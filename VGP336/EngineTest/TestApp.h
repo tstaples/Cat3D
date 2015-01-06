@@ -1,0 +1,32 @@
+#ifndef INCLUDED_TESTAPP_H
+#define INCLUDED_TESTAPP_H
+
+#include <Engine.h>
+
+class TestApp : public Application
+{
+public:
+	TestApp();
+	virtual ~TestApp();
+
+private:
+	// Application implementation
+	virtual void OnInitialize(u32 width, u32 height);
+	virtual void OnTerminate();
+	virtual bool OnInput(const InputEvent& evt);
+	virtual void OnUpdate();
+
+private:
+	Window mWindow;
+
+	s32 mMouseY;
+	s32 mMouseX;
+
+	Timer mTimer;
+	GraphicsSystem mGraphicsSystem;
+	Camera mCamera;
+
+	bool mKeyStates[256];
+};
+
+#endif //#ifndef INCLUDED_TESTAPP_H
