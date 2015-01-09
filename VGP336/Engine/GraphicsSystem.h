@@ -7,6 +7,8 @@
 // Description:	Class for the graphics system.
 //====================================================================================================
 
+#include "Color.h"
+
 //====================================================================================================
 // Class Declarations
 //====================================================================================================
@@ -20,7 +22,7 @@ public:
 	void Initialize(HWND window, bool fullscreen);
 	void Terminate();
 
-	void BeginRender();
+	void BeginRender(const Color& clearColor = Color::Blue());
 	void EndRender();
 
 	void ToggleFullscreen();
