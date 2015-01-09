@@ -36,6 +36,8 @@ public:
 	void Pitch(f32 degree);
 
 	const Math::Vector3& GetPosition() const	{ return mPosition; }
+	const Math::Vector3& GetLookAt() const		{ return mLook; }
+	const Math::Vector3& GetRight() const		{ return mRight; }
 
 	f32 GetFOV() const							{ return mFOV; }
 	f32 GetAspectRatio() const					{ return mAspectRatio; }

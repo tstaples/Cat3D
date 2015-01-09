@@ -16,6 +16,9 @@
     <Filter Include="Math">
       <UniqueIdentifier>{b291b0c4-debf-4dfb-a9aa-49c22b619c40}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Containers">
+      <UniqueIdentifier>{e3e84abc-f471-49ae-9919-f32d1fb903a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputSystem.cpp">
@@ -171,6 +174,9 @@
     <ClInclude Include="MeshBuffer.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="ComplexNumber.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Vector3.inl">
@@ -180,6 +186,9 @@
       <Filter>Math</Filter>
     </None>
     <None Include="EngineMath.inl">
+      <Filter>Math</Filter>
+    </None>
+    <None Include="ComplexNumber.inl">
       <Filter>Math</Filter>
     </None>
   </ItemGroup>
