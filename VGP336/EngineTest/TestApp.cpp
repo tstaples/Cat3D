@@ -1,10 +1,7 @@
 #include "TestApp.h"
 
 TestApp::TestApp()
-: mMouseX(-1)
-, mMouseY(-1)
 {
-	memset(mKeyStates, 0, sizeof(bool) * 256);
 }
 
 TestApp::~TestApp()
@@ -17,17 +14,19 @@ void TestApp::OnInitialize(u32 width, u32 height)
 	mWindow.Initialize(GetInstance(), GetAppName(), width, height);
 	HookWindow(mWindow.GetWindowHandle());
 
+	mTimer.Initialize();
+	mInputSystem.Initialize(mWindow.GetWindowHandle());
+
 	mGraphicsSystem.Initialize(mWindow.GetWindowHandle(), false);
+	SimpleDraw::Initialize(mGraphicsSystem);
+
 	mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
 	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -10.0f));
-
-	mTimer.Initialize();
-
-	SimpleDraw::Initialize(mGraphicsSystem);
 }
 
 void TestApp::OnTerminate()
 {
+	mInputSystem.Terminate();
 	SimpleDraw::Terminate();
 	mGraphicsSystem.Terminate();
 	mWindow.Terminate();
@@ -36,40 +35,10 @@ void TestApp::OnTerminate()
 bool TestApp::OnInput(const InputEvent& evt)
 {
 	bool handled = false;
-	switch(evt.type)
+	if (mInputSystem.IsKeyPressed(Keys::ESCAPE))
 	{
-	case InputEvent::KeyDown:
-		{
-			if(evt.value == VK_ESCAPE)
-			{
-				PostQuitMessage(0);
-			}
-			mKeyStates[evt.value] = true;
-			handled = true;
-		}
-		break;
-
-	case InputEvent::KeyUp:
-		{
-			mKeyStates[evt.value] = false;
-			handled = true;
-		}
-		break;
-
-	case InputEvent::MouseMove:
-		{
-			if (mMouseX != -1 && mMouseY != -1)
-			{
-				f32 deltaX = (f32)(evt.x - mMouseX);
-				f32 deltaY = (f32)(evt.y - mMouseY);
-				mCamera.Yaw(deltaX);
-				mCamera.Pitch(deltaY);
-			}
-			mMouseX = evt.x;
-			mMouseY = evt.y;
-			handled = true;	
-		}
-		break;
+		PostQuitMessage(0);
+		handled = true;
 	}
 	return handled;
 }
@@ -79,29 +48,37 @@ void TestApp::OnUpdate()
 	if (mWindow.HandleMessage())
 	{
 		mRunning = false;
+		return;
 	}
-	else
-	{
-		mTimer.Update();
-		const f32 deltatime = mTimer.GetElapsedTime();
-		const f32 kMoveSpeed = 10.0f;
 
-		if (mKeyStates['W'])
-			mCamera.Walk(kMoveSpeed * deltatime);
-		else if (mKeyStates['A'])
-			mCamera.Strafe(-kMoveSpeed * deltatime);
-		else if (mKeyStates['D'])
-			mCamera.Strafe(kMoveSpeed * deltatime);
-		else if (mKeyStates['S'])
-			mCamera.Walk(-kMoveSpeed * deltatime);
+	mTimer.Update();
+	mInputSystem.Update();
 
-		mGraphicsSystem.BeginRender();
+	const f32 deltatime = mTimer.GetElapsedTime();
+	const f32 kMoveSpeed = 10.0f;
 
-		SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::XAxis(), Color::Red());
-		SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::YAxis(), Color::Green());
-		SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::ZAxis(), Color::Blue());
+	// Camera movement
+	f32 mouseSensitivity = 0.25f;
+	mCamera.Yaw((f32)(mInputSystem.GetMouseMoveX()) * mouseSensitivity);
+	mCamera.Pitch((f32)(mInputSystem.GetMouseMoveY()) * mouseSensitivity);
 
-		SimpleDraw::Render(mCamera);
-		mGraphicsSystem.EndRender();
-	}
+	// Player movement
+	if (mInputSystem.IsKeyDown(Keys::W))
+		mCamera.Walk(kMoveSpeed * deltatime);
+	else if (mInputSystem.IsKeyDown(Keys::A))
+		mCamera.Strafe(-kMoveSpeed * deltatime);
+	else if (mInputSystem.IsKeyDown(Keys::D))
+		mCamera.Strafe(kMoveSpeed * deltatime);
+	else if (mInputSystem.IsKeyDown(Keys::S))
+		mCamera.Walk(-kMoveSpeed * deltatime);
+
+	// Render
+	mGraphicsSystem.BeginRender();
+
+	SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::XAxis(), Color::Red());
+	SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::YAxis(), Color::Green());
+	SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::ZAxis(), Color::Blue());
+
+	SimpleDraw::Render(mCamera);
+	mGraphicsSystem.EndRender();
 }

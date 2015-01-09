@@ -18,15 +18,10 @@ private:
 
 private:
 	Window mWindow;
-
-	s32 mMouseY;
-	s32 mMouseX;
-
 	Timer mTimer;
+	InputSystem mInputSystem;
 	GraphicsSystem mGraphicsSystem;
 	Camera mCamera;
-
-	bool mKeyStates[256];
 };
 
 #endif //#ifndef INCLUDED_TESTAPP_H
