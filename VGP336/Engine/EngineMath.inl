@@ -84,6 +84,19 @@ inline bool IsZero(const Vector3& v)
 
 //----------------------------------------------------------------------------------------------------
 
+// http://www.musicdsp.org/showone.php?id=249
+inline bool IsFloatPositive(f32 f)
+{
+	if (IsZero(f))
+		return false;
+	
+	f32 r = 1.0f;
+    (s32&)r |= ((s32&)f & 0x80000000); // mask sign bit in f, set it in r if necessary
+	return (r > 0.0f);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 inline f32 MagnitudeSqr(const Vector3& v)
 {
 	return (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
