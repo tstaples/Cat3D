@@ -1,28 +1,32 @@
+#include "Precompiled.h"
+#include "ComplexNumber.h"
+#include "EngineMath.h"
+
 namespace Math
 {
 
-inline ComplexNumber::ComplexNumber()
+ComplexNumber::ComplexNumber()
 : mReal(0.0f)
 , mImaginary(0.0f)
 {
 }
 //----------------------------------------------------------------------------------------------------
 
-inline ComplexNumber::ComplexNumber(f32 real, f32 imaginary)
+ComplexNumber::ComplexNumber(f32 real, f32 imaginary)
 : mReal(real)
 , mImaginary(imaginary)
 {
 }
 //----------------------------------------------------------------------------------------------------
 
-inline ComplexNumber::ComplexNumber(const ComplexNumber& rhs)
+ComplexNumber::ComplexNumber(const ComplexNumber& rhs)
 {
 	*this = rhs;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline ComplexNumber& ComplexNumber::operator=(const ComplexNumber& rhs)
+ComplexNumber& ComplexNumber::operator=(const ComplexNumber& rhs)
 {
 	if (this != &rhs)
 	{
@@ -34,7 +38,7 @@ inline ComplexNumber& ComplexNumber::operator=(const ComplexNumber& rhs)
 
 //----------------------------------------------------------------------------------------------------
 
-inline f32 ComplexNumber::Modulus() const
+f32 ComplexNumber::Modulus() const
 {
 	// "Distance from zero" aka length
 	return Sqrt((mReal * mReal) + (mImaginary * mImaginary));
@@ -42,7 +46,15 @@ inline f32 ComplexNumber::Modulus() const
 
 //----------------------------------------------------------------------------------------------------
 
-inline ComplexNumber ComplexNumber::Conjugate() const
+f32 ComplexNumber::ModulusSquared() const
+{
+	f32 mod = Modulus();
+	return mod * mod;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+ComplexNumber ComplexNumber::Conjugate() const
 {
 	// Flip sign of imaginary part
 	return ComplexNumber(mReal, mImaginary * -1.0f);
@@ -50,7 +62,7 @@ inline ComplexNumber ComplexNumber::Conjugate() const
 
 //----------------------------------------------------------------------------------------------------
 
-inline f32 ComplexNumber::Argument() const
+f32 ComplexNumber::Argument() const
 {
 	if (IsZero(mReal) || IsZero(mImaginary))
 		return 0.0f;
@@ -59,35 +71,35 @@ inline f32 ComplexNumber::Argument() const
 
 //----------------------------------------------------------------------------------------------------
 
-inline ComplexNumber operator+(const ComplexNumber& lhs, const ComplexNumber& rhs)
+ComplexNumber operator+(const ComplexNumber& lhs, const ComplexNumber& rhs)
 {
 	return ComplexNumber(lhs.mReal + rhs.mReal, lhs.mImaginary + rhs.mImaginary);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline ComplexNumber operator+(const ComplexNumber& lhs, f32 scalar)
+ComplexNumber operator+(const ComplexNumber& lhs, f32 scalar)
 {
 	return ComplexNumber(lhs.mReal + scalar, lhs.mImaginary);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline ComplexNumber operator-(const ComplexNumber& lhs, const ComplexNumber& rhs)
+ComplexNumber operator-(const ComplexNumber& lhs, const ComplexNumber& rhs)
 {
 	return ComplexNumber(lhs.mReal - rhs.mReal, lhs.mImaginary - rhs.mImaginary);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline ComplexNumber operator-(const ComplexNumber& lhs, f32 scalar)
+ComplexNumber operator-(const ComplexNumber& lhs, f32 scalar)
 {
 	return ComplexNumber(lhs.mReal - scalar, lhs.mImaginary);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline ComplexNumber operator*(const ComplexNumber& lhs, const ComplexNumber& rhs)
+ComplexNumber operator*(const ComplexNumber& lhs, const ComplexNumber& rhs)
 {
 	f32 first = lhs.mReal * rhs.mReal;
 	f32 outside = lhs.mReal * rhs.mImaginary;
@@ -98,49 +110,49 @@ inline ComplexNumber operator*(const ComplexNumber& lhs, const ComplexNumber& rh
 
 //----------------------------------------------------------------------------------------------------
 
-inline ComplexNumber operator*(const ComplexNumber& lhs, f32 scalar)
+ComplexNumber operator*(const ComplexNumber& lhs, f32 scalar)
 {
 	return ComplexNumber(lhs.mReal * scalar, lhs.mImaginary * scalar);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline ComplexNumber operator/(const ComplexNumber& lhs, const ComplexNumber& rhs)
+ComplexNumber operator/(const ComplexNumber& lhs, const ComplexNumber& rhs)
 {
-	return ComplexNumber(lhs * rhs.Conjugate() / Sqr(rhs.Modulus()));
+	return ComplexNumber(lhs * rhs.Conjugate() / rhs.ModulusSquared());
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline ComplexNumber operator/(const ComplexNumber& lhs, f32 scalar)
+ComplexNumber operator/(const ComplexNumber& lhs, f32 scalar)
 {
 	return ComplexNumber(lhs.mReal / scalar, lhs.mImaginary / scalar);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline bool operator==(const ComplexNumber& lhs, const ComplexNumber& rhs)
+bool operator==(const ComplexNumber& lhs, const ComplexNumber& rhs)
 {
 	return (lhs.mReal == rhs.mReal && lhs.mImaginary == rhs.mImaginary);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline bool operator==(const ComplexNumber& lhs, f32 scalar)
+bool operator==(const ComplexNumber& lhs, f32 scalar)
 {
 	return (lhs.mReal == scalar && IsZero(lhs.mImaginary));
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline bool operator!=(const ComplexNumber& lhs, const ComplexNumber& rhs)
+bool operator!=(const ComplexNumber& lhs, const ComplexNumber& rhs)
 {
 	return !(lhs == rhs);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline bool operator!=(const ComplexNumber& lhs, f32 scalar)
+bool operator!=(const ComplexNumber& lhs, f32 scalar)
 {
 	return !(lhs == scalar);
 }

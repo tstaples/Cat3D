@@ -85,7 +85,7 @@ inline bool IsZero(const Vector3& v)
 //----------------------------------------------------------------------------------------------------
 
 // http://www.musicdsp.org/showone.php?id=249
-inline bool IsFloatPositive(f32 f)
+inline bool IsPositive(f32 f)
 {
 	if (IsZero(f))
 		return false;

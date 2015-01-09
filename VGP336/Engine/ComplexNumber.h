@@ -7,9 +7,6 @@
 // Description:	Class representing a complex number.
 //====================================================================================================
 
-#include "Common.h"
-#include "EngineMath.h"
-
 namespace Math
 {
 
@@ -36,6 +33,7 @@ public:
 	ComplexNumber& operator=(const ComplexNumber& rhs);
 
 	f32 Modulus() const;
+	f32 ModulusSquared() const;
 	f32 Argument() const;
 	ComplexNumber Conjugate() const;
 
@@ -45,11 +43,5 @@ private:
 };
 
 } // namespace Math
-
-//====================================================================================================
-// Inline Definitions
-//====================================================================================================
-
-#include "ComplexNumber.inl"
 
 #endif // #ifndef INCLUDED_ENGINE_COMPLEXNUMBER_H
