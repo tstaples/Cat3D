@@ -21,6 +21,7 @@
     <ClCompile Include="EngineMath.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshBuilder.cpp" />
+    <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="MeshUtil.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="Precompiled.cpp">
@@ -56,6 +57,7 @@
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshBuilder.h" />
+    <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="MeshUtil.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Precompiled.h" />
@@ -76,6 +78,16 @@
     <None Include="EngineMath.inl" />
     <None Include="Matrix.inl" />
     <None Include="Vector3.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\External\DirectXTK\DirectXTK_Desktop_2013.vcxproj">
+      <Project>{e0b52ae7-e160-4d32-bf3f-910b785e5a8e}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BF37882E-6717-49C4-B8B2-1C13CE301343}</ProjectGuid>

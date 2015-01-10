@@ -11,6 +11,8 @@
 // Class Declarations
 //====================================================================================================
 
+#include "Color.h"
+
 class GraphicsSystem
 {
 public:
@@ -20,7 +22,7 @@ public:
 	void Initialize(HWND window, bool fullscreen);
 	void Terminate();
 
-	void BeginRender();
+	void BeginRender(const Color& clearColor = Color::Black());
 	void EndRender();
 
 	void ToggleFullscreen();
