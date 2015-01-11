@@ -24,11 +24,7 @@ public:
 	void Initialize(HWND window, bool fullscreen);
 	void Terminate();
 
-<<<<<<< HEAD
-	void BeginRender(const Color& clearColor = Color::Blue());
-=======
 	void BeginRender(const Color& clearColor = Color::Black());
->>>>>>> c02e68c600a3046aca295e57ef4fcddf0f74138d
 	void EndRender();
 
 	void ToggleFullscreen();

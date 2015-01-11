@@ -58,10 +58,7 @@ bool Compare(f32 a, f32 b, f32 epsilon = 0.000001f);
 
 bool IsZero(f32 value);
 bool IsZero(const Vector3& v);
-<<<<<<< HEAD
 bool IsPositive(f32 f);
-=======
->>>>>>> c02e68c600a3046aca295e57ef4fcddf0f74138d
 
 f32 MagnitudeSqr(const Vector3& v);
 f32 Magnitude(const Vector3& v);

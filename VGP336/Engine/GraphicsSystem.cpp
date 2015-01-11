@@ -284,14 +284,7 @@ void GraphicsSystem::Terminate()
 
 void GraphicsSystem::BeginRender(const Color& clearColor)
 {
-<<<<<<< HEAD
-	//float ClearColor[4] = { 0.0f, 0.125f, 0.6f, 1.0f }; // RGBA
-
-	float arr[4];
-	mpImmediateContext->ClearRenderTargetView(mpRenderTargetView, clearColor.ToFloatArray(arr));
-=======
 	mpImmediateContext->ClearRenderTargetView(mpRenderTargetView, clearColor.ToFloatArray());
->>>>>>> c02e68c600a3046aca295e57ef4fcddf0f74138d
 	mpImmediateContext->ClearDepthStencilView(mpDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
