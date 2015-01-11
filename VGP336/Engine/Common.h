@@ -127,4 +127,12 @@ inline void SafeRelease(T*& ptr)
 	}
 }
 
+//----------------------------------------------------------------------------------------------------
+
+template<typename T>
+std::string S(const T& tostr)
+{
+    return std::to_string(tostr);
+}
+
 #endif // #ifndef INCLUDED_ENGINE_COMMON_H
