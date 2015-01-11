@@ -48,6 +48,7 @@ public:
 	
 	static const D3D11_INPUT_ELEMENT_DESC* GetVertexLayout();
 	static u32 GetVertexLayoutSize();
+	static u32 GetVertexFormat();
 
 	Mesh();
 	~Mesh();

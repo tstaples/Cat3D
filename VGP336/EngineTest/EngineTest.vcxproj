@@ -80,16 +80,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Engine\Engine.vcxproj">
-      <Project>{bf37882e-6717-49c4-b8b2-1c13ce301343}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="TestApp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestApp.cpp" />
     <ClCompile Include="WinMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Engine\Engine.vcxproj">
+      <Project>{bf37882e-6717-49c4-b8b2-1c13ce301343}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

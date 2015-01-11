@@ -31,7 +31,7 @@ public:
 
 	void Update();
 	
-	bool IsRunning() const							{ return mRunning; }
+	bool IsRunning() const			{ return mRunning; }
 	
 protected:
 	HINSTANCE GetInstance() const	{ return mInstance; }

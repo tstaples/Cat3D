@@ -84,6 +84,7 @@ inline bool IsZero(const Vector3& v)
 
 //----------------------------------------------------------------------------------------------------
 
+<<<<<<< HEAD
 // http://www.musicdsp.org/showone.php?id=249
 inline bool IsPositive(f32 f)
 {
@@ -97,6 +98,8 @@ inline bool IsPositive(f32 f)
 
 //----------------------------------------------------------------------------------------------------
 
+=======
+>>>>>>> c02e68c600a3046aca295e57ef4fcddf0f74138d
 inline f32 MagnitudeSqr(const Vector3& v)
 {
 	return (v.x * v.x) + (v.y * v.y) + (v.z * v.z);

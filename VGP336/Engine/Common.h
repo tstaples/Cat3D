@@ -91,7 +91,6 @@ typedef double				f64;
 
 //----------------------------------------------------------------------------------------------------
 
-// Requires C++11
 #define NONCOPYABLE(type)\
 	type(const type&) = delete;\
 	type& operator=(const type&) = delete;

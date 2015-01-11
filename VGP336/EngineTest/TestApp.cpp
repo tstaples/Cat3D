@@ -73,11 +73,14 @@ void TestApp::OnUpdate()
 		mCamera.Walk(-kMoveSpeed * deltatime);
 
 	// Render
-	mGraphicsSystem.BeginRender();
+	mGraphicsSystem.BeginRender(Color::Red());
 
-	SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::XAxis(), Color::Red());
-	SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::YAxis(), Color::Green());
-	SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::ZAxis(), Color::Blue());
+	//SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::XAxis(), Color::Red());
+	//SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::YAxis(), Color::Green());
+	//SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::ZAxis(), Color::Blue());
+
+	SimpleDraw::AddSphere(Math::Vector3(-2.0f, 0.0f, 0.0f), 2.0f, Color::White());
+	SimpleDraw::AddSphere(Math::Vector3(2.0f, 0.0f, 0.0f), 2.0f, Color::White());
 
 	SimpleDraw::Render(mCamera);
 	mGraphicsSystem.EndRender();

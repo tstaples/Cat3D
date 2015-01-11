@@ -26,6 +26,7 @@
 #include "Heightmap.h"
 #include "Mesh.h"
 #include "MeshBuilder.h"
+#include "MeshRenderer.h"
 #include "MeshUtil.h"
 #include "PixelShader.h"
 #include "MeshBuffer.h"
