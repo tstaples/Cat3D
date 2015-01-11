@@ -3,8 +3,11 @@
   <ItemGroup>
     <ClCompile Include="WinMain.cpp" />
     <ClCompile Include="Importer.cpp" />
+    <ClCompile Include="Exporter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Importer.h" />
+    <ClInclude Include="Exporter.h" />
+    <ClInclude Include="ImporterTypes.h" />
   </ItemGroup>
 </Project>

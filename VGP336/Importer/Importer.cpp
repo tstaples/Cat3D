@@ -1,10 +1,4 @@
 #include "Importer.h"
-#include "ImportFunctors.h"
-
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
-#include <memory>
 
 
 Importer::Importer()
@@ -73,6 +67,9 @@ void Importer::CopyVertexData(const AIMeshPtr& aimesh, f32 scale, MeshPtr& mesh)
             // Branch prediction should hopefully make this not too slow
             CopyNormal(*aivIter, *vIter);
         }
+
+        // TODO: copy rest of data
+
         ++aivIter;
     }
 }
@@ -90,10 +87,6 @@ void Importer::CopyIndexData(const AIMeshPtr& aimesh, MeshPtr& mesh)
     }
 }
 
-bool Importer::Output(const char* outputFile)
-{
-    return false;
-}
 
 void Importer::CopyPosition(const aiVector3D& fromV, Mesh::Vertex& toV, f32 scale)
 {
