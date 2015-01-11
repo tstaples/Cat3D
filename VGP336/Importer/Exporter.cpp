@@ -8,14 +8,19 @@
 */
 
 template<typename T>
-std::string S(const T& tostr)
+void Write(std::ofstream& of, T* data, size_t size, bool nl=true)
 {
-    return std::to_string(tostr);
+    //s8* buffer[1024];
+    of.write((char*)data, sizeof(T) * size);
+    if (nl)
+    {
+        of.write("\r\n", sizeof(s8) * 2);
+    }
 }
 
 bool Exporter::Export(const char* outpath, const Meshes& meshes)
 {
-    std::ofstream fout(outpath);
+    std::ofstream fout(outpath, std::ios::binary | std::ios::out);
     if (!fout.is_open())
     {
         return false;
@@ -23,11 +28,11 @@ bool Exporter::Export(const char* outpath, const Meshes& meshes)
 
     // Write header (TODO: read version from config)
     Header header(1, 0, "CATM");
-    fout << header;
+    WriteHeader(header, fout);
 
     // Write how many meshes this file contains
     const u32 numMeshes = meshes.size();
-    fout << numMeshes << std::endl;
+    Write(fout, &numMeshes, 1);
 
     for (auto &mesh : meshes)
     {
@@ -39,19 +44,26 @@ bool Exporter::Export(const char* outpath, const Meshes& meshes)
     return true;
 }
 
+void Exporter::WriteHeader(const Header& head, std::ofstream& fhandle)
+{
+    Write(fhandle, &head.signature, 1);
+    Write(fhandle, &head.version, 1);
+
+}
+
 void Exporter::WriteVertexBlock(const NativeVertList& verts, std::ofstream& fhandle)
 {
     // Write how many verticies are following
     const u32 numVerts = verts.size();
-    fhandle << numVerts << std::endl;
+    Write(fhandle, &numVerts, 1);
 
     for (auto v : verts)
     {
-        fhandle << FormatVector3(v.position) << std::endl;
-        fhandle << FormatVector3(v.normal) << std::endl;
-        fhandle << FormatVector3(v.tangent) << std::endl;
-        fhandle << FormatColor(v.color) << std::endl;
-        fhandle << FormatVector2(v.texcoord) << std::endl;
+        WriteVector3(v.position, fhandle);
+        WriteVector3(v.normal, fhandle);
+        WriteVector3(v.tangent, fhandle);
+        WriteColor(v.color, fhandle);
+        WriteVector2(v.texcoord, fhandle);
     }
 }
 
@@ -59,25 +71,37 @@ void Exporter::WriteIndexBlock(const IndexList& indices, std::ofstream& fhandle)
 {
     // Write how many indices are following
     const u32 numIndices = indices.size();
-    fhandle << numIndices << std::endl;
+    Write(fhandle, &numIndices, 1);
 
     for (auto i : indices)
     {
-        fhandle << i << std::endl;
+        Write(fhandle, &i, 1);
     }
 }
 
-std::string Exporter::FormatVector3(const Math::Vector3& v)
+void Exporter::WriteVector3(const Math::Vector3& v, std::ofstream& fhandle)
 {
-    return std::string(S(v.x) + " " + S(v.y) + " " + S(v.z));
+    std::string s(S(v.x) + " " + S(v.y) + " " + S(v.z));
+    const std::size_t sz = s.size();
+
+    const s8* buff = s.c_str();;
+    Write(fhandle, buff, sz);
 }
 
-std::string Exporter::FormatVector2(const Math::Vector2& v)
+void Exporter::WriteVector2(const Math::Vector2& v, std::ofstream& fhandle)
 {
-    return std::string(S(v.x) + " " + S(v.y));
+    std::string s(S(v.x) + " " + S(v.y));
+    const std::size_t sz = s.size();
+
+    const s8* buff = s.c_str();;
+    Write(fhandle, buff, sz);
 }
 
-std::string Exporter::FormatColor(const Color& c)
+void Exporter::WriteColor(const Color& c, std::ofstream& fhandle)
 {
-    return std::string(S(c.r) + " " + S(c.g) + " " + S(c.b) + " " + S(c.a));
+    std::string s(S(c.r) + " " + S(c.g) + " " + S(c.b) + " " + S(c.a));
+    const std::size_t sz = s.size();
+
+    const s8* buff = s.c_str();;
+    Write(fhandle, buff, sz);
 }
