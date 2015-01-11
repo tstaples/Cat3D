@@ -55,57 +55,50 @@ bool Importer::Load(const char* inputFile, f32 scale)
 void Importer::CopyVertexData(const aiMesh& aimesh, f32 scale, MeshPtr& mesh)
 {
     bool hasNormal = aimesh.HasNormals();
+    bool hasTangents = aimesh.HasTangentsAndBitangents();
+    
+    const Math::Vector3 zero = Math::Vector3::Zero();
 
-    NativeVertList::iterator vIter = mesh->mVertices.begin();
-    const aiVector3D* aivIter = aimesh.mVertices;
     const u32 numVertices = aimesh.mNumVertices;
-
     for (u32 j=0; j < numVertices; ++j)
     {
-        CopyPosition(*aivIter, *vIter, scale);
-        if (hasNormal)
-        {
-            // Branch prediction should hopefully make this not too slow
-            CopyNormal(*aivIter, *vIter);
-        }
+        Mesh::Vertex& vert = mesh->mVertices[j];
+    
+        bool hasColor = aimesh.HasVertexColors(j);
+        bool hasUV = aimesh.HasTextureCoords(j);
 
-        // TODO: copy rest of data
-
-        ++aivIter;
+        vert.position   = ToV3(aimesh.mVertices[j]); // always present
+        vert.normal     = (hasNormal)   ? ToV3(aimesh.mNormals[j])      : zero;
+        vert.tangent    = (hasTangents) ? ToV3(aimesh.mTangents[j])     : zero;
+        vert.color      = (hasColor)    ? ToColor(*aimesh.mColors[j])   : Color::White();
+        // TODO: UV coords & handling multple
     }
 }
 
 void Importer::CopyIndexData(const aiMesh& aimesh, MeshPtr& mesh)
 {
+    if (!aimesh.HasFaces())
+        return;
+
     const aiFace* aifaceIter = aimesh.mFaces;
     IndexList::iterator indexIter = mesh->mIndices.begin();
 
     const u32 numFaces = aimesh.mNumFaces;
     for (u32 j=0; j < numFaces; ++j)
     {
-        CopyIndex(*aifaceIter, indexIter);
+        indexIter[0] = aifaceIter->mIndices[0];
+	    indexIter[1] = aifaceIter->mIndices[1];
+	    indexIter[2] = aifaceIter->mIndices[2];
         indexIter += 3;
     }
 }
 
-
-void Importer::CopyPosition(const aiVector3D& fromV, Mesh::Vertex& toV, f32 scale)
+Math::Vector3 Importer::ToV3(const aiVector3D& v)
 {
-    toV.position.x = fromV.x * scale;
-    toV.position.y = fromV.y * scale;
-    toV.position.z = fromV.z * scale;
+    return Math::Vector3(v.x, v.y, v.z);
 }
 
-void Importer::CopyNormal(const aiVector3D& fromV, Mesh::Vertex& toV)
+Color Importer::ToColor(const aiColor4D& c)
 {
-    toV.normal.x = fromV.x;
-    toV.normal.y = fromV.y;
-    toV.normal.z = fromV.z;
-}
-
-void Importer::CopyIndex(const aiFace& face, IndexList::iterator& indexIter)
-{
-    indexIter[0] = face.mIndices[0];
-	indexIter[1] = face.mIndices[1];
-	indexIter[2] = face.mIndices[2];
+    return Color(c.r, c.g, c.b, c.a);
 }

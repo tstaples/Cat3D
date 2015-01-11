@@ -17,10 +17,8 @@ private:
     void CopyVertexData(const aiMesh& aimesh, f32 scale, MeshPtr& mesh);
     void CopyIndexData(const aiMesh& aimesh, MeshPtr& mesh);
 
-    void CopyPosition(const aiVector3D& fromV, Mesh::Vertex& toV, f32 scale);
-    void CopyNormal(const aiVector3D& fromV, Mesh::Vertex& toV);
-    void CopyIndex(const aiFace& face, IndexList::iterator& indexIter);
-
+    Math::Vector3 ToV3(const aiVector3D& v);
+    Color ToColor(const aiColor4D& c);
 
 private:
     Assimp::Importer mImporter;
