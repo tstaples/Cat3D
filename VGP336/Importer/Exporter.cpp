@@ -10,7 +10,6 @@
 template<typename T>
 void Write(std::ofstream& of, T* data, size_t size, bool nl=true)
 {
-    //s8* buffer[1024];
     of.write((char*)data, sizeof(T) * size);
     if (nl)
     {
@@ -48,7 +47,6 @@ void Exporter::WriteHeader(const Header& head, std::ofstream& fhandle)
 {
     Write(fhandle, &head.signature, 1);
     Write(fhandle, &head.version, 1);
-
 }
 
 void Exporter::WriteVertexBlock(const NativeVertList& verts, std::ofstream& fhandle)

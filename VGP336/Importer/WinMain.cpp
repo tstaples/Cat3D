@@ -1,9 +1,7 @@
+#include "Importer.h"
+#include "Exporter.h"
+
 #include <Engine.h>
-
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
 #include <iostream>
 
 f32 GetScale(u32 args, char** argv);
@@ -25,8 +23,23 @@ int main(int argc, char** argv)
     const char* outputFile = argv[2];
     const f32 scale = GetScale(args, argv);
 
+    Importer importer;
+    if (!importer.Load(inputFile, scale))
+    {
+        std::cout << "Failed to load file: " << inputFile << std::endl;
+        return 1;
+    }
+
+    Exporter exporter;
+    if (!exporter.Export(outputFile, importer.GetMeshes()))
+    {
+        std::cout << "Failed to export to: " << outputFile << std::endl;
+        return 1;
+    }
+
     return 0;
 }
+
 
 f32 GetScale(u32 args, char** argv)
 {
@@ -47,7 +60,7 @@ f32 GetScale(u32 args, char** argv)
             return scale;
         }
         std::string val(line.begin() + (equalIndex + 1), line.end());
-        scale = atof(val.data());
+        scale = (f32)atof(val.data());
     }
     return scale;
 }

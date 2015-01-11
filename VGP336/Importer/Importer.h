@@ -17,6 +17,7 @@ private:
     void CopyVertexData(const aiMesh& aimesh, f32 scale, MeshPtr& mesh);
     void CopyIndexData(const aiMesh& aimesh, MeshPtr& mesh);
 
+    // Helpers to convert assimp formats to native
     Math::Vector3 ToV3(const aiVector3D& v);
     Color ToColor(const aiColor4D& c);
 
