@@ -7,9 +7,6 @@
 #include <assimp/postprocess.h>
 #include <memory>
 
-typedef std::unique_ptr<const aiScene> AIScenePtr;
-typedef std::unique_ptr<aiMesh> AIMeshPtr;
-
 // Local types
 typedef std::vector<Mesh::Vertex> NativeVertList;
 typedef std::vector<u16> IndexList;

@@ -21,9 +21,8 @@ bool Importer::Init()
 bool Importer::Load(const char* inputFile, f32 scale)
 {
     // Load the model into the scene
-    AIScenePtr scene(mImporter.ReadFile(inputFile, mFlags));
-	// TODO: Exception
-    ASSERT(scene, "Failed to load model - %s", mImporter.GetErrorString());
+	const aiScene* scene = mImporter.ReadFile(inputFile, mFlags);   
+    ASSERT(scene, "Failed to load model - %s", mImporter.GetErrorString()); // TODO: Exception
 
     if (!scene->HasMeshes())
     {
@@ -31,19 +30,21 @@ bool Importer::Load(const char* inputFile, f32 scale)
         return false;
     }
 
+    MeshPtr mesh(nullptr);
     const u32 numMeshes = scene->mNumMeshes;
     for (u32 i=0; i < numMeshes; ++i)
     {
-        AIMeshPtr aimesh(scene->mMeshes[i]);
-        MeshPtr mesh(new LocalMesh());
+        //AIMeshPtr aimesh(scene->mMeshes[i]);
+        aiMesh* aimesh = scene->mMeshes[i];
+        mesh.reset(new LocalMesh());
 
         // Allocate space for the verts and indices
         mesh->mVertices.resize(aimesh->mNumVertices);
         mesh->mIndices.resize(aimesh->mNumFaces * 3);
 
         // Convert and copy the data from the imported file type to our native type
-        CopyVertexData(aimesh, scale, mesh);
-        CopyIndexData(aimesh, mesh);
+        CopyVertexData(*aimesh, scale, mesh);
+        CopyIndexData(*aimesh, mesh);
 
         // Store the native mesh
         mMeshes.push_back(std::move(mesh));
@@ -51,13 +52,13 @@ bool Importer::Load(const char* inputFile, f32 scale)
     return true;
 }
 
-void Importer::CopyVertexData(const AIMeshPtr& aimesh, f32 scale, MeshPtr& mesh)
+void Importer::CopyVertexData(const aiMesh& aimesh, f32 scale, MeshPtr& mesh)
 {
-    bool hasNormal = aimesh->HasNormals();
+    bool hasNormal = aimesh.HasNormals();
 
     NativeVertList::iterator vIter = mesh->mVertices.begin();
-    const aiVector3D* aivIter = aimesh->mVertices;
-    const u32 numVertices = aimesh->mNumVertices;
+    const aiVector3D* aivIter = aimesh.mVertices;
+    const u32 numVertices = aimesh.mNumVertices;
 
     for (u32 j=0; j < numVertices; ++j)
     {
@@ -74,12 +75,12 @@ void Importer::CopyVertexData(const AIMeshPtr& aimesh, f32 scale, MeshPtr& mesh)
     }
 }
 
-void Importer::CopyIndexData(const AIMeshPtr& aimesh, MeshPtr& mesh)
+void Importer::CopyIndexData(const aiMesh& aimesh, MeshPtr& mesh)
 {
-    const aiFace* aifaceIter = aimesh->mFaces;
+    const aiFace* aifaceIter = aimesh.mFaces;
     IndexList::iterator indexIter = mesh->mIndices.begin();
 
-    const u32 numFaces = aimesh->mNumFaces;
+    const u32 numFaces = aimesh.mNumFaces;
     for (u32 j=0; j < numFaces; ++j)
     {
         CopyIndex(*aifaceIter, indexIter);

@@ -9,12 +9,13 @@ public:
     Importer();
 
     bool Load(const char* inputFile, f32 scale);
+    const Meshes& GetMeshes() const { return mMeshes; }
 
 private:
     bool Init();
 
-    void CopyVertexData(const AIMeshPtr& aimesh, f32 scale, MeshPtr& mesh);
-    void CopyIndexData(const AIMeshPtr& aimesh, MeshPtr& mesh);
+    void CopyVertexData(const aiMesh& aimesh, f32 scale, MeshPtr& mesh);
+    void CopyIndexData(const aiMesh& aimesh, MeshPtr& mesh);
 
     void CopyPosition(const aiVector3D& fromV, Mesh::Vertex& toV, f32 scale);
     void CopyNormal(const aiVector3D& fromV, Mesh::Vertex& toV);
