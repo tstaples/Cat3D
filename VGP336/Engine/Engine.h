@@ -48,4 +48,9 @@
 #include "Timer.h"
 #include "Window.h"
 
+// Resource headers
+#include "Resource.h"
+#include "ResourceManager.h"
+#include "TextureManager.h"
+
 #endif // #ifndef INCLUDED_ENGINE_H
