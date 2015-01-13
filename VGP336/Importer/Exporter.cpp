@@ -4,17 +4,29 @@
 
 /* === Format Guidelines ===
  * Layout:
+ *	Header size (fixed): 8 bytes
+ *	Number of meshes (4 bytes)
+ *	Vertex block:
+ *		Number of verts (4 bytes)
+ *		- all values for each property space delimited on single line
+ *		Position: x y z (12)
+ *		Normal: x y z (12)
+ *		Tangent: x y z (12)
+ *		Color: r g b a (16)
+ *		Texture Coords: u v (8)
+ *	Indices block:
+ *		Number of indicies (4)
+ *		- each index is newline (\r\n) delimited (4)
  * 
 */
 
+// TODO: write all data as a contiguous block of bytes that can just be read in to memory
+// then when loading the native format, blocks of the data can just be memcpy'd
+
 template<typename T>
-void Write(std::ofstream& of, T* data, size_t size, bool nl=true)
+void Write(std::ofstream& of, T* data, size_t size)
 {
     of.write((char*)data, sizeof(T) * size);
-    if (nl)
-    {
-        of.write("\r\n", sizeof(s8) * 2);
-    }
 }
 
 bool Exporter::Export(const char* outpath, const Meshes& meshes)

@@ -3,7 +3,9 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-//#pragma comment(lib, "../External/assimp-3.1.1/lib/assimp.lib")
+
+#include <fstream>
+#include <sstream>
 
 TestApp::TestApp()
 {
@@ -105,70 +107,152 @@ void TestApp::OnUpdate()
 	mGraphicsSystem.EndRender();
 }
 
+Math::Vector3 ReadVector3(const std::string& line)
+{
+	std::vector<f32> vals;
+
+	std::string token;
+	std::stringstream ss(line);
+	while(std::getline(ss, token, ' '))
+	{
+		vals.push_back((f32)atof(token.data()));
+	}
+	return Math::Vector3(vals[0], vals[1], vals[2]);
+}
+
+Color ReadColor(const std::string& line)
+{
+	std::vector<f32> vals;
+
+	std::string token;
+	std::stringstream ss(line);
+	while(std::getline(ss, token, ' '))
+	{
+		vals.push_back((f32)atof(token.data()));
+	}
+	return Color(vals[0], vals[1], vals[2], vals[3]);
+}
+
+Math::Vector2 ReadVector2(const std::string& line)
+{
+	std::vector<f32> vals;
+
+	std::string token;
+	std::stringstream ss(line);
+	while(std::getline(ss, token, ' '))
+	{
+		vals.push_back((f32)atof(token.data()));
+	}
+	return Math::Vector2(vals[0], vals[1]);
+}
+
 void TestApp::LoadModel(const char* filename, Model& model)
 {
-	Assimp::Importer importer;
-	u32 flags =	  aiProcess_Triangulate
-				| aiProcess_JoinIdenticalVertices
-				| aiProcess_SortByPType
-				| aiProcess_FlipUVs;
+	std::string line;
 
-	const aiScene* scene = importer.ReadFile(filename, flags);
-	ASSERT(scene, "Failed to load model - %s", importer.GetErrorString());
+	std::ifstream infile(filename, std::ios::binary);
+	if(!infile.is_open())
+		return;
 
-	if(scene->HasMeshes())
+	// Seek to the end of the header
+	const size_t headSize = sizeof(u32) * 2;
+	infile.seekg(headSize);
+
+	// Get how many meshes the file contains
+	std::getline(infile, line);
+	const size_t numMeshes = atoi(line.data());
+
+	for(u32 i = 0; i < numMeshes; ++i)
 	{
-		for(u32 i = 0; i < scene->mNumMeshes; ++i)
+		Mesh* mesh = new Mesh();
+		
+		// Get number of verts in this block
+		std::getline(infile, line);
+		const size_t numVerts = atoi(line.data());
+
+		// Allocate space for all the vertices
+		Mesh::Vertex* verts = new Mesh::Vertex[numVerts];
+		Mesh::Vertex* vIter = verts;
+
+		// Read in all the vert data for this block
+		for(u32 j = 0; j < numVerts; ++j)
 		{
-			aiMesh* aimesh = scene->mMeshes[i];
-			Mesh* mesh = new Mesh();
+			std::getline(infile, line);
 
-			Mesh::Vertex* vertices = new Mesh::Vertex[aimesh->mNumVertices];
-			Mesh::Vertex* vertexIter = vertices;
-
-			// Copy positions
-			for(u32 j = 0; j < aimesh->mNumVertices; ++j)
-			{
-				// Hack: scale down mesh for now.
-				// TODO: make scaling an optional param
-				vertexIter->position.x = aimesh->mVertices[j].x * 0.1f;
-				vertexIter->position.y = aimesh->mVertices[j].y * 0.1f;
-				vertexIter->position.z = aimesh->mVertices[j].z * 0.1f;
-				++vertexIter;
-			}
-
-			// Copy normals if it has any
-			if(aimesh->HasNormals())
-			{
-				vertexIter = vertices;
-				for(u32 j = 0; j < aimesh->mNumVertices; ++j)
-				{
-					vertexIter->normal.x = aimesh->mNormals[j].x;
-					vertexIter->normal.y = aimesh->mNormals[j].y;
-					vertexIter->normal.z = aimesh->mNormals[j].z;
-					++vertexIter;
-				}
-			}
-
-			u16* indices = new u16[aimesh->mNumFaces * 3];
-			u16* indexIter = indices;
-			for(u32 j = 0; j < aimesh->mNumFaces; ++j)
-			{
-				indexIter[0] = aimesh->mFaces[j].mIndices[0];
-				indexIter[1] = aimesh->mFaces[j].mIndices[1];
-				indexIter[2] = aimesh->mFaces[j].mIndices[2];
-				indexIter += 3;
-			}
-
-			MeshBuilder::GenerateMesh(*mesh, vertices, aimesh->mNumVertices, indices, aimesh->mNumFaces * 3);
-			mModel.mMeshes.push_back(mesh);
-
-			SafeDeleteArray(vertices);
-			SafeDeleteArray(indices);
-
-			MeshBuffer* meshBuffer = new MeshBuffer();
-			meshBuffer->Initialize(mGraphicsSystem, Mesh::GetVertexFormat(), *mesh);
-			mModel.mMeshBuffers.push_back(meshBuffer);
+			vIter->position = ReadVector3(line);
+			vIter->normal = ReadVector3(line);
+			vIter->tangent = ReadVector3(line);
+			vIter->color = ReadColor(line);
+			vIter->texcoord = ReadVector2(line);
+			++vIter;
 		}
 	}
 }
+
+//void TestApp::LoadModel(const char* filename, Model& model)
+//{
+//	Assimp::Importer importer;
+//	u32 flags =	  aiProcess_Triangulate
+//				| aiProcess_JoinIdenticalVertices
+//				| aiProcess_SortByPType
+//				| aiProcess_FlipUVs;
+//
+//	const aiScene* scene = importer.ReadFile(filename, flags);
+//	ASSERT(scene, "Failed to load model - %s", importer.GetErrorString());
+//
+//	if(scene->HasMeshes())
+//	{
+//		for(u32 i = 0; i < scene->mNumMeshes; ++i)
+//		{
+//			aiMesh* aimesh = scene->mMeshes[i];
+//			Mesh* mesh = new Mesh();
+//
+//			Mesh::Vertex* vertices = new Mesh::Vertex[aimesh->mNumVertices];
+//			Mesh::Vertex* vertexIter = vertices;
+//
+//			// Copy positions
+//			for(u32 j = 0; j < aimesh->mNumVertices; ++j)
+//			{
+//				// Hack: scale down mesh for now.
+//				// TODO: make scaling an optional param
+//				vertexIter->position.x = aimesh->mVertices[j].x * 0.1f;
+//				vertexIter->position.y = aimesh->mVertices[j].y * 0.1f;
+//				vertexIter->position.z = aimesh->mVertices[j].z * 0.1f;
+//				++vertexIter;
+//			}
+//
+//			// Copy normals if it has any
+//			if(aimesh->HasNormals())
+//			{
+//				vertexIter = vertices;
+//				for(u32 j = 0; j < aimesh->mNumVertices; ++j)
+//				{
+//					vertexIter->normal.x = aimesh->mNormals[j].x;
+//					vertexIter->normal.y = aimesh->mNormals[j].y;
+//					vertexIter->normal.z = aimesh->mNormals[j].z;
+//					++vertexIter;
+//				}
+//			}
+//
+//			u16* indices = new u16[aimesh->mNumFaces * 3];
+//			u16* indexIter = indices;
+//			for(u32 j = 0; j < aimesh->mNumFaces; ++j)
+//			{
+//				indexIter[0] = aimesh->mFaces[j].mIndices[0];
+//				indexIter[1] = aimesh->mFaces[j].mIndices[1];
+//				indexIter[2] = aimesh->mFaces[j].mIndices[2];
+//				indexIter += 3;
+//			}
+//
+//			MeshBuilder::GenerateMesh(*mesh, vertices, aimesh->mNumVertices, indices, aimesh->mNumFaces * 3);
+//			mModel.mMeshes.push_back(mesh);
+//
+//			SafeDeleteArray(vertices);
+//			SafeDeleteArray(indices);
+//
+//			MeshBuffer* meshBuffer = new MeshBuffer();
+//			meshBuffer->Initialize(mGraphicsSystem, Mesh::GetVertexFormat(), *mesh);
+//			mModel.mMeshBuffers.push_back(meshBuffer);
+//		}
+//	}
+//}
