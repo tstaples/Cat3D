@@ -12,6 +12,68 @@
 #include "Application.h"
 
 #include "InputEvent.h"
+#include "InputTypes.h"
+
+//====================================================================================================
+// Class Definitions
+//====================================================================================================
+
+Application::Application()
+	: mInstance(nullptr)
+	, mWindow(nullptr)
+	, mRunning(true)
+{
+}
+
+//----------------------------------------------------------------------------------------------------
+
+Application::~Application()
+{
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void Application::Initialize(HINSTANCE instance, LPCSTR appName, u32 width, u32 height)
+{
+	mInstance = instance;
+	mAppName = appName;
+
+	OnInitialize(width, height);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void Application::Terminate()
+{
+	OnTerminate();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void Application::HookWindow(HWND hWnd)
+{
+	SetWindowLongPtrA(hWnd, GWL_USERDATA, (LONG)this);
+	SetWindowLong(hWnd, GWL_WNDPROC, (LONG)WndProc);
+
+	mWindow = hWnd;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void Application::UnhookWindow()
+{
+	SetWindowLongPtrA(mWindow, GWL_USERDATA, 0);
+	SetWindowLong(mWindow, GWL_WNDPROC, (LONG)DefWindowProc);
+
+	mWindow = nullptr;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void Application::Update()
+{
+	OnUpdate();
+}
 
 //====================================================================================================
 // Window Message Procedure
@@ -100,70 +162,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 		}
 		break;
+        // TODO: rest of mouse button cases
+    case WM_LBUTTONDOWN:
+		{
+			Application* myApp = (Application*)GetWindowLongPtrA(hWnd, GWL_USERDATA);
+			if (myApp != nullptr)
+			{
+				InputEvent inputEvent;
+				inputEvent.type = InputEvent::MouseDown;
+                inputEvent.value = Mouse::LBUTTON;
+				inputEvent.x = GET_X_LPARAM(lParam);
+				inputEvent.y = GET_Y_LPARAM(lParam);
+
+				if (!myApp->OnInput(inputEvent))
+				{
+					return DefWindowProcA(hWnd, message, wParam, lParam);
+				}
+			}
+		}
+		break;
 	default:
 		return DefWindowProcA(hWnd, message, wParam, lParam);
 	}
 		
 	return 0;
-}
-
-//====================================================================================================
-// Class Definitions
-//====================================================================================================
-
-Application::Application()
-	: mInstance(nullptr)
-	, mWindow(nullptr)
-	, mRunning(true)
-{
-}
-
-//----------------------------------------------------------------------------------------------------
-
-Application::~Application()
-{
-}
-
-//----------------------------------------------------------------------------------------------------
-
-void Application::Initialize(HINSTANCE instance, LPCSTR appName, u32 width, u32 height)
-{
-	mInstance = instance;
-	mAppName = appName;
-
-	OnInitialize(width, height);
-}
-
-//----------------------------------------------------------------------------------------------------
-
-void Application::Terminate()
-{
-	OnTerminate();
-}
-
-//----------------------------------------------------------------------------------------------------
-
-void Application::HookWindow(HWND hWnd)
-{
-	SetWindowLongPtrA(hWnd, GWL_USERDATA, (LONG)this);
-	SetWindowLong(hWnd, GWL_WNDPROC, (LONG)WndProc);
-
-	mWindow = hWnd;
-}
-
-//----------------------------------------------------------------------------------------------------
-
-void Application::UnhookWindow()
-{
-	SetWindowLongPtrA(mWindow, GWL_USERDATA, 0);
-	SetWindowLong(mWindow, GWL_WNDPROC, (LONG)DefWindowProc);
-
-	mWindow = nullptr;
-}
-
-//----------------------------------------------------------------------------------------------------
-
-void Application::Update()
-{
-	OnUpdate();
 }

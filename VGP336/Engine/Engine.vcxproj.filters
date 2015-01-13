@@ -16,6 +16,9 @@
     <Filter Include="Math">
       <UniqueIdentifier>{b291b0c4-debf-4dfb-a9aa-49c22b619c40}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{fb72d9be-23cd-48f8-af91-5307fdb09f44}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputSystem.cpp">
@@ -84,6 +87,9 @@
     </ClCompile>
     <ClCompile Include="MeshRenderer.cpp">
       <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Hash.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +186,15 @@
     <ClInclude Include="ComplexNumber.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Hash.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Vector3.inl">
@@ -193,6 +208,9 @@
     </None>
     <None Include="ComplexNumber.inl">
       <Filter>Math</Filter>
+    </None>
+    <None Include="ResourceManager.inl">
+      <Filter>Resource</Filter>
     </None>
   </ItemGroup>
 </Project>
