@@ -1,6 +1,7 @@
 #include "Exporter.h"
 
 #include <fstream>
+#include "FileBuffer.h"
 
 /* === Format Guidelines ===
  * Layout:
@@ -31,87 +32,75 @@ void Write(std::ofstream& of, T* data, size_t size)
 
 bool Exporter::Export(const char* outpath, const Meshes& meshes)
 {
-    std::ofstream fout(outpath, std::ios::binary | std::ios::out);
-    if (!fout.is_open())
-    {
-        return false;
-    }
+    // Get total size of all mesh data
+    size_t size = CalculateSize(meshes);;
+
+    // Init our buffer
+    FileBuffer buffer(size);
 
     // Write header (TODO: read version from config)
     Header header(1, 0, "CATM");
-    WriteHeader(header, fout);
+    buffer.Write(header);
 
     // Write how many meshes this file contains
     const u32 numMeshes = meshes.size();
-    Write(fout, &numMeshes, 1);
+    buffer.Write(numMeshes);
 
+    // Write all the vertex and index data
     for (auto &mesh : meshes)
     {
-        WriteVertexBlock(mesh->mVertices, fout);
-        WriteIndexBlock(mesh->mIndices, fout);
+        WriteVertexBlock(mesh->mVertices, buffer);
+        WriteIndexBlock(mesh->mIndices, buffer);
     }
 
-    fout.close();
-    return true;
+    // Output the buffer
+    bool rc = false;
+    if (IO::File::SyncWriteFile(outpath, buffer.GetBuffer(), size))
+    {
+        rc = true;
+    }
+    buffer.Clear();
+    return rc;
 }
 
-void Exporter::WriteHeader(const Header& head, std::ofstream& fhandle)
+size_t Exporter::CalculateSize(const Meshes& meshes)
 {
-    Write(fhandle, &head.signature, 1);
-    Write(fhandle, &head.version, 1);
+    size_t size = 0;
+    for (auto& mesh : meshes)
+    {
+        size += mesh->GetSize();
+    }
+    size += sizeof(Header);
+    size += sizeof(u32);                 // Number of Meshes
+    size += sizeof(u32) * meshes.size(); // Number of verticies
+    size += sizeof(u32) * meshes.size(); // Number of indices
+    return size;
 }
 
-void Exporter::WriteVertexBlock(const NativeVertList& verts, std::ofstream& fhandle)
+void Exporter::WriteVertexBlock(const NativeVertList& verts, FileBuffer& buffer)
 {
     // Write how many verticies are following
     const u32 numVerts = verts.size();
-    Write(fhandle, &numVerts, 1);
+    buffer.Write(numVerts);
 
     for (auto v : verts)
     {
-        WriteVector3(v.position, fhandle);
-        WriteVector3(v.normal, fhandle);
-        WriteVector3(v.tangent, fhandle);
-        WriteColor(v.color, fhandle);
-        WriteVector2(v.texcoord, fhandle);
+        buffer.Write(&v.position);
+        buffer.Write(&v.normal);
+        buffer.Write(&v.tangent);
+        buffer.Write(&v.color);
+        buffer.Write(&v.texcoord);
     }
 }
 
-void Exporter::WriteIndexBlock(const IndexList& indices, std::ofstream& fhandle)
+void Exporter::WriteIndexBlock(const IndexList& indices, FileBuffer& buffer)
 {
     // Write how many indices are following
     const u32 numIndices = indices.size();
-    Write(fhandle, &numIndices, 1);
+    buffer.Write(numIndices);
 
     for (auto i : indices)
     {
-        Write(fhandle, &i, 1);
+        buffer.Write(i);
     }
-}
-
-void Exporter::WriteVector3(const Math::Vector3& v, std::ofstream& fhandle)
-{
-    std::string s(S(v.x) + " " + S(v.y) + " " + S(v.z));
-    const std::size_t sz = s.size();
-
-    const s8* buff = s.c_str();;
-    Write(fhandle, buff, sz);
-}
-
-void Exporter::WriteVector2(const Math::Vector2& v, std::ofstream& fhandle)
-{
-    std::string s(S(v.x) + " " + S(v.y));
-    const std::size_t sz = s.size();
-
-    const s8* buff = s.c_str();;
-    Write(fhandle, buff, sz);
-}
-
-void Exporter::WriteColor(const Color& c, std::ofstream& fhandle)
-{
-    std::string s(S(c.r) + " " + S(c.g) + " " + S(c.b) + " " + S(c.a));
-    const std::size_t sz = s.size();
-
-    const s8* buff = s.c_str();;
-    Write(fhandle, buff, sz);
 }

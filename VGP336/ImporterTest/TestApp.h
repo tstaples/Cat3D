@@ -3,13 +3,6 @@
 
 #include <Engine.h>
 
-class Model
-{
-public:
-	std::vector<Mesh*> mMeshes;
-	std::vector<MeshBuffer*> mMeshBuffers;
-};
-
 
 class TestApp : public Application
 {

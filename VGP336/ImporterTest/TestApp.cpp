@@ -31,7 +31,8 @@ void TestApp::OnInitialize(u32 width, u32 height)
 
 	mRenderer.Initialize(mGraphicsSystem);
 
-	LoadModel("../Data/Models/duck.fbx", mModel);
+	//LoadModel("../Data/Models/duck.fbx", mModel);
+    AssetLoader::LoadModel("../Data/Models/duck.catm", mGraphicsSystem, mModel);
 }
 
 void TestApp::OnTerminate()
@@ -42,17 +43,7 @@ void TestApp::OnTerminate()
 	mInputSystem.Terminate();
 	mRenderer.Terminate();
 
-	// Todo: do this in Model
-	for(u32 i = 0; i < mModel.mMeshes.size(); ++i)
-	{
-		delete mModel.mMeshes[i];
-	}
-	mModel.mMeshes.clear();
-	for(u32 i = 0; i < mModel.mMeshBuffers.size(); ++i)
-	{
-		delete mModel.mMeshBuffers[i];
-	}
-	mModel.mMeshBuffers.clear();
+    mModel.Destroy();
 }
 
 bool TestApp::OnInput(const InputEvent& evt)
@@ -107,6 +98,13 @@ void TestApp::OnUpdate()
 	mGraphicsSystem.EndRender();
 }
 
+void TestApp::LoadModel(const char* filename, Model& model)
+{
+    FileBuffer buffer(filename);
+}
+
+
+
 Math::Vector3 ReadVector3(const std::string& line)
 {
 	std::vector<f32> vals;
@@ -146,48 +144,48 @@ Math::Vector2 ReadVector2(const std::string& line)
 	return Math::Vector2(vals[0], vals[1]);
 }
 
-void TestApp::LoadModel(const char* filename, Model& model)
-{
-	std::string line;
-
-	std::ifstream infile(filename, std::ios::binary);
-	if(!infile.is_open())
-		return;
-
-	// Seek to the end of the header
-	const size_t headSize = sizeof(u32) * 2;
-	infile.seekg(headSize);
-
-	// Get how many meshes the file contains
-	std::getline(infile, line);
-	const size_t numMeshes = atoi(line.data());
-
-	for(u32 i = 0; i < numMeshes; ++i)
-	{
-		Mesh* mesh = new Mesh();
-		
-		// Get number of verts in this block
-		std::getline(infile, line);
-		const size_t numVerts = atoi(line.data());
-
-		// Allocate space for all the vertices
-		Mesh::Vertex* verts = new Mesh::Vertex[numVerts];
-		Mesh::Vertex* vIter = verts;
-
-		// Read in all the vert data for this block
-		for(u32 j = 0; j < numVerts; ++j)
-		{
-			std::getline(infile, line);
-
-			vIter->position = ReadVector3(line);
-			vIter->normal = ReadVector3(line);
-			vIter->tangent = ReadVector3(line);
-			vIter->color = ReadColor(line);
-			vIter->texcoord = ReadVector2(line);
-			++vIter;
-		}
-	}
-}
+//void TestApp::LoadModel(const char* filename, Model& model)
+//{
+//	std::string line;
+//
+//	std::ifstream infile(filename, std::ios::binary);
+//	if(!infile.is_open())
+//		return;
+//
+//	// Seek to the end of the header
+//	const size_t headSize = sizeof(u32) * 2;
+//	infile.seekg(headSize);
+//
+//	// Get how many meshes the file contains
+//	std::getline(infile, line);
+//	const size_t numMeshes = atoi(line.data());
+//
+//	for(u32 i = 0; i < numMeshes; ++i)
+//	{
+//		Mesh* mesh = new Mesh();
+//		
+//		// Get number of verts in this block
+//		std::getline(infile, line);
+//		const size_t numVerts = atoi(line.data());
+//
+//		// Allocate space for all the vertices
+//		Mesh::Vertex* verts = new Mesh::Vertex[numVerts];
+//		Mesh::Vertex* vIter = verts;
+//
+//		// Read in all the vert data for this block
+//		for(u32 j = 0; j < numVerts; ++j)
+//		{
+//			std::getline(infile, line);
+//
+//			vIter->position = ReadVector3(line);
+//			vIter->normal = ReadVector3(line);
+//			vIter->tangent = ReadVector3(line);
+//			vIter->color = ReadColor(line);
+//			vIter->texcoord = ReadVector2(line);
+//			++vIter;
+//		}
+//	}
+//}
 
 //void TestApp::LoadModel(const char* filename, Model& model)
 //{

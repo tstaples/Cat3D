@@ -15,6 +15,12 @@ struct LocalMesh
 {
     NativeVertList mVertices;
     IndexList mIndices;
+
+    size_t GetSize() const
+    {
+        return (sizeof(Mesh::Vertex) * mVertices.size() +
+                sizeof(u16) * mIndices.size());
+    }
 };
 
 typedef std::unique_ptr<LocalMesh> MeshPtr;

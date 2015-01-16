@@ -35,6 +35,7 @@
 #include "SpriteRenderer.h"
 #include "Texture.h"
 #include "VertexShader.h"
+#include "Model.h"
 
 // Input heades
 #include "InputEvent.h"
@@ -52,5 +53,10 @@
 #include "Resource.h"
 #include "ResourceManager.h"
 #include "TextureManager.h"
+
+// File IO
+#include "File.h"
+#include "FileBuffer.h"
+#include "AssetLoader.h"
 
 #endif // #ifndef INCLUDED_ENGINE_H

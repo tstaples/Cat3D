@@ -19,6 +19,9 @@
     <Filter Include="Resource">
       <UniqueIdentifier>{fb72d9be-23cd-48f8-af91-5307fdb09f44}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FileIO">
+      <UniqueIdentifier>{7117cd9e-0f75-4ec4-aea4-eb27e4256fe1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputSystem.cpp">
@@ -90,6 +93,18 @@
     </ClCompile>
     <ClCompile Include="Hash.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="File.cpp">
+      <Filter>FileIO</Filter>
+    </ClCompile>
+    <ClCompile Include="FileBuffer.cpp">
+      <Filter>FileIO</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetLoader.cpp">
+      <Filter>FileIO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -194,6 +209,21 @@
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
       <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="File.h">
+      <Filter>FileIO</Filter>
+    </ClInclude>
+    <ClInclude Include="FileBuffer.h">
+      <Filter>FileIO</Filter>
+    </ClInclude>
+    <ClInclude Include="Serializer.h">
+      <Filter>FileIO</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetLoader.h">
+      <Filter>FileIO</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
