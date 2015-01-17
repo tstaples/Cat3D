@@ -30,14 +30,15 @@ struct Header
 
 class Exporter
 {
+    typedef std::vector<Mesh*> Meshes;
 public:
     bool Export(const char* outpath, const Meshes& meshes);
 
 private:
     size_t CalculateSize(const Meshes& meshes);
 
-    void WriteVertexBlock(const NativeVertList& verts, FileBuffer& buffer);
-    void WriteIndexBlock(const IndexList& indices, FileBuffer& buffer);
+    //void WriteVertexBlock(const NativeVertList& verts, FileBuffer& buffer);
+    //void WriteIndexBlock(const IndexList& indices, FileBuffer& buffer);
 };
 
 #endif // #ifndef INCLUDED_EXPORTER_H

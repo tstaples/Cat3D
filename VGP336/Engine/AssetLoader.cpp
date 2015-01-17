@@ -51,31 +51,24 @@ bool AssetLoader::LoadCatmFile(const char* pFilename, GraphicsSystem& gs, Model&
         {
             // Read the verticies
             u32 numVerts = sin.Read<u32>();
-            f32 f = sin.Read<f32>();
-            Mesh::Vertex v = sin.Read<Mesh::Vertex>();
-            //Mesh::Vertex* vertexBuffer = new Mesh::Vertex[numVerts];
-            //sin.Read(*vertexBuffer);
-            //sin.Read(*vertexBuffer);
-            //sin.Seek((numVerts-1) * sizeof(Mesh::Vertex), SerialReader::Current); // hack
-
-            for (u32 i=0; i < numVerts; ++i)
-            {
-                //Mesh::Vertex v = vertexBuffer[i];
-                int j=0;
-            }
+            Mesh::Vertex* vertexBuffer = new Mesh::Vertex[numVerts];
+            sin.ReadArray(vertexBuffer, sizeof(Mesh::Vertex) * numVerts);
 
             // Read in the indices
             u32 numIndices = sin.Read<u32>();
             u16* indexBuffer = new u16[numIndices];
-            sin.Read(*indexBuffer, numIndices);
+            sin.ReadArray(indexBuffer, sizeof(u16) * numIndices);
 
+            // Generate the push and add it to the model
             Mesh* mesh = new Mesh();
-            //MeshBuilder::GenerateMesh(*mesh, vertexBuffer, numVerts, indexBuffer, numIndices * 3);
+            MeshBuilder::GenerateMesh(*mesh, vertexBuffer, numVerts, indexBuffer, numIndices);
 			model.mMeshes.push_back(mesh);
 
-			//SafeDeleteArray(vertexBuffer);
+            // Clear the temp buffers
+			SafeDeleteArray(vertexBuffer);
 			SafeDeleteArray(indexBuffer);
 
+            // Create the mesh buffer and add it to the model
 			MeshBuffer* meshBuffer = new MeshBuffer();
 			meshBuffer->Initialize(gs, Mesh::GetVertexFormat(), *mesh);
 			model.mMeshBuffers.push_back(meshBuffer);

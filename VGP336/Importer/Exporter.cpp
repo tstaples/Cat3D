@@ -30,75 +30,75 @@ void Write(std::ofstream& of, T* data, size_t size)
     of.write((char*)data, sizeof(T) * size);
 }
 
-void Testing(const Meshes& meshes)
-{
-    const size_t size = sizeof(Header)
-                        + (sizeof(u32) * 2) // nummeshes + numverts
-                        + (sizeof(Mesh::Vertex) * 3); // 3 verts
-    // Init our buffer
-    FileBuffer outbuffer(size);
-
-    // Write header
-    Header header(1, 0, "CATM");
-    outbuffer.Write(header);
-
-    // Write how many meshes this file contains
-    const u32 numMeshes = meshes.size();
-    outbuffer.Write(numMeshes);
-
-    // Write number of verts (fixed size for testing)
-    const u32 numVerts = 3;
-    outbuffer.Write(numVerts);
-    
-    // Createa an array of 3 verts and write them to the buffer
-    Mesh::Vertex v[numVerts];
-    v[0] = meshes[0]->mVertices[0];
-    v[1] = meshes[0]->mVertices[1];
-    v[2] = meshes[0]->mVertices[2];
-    outbuffer.Write(v);
-    
-    // Get the offset to where the verts start in the buffer and read them
-    u32 voffset = outbuffer.GetOffset() - sizeof(v);
-    SerialReader reader(outbuffer.GetBuffer() + voffset, outbuffer.Size());
-    Mesh::Vertex v2[numVerts];
-    reader.Read(v2);
-    assert(v2[0].position == v[0].position);
-
-    // Write the buffer to a file
-    assert(IO::File::SyncWriteFile("test.catm", outbuffer.GetBuffer(), outbuffer.Size()));
-
-    // ### READING ###
-
-    // init a buffer with the contents of the file
-    FileBuffer inbuffer("test.catm");
-    assert(inbuffer.Initialized());
-    
-    // Read the file and create a serialreader. check header is correcet
-    SerialReader sin(inbuffer.GetBuffer(), inbuffer.Size());
-    std::string sig = sin.ReadFormatted(4);
-    assert(sig.compare("CATM") == 0);
-
-    // Ensure the version number is correct
-    u32 ver = 0;
-    sin.Read(ver);
-    std::pair<u8, u8> version = Header::GetVersion(ver);
-    assert(version.first == 1 && version.second == 0);
-
-    // Read number of meshes and verts
-    u32 numMeshesinfile = sin.Read<u32>();
-    assert(numMeshesinfile == numMeshes);
-    u32 numVertsinfile = sin.Read<u32>();
-    assert(numVertsinfile == numVerts);
- 
-    // Read the data from the buffer into the array
-    Mesh::Vertex vFromFile[numVerts];
-    sin.Read(vFromFile);
-    assert(vFromFile[0].position == v[0].position);
-}
+//void Testing(const Meshes& meshes)
+//{
+//    const size_t size = sizeof(Header)
+//                        + (sizeof(u32) * 2) // nummeshes + numverts
+//                        + (sizeof(Mesh::Vertex) * 3); // 3 verts
+//    // Init our buffer
+//    FileBuffer outbuffer(size);
+//
+//    // Write header
+//    Header header(1, 0, "CATM");
+//    outbuffer.Write(header);
+//
+//    // Write how many meshes this file contains
+//    const u32 numMeshes = meshes.size();
+//    outbuffer.Write(numMeshes);
+//
+//    // Write number of verts (fixed size for testing)
+//    const u32 numVerts = 3;
+//    outbuffer.Write(numVerts);
+//    
+//    // Createa an array of 3 verts and write them to the buffer
+//    Mesh::Vertex v[numVerts];
+//    v[0] = meshes[0]->mVertices[0];
+//    v[1] = meshes[0]->mVertices[1];
+//    v[2] = meshes[0]->mVertices[2];
+//    outbuffer.Write(v);
+//    
+//    // Get the offset to where the verts start in the buffer and read them
+//    u32 voffset = outbuffer.GetOffset() - sizeof(v);
+//    SerialReader reader(outbuffer.GetBuffer() + voffset, outbuffer.Size());
+//    Mesh::Vertex v2[numVerts];
+//    reader.Read(v2);
+//    assert(v2[0].position == v[0].position);
+//
+//    // Write the buffer to a file
+//    assert(IO::File::SyncWriteFile("test.catm", outbuffer.GetBuffer(), outbuffer.Size()));
+//
+//    // ### READING ###
+//
+//    // init a buffer with the contents of the file
+//    FileBuffer inbuffer("test.catm");
+//    assert(inbuffer.Initialized());
+//    
+//    // Read the file and create a serialreader. check header is correcet
+//    SerialReader sin(inbuffer.GetBuffer(), inbuffer.Size());
+//    std::string sig = sin.ReadFormatted(4);
+//    assert(sig.compare("CATM") == 0);
+//
+//    // Ensure the version number is correct
+//    u32 ver = 0;
+//    sin.Read(ver);
+//    std::pair<u8, u8> version = Header::GetVersion(ver);
+//    assert(version.first == 1 && version.second == 0);
+//
+//    // Read number of meshes and verts
+//    u32 numMeshesinfile = sin.Read<u32>();
+//    assert(numMeshesinfile == numMeshes);
+//    u32 numVertsinfile = sin.Read<u32>();
+//    assert(numVertsinfile == numVerts);
+// 
+//    // Read the data from the buffer into the array
+//    Mesh::Vertex vFromFile[numVerts];
+//    sin.Read(vFromFile);
+//    assert(vFromFile[0].position == v[0].position);
+//}
 
 bool Exporter::Export(const char* outpath, const Meshes& meshes)
 {
-    Testing(meshes);
+    //Testing(meshes);
 
     // Get total size of all mesh data
     size_t size = CalculateSize(meshes);;
@@ -117,8 +117,15 @@ bool Exporter::Export(const char* outpath, const Meshes& meshes)
     // Write all the vertex and index data
     for (auto &mesh : meshes)
     {
-        WriteVertexBlock(mesh->mVertices, buffer);
-        WriteIndexBlock(mesh->mIndices, buffer);
+        // Write the number of verts then all the verts
+        const u32 numVerts = mesh->GetVertexCount();
+        buffer.Write(numVerts);
+        buffer.WriteArray(mesh->GetVertices(), numVerts * sizeof(Mesh::Vertex));
+
+        // Write the number of indices and index buffer
+        const u32 numIndices = mesh->GetIndexCount();
+        buffer.Write(numIndices);
+        buffer.WriteArray(mesh->GetIndices(), numIndices * sizeof(u16));
     }
 
     // Output the buffer
@@ -136,7 +143,8 @@ size_t Exporter::CalculateSize(const Meshes& meshes)
     size_t size = 0;
     for (auto& mesh : meshes)
     {
-        size += mesh->GetSize();
+        size += mesh->GetVertexCount() * sizeof(Mesh::Vertex);
+        size += mesh->GetIndexCount() * sizeof(u16);
     }
     size += sizeof(Header);
     size += sizeof(u32);                 // Number of Meshes
@@ -145,30 +153,30 @@ size_t Exporter::CalculateSize(const Meshes& meshes)
     return size;
 }
 
-void Exporter::WriteVertexBlock(const NativeVertList& verts, FileBuffer& buffer)
-{
-    // Write how many verticies are following
-    const u32 numVerts = verts.size();
-    buffer.Write(numVerts);
-
-    for (auto v : verts)
-    {
-        buffer.Write(v.position);
-        buffer.Write(v.normal);
-        buffer.Write(v.tangent);
-        buffer.Write(v.color);
-        buffer.Write(v.texcoord);
-    }
-}
-
-void Exporter::WriteIndexBlock(const IndexList& indices, FileBuffer& buffer)
-{
-    // Write how many indices are following
-    const u32 numIndices = indices.size();
-    buffer.Write(numIndices);
-
-    for (auto i : indices)
-    {
-        buffer.Write(i);
-    }
-}
+//void Exporter::WriteVertexBlock(const NativeVertList& verts, FileBuffer& buffer)
+//{
+//    // Write how many verticies are following
+//    const u32 numVerts = verts.size();
+//    buffer.Write(numVerts);
+//
+//    for (auto v : verts)
+//    {
+//        buffer.Write(v.position);
+//        buffer.Write(v.normal);
+//        buffer.Write(v.tangent);
+//        buffer.Write(v.color);
+//        buffer.Write(v.texcoord);
+//    }
+//}
+//
+//void Exporter::WriteIndexBlock(const IndexList& indices, FileBuffer& buffer)
+//{
+//    // Write how many indices are following
+//    const u32 numIndices = indices.size();
+//    buffer.Write(numIndices);
+//
+//    for (auto i : indices)
+//    {
+//        buffer.Write(i);
+//    }
+//}

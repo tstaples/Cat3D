@@ -7,17 +7,30 @@ public:
     template <typename T>
     static void Write(const T& data, u8* buffer, u32& offset)
     {
-        //u8* handle = buffer + offset;
         memcpy(buffer + offset, &data, sizeof(data));
         offset += sizeof(data);
     }
 
+    template <typename T>
+    static void WriteArray(const T* data, u8* buffer, u32& offset)
+    {
+        memcpy(buffer + offset, data, sizeof(data));
+        offset += sizeof(data);
+    }
+    
     template <typename T>
     static void Read(const T& data, u8* buffer, u32& offset)
     {
         data = *reinterpret_cast<T*>(data + offset);
         offset += sizeof(data);
     }
+
+    /*template <typename T>
+    static void ReadArray(const T& data, u8* buffer, u32& offset)
+    {
+        data = *reinterpret_cast<T*>(data + offset);
+        offset += sizeof(data);
+    }*/
 };
 
 class SerialWriter/* : public Serializer*/
@@ -37,6 +50,13 @@ public:
 		mWriteOffset += sizeof(data);
 		assert(mWriteOffset <= mBufferSize);
 	}
+
+    template <typename T>
+    void WriteArray(const T* data, size_t size)
+    {
+        memcpy(mBufferHandle + mWriteOffset, data, size);
+        mWriteOffset += size;
+    }
 
 private:
 	u8* mBufferHandle;	    // Buffer we are reading/writing to
@@ -66,10 +86,10 @@ public:
 
     // Reads sizeof(T) * length bytes from the buffer
     template <typename T>
-	void Read(T& data, u32 length)
+	void ReadArray(T* data, size_t size)
 	{
-        memcpy(&data, mBufferHandle + mWriteOffset, sizeof(data) * length);
-		mWriteOffset += sizeof(data) * length;
+        memcpy(data, mBufferHandle + mWriteOffset, size);
+		mWriteOffset += size;
 		assert(mWriteOffset <= mBufferSize);
 	}
 

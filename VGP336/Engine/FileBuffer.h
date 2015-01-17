@@ -31,11 +31,17 @@ public:
     template <typename T>
 	void Write(const T& data);
 
+    template <typename T>
+	void WriteArray(const T* data, u32 bytes);
+
     // Reads sizeof(T) bytes from the buffer into data
     template <typename T>
 	void Read(T& data);
 
-    const u8* GetBuffer() const     { return mBuffer; }
+    template <typename T>
+	void ReadArray(T* data, u32 bytes);
+
+    u8* GetBuffer() const     { return mBuffer; }
     const size_t Size() const       { return mBufferSize; }
     const size_t GetOffset() const  { return mWriteOffset; }
 
@@ -52,15 +58,31 @@ private:
 template <typename T>
 void FileBuffer::Write(const T& data)
 {
-    Serializer::Write(data, mBuffer, mWriteOffset);
+    memcpy(mBuffer + mWriteOffset, &data, sizeof(data));
+    mWriteOffset += sizeof(data);
     ASSERT(mWriteOffset <= mBufferSize, "Writing to invalid memory");
+}
+
+template <typename T>
+void FileBuffer::WriteArray(const T* data, u32 bytes)
+{
+    memcpy(mBuffer + mWriteOffset, data, bytes);
+    mWriteOffset += bytes;
 }
 
 template <typename T>
 void FileBuffer::Read(T& data)
 {
-    Serializer::Read(data, mBuffer, mWriteOffset);
+    memcpy(&data, mBuffer + mWriteOffset, sizeof(data));
+    mWriteOffset += sizeof(data);
     ASSERT(mWriteOffset <= mBufferSize, "Writing to invalid memory");
+}
+
+template <typename T>
+void FileBuffer::ReadArray(T* data, u32 bytes)
+{
+    memcpy(data, mBuffer + mWriteOffset, bytes);
+    mWriteOffset += bytes;
 }
 
 #endif // #ifndef INCLUDED_ENGINE_FILEBUFFER_H

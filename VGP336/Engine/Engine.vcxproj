@@ -71,6 +71,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Precompiled.h" />
+    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="MeshBuffer.h" />
     <ClInclude Include="Resource.h" />

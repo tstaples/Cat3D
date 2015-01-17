@@ -30,29 +30,35 @@ bool Importer::Load(const char* inputFile, f32 scale)
         return false;
     }
 
-    MeshPtr mesh(nullptr);
     const u32 numMeshes = scene->mNumMeshes;
     for (u32 i=0; i < numMeshes; ++i)
     {
         //AIMeshPtr aimesh(scene->mMeshes[i]);
         aiMesh* aimesh = scene->mMeshes[i];
-        mesh.reset(new LocalMesh());
 
         // Allocate space for the verts and indices
-        mesh->mVertices.resize(aimesh->mNumVertices);
-        mesh->mIndices.resize(aimesh->mNumFaces * 3);
+        const u32 numVerts = aimesh->mNumVertices;
+        Mesh::Vertex* vertices = new Mesh::Vertex[numVerts];
+        const u32 numIndices = (aimesh->mNumFaces * 3);
+        u16* indices = new u16[numIndices];
 
         // Convert and copy the data from the imported file type to our native type
-        CopyVertexData(*aimesh, scale, mesh);
-        CopyIndexData(*aimesh, mesh);
+        CopyVertexData(*aimesh, scale, vertices);
+        CopyIndexData(*aimesh, indices);
 
         // Store the native mesh
-        mMeshes.push_back(std::move(mesh));
+        Mesh* mesh = new Mesh();
+        MeshBuilder::GenerateMesh(*mesh, vertices, numVerts, indices, numIndices * 3);
+        mMeshes.push_back(mesh);
+
+        // Free temp
+        SafeDeleteArray(vertices);
+        SafeDeleteArray(indices);
     }
     return true;
 }
 
-void Importer::CopyVertexData(const aiMesh& aimesh, f32 scale, MeshPtr& mesh)
+void Importer::CopyVertexData(const aiMesh& aimesh, f32 scale, Mesh::Vertex* vertices)
 {
     bool hasNormal = aimesh.HasNormals();
     bool hasTangents = aimesh.HasTangentsAndBitangents();
@@ -62,12 +68,12 @@ void Importer::CopyVertexData(const aiMesh& aimesh, f32 scale, MeshPtr& mesh)
     const u32 numVertices = aimesh.mNumVertices;
     for (u32 j=0; j < numVertices; ++j)
     {
-        Mesh::Vertex& vert = mesh->mVertices[j];
+        Mesh::Vertex& vert = vertices[j];
     
         bool hasColor = aimesh.HasVertexColors(j);
         bool hasUV = aimesh.HasTextureCoords(j);
 
-        vert.position   = ToV3(aimesh.mVertices[j]); // always present
+        vert.position   = ToV3(aimesh.mVertices[j]) * 0.1f; // always present
         vert.normal     = (hasNormal)   ? ToV3(aimesh.mNormals[j])      : zero;
         vert.tangent    = (hasTangents) ? ToV3(aimesh.mTangents[j])     : zero;
         vert.color      = (hasColor)    ? ToColor(*aimesh.mColors[j])   : Color::White();
@@ -75,13 +81,13 @@ void Importer::CopyVertexData(const aiMesh& aimesh, f32 scale, MeshPtr& mesh)
     }
 }
 
-void Importer::CopyIndexData(const aiMesh& aimesh, MeshPtr& mesh)
+void Importer::CopyIndexData(const aiMesh& aimesh, u16* indices)
 {
     if (!aimesh.HasFaces())
         return;
 
     const aiFace* aifaceIter = aimesh.mFaces;
-    IndexList::iterator indexIter = mesh->mIndices.begin();
+    u16* indexIter = indices;
 
     const u32 numFaces = aimesh.mNumFaces;
     for (u32 j=0; j < numFaces; ++j)
@@ -90,6 +96,7 @@ void Importer::CopyIndexData(const aiMesh& aimesh, MeshPtr& mesh)
 	    indexIter[1] = aifaceIter->mIndices[1];
 	    indexIter[2] = aifaceIter->mIndices[2];
         indexIter += 3;
+        ++aifaceIter;
     }
 }
 

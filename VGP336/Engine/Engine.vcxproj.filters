@@ -225,6 +225,9 @@
     <ClInclude Include="Model.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Quaternion.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Vector3.inl">

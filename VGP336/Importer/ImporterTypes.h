@@ -8,22 +8,25 @@
 #include <memory>
 
 // Local types
-typedef std::vector<Mesh::Vertex> NativeVertList;
-typedef std::vector<u16> IndexList;
+//typedef std::vector<Mesh::Vertex> NativeVertList;
+//typedef std::vector<u16> IndexList;
 
 struct LocalMesh
 {
-    NativeVertList mVertices;
-    IndexList mIndices;
+    Mesh::Vertex* mpVertices;
+    u16* mpIndices;
+    u32 mNumVerts;
+    u32 mNumIndices;
+    //NativeVertList mVertices;
+    //IndexList mIndices;
 
     size_t GetSize() const
     {
-        return (sizeof(Mesh::Vertex) * mVertices.size() +
-                sizeof(u16) * mIndices.size());
+        return (sizeof(Mesh::Vertex) * mNumVerts +
+                sizeof(u16) * mNumIndices);
     }
 };
 
-typedef std::unique_ptr<LocalMesh> MeshPtr;
-typedef std::vector<MeshPtr> Meshes;
+//typedef std::unique_ptr<LocalMesh> MeshPtr;
 
 #endif
