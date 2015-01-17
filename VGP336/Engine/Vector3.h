@@ -40,6 +40,9 @@ struct Vector3
 	Vector3& operator-=(const Vector3& rhs);
 	Vector3& operator*=(f32 s);
 	Vector3& operator/=(f32 s);
+
+    friend bool operator==(const Vector3& lhs, const Vector3& rhs);
+    friend bool operator!=(const Vector3& lhs, const Vector3& rhs);
 };
 
 } // namespace Math

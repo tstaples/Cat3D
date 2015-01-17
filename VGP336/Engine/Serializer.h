@@ -76,7 +76,7 @@ public:
     template <typename T>
 	T Read()
     {
-        T data = NULL;
+        T data;
         Read(data);
         return data;
     }

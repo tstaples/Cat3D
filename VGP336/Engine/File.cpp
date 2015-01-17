@@ -45,7 +45,7 @@ bool File::SyncWriteFile(const char* path, const u8* buffer, size_t buffsize, co
     return false;
 }
 
-bool File::SyncWriteFile(const char* path, const u8* buffer, size_t buffsize, size_t& bytesWritten, const char* mode)
+bool File::SyncWriteFile(const char* path, const u8* buffer, size_t buffsize, size_t& bWritten, const char* mode)
 {
     FILE* handle = fopen(path, mode);
     if (handle)
@@ -56,11 +56,11 @@ bool File::SyncWriteFile(const char* path, const u8* buffer, size_t buffsize, si
         int err = ferror(handle);
         if (err == 0)
         {
-            bytesWritten = bytesWritten;
+            bWritten = bytesWritten;
             return true;
         }
     }
-    bytesWritten = 0;
+    bWritten = 0;
     return false;
 }
 

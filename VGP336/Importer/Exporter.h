@@ -19,6 +19,13 @@ struct Header
                     | (sig[1] << 8) 
                     | (sig[0]));
     }
+
+    inline static std::pair<u8, u8> GetVersion(u32 v)
+    {
+        u8 maj = (v >> 16);
+        u8 min = (v << 24);
+        return std::make_pair(maj, min);
+    }
 };
 
 class Exporter

@@ -51,10 +51,18 @@ bool AssetLoader::LoadCatmFile(const char* pFilename, GraphicsSystem& gs, Model&
         {
             // Read the verticies
             u32 numVerts = sin.Read<u32>();
-            Mesh::Vertex* vertexBuffer = new Mesh::Vertex[numVerts];
-            sin.Read(*vertexBuffer, numVerts);
+            f32 f = sin.Read<f32>();
+            Mesh::Vertex v = sin.Read<Mesh::Vertex>();
+            //Mesh::Vertex* vertexBuffer = new Mesh::Vertex[numVerts];
+            //sin.Read(*vertexBuffer);
             //sin.Read(*vertexBuffer);
             //sin.Seek((numVerts-1) * sizeof(Mesh::Vertex), SerialReader::Current); // hack
+
+            for (u32 i=0; i < numVerts; ++i)
+            {
+                //Mesh::Vertex v = vertexBuffer[i];
+                int j=0;
+            }
 
             // Read in the indices
             u32 numIndices = sin.Read<u32>();
@@ -62,10 +70,10 @@ bool AssetLoader::LoadCatmFile(const char* pFilename, GraphicsSystem& gs, Model&
             sin.Read(*indexBuffer, numIndices);
 
             Mesh* mesh = new Mesh();
-            MeshBuilder::GenerateMesh(*mesh, vertexBuffer, numVerts, indexBuffer, numIndices * 3);
+            //MeshBuilder::GenerateMesh(*mesh, vertexBuffer, numVerts, indexBuffer, numIndices * 3);
 			model.mMeshes.push_back(mesh);
 
-			SafeDeleteArray(vertexBuffer);
+			//SafeDeleteArray(vertexBuffer);
 			SafeDeleteArray(indexBuffer);
 
 			MeshBuffer* meshBuffer = new MeshBuffer();
