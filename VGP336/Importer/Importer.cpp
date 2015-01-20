@@ -33,12 +33,13 @@ bool Importer::Load(const char* inputFile, f32 scale)
     const u32 numMeshes = scene->mNumMeshes;
     for (u32 i=0; i < numMeshes; ++i)
     {
-        //AIMeshPtr aimesh(scene->mMeshes[i]);
         aiMesh* aimesh = scene->mMeshes[i];
 
         // Allocate space for the verts and indices
         const u32 numVerts = aimesh->mNumVertices;
         Mesh::Vertex* vertices = new Mesh::Vertex[numVerts];
+
+        // 3 indices per face
         const u32 numIndices = (aimesh->mNumFaces * 3);
         u16* indices = new u16[numIndices];
 
@@ -48,7 +49,7 @@ bool Importer::Load(const char* inputFile, f32 scale)
 
         // Store the native mesh
         Mesh* mesh = new Mesh();
-        MeshBuilder::GenerateMesh(*mesh, vertices, numVerts, indices, numIndices * 3);
+        MeshBuilder::GenerateMesh(*mesh, vertices, numVerts, indices, numIndices);
         mMeshes.push_back(mesh);
 
         // Free temp
@@ -73,7 +74,7 @@ void Importer::CopyVertexData(const aiMesh& aimesh, f32 scale, Mesh::Vertex* ver
         bool hasColor = aimesh.HasVertexColors(j);
         bool hasUV = aimesh.HasTextureCoords(j);
 
-        vert.position   = ToV3(aimesh.mVertices[j]) * 0.1f; // always present
+        vert.position   = ToV3(aimesh.mVertices[j]) * scale; // Scale position by set value
         vert.normal     = (hasNormal)   ? ToV3(aimesh.mNormals[j])      : zero;
         vert.tangent    = (hasTangents) ? ToV3(aimesh.mTangents[j])     : zero;
         vert.color      = (hasColor)    ? ToColor(*aimesh.mColors[j])   : Color::White();

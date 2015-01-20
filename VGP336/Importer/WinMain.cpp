@@ -23,6 +23,7 @@ int main(int argc, char** argv)
     const char* outputFile = argv[2];
     const f32 scale = GetScale(args, argv);
 
+    // Import the model and convert it to native format
     Importer importer;
     if (!importer.Load(inputFile, scale))
     {
@@ -30,6 +31,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
+    // Export the asset in our native format
     Exporter exporter;
     if (!exporter.Export(outputFile, importer.GetMeshes()))
     {
