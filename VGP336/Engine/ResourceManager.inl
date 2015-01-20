@@ -7,7 +7,7 @@ ResourceManager<T>::ResourceManager()
 template<typename T>
 ResourceManager<T>::~ResourceManager()
 {
-    ASSERT(mInventory.size() > 0, "[ResourceManager] Inventory is not empty!");
+    ASSERT(mInventory.size() == 0, "[ResourceManager] Inventory is not empty!");
 }
 //----------------------------------------------------------------------------------------------------
 
@@ -15,9 +15,10 @@ template<typename T>
 void ResourceManager<T>::Terminate()
 {
     // Make sure we are holding the last reference of each resource
-    for (auto item : mInventory)
+    Inventory::iterator item = mInventory.begin();
+    for (item; item != mInventory.end(); ++item)
     {
-        T* resource = item;
+        T* resource = item->second;
 
         // Ensure we are the soul owner of this object
         ASSERT(resource->GetRefCount() == 1, "[ResourceManager] resource was not released!");

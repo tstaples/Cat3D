@@ -22,6 +22,9 @@
     <Filter Include="FileIO">
       <UniqueIdentifier>{7117cd9e-0f75-4ec4-aea4-eb27e4256fe1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObject">
+      <UniqueIdentifier>{0987423c-1e8b-4161-abfa-3d5a4b535ce9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputSystem.cpp">
@@ -105,6 +108,12 @@
     </ClCompile>
     <ClCompile Include="AssetLoader.cpp">
       <Filter>FileIO</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="ID.cpp">
+      <Filter>GameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -228,6 +237,18 @@
     <ClInclude Include="Quaternion.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaTypes.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Repository.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ID.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Vector3.inl">
@@ -244,6 +265,12 @@
     </None>
     <None Include="ResourceManager.inl">
       <Filter>Resource</Filter>
+    </None>
+    <None Include="MetaTypeDefines.tup">
+      <Filter>GameObject</Filter>
+    </None>
+    <None Include="Repository.inl">
+      <Filter>GameObject</Filter>
     </None>
   </ItemGroup>
 </Project>

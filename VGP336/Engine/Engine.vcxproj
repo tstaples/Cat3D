@@ -21,6 +21,7 @@
     <ClCompile Include="GraphicsSystem.cpp" />
     <ClCompile Include="Hash.cpp" />
     <ClCompile Include="Heightmap.cpp" />
+    <ClCompile Include="ID.cpp" />
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="EngineMath.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -39,6 +40,7 @@
     <ClCompile Include="SimpleDraw.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="VertexShader.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -59,6 +61,7 @@
     <ClInclude Include="GraphicsSystem.h" />
     <ClInclude Include="Hash.h" />
     <ClInclude Include="Heightmap.h" />
+    <ClInclude Include="ID.h" />
     <ClInclude Include="InputEvent.h" />
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="InputTypes.h" />
@@ -68,12 +71,14 @@
     <ClInclude Include="MeshBuilder.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="MeshUtil.h" />
+    <ClInclude Include="MetaTypes.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Precompiled.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="MeshBuffer.h" />
+    <ClInclude Include="Repository.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Sampler.h" />
@@ -81,6 +86,7 @@
     <ClInclude Include="SimpleDraw.h" />
     <ClInclude Include="SpriteRenderer.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
@@ -91,6 +97,8 @@
     <None Include="ComplexNumber.inl" />
     <None Include="EngineMath.inl" />
     <None Include="Matrix.inl" />
+    <None Include="MetaTypeDefines.tup" />
+    <None Include="Repository.inl" />
     <None Include="ResourceManager.inl" />
     <None Include="Vector3.inl" />
   </ItemGroup>
