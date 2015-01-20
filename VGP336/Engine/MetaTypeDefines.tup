@@ -1,0 +1,10 @@
+//====================================================================================================
+// Filename:	MetaTypeDefines.tup
+// Created by:	Tyler Staples
+//====================================================================================================
+
+DEFTYPE(GameObject)
+
+DEFTYPE(TransformComponent)
+
+DEFTYPE(RenderService)
