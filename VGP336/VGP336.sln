@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImporterTest", "ImporterTes
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Importer", "Importer\Importer.vcxproj", "{FC0D464C-C566-470A-BFA5-96B117F5D61B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QuaternionTest", "QuaternionTest\QuaternionTest.vcxproj", "{98143D53-4E89-4D60-B557-F7FD84C94733}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -53,6 +55,12 @@ Global
 		{FC0D464C-C566-470A-BFA5-96B117F5D61B}.Release|Win32.ActiveCfg = Release|Win32
 		{FC0D464C-C566-470A-BFA5-96B117F5D61B}.Release|Win32.Build.0 = Release|Win32
 		{FC0D464C-C566-470A-BFA5-96B117F5D61B}.Release|x64.ActiveCfg = Release|Win32
+		{98143D53-4E89-4D60-B557-F7FD84C94733}.Debug|Win32.ActiveCfg = Debug|Win32
+		{98143D53-4E89-4D60-B557-F7FD84C94733}.Debug|Win32.Build.0 = Debug|Win32
+		{98143D53-4E89-4D60-B557-F7FD84C94733}.Debug|x64.ActiveCfg = Debug|Win32
+		{98143D53-4E89-4D60-B557-F7FD84C94733}.Release|Win32.ActiveCfg = Release|Win32
+		{98143D53-4E89-4D60-B557-F7FD84C94733}.Release|Win32.Build.0 = Release|Win32
+		{98143D53-4E89-4D60-B557-F7FD84C94733}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

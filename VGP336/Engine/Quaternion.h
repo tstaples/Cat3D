@@ -1,16 +1,48 @@
-// TODO
-// - default constructor (0, 0, 0, 1)
-// - constructor taking axis and angle (v3, f32)
-//      - q = (sin(theta/2) * v3) + cos(theta/2)
-//      x = axis.x * sin(angle * 0.5f)
-//      y = axis.y * sin(angle * 0.5f)
-//      z = axis.z * sin(angle * 0.5f)
-//      w = cos(angle * 0.5f)
-// 
-// Externals
-// - create a helper to take a q and a v, which rotates the v by the q
-//
-// - Matrix Convert(quaternion)
-//      - converts a q to a matrix
-//
-// Quaternion Slerp(Quaternion q1, q2, f32 t)
+#ifndef INLCUDED_ENGINE_QUATERNION_H
+#define INLCUDED_ENGINE_QUATERNION_H
+
+//====================================================================================================
+// Filename:	Quaternion.h
+// Created by:	Tyler Staples
+// Description:	Struct representing a quaternion.
+//====================================================================================================
+
+//====================================================================================================
+// Includes
+//====================================================================================================
+
+#include "Vector3.h"
+
+namespace Math
+{
+
+//====================================================================================================
+// Structs
+//====================================================================================================
+
+struct Quaternion
+{
+    Quaternion();
+    Quaternion(f32 x, f32 y, f32 z, f32 w);
+    Quaternion(const Vector3& axis, f32 angle);
+
+    Vector3 GetVectorPart() const;
+    Quaternion Identity() const;
+
+    Quaternion operator+(const Quaternion& rhs) const;
+    Quaternion operator*(const Quaternion& rhs) const;
+    Quaternion operator*(f32 scalar) const;
+
+    f32 x, y, z;    // Vector (imaginary part)
+    f32 w;          // Real part
+};
+
+} // namespace Math
+
+//====================================================================================================
+// Inline Definitions
+//====================================================================================================
+
+#include "Quaternion.inl"
+
+#endif // #ifndef INLCUDED_ENGINE_QUATERNION_H

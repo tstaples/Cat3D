@@ -272,5 +272,8 @@
     <None Include="Repository.inl">
       <Filter>GameObject</Filter>
     </None>
+    <None Include="Quaternion.inl">
+      <Filter>Math</Filter>
+    </None>
   </ItemGroup>
 </Project>

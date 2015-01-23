@@ -63,6 +63,13 @@ inline f32 Sqrt(f32 value)
 
 //----------------------------------------------------------------------------------------------------
 
+inline f32 InvSqrt(f32 value)
+{
+    return (1.0f / (value * value));
+}
+
+//----------------------------------------------------------------------------------------------------
+
 inline bool Compare(f32 a, f32 b, f32 epsilon)
 {
 	return Abs(a - b) < epsilon;
@@ -120,6 +127,19 @@ inline Vector3 Normalize(const Vector3& v)
 
 //----------------------------------------------------------------------------------------------------
 
+inline Quaternion Normalize(const Quaternion& q)
+{
+    const f32 n = Dot(q, q);
+    if (Compare(n, 1.0f))
+    {
+        // q is already normalized
+        return q;
+    }
+    return (q * InvSqrt(n));
+}
+
+//----------------------------------------------------------------------------------------------------
+
 inline f32 DistanceSqr(const Vector3& a, const Vector3& b)
 {
 	return MagnitudeSqr(a - b);
@@ -130,6 +150,13 @@ inline f32 DistanceSqr(const Vector3& a, const Vector3& b)
 inline f32 Distance(const Vector3& a, const Vector3& b)
 {
 	return Sqrt(DistanceSqr(a, b));
+}
+
+//----------------------------------------------------------------------------------------------------
+
+inline f32 Dot(const Quaternion& q1, const Quaternion& q2)
+{
+    return (q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z) + (q1.w * q2.w);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -250,6 +277,73 @@ inline Vector3 TransformNormal(const Vector3& v, const Matrix& m)
 inline Vector3 Lerp(const Vector3& v0, const Vector3& v1, f32 t)
 {
 	return v0 + ((v1 - v0) * t);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+inline Quaternion Slerp(const Quaternion& q1, const Quaternion& q2, f32 t)
+{
+    Quaternion qa = q1;
+    Quaternion qb = q2;
+    f32 angle = Dot(q1, q2);
+
+    // Make sure we use the short rotation
+    if (angle < 0.0f)
+    {
+        qa = qa * -1.0f;
+        angle *= -1.0f;
+    }
+
+    const f32 theta = acosf(angle);
+    const f32 invSinTheta = asinf(sinf(theta));
+    const f32 scale = sinf(theta * (1.0f - t)) * invSinTheta;
+    const f32 invScale = sinf(theta * t) * invSinTheta;
+    return Quaternion((qa * scale) + (qb * invScale));
+}
+
+//----------------------------------------------------------------------------------------------------
+
+inline Matrix Convert(const Quaternion& q)
+{
+    const f32 x = q.x;
+    const f32 y = q.y;
+    const f32 z = q.z;
+    const f32 w = q.w;
+
+    Matrix m;
+    m._11 = 1.0f - (2.0f * Sqr(y)) - (2.0f * Sqr(z));
+    m._12 = (2.0f * x * y) + (2.0f * w * z);
+    m._13 = (2.0f * x * z) - (2.0f * w * y);
+
+    m._21 = (2.0f * x * y) - (2.0f * w * z);
+    m._22 = 1.0f - (2.0f * Sqr(x)) - (2.0f * Sqr(z));
+    m._23 = (2.0f * y * z) + (2.0f * w * x);
+
+    m._31 = (2.0f * x * z) + (2.0f * w * y);
+    m._32 = (2.0f * y * z) - (2.0f * w * x);
+    m._33 = 1.0f - (2.0f * Sqr(x)) - (2.0f * Sqr(y));
+    return m;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+inline Quaternion Conjugate(const Quaternion& q)
+{
+    // Invert vector part
+    return Quaternion(-q.x, -q.y, -q.z, q.w);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+// http://gamedev.stackexchange.com/a/50545/51098
+inline Vector3 RotateVector(const Vector3& v, const Quaternion& q)
+{
+    Vector3 qv = q.GetVectorPart();
+
+    Vector3 rot = qv * 2.0f * Dot(qv, v)
+                + v * (Sqr(q.w) - Dot(qv, qv)) 
+                + Cross(qv, v) * (q.w * 2.0f);
+    return rot;
 }
 
 } // namespace Math

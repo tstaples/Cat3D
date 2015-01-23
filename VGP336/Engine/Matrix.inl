@@ -10,7 +10,7 @@
 namespace Math
 {
 
-	inline Matrix Matrix::Identity()
+inline Matrix Matrix::Identity()
 {
 	return Matrix();
 }
@@ -203,6 +203,23 @@ inline Matrix Matrix::operator/(f32 s) const
 				  _21 * inv, _22 * inv, _23 * inv, _24 * inv,
 				  _31 * inv, _32 * inv, _33 * inv, _34 * inv,
 				  _41 * inv, _42 * inv, _43 * inv, _44 * inv);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+inline bool operator==(const Matrix& lhs, const Matrix& rhs)
+{
+    return (lhs._11 == rhs._11 && lhs._12 == rhs._12 && lhs._13 == rhs._13 && lhs._14 == rhs._14 &&
+			lhs._21 == rhs._21 && lhs._22 == rhs._22 && lhs._23 == rhs._23 && lhs._24 == rhs._24 &&
+			lhs._31 == rhs._31 && lhs._32 == rhs._32 && lhs._33 == rhs._33 && lhs._34 == rhs._34 &&
+			lhs._41 == rhs._41 && lhs._42 == rhs._42 && lhs._43 == rhs._43 && lhs._44 == rhs._44);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+inline bool operator!=(const Matrix& lhs, const Matrix& rhs)
+{
+    return !(lhs == rhs);
 }
 
 } // namespace Math

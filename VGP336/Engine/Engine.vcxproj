@@ -98,6 +98,7 @@
     <None Include="EngineMath.inl" />
     <None Include="Matrix.inl" />
     <None Include="MetaTypeDefines.tup" />
+    <None Include="Quaternion.inl" />
     <None Include="Repository.inl" />
     <None Include="ResourceManager.inl" />
     <None Include="Vector3.inl" />

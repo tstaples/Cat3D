@@ -26,6 +26,7 @@
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Matrix.h"
+#include "Quaternion.h"
 #include "ComplexNumber.h"
 
 namespace Math
@@ -53,6 +54,7 @@ f32 Abs(f32 value);
 f32 Sign(f32 value);
 f32 Sqr(f32 value);
 f32 Sqrt(f32 value);
+f32 InvSqrt(f32 value);
 
 bool Compare(f32 a, f32 b, f32 epsilon = 0.000001f);
 
@@ -64,24 +66,31 @@ f32 MagnitudeSqr(const Vector3& v);
 f32 Magnitude(const Vector3& v);
 
 Vector3 Normalize(const Vector3& v);
+Quaternion Normalize(const Quaternion& q);
 
 f32 DistanceSqr(const Vector3& a, const Vector3& b);
 f32 Distance(const Vector3& a, const Vector3& b);
 
+f32 Dot(const Quaternion& q1, const Quaternion& q2);
 f32 Dot(const Vector3& a, const Vector3& b);
 Vector3 Cross(const Vector3& a, const Vector3& b);
 
 Vector3 Project(const Vector3& v, const Vector3& n);
 
 f32 Determinant(const Matrix& m);
-Matrix Adjoint (const Matrix& m);
+Matrix Adjoint(const Matrix& m);
 Matrix Inverse(const Matrix& m);
 Matrix Transpose(const Matrix& m);
+Matrix Convert(const Quaternion& q);
+Quaternion Conjugate(const Quaternion& q);
 
 Vector3 TransformCoord(const Vector3& v, const Matrix& m);
 Vector3 TransformNormal(const Vector3& v, const Matrix& m);
+Vector3 RotateVector(const Vector3& v, const Quaternion& q);
 
 Vector3 Lerp(const Vector3& v0, const Vector3& v1, f32 t);
+Quaternion Slerp(const Quaternion& q1, const Quaternion& q2, f32 t);
+
 
 } // namespace Math
 
