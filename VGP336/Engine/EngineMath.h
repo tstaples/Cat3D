@@ -82,6 +82,7 @@ Matrix Adjoint(const Matrix& m);
 Matrix Inverse(const Matrix& m);
 Matrix Transpose(const Matrix& m);
 Matrix Convert(const Quaternion& q);
+Quaternion Inverse(const Quaternion& q);
 Quaternion Conjugate(const Quaternion& q);
 
 Vector3 TransformCoord(const Vector3& v, const Matrix& m);

@@ -8,6 +8,26 @@ TestApp::~TestApp()
 {
 }
 
+void TestQuaternion()
+{
+    using namespace Math;
+
+    f32 angle = kPi / 6.0f; // 60 degrees
+
+    Quaternion q(Vector3::ZAxis(), angle);
+    Quaternion qn = Normalize(q);
+
+    Vector3 v(0.0f, 1.5f, 0.0f);
+    Vector3 rot = RotateVector(v, qn);
+
+    Matrix mZ = Matrix::RotationZ(angle);
+    Matrix qm = Convert(q);
+    ASSERT(qm == mZ, "Incorrect result: Converting quaternion to matrix");
+
+    int i=0;
+}
+
+
 void TestApp::OnInitialize(u32 width, u32 height)
 {
 	// Init the window
@@ -22,6 +42,8 @@ void TestApp::OnInitialize(u32 width, u32 height)
 
 	mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
 	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -10.0f));
+
+    TestQuaternion();
 }
 
 void TestApp::OnTerminate()

@@ -327,6 +327,13 @@ inline Matrix Convert(const Quaternion& q)
 
 //----------------------------------------------------------------------------------------------------
 
+inline Quaternion Inverse(const Quaternion& q)
+{
+    return Quaternion(-q.x, -q.y, -q.z, -q.w);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 inline Quaternion Conjugate(const Quaternion& q)
 {
     // Invert vector part

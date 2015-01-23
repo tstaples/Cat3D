@@ -41,16 +41,23 @@ inline Quaternion::Quaternion(const Vector3& axis, f32 angle)
 
 //----------------------------------------------------------------------------------------------------
 
-inline Vector3 Quaternion::GetVectorPart() const
+inline Quaternion Identity()
 {
-    return Vector3(x, y, z);
+    return Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline Quaternion Quaternion::Identity() const
+inline Quaternion Pure(const Vector3& v)
 {
-    return Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+    return Quaternion(v.x, v.y, v.z, 0.0f);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+inline Vector3 Quaternion::GetVectorPart() const
+{
+    return Vector3(x, y, z);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -77,6 +84,23 @@ inline Quaternion Quaternion::operator*(const Quaternion& rhs) const
 inline Quaternion Quaternion::operator*(f32 scalar) const
 {
     return Quaternion(x * scalar, y * scalar, z * scalar, w * scalar);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+inline bool operator==(const Quaternion& lhs, const Quaternion& rhs)
+{
+    return ((lhs.x == rhs.x) &&
+            (lhs.y == rhs.y) &&
+            (lhs.z == rhs.z) &&
+            (lhs.w == rhs.w));
+}
+
+//----------------------------------------------------------------------------------------------------
+
+inline bool operator!=(const Quaternion& lhs, const Quaternion& rhs)
+{
+    return !(lhs == rhs);
 }
 
 } // namespace Math
