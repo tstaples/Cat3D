@@ -30,6 +30,7 @@ private:
 	
 	MeshRenderer mRenderer;
 	Model mModel;
+    Texture mTexture;
 };
 
 #endif //#ifndef INCLUDED_TESTAPP_H

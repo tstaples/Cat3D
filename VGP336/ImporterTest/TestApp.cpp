@@ -26,9 +26,12 @@ void TestApp::OnInitialize(u32 width, u32 height)
 	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -10.0f));
 	mTimer.Initialize();
 
-	mRenderer.Initialize(mGraphicsSystem);
+    mTexture.Initialize(mGraphicsSystem, L"../Engine/Images/metalpanel.dds");
+    mTexture.AddRef();
 
-	//LoadModel("../Data/Models/duck.fbx", mModel);
+	mRenderer.Initialize(mGraphicsSystem);
+    mRenderer.SetTexture(mTexture);
+
     AssetLoader::LoadModel("../Data/Models/duck.catm", mGraphicsSystem, mModel);
 }
 
@@ -38,7 +41,11 @@ void TestApp::OnTerminate()
 	mGraphicsSystem.Terminate();
 	SimpleDraw::Terminate();
 	mInputSystem.Terminate();
-	mRenderer.Terminate();
+	
+    mTexture.Terminate();
+    mTexture.Release();
+    
+    mRenderer.Terminate();
 
     mModel.Destroy();
 }

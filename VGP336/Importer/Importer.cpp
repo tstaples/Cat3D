@@ -69,16 +69,29 @@ void Importer::CopyVertexData(const aiMesh& aimesh, f32 scale, Mesh::Vertex* ver
     const u32 numVertices = aimesh.mNumVertices;
     for (u32 j=0; j < numVertices; ++j)
     {
+        // Cache the vertex
         Mesh::Vertex& vert = vertices[j];
     
         bool hasColor = aimesh.HasVertexColors(j);
-        bool hasUV = aimesh.HasTextureCoords(j);
 
-        vert.position   = ToV3(aimesh.mVertices[j]) * scale; // Scale position by set value
+        // Assign corresponding data from importer, or default if doesn't exist
+        vert.position   = ToV3(aimesh.mVertices[j]) * scale; // Scale position by param value
         vert.normal     = (hasNormal)   ? ToV3(aimesh.mNormals[j])      : zero;
         vert.tangent    = (hasTangents) ? ToV3(aimesh.mTangents[j])     : zero;
         vert.color      = (hasColor)    ? ToColor(*aimesh.mColors[j])   : Color::White();
-        // TODO: UV coords & handling multple
+
+        // Check if this vertex has texture coords
+        bool hasUV = aimesh.HasTextureCoords(j);
+        if (hasUV)
+        {
+            // Get the number of UV channels
+            const u32 numUVChannels =  aimesh.mNumUVComponents[j];
+            if (numUVChannels == 2) // hack: our vertex only supports dual channel
+            {
+                const aiVector3D& tx = *aimesh.mTextureCoords[j];
+                vert.texcoord = Math::Vector2(tx.x, tx.y);
+            }
+        }
     }
 }
 
