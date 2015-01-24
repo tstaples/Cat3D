@@ -349,7 +349,7 @@ inline Vector3 RotateVector(const Vector3& v, const Quaternion& q)
 
     Vector3 rot = qv * 2.0f * Dot(qv, v)
                 + v * (Sqr(q.w) - Dot(qv, qv)) 
-                + Cross(qv, v) * (q.w * 2.0f);
+                + Cross(v, qv) * (q.w * 2.0f);
     return rot;
 }
 
