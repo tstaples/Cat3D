@@ -8,7 +8,7 @@ Importer::Importer()
 
 bool Importer::Init()
 {
-    // TODO: Load flags from config
+    // TODO: Load flags from command line
     mFlags =  aiProcess_Triangulate
 			| aiProcess_JoinIdenticalVertices
 			| aiProcess_SortByPType
@@ -17,23 +17,30 @@ bool Importer::Init()
     return true;
 }
 
-
 bool Importer::Load(const char* inputFile, f32 scale)
 {
     // Load the model into the scene
 	const aiScene* scene = mImporter.ReadFile(inputFile, mFlags);   
     ASSERT(scene, "Failed to load model - %s", mImporter.GetErrorString()); // TODO: Exception
 
-    if (!scene->HasMeshes())
+    if (scene->HasMeshes())
     {
-        // TODO: decide how to handle empty models
-        return false;
+        LoadMeshes(*scene, scale);
     }
 
-    const u32 numMeshes = scene->mNumMeshes;
+    if (scene->HasMaterials())
+    {
+        LoadMaterials(*scene);
+    }
+    return true;
+}
+
+void Importer::LoadMeshes(const aiScene& scene, f32 scale)
+{
+    const u32 numMeshes = scene.mNumMeshes;
     for (u32 i=0; i < numMeshes; ++i)
     {
-        aiMesh* aimesh = scene->mMeshes[i];
+        aiMesh* aimesh = scene.mMeshes[i];
 
         // Allocate space for the verts and indices
         const u32 numVerts = aimesh->mNumVertices;
@@ -56,7 +63,31 @@ bool Importer::Load(const char* inputFile, f32 scale)
         SafeDeleteArray(vertices);
         SafeDeleteArray(indices);
     }
-    return true;
+}
+
+void Importer::LoadMaterials(const aiScene& scene)
+{
+    // Get the number of materials in the scene and iterate over them
+    const u32 numMaterials = scene.mNumMaterials;
+    for (u32 i=0; i < numMaterials; ++i)
+    {
+        // Get the material for this index
+        aiMaterial* material = scene.mMaterials[i];
+
+        // Get the number of diffuse textures in this material
+        const u32 textureCount = material->GetTextureCount(aiTextureType_DIFFUSE);
+        for (u32 j=0; j < textureCount; ++j)
+        {
+            // TODO: Get textures of all types
+
+            // Get the path of each texture and store it.
+            aiString texturePath;
+            if (material->GetTexture(aiTextureType_DIFFUSE, j, &texturePath) == AI_SUCCESS)
+            {
+                mTexturePaths.push_back(texturePath.C_Str());
+            }
+        }
+    }
 }
 
 void Importer::CopyVertexData(const aiMesh& aimesh, f32 scale, Mesh::Vertex* vertices)
@@ -79,18 +110,21 @@ void Importer::CopyVertexData(const aiMesh& aimesh, f32 scale, Mesh::Vertex* ver
         vert.normal     = (hasNormal)   ? ToV3(aimesh.mNormals[j])      : zero;
         vert.tangent    = (hasTangents) ? ToV3(aimesh.mTangents[j])     : zero;
         vert.color      = (hasColor)    ? ToColor(*aimesh.mColors[j])   : Color::White();
+    }
 
-        // Check if this vertex has texture coords
-        bool hasUV = aimesh.HasTextureCoords(j);
-        if (hasUV)
+    // Check if this vertex has texture coords
+    if (aimesh.HasTextureCoords(0))
+    {
+        // Get the number of UV channels
+        const u32 numUVChannels = aimesh.GetNumUVChannels();
+        for (u32 i=0; i < numUVChannels; ++i)
         {
-            // Get the number of UV channels
-            const u32 numUVChannels =  aimesh.mNumUVComponents[j];
-            if (numUVChannels == 2) // hack: our vertex only supports dual channel
+            for (u32 j=0; j < numVertices; ++j)
             {
-                const aiVector3D& tx = *aimesh.mTextureCoords[j];
-                vert.texcoord = Math::Vector2(tx.x, tx.y);
+                const aiVector3D& tx = aimesh.mTextureCoords[i][j];
+                vertices[j].texcoord = Math::Vector2(tx.x, tx.y);
             }
+            break; // Hack: Our verts only support 1 channel
         }
     }
 }

@@ -10,9 +10,11 @@
 #include "Precompiled.h"
 
 #include "Texture.h"
-
 #include "GraphicsSystem.h"
+#include "File.h"
+
 #include <DDSTextureLoader.h>
+#include <WICTextureLoader.h>
 
 //====================================================================================================
 // Class Definitions
@@ -34,7 +36,19 @@ Texture::~Texture()
 
 void Texture::Initialize(GraphicsSystem& gs, const wchar_t* pFilename)
 {
-	CreateDDSTextureFromFile(gs.GetDevice(), pFilename, nullptr, &mpTexture);
+    // Get the extension of the texture file to determine how it's loaded
+    std::string ext = IO::File::GetExtension(pFilename);
+
+    HRESULT hr;
+    if (ext.compare("dds") == 0)
+    {
+    	hr = CreateDDSTextureFromFile(gs.GetDevice(), pFilename, nullptr, &mpTexture);
+    }
+    else
+    {
+        hr = CreateWICTextureFromFile(gs.GetDevice(), gs.GetContext(), pFilename, nullptr, &mpTexture);
+    }
+    ASSERT(hr == 0, "Failed to init texture");
 }
 
 //----------------------------------------------------------------------------------------------------

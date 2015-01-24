@@ -247,6 +247,10 @@ void GraphicsSystem::Initialize(HWND window, bool fullscreen)
 	mViewport.TopLeftY = 0;
 	mpImmediateContext->RSSetViewports(1, &mViewport);
 
+    // Initialize the DX COM library
+    // Enables DXTK to load non .dds textures
+    CoInitialize(nullptr);
+
 	// Set flag
 	mInitialized = true;
 

@@ -1,6 +1,7 @@
 #include "Precompiled.h"
 
 #include "File.h"
+#include <string.h>
 
 namespace IO
 {
@@ -87,6 +88,48 @@ std::string File::GetExtension(const std::string& file)
         extension.assign(file.begin() + pos + 1, file.end());
     }
     return extension;
+}
+
+std::string File::GetExtension(const wchar_t* file)
+{
+    std::string extension;
+
+    std::wstring path(file);
+    size_t pos = path.find_last_of('.');
+    if (pos != std::string::npos)
+    {
+        extension.assign(path.begin() + pos + 1, path.end());
+    }
+    return extension;
+}
+
+void File::ConvertMBToWChar(const std::string& buff, wchar_t* out)
+{
+    size_t numConverted = 0;
+    //mbstowcs_s(&numConverted, out, buff.c_str(), 256);
+    mbstowcs_s(&numConverted, out, 256, buff.c_str(), 256);
+}
+
+std::string File::GetLocation(const std::string& path)
+{
+    std::string locationDir;
+
+    // Try forward slash
+    u32 slashIndex = path.find_last_of('/');
+    if (slashIndex != std::string::npos)
+    {
+        // +1 to include the trailing slash
+        locationDir.assign(path.begin(), path.begin() + slashIndex + 1);
+    }
+    else
+    {
+        // Check if path is formatted with backslashed
+        slashIndex = path.find_last_of('\\');
+
+        // +1 to include the trailing slash
+        locationDir.assign(path.begin(), path.begin() + slashIndex + 1);
+    }
+    return locationDir;
 }
 
 } // namespace IO

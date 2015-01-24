@@ -34,6 +34,11 @@ public:
 
     // Returns the extension of a filename
     static std::string GetExtension(const std::string& file);
+    static std::string GetExtension(const wchar_t* file);
+
+    static std::string GetLocation(const std::string& path);
+
+    static void ConvertMBToWChar(const std::string& buff, wchar_t* out);
 };
 
 } // namespace IO

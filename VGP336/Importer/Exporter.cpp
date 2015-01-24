@@ -9,7 +9,6 @@
  *	Number of meshes (4 bytes)
  *	Vertex block:
  *		Number of verts (4 bytes)
- *		- all values for each property space delimited on single line
  *		Position: x y z (12)
  *		Normal: x y z (12)
  *		Tangent: x y z (12)
@@ -22,10 +21,10 @@
 */
 
 
-bool Exporter::Export(const char* outpath, const Meshes& meshes)
+bool Exporter::Export(const char* outpath, const Meshes& meshes, const StringVec& texPaths)
 {
     // Get total size of all mesh data
-    size_t size = CalculateSize(meshes);;
+    size_t size = CalculateSize(meshes, texPaths);
 
     // Init our buffer
     FileBuffer buffer(size);
@@ -34,6 +33,22 @@ bool Exporter::Export(const char* outpath, const Meshes& meshes)
     Header header(1, 0, "CATM");
     buffer.Write(header);
 
+    // Ouput the mesh and texture data
+    ExportMeshes(meshes, buffer);
+    ExportTextures(texPaths, buffer);
+
+    // Output the buffer
+    bool rc = false;
+    if (IO::File::SyncWriteFile(outpath, buffer.GetBuffer(), size))
+    {
+        rc = true;
+    }
+    buffer.Clear();
+    return rc;
+}
+
+void Exporter::ExportMeshes(const Meshes& meshes, FileBuffer& buffer)
+{
     // Write how many meshes this file contains
     const u32 numMeshes = meshes.size();
     buffer.Write(numMeshes);
@@ -51,18 +66,26 @@ bool Exporter::Export(const char* outpath, const Meshes& meshes)
         buffer.Write(numIndices);
         buffer.WriteArray(mesh->GetIndices(), numIndices * sizeof(u16));
     }
-
-    // Output the buffer
-    bool rc = false;
-    if (IO::File::SyncWriteFile(outpath, buffer.GetBuffer(), size))
-    {
-        rc = true;
-    }
-    buffer.Clear();
-    return rc;
 }
 
-size_t Exporter::CalculateSize(const Meshes& meshes)
+void Exporter::ExportTextures(const StringVec& texPaths, FileBuffer& buffer)
+{
+    // Write the number of textures
+    const u32 numTextures = texPaths.size();
+    buffer.Write(numTextures);
+
+    for (auto& path : texPaths)
+    {
+        // Length encode each string
+        u32 pathSize = path.length();
+        buffer.Write(pathSize);
+
+        // Write it to the buffer
+        buffer.WriteArray(path.c_str(), pathSize);
+    }
+}
+
+size_t Exporter::CalculateSize(const Meshes& meshes, const StringVec& texPaths)
 {
     size_t size = 0;
     for (auto& mesh : meshes)
@@ -74,5 +97,14 @@ size_t Exporter::CalculateSize(const Meshes& meshes)
     size += sizeof(u32);                 // Number of Meshes
     size += sizeof(u32) * meshes.size(); // Number of verticies
     size += sizeof(u32) * meshes.size(); // Number of indices
+
+    // Iterate through all the paths and get their size
+    for (auto& path : texPaths)
+    {
+        size += sizeof(u32);    // Length encoding byte
+        size += path.length();
+    }
+    size += sizeof(u32); // Number of textures
+
     return size;
 }

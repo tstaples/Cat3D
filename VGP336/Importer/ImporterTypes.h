@@ -5,11 +5,6 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <memory>
-
-// Local types
-//typedef std::vector<Mesh::Vertex> NativeVertList;
-//typedef std::vector<u16> IndexList;
 
 struct LocalMesh
 {
@@ -17,8 +12,6 @@ struct LocalMesh
     u16* mpIndices;
     u32 mNumVerts;
     u32 mNumIndices;
-    //NativeVertList mVertices;
-    //IndexList mIndices;
 
     size_t GetSize() const
     {
@@ -26,7 +19,5 @@ struct LocalMesh
                 sizeof(u16) * mNumIndices);
     }
 };
-
-//typedef std::unique_ptr<LocalMesh> MeshPtr;
 
 #endif

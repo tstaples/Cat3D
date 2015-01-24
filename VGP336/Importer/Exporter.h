@@ -31,14 +31,15 @@ struct Header
 class Exporter
 {
     typedef std::vector<Mesh*> Meshes;
+    typedef std::vector<std::string> StringVec;
 public:
-    bool Export(const char* outpath, const Meshes& meshes);
+    bool Export(const char* outpath, const Meshes& meshes, const StringVec& texPaths);
 
 private:
-    size_t CalculateSize(const Meshes& meshes);
+    size_t CalculateSize(const Meshes& meshes, const StringVec& texPaths);
 
-    //void WriteVertexBlock(const NativeVertList& verts, FileBuffer& buffer);
-    //void WriteIndexBlock(const IndexList& indices, FileBuffer& buffer);
+    void ExportMeshes(const Meshes& meshes, FileBuffer& buffer);
+    void ExportTextures(const StringVec& texPaths, FileBuffer& buffer);
 };
 
 #endif // #ifndef INCLUDED_EXPORTER_H

@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 
     // Export the asset in our native format
     Exporter exporter;
-    if (!exporter.Export(outputFile, importer.GetMeshes()))
+    if (!exporter.Export(outputFile, importer.GetMeshes(), importer.GetTexturePaths()))
     {
         std::cout << "Failed to export to: " << outputFile << std::endl;
         return 1;
