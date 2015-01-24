@@ -22,14 +22,10 @@ void TestApp::OnInitialize(u32 width, u32 height)
 	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -10.0f));
 	mTimer.Initialize();
 
-    //mTexture.Initialize(mGraphicsSystem, L"../Engine/Images/metalpanel.dds");
-    //mTexture.AddRef();
-
 	mRenderer.Initialize(mGraphicsSystem);
-    //mRenderer.SetTexture(mTexture);
 
-    //AssetLoader::LoadModel("../Data/Models/duck.catm", mGraphicsSystem, mModel);
-    AssetLoader::LoadModel("../Data/Stuff/soldier.catm", mGraphicsSystem, mModel);
+    mAssetLoader.Initialize(mGraphicsSystem);
+    mAssetLoader.LoadModel("../Data/Stuff/soldier.catm", mModel);
 }
 
 void TestApp::OnTerminate()
@@ -38,13 +34,10 @@ void TestApp::OnTerminate()
 	mGraphicsSystem.Terminate();
 	SimpleDraw::Terminate();
 	mInputSystem.Terminate();
-	
-    //mTexture.Terminate();
-    //mTexture.Release();
-    
     mRenderer.Terminate();
 
     mModel.Unload();
+    mAssetLoader.Terminate();
 }
 
 bool TestApp::OnInput(const InputEvent& evt)

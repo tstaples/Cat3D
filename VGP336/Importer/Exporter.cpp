@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include "FileBuffer.h"
+#include "IO.h"
 
 /* === Format Guidelines ===
  * Layout:
@@ -39,7 +40,7 @@ bool Exporter::Export(const char* outpath, const Meshes& meshes, const StringVec
 
     // Output the buffer
     bool rc = false;
-    if (IO::File::SyncWriteFile(outpath, buffer.GetBuffer(), size))
+    if (IO::SyncWriteFile(outpath, buffer.GetBuffer(), size))
     {
         rc = true;
     }

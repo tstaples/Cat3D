@@ -27,9 +27,32 @@ void TestQuaternion()
     int i=0;
 }
 
+void TestPath()
+{
+    Path path("../Data/Stuff/soldier.catm");
+
+    std::wstring extension = path.GetExtension();
+    ASSERT(extension.compare(L"catm") == 0, "GetExtension() Failed");
+
+    std::wstring filename = path.GetFileName();
+    ASSERT(filename.compare(L"soldier.catm") == 0, "GetFileName() Failed");
+
+    std::wstring filenameNoExt = path.GetFileNameWithoutExtension();
+    ASSERT(filenameNoExt.compare(L"soldier") == 0, "GetFileNameWithoutExtension() Failed");
+
+    std::wstring originalPath = path.GetPath();
+    ASSERT(originalPath.compare(L"../Data/Stuff/soldier.catm") == 0, "GetPath() Failed");
+
+    std::string originalPathString = path.GetPathString();
+    ASSERT(originalPathString.compare("../Data/Stuff/soldier.catm") == 0, "GetPathString() Failed");
+}
 
 void TestApp::OnInitialize(u32 width, u32 height)
 {
+    TestQuaternion();
+
+    TestPath();
+
 	// Init the window
 	mWindow.Initialize(GetInstance(), GetAppName(), width, height);
 	HookWindow(mWindow.GetWindowHandle());
@@ -42,8 +65,6 @@ void TestApp::OnInitialize(u32 width, u32 height)
 
 	mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
 	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -10.0f));
-
-    TestQuaternion();
 }
 
 void TestApp::OnTerminate()
