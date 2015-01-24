@@ -56,6 +56,8 @@
 
 // File IO
 #include "File.h"
+#include "IO.h"
+#include "Path.h"
 #include "FileBuffer.h"
 #include "AssetLoader.h"
 

@@ -24,11 +24,13 @@
     <ClCompile Include="ID.cpp" />
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="EngineMath.cpp" />
+    <ClCompile Include="IO.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshBuilder.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="MeshUtil.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Path.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="Precompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -39,6 +41,7 @@
     <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="SimpleDraw.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />
+    <ClCompile Include="TString.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -66,6 +69,7 @@
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="InputTypes.h" />
     <ClInclude Include="EngineMath.h" />
+    <ClInclude Include="IO.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshBuilder.h" />
@@ -73,6 +77,7 @@
     <ClInclude Include="MeshUtil.h" />
     <ClInclude Include="MetaTypes.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="Path.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Precompiled.h" />
     <ClInclude Include="Quaternion.h" />
@@ -85,6 +90,7 @@
     <ClInclude Include="Serializer.h" />
     <ClInclude Include="SimpleDraw.h" />
     <ClInclude Include="SpriteRenderer.h" />
+    <ClInclude Include="TString.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Timer.h" />

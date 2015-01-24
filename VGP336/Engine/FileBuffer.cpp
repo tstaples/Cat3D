@@ -1,6 +1,6 @@
 #include "Precompiled.h"
 #include "FileBuffer.h"
-#include "File.h"
+#include "IO.h"
 
 
 FileBuffer::FileBuffer(const size_t size)
@@ -36,7 +36,7 @@ bool FileBuffer::WriteBufferToFile(const char* pFilename)
 {
     ASSERT(mBuffer, "Buffer unitialized");
     size_t bwritten = 0;
-    return IO::File::SyncWriteFile(pFilename, mBuffer, mBufferSize, bwritten);
+    return IO::SyncWriteFile(pFilename, mBuffer, mBufferSize, bwritten);
 }
 
 bool FileBuffer::LoadBuffer(const char* pFilename)
@@ -45,11 +45,11 @@ bool FileBuffer::LoadBuffer(const char* pFilename)
     Clear();
 
     // Create a buffer the size of the file
-    mBufferSize = IO::File::GetFileSize(pFilename);
+    mBufferSize = IO::GetFileSize(pFilename);
     mBuffer = new u8[mBufferSize];
     
     size_t bRead = 0;
-    return IO::File::SyncReadFile(pFilename, mBuffer, mBufferSize, bRead);
+    return IO::SyncReadFile(pFilename, mBuffer, mBufferSize, bRead);
 }
 
 bool FileBuffer::LoadBuffer(const char* pFilename, size_t fileSize)
@@ -62,7 +62,7 @@ bool FileBuffer::LoadBuffer(const char* pFilename, size_t fileSize)
     mBuffer = new u8[mBufferSize];
     
     size_t bRead = 0;
-    return IO::File::SyncReadFile(pFilename, mBuffer, mBufferSize, bRead);
+    return IO::SyncReadFile(pFilename, mBuffer, mBufferSize, bRead);
 }
 
 void FileBuffer::Clear()

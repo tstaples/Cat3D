@@ -1,39 +1,8 @@
 #ifndef INCLUDED_ENGINE_SERIALIZER_H
 #define INCLUDED_ENGINE_SERIALIZER_H
 
-class Serializer
-{
-public:
-    template <typename T>
-    static void Write(const T& data, u8* buffer, u32& offset)
-    {
-        memcpy(buffer + offset, &data, sizeof(data));
-        offset += sizeof(data);
-    }
 
-    template <typename T>
-    static void WriteArray(const T* data, u8* buffer, u32& offset)
-    {
-        memcpy(buffer + offset, data, sizeof(data));
-        offset += sizeof(data);
-    }
-    
-    template <typename T>
-    static void Read(const T& data, u8* buffer, u32& offset)
-    {
-        data = *reinterpret_cast<T*>(data + offset);
-        offset += sizeof(data);
-    }
-
-    /*template <typename T>
-    static void ReadArray(const T& data, u8* buffer, u32& offset)
-    {
-        data = *reinterpret_cast<T*>(data + offset);
-        offset += sizeof(data);
-    }*/
-};
-
-class SerialWriter/* : public Serializer*/
+class SerialWriter
 {
 public:
     SerialWriter(u8* buffer, u32 size)
@@ -59,13 +28,13 @@ public:
     }
 
 private:
-	u8* mBufferHandle;	    // Buffer we are reading/writing to
+	u8* mBufferHandle;	// Buffer we are reading/writing to
 	u32 mWriteOffset;	// Position in buffer
-	u32 mBufferSize;	    // Total size of buffer
+	u32 mBufferSize;	// Total size of buffer
 };
 
 
-class SerialReader/* : public Serializer*/
+class SerialReader
 {
 public:
     SerialReader(const u8* buffer, u32 size)
