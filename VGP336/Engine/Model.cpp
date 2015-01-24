@@ -6,12 +6,6 @@
 #include "Texture.h"
 #include "GraphicsSystem.h"
 
-void Model::Load(GraphicsSystem& gs, const char* pFilename)
-{
-
-
-}
-
 void Model::Unload()
 {
     for (auto mesh : mMeshes)
@@ -29,7 +23,7 @@ void Model::Unload()
 
     for (auto tex : mTextures)
     {
-        tex->Terminate();
+        tex->Release();
     }
     mTextures.clear();
 }

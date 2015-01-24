@@ -1,14 +1,17 @@
 #include "Precompiled.h"
 #include "AssetLoader.h"
+
+#include "GraphicsSystem.h"
 #include "Model.h"
 #include "Mesh.h"
 #include "MeshBuffer.h"
 #include "MeshBuilder.h"
+#include "TextureManager.h"
 #include "Texture.h"
-#include "File.h"
+#include "IO.h"
 #include "FileBuffer.h"
 #include "Serializer.h"
-#include "GraphicsSystem.h"
+#include "Path.h"
 
 struct Header
 {
@@ -16,18 +19,43 @@ struct Header
     u32 version;
 };
 
-bool AssetLoader::LoadModel(const char* pFilename, GraphicsSystem& gs, Model& model)
+AssetLoader::AssetLoader()
+    : mpGraphicsSystem(nullptr)
+{
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void AssetLoader::Initialize(GraphicsSystem& gs)
+{
+    mpGraphicsSystem = &gs;
+    mTextureManager.Initialize(gs);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void AssetLoader::Terminate()
+{
+    mTextureManager.Terminate();
+    mpGraphicsSystem = nullptr;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool AssetLoader::LoadModel(const char* pFilename, Model& model)
 {
     // Get the asset type and pass to corresponding function
-    std::string extension = IO::File::GetExtension(pFilename);
+    std::string extension = IO::GetExtension(pFilename);
     if (extension.compare("catm") == 0)
     {
-        return LoadCatmFile(pFilename, gs, model);
+        return LoadCatmFile(pFilename, model);
     }
     return false;
 }
 
-bool AssetLoader::LoadCatmFile(const char* pFilename, GraphicsSystem& gs, Model& model)
+//----------------------------------------------------------------------------------------------------
+
+bool AssetLoader::LoadCatmFile(const char* pFilename, Model& model)
 {
     // Read the data into the buffer
     FileBuffer buffer(pFilename);
@@ -48,19 +76,21 @@ bool AssetLoader::LoadCatmFile(const char* pFilename, GraphicsSystem& gs, Model&
         sin.Seek(sizeof(u32), SerialReader::Current);
 
         // Load the mesh data into the model
-        LoadMeshes(gs, sin, model);
+        LoadMeshes(sin, model);
 
         // Load the texture paths from the file
         StringVec paths;
         LoadTexturesPaths(pFilename, sin, paths);
 
         // Load the textures from the files into the model
-        LoadTextures(gs, paths, model);
+        LoadTextures(paths, model);
     }
     return false;
 }
 
-bool AssetLoader::LoadMeshes(GraphicsSystem& gs, SerialReader& reader, Model& model)
+//----------------------------------------------------------------------------------------------------
+
+bool AssetLoader::LoadMeshes(SerialReader& reader, Model& model)
 {
     u32 numMeshes = reader.Read<u32>();
     for (u32 i=0; i < numMeshes; ++i)
@@ -86,31 +116,33 @@ bool AssetLoader::LoadMeshes(GraphicsSystem& gs, SerialReader& reader, Model& mo
 
         // Create the mesh buffer and add it to the model
 		MeshBuffer* meshBuffer = new MeshBuffer();
-		meshBuffer->Initialize(gs, Mesh::GetVertexFormat(), *mesh);
+		meshBuffer->Initialize(*mpGraphicsSystem, Mesh::GetVertexFormat(), *mesh);
 		model.mMeshBuffers.push_back(meshBuffer);
     }
     return true;
 }
 
-bool AssetLoader::LoadTextures(GraphicsSystem& gs, const StringVec& paths, Model& model)
+//----------------------------------------------------------------------------------------------------
+
+bool AssetLoader::LoadTextures(const StringVec& paths, Model& model)
 {
     const u32 numTextures = paths.size();
     for(auto path : paths)
     {
         wchar_t wbuffer[256];
-        IO::File::ConvertMBToWChar(path, wbuffer);
+        IO::CharToWChar(path, wbuffer, 256);
 
-        Texture* texture = new Texture();
-
-        texture->Initialize(gs, wbuffer);
+        Texture* texture = mTextureManager.GetResource(wbuffer);
         model.mTextures.push_back(texture);
     }
     return true;
 }
 
+//----------------------------------------------------------------------------------------------------
+
 bool AssetLoader::LoadTexturesPaths(const char* pModelPath, SerialReader& reader, StringVec& paths)
 {
-    std::string modelDir = IO::File::GetLocation(pModelPath);
+    std::string modelDir = IO::GetLocation(pModelPath);
     char tempPathBuffer[MAX_PATH];
 
     u32 numTextures = reader.Read<u32>();

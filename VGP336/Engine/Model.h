@@ -16,7 +16,6 @@ public:
     Model() {}
     ~Model() {}
 
-    void Load(GraphicsSystem& gs, const char* pFilename);
     void Unload();
 
     void Render(MeshRenderer& renderer);

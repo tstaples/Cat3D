@@ -11,7 +11,7 @@
 
 #include "Texture.h"
 #include "GraphicsSystem.h"
-#include "File.h"
+#include "IO.h"
 
 #include <DDSTextureLoader.h>
 #include <WICTextureLoader.h>
@@ -37,7 +37,7 @@ Texture::~Texture()
 void Texture::Initialize(GraphicsSystem& gs, const wchar_t* pFilename)
 {
     // Get the extension of the texture file to determine how it's loaded
-    std::string ext = IO::File::GetExtension(pFilename);
+    std::string ext = IO::GetExtension(pFilename);
 
     HRESULT hr;
     if (ext.compare("dds") == 0)
