@@ -18,6 +18,7 @@
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FileBuffer.cpp" />
     <ClCompile Include="Font.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraphicsSystem.cpp" />
     <ClCompile Include="Hash.cpp" />
     <ClCompile Include="Heightmap.cpp" />
@@ -30,6 +31,7 @@
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="MeshUtil.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ModelComponent.cpp" />
     <ClCompile Include="Path.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="Precompiled.cpp">
@@ -38,9 +40,11 @@
     </ClCompile>
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="MeshBuffer.cpp" />
+    <ClCompile Include="RenderService.cpp" />
     <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="SimpleDraw.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />
+    <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="TString.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureManager.cpp" />
@@ -61,6 +65,7 @@
     <ClInclude Include="File.h" />
     <ClInclude Include="FileBuffer.h" />
     <ClInclude Include="Font.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="GraphicsSystem.h" />
     <ClInclude Include="Hash.h" />
     <ClInclude Include="Heightmap.h" />
@@ -77,19 +82,24 @@
     <ClInclude Include="MeshUtil.h" />
     <ClInclude Include="MetaTypes.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelComponent.h" />
     <ClInclude Include="Path.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Precompiled.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="MeshBuffer.h" />
+    <ClInclude Include="RenderService.h" />
     <ClInclude Include="Repository.h" />
+    <ClInclude Include="RepositoryTypes.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Sampler.h" />
     <ClInclude Include="Serializer.h" />
+    <ClInclude Include="Service.h" />
     <ClInclude Include="SimpleDraw.h" />
     <ClInclude Include="SpriteRenderer.h" />
+    <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="TString.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureManager.h" />
@@ -107,6 +117,7 @@
     <None Include="Quaternion.inl" />
     <None Include="Repository.inl" />
     <None Include="ResourceManager.inl" />
+    <None Include="Service.inl" />
     <None Include="Vector3.inl" />
   </ItemGroup>
   <ItemGroup>

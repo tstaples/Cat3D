@@ -5,6 +5,7 @@
 #include "MeshRenderer.h"
 #include "Texture.h"
 #include "GraphicsSystem.h"
+#include "EngineMath.h"
 
 void Model::Unload()
 {
@@ -28,12 +29,12 @@ void Model::Unload()
     mTextures.clear();
 }
 
-void Model::Render(MeshRenderer& renderer)
+void Model::Render(MeshRenderer& renderer, const Math::Matrix& transform) const
 {
     const u32 meshBufferSize = mMeshBuffers.size();
     for (u32 i = 0; i < meshBufferSize; ++i)
     {              
         renderer.SetTexture(*mTextures[i]);
-        renderer.Render(*mMeshBuffers[i], Math::Matrix::Identity());
+        renderer.Render(*mMeshBuffers[i], transform);
     }
 }

@@ -105,5 +105,5 @@ bool Repository<T>::IsValid(ID id) const
 
     return (type == GetType()
         && (index < mData.size())
-        && (instance == mInstanceCount.at(index));
+        && (instance == mInstanceCount.at(index)));
 }

@@ -3,6 +3,11 @@
 
 #include "Common.h"
 
+namespace Math
+{
+    struct Matrix;
+}
+
 class Mesh;
 class MeshBuffer;
 class MeshRenderer;
@@ -18,10 +23,11 @@ public:
 
     void Unload();
 
-    void Render(MeshRenderer& renderer);
+    // Renders this model at the specified transform
+    void Render(MeshRenderer& renderer, const Math::Matrix& transform) const;
 
 private:
-    NONCOPYABLE(Model);
+    NONCOPYABLE(Model)
 
 public:
 	std::vector<Mesh*> mMeshes;

@@ -28,6 +28,12 @@
     <Filter Include="Utility">
       <UniqueIdentifier>{c748b774-009e-40dc-a299-6d8ec34ab1c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObject\Components">
+      <UniqueIdentifier>{842c9f90-42ad-4f57-9fb9-166b41e5b3cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\Services">
+      <UniqueIdentifier>{8962da58-2d6f-4430-96b0-fb2bdf71115a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputSystem.cpp">
@@ -109,9 +115,6 @@
     <ClCompile Include="Model.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="AssetLoader.cpp">
-      <Filter>FileIO</Filter>
-    </ClCompile>
     <ClCompile Include="TextureManager.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
@@ -126,6 +129,21 @@
     </ClCompile>
     <ClCompile Include="TString.cpp">
       <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetLoader.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformComponent.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelComponent.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderService.cpp">
+      <Filter>GameObject\Services</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -240,9 +258,6 @@
     <ClInclude Include="Serializer.h">
       <Filter>FileIO</Filter>
     </ClInclude>
-    <ClInclude Include="AssetLoader.h">
-      <Filter>FileIO</Filter>
-    </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -270,6 +285,27 @@
     <ClInclude Include="TString.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="AssetLoader.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformComponent.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelComponent.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Service.h">
+      <Filter>GameObject\Services</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderService.h">
+      <Filter>GameObject\Services</Filter>
+    </ClInclude>
+    <ClInclude Include="RepositoryTypes.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Vector3.inl">
@@ -295,6 +331,9 @@
     </None>
     <None Include="Quaternion.inl">
       <Filter>Math</Filter>
+    </None>
+    <None Include="Service.inl">
+      <Filter>GameObject\Services</Filter>
     </None>
   </ItemGroup>
 </Project>

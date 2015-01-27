@@ -17,6 +17,19 @@
 #include "Application.h"
 #include "Delegate.h"
 
+// Component headers
+#include "ModelComponent.h"
+#include "TransformComponent.h"
+
+// Service headers
+#include "RenderService.h"
+
+// GameObject headers
+#include "GameObject.h"
+#include "RepositoryTypes.h"
+#include "MetaTypes.h"
+#include "ID.h"
+
 // Graphics headers
 #include "Camera.h"
 #include "Color.h"
