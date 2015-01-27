@@ -9,5 +9,6 @@
     <ClInclude Include="Importer.h" />
     <ClInclude Include="Exporter.h" />
     <ClInclude Include="ImporterTypes.h" />
+    <ClInclude Include="Options.h" />
   </ItemGroup>
 </Project>

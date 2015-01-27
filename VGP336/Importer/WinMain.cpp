@@ -3,6 +3,7 @@
 
 #include <Engine.h>
 #include <iostream>
+#include "Options.h"
 
 f32 GetScale(u32 args, char** argv);
 

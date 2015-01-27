@@ -84,7 +84,7 @@ void TestApp::OnUpdate()
 	mGraphicsSystem.BeginRender();
 
 	mRenderer.SetCamera(mCamera);
-    mModel.Render(mRenderer);
+    mModel.Render(mRenderer, Math::Matrix::Identity());
 
 	mGraphicsSystem.EndRender();
 }
