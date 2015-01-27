@@ -1,6 +1,8 @@
 #ifndef INCLUDED_ENGINE_FILE_H
 #define INCLUDED_ENGINE_FILE_H
 
+#include "FileBuffer.h"
+
 namespace IO
 {
 
@@ -10,6 +12,8 @@ public:
     File();
     File(const std::string& path);
 
+private:
+    FileBuffer mBuffer;
 };
 
 } // namespace IO
