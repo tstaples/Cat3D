@@ -28,3 +28,15 @@ u64 GetHash(const char* str)
     }
     return hash;
 }
+
+u64 GetHash(const wchar_t* wstr)
+{
+    u64 hash = 5381;
+    s32 c = *wstr++;
+    while (c != 0)
+    {
+        hash = ((hash << 5) + hash) + c;
+        c = *wstr++;
+    }
+    return hash;
+}

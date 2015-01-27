@@ -33,7 +33,7 @@ template<typename T>
 T* ResourceManager<T>::GetResource(const wchar_t* pfilename)
 {
     // Check if the resource already exists
-    u64 hash = GetHash((const char*)pfilename); // TODO: overload hash for wchar
+    u64 hash = GetHash(pfilename); // TODO: overload hash for wchar
     Inventory::iterator it = mInventory.find(hash);
     if (it != mInventory.end())
     {

@@ -14,4 +14,6 @@
 // Assumes string passed in is null terminated
 u64 GetHash(const char* str);
 
+u64 GetHash(const wchar_t* wstr);
+
 #endif // #ifndef INCLUDED_ENGINE_HASH_H
