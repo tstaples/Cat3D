@@ -26,11 +26,12 @@
 
 // GameObject headers
 #include "GameObject.h"
-#include "RepositoryTypes.h"
-#include "MetaTypes.h"
 #include "ID.h"
+#include "MetaTypes.h"
+#include "RepositoryTypes.h"
 
 // Graphics headers
+#include "Bone.h"
 #include "Camera.h"
 #include "Color.h"
 #include "ConstantBuffer.h"
@@ -68,10 +69,10 @@
 #include "TextureManager.h"
 
 // File IO
+#include "AssetLoader.h"
 #include "File.h"
+#include "FileBuffer.h"
 #include "IO.h"
 #include "Path.h"
-#include "FileBuffer.h"
-#include "AssetLoader.h"
 
 #endif // #ifndef INCLUDED_ENGINE_H

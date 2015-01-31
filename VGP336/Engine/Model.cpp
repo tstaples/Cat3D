@@ -27,6 +27,14 @@ void Model::Unload()
         tex->Release();
     }
     mTextures.clear();
+
+    for (auto bone : mBones)
+    {
+        delete bone;
+    }
+    mBones.clear();
+    mBoneIndexMap.clear();
+    mpRoot = nullptr;
 }
 
 void Model::Render(MeshRenderer& renderer, const Math::Matrix& transform) const

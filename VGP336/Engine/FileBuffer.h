@@ -34,6 +34,9 @@ public:
     template <typename T>
 	void WriteArray(const T* data, u32 bytes);
 
+    template <typename T>
+	void WriteVector(const std::vector<T>& data);
+
     // Reads sizeof(T) bytes from the buffer into data
     template <typename T>
 	void Read(T& data);
@@ -68,6 +71,16 @@ void FileBuffer::WriteArray(const T* data, u32 bytes)
 {
     memcpy(mBuffer + mWriteOffset, data, bytes);
     mWriteOffset += bytes;
+}
+
+template <typename T>
+void FileBuffer::WriteVector(const std::vector<T>& data)
+{
+    for (auto it : data)
+    {
+        Write(it);
+        mWriteOffset += sizeof(it);
+    }
 }
 
 template <typename T>

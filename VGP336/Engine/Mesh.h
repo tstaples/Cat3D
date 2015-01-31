@@ -15,6 +15,19 @@
 #include "EngineMath.h"
 
 //====================================================================================================
+// Structs
+//====================================================================================================
+
+struct BoneWeight
+{
+    u32 boneIndex;
+    f32 weight;
+};
+// TODO: use array2 container
+typedef std::vector<BoneWeight> BoneWeights; // Affecting a single vertex
+typedef std::vector<BoneWeights> VertexWeights;
+
+//====================================================================================================
 // Class Declarations
 //====================================================================================================
 
@@ -60,6 +73,8 @@ public:
 	u32 GetVertexCount() const			{ return mNumVertices; }
 	u32 GetIndexCount() const			{ return mNumIndices; }
 
+    VertexWeights& GetVertexWeights()   { return mVertexWeights; }
+
 private:
 	NONCOPYABLE(Mesh);
 
@@ -70,6 +85,10 @@ private:
 
 	u32 mNumVertices;
 	u32 mNumIndices;
+
+    // Should have the same count as NumVertices
+    // Separate from Vertex struct to keep the struct more universal.
+    VertexWeights mVertexWeights;
 };
 
 #endif // #ifndef INCLUDED_ENGINE_MESH_H
