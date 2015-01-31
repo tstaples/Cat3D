@@ -34,6 +34,9 @@
     <Filter Include="GameObject\Services">
       <UniqueIdentifier>{8962da58-2d6f-4430-96b0-fb2bdf71115a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics\Animations">
+      <UniqueIdentifier>{0305d378-b56d-4b65-94a0-49c85d5aa151}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputSystem.cpp">
@@ -144,6 +147,9 @@
     </ClCompile>
     <ClCompile Include="RenderService.cpp">
       <Filter>GameObject\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="Bone.cpp">
+      <Filter>Graphics\Animations</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -305,6 +311,9 @@
     </ClInclude>
     <ClInclude Include="RepositoryTypes.h">
       <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Bone.h">
+      <Filter>Graphics\Animations</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
