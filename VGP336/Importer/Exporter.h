@@ -32,14 +32,17 @@ class Exporter
 {
     typedef std::vector<Mesh*> Meshes;
     typedef std::vector<std::string> StringVec;
+    typedef std::vector<Bone*> BoneVec;
 public:
-    bool Export(const char* outpath, const Meshes& meshes, const StringVec& texPaths);
+    bool Export(const char* outpath, const Meshes& meshes, const StringVec& texPaths, const BoneVec& bones);
 
 private:
-    size_t CalculateSize(const Meshes& meshes, const StringVec& texPaths);
+    size_t CalculateSize(const Meshes& meshes, const StringVec& texPaths, const BoneVec& bones);
 
     void ExportMeshes(const Meshes& meshes, FileBuffer& buffer);
     void ExportTextures(const StringVec& texPaths, FileBuffer& buffer);
+    void ExportBones(const BoneVec& bones, FileBuffer& buffer);
+    void ExportBoneWeights(const Meshes& meshes, FileBuffer& buffer);
 };
 
 #endif // #ifndef INCLUDED_EXPORTER_H

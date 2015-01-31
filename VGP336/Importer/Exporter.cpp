@@ -21,8 +21,23 @@
  * 
 */
 
+//  TODO:
+//  skeleton -> bone array
+//      - name (useful during runtime for referring to specific bone)
+//      - parent index
+//      - children index
+//      - transform
+//      - offset transform
+//  Index does not need to be saved since they're saved sequencially
+//
+//  **When loading, load all  the bones first, then do a second pass to connect parents and children using the indices written to the file
+// 
+//  Vertex bone weights
+//      - number of weights for that vertex
+//      - weights...
 
-bool Exporter::Export(const char* outpath, const Meshes& meshes, const StringVec& texPaths)
+
+bool Exporter::Export(const char* outpath, const Meshes& meshes, const StringVec& texPaths, const BoneVec& bones)
 {
     // Get total size of all mesh data
     size_t size = CalculateSize(meshes, texPaths);
@@ -34,17 +49,16 @@ bool Exporter::Export(const char* outpath, const Meshes& meshes, const StringVec
     Header header(1, 0, "CATM");
     buffer.Write(header);
 
-    // Ouput the mesh and texture data
+    // Export all the model data
     ExportMeshes(meshes, buffer);
     ExportTextures(texPaths, buffer);
+    ExportBones(bones, buffer);
+    ExportBoneWeights(meshes, buffer);
 
     // Output the buffer
-    bool rc = false;
-    if (IO::SyncWriteFile(outpath, buffer.GetBuffer(), size))
-    {
-        rc = true;
-    }
+    bool rc = IO::SyncWriteFile(outpath, buffer.GetBuffer(), size);
     buffer.Clear();
+
     return rc;
 }
 
@@ -86,13 +100,66 @@ void Exporter::ExportTextures(const StringVec& texPaths, FileBuffer& buffer)
     }
 }
 
-size_t Exporter::CalculateSize(const Meshes& meshes, const StringVec& texPaths)
+void Exporter::ExportBones(const BoneVec& bones, FileBuffer& buffer)
+{
+    // Write how many bones there are
+    const u32 numBones = bones.size();
+    buffer.Write(numBones);
+
+    for (auto bone : bones)
+    {
+        // Write length encoded string
+        u32 nameLen = bone->name.size();
+        buffer.Write(nameLen);
+        buffer.WriteArray(bone->name.c_str(), nameLen);
+
+        // Write the parent index
+        buffer.Write(bone->parentIndex);
+
+        // Write number of child indices, then the indices themselves
+        const u32 numChildrenIndices = bone->childrenIndices.size();
+        buffer.Write(numChildrenIndices);
+        buffer.WriteVector(bone->childrenIndices);
+
+        // Write transform and offset transform matrices
+        buffer.Write(bone->transform);
+        buffer.Write(bone->offsetTransform);
+    }
+}
+
+void Exporter::ExportBoneWeights(const Meshes& meshes, FileBuffer& buffer)
+{
+    for (auto mesh : meshes)
+    {
+        VertexWeights& vertexWeights = mesh->GetVertexWeights();
+
+        // Write the number of weights
+        const u32 numBoneWeights = vertexWeights.size();
+        buffer.Write(numBoneWeights);
+
+        // Iterate through all the weights for each vertex
+        for (auto weights : vertexWeights)
+        {
+            // Write how many weights this vertex contains, then the weights
+            const u32 numWeightsForThisVert = weights.size();
+            buffer.Write(numWeightsForThisVert);
+            buffer.WriteVector(weights);
+        }
+    }
+}
+
+size_t Exporter::CalculateSize(const Meshes& meshes, const StringVec& texPaths, const BoneVec& bones)
 {
     size_t size = 0;
     for (auto& mesh : meshes)
     {
         size += mesh->GetVertexCount() * sizeof(Mesh::Vertex);
         size += mesh->GetIndexCount() * sizeof(u16);
+
+        for (auto weights : mesh->GetVertexWeights())
+        {
+            size += weights.size() * sizeof(f32);
+        }
     }
     size += sizeof(Header);
     size += sizeof(u32);                 // Number of Meshes
@@ -106,6 +173,16 @@ size_t Exporter::CalculateSize(const Meshes& meshes, const StringVec& texPaths)
         size += path.length();
     }
     size += sizeof(u32); // Number of textures
+
+    for (auto bone : bones)
+    {
+        size += sizeof(u32); // length encode byte
+        size += bone->name.length();
+        size += sizeof(u32); // parent index
+        size += sizeof(u32); // number of child indices
+        size += bone->childrenIndices.size() * sizeof(u32);
+        size += sizeof(Math::Matrix) * 2; // transform and offset transform
+    }
 
     return size;
 }
