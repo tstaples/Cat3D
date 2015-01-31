@@ -1,28 +1,30 @@
+/* + Model
+*  | + *Mesh
+*  | | + Vertex buffer
+*  | | + Index buffer
+*  | | + Bone weights (max ~4 per vert)
+*  | + *Bone
+*  | + *Animations
+*  | | + *Keyframes 
+*/
+
+// Load bones
+// Specify bone weights per vertex
+
 #include "Importer.h"
 
 
 Importer::Importer()
 {
-    Init();
 }
 
-bool Importer::Init()
-{
-    // TODO: Load flags from command line
-    mFlags =  aiProcess_Triangulate
-			| aiProcess_JoinIdenticalVertices
-			| aiProcess_SortByPType
-			| aiProcess_FlipUVs;
-
-    return true;
-}
-
-bool Importer::Load(const char* inputFile, f32 scale)
+bool Importer::Load(const char* inputFile, f32 scale, u32 flags)
 {
     // Load the model into the scene
-	const aiScene* scene = mImporter.ReadFile(inputFile, mFlags);   
+	const aiScene* scene = mImporter.ReadFile(inputFile, flags);   
     ASSERT(scene, "Failed to load model - %s", mImporter.GetErrorString()); // TODO: Exception
 
+    // Check for meshes and load them
     if (scene->HasMeshes())
     {
         LoadMeshes(*scene, scale);
@@ -32,8 +34,37 @@ bool Importer::Load(const char* inputFile, f32 scale)
     {
         LoadMaterials(*scene);
     }
+
+    if (scene->HasAnimations())
+    {
+        LoadAnimations(*scene);
+    }
+
+    Cleanup();
+
     return true;
 }
+
+//----------------------------------------------------------------------------------------------------
+
+void Importer::Cleanup()
+{
+    for (auto mesh : mMeshes)
+    {
+        mesh->Destroy();
+        delete mesh;
+    }
+    mMeshes.clear();
+    
+    for (auto bone : mBones)
+    {
+        delete bone;
+    }
+    mBones.clear();
+    mBoneIndexMap.clear();
+}
+
+//----------------------------------------------------------------------------------------------------
 
 void Importer::LoadMeshes(const aiScene& scene, f32 scale)
 {
@@ -62,8 +93,72 @@ void Importer::LoadMeshes(const aiScene& scene, f32 scale)
         // Free temp
         SafeDeleteArray(vertices);
         SafeDeleteArray(indices);
+
+        LoadBoneData(*aimesh, mesh);
     }
 }
+
+//----------------------------------------------------------------------------------------------------
+
+void Importer::LoadBoneData(const aiMesh& aimesh, Mesh* mesh)
+{
+    if (aimesh.HasBones())
+    {
+        VertexWeights& vertexWeights = mesh->GetVertexWeights();
+        vertexWeights.resize(aimesh.mNumVertices); // Each vertex has weights
+
+        // Loop through all the bones for this mesh (not neccessarily all bones)
+        const u32 numBones = aimesh.mNumBones;
+        for (u32 i=0; i < numBones; ++i)
+        {
+            aiBone* aibone = aimesh.mBones[i];
+            u32 boneIndex = 0;
+
+            // see if we have already added this bone
+            auto iter = mBoneIndexMap.find(aibone->mName.C_Str());
+            if (iter != mBoneIndexMap.end())
+            {
+                boneIndex = iter->second;
+            }
+            else // This is a new bone
+            {
+                // Set index to the end
+                boneIndex = mBones.size();
+                Bone* newBone = new Bone();
+                newBone->name = aibone->mName.C_Str();
+                newBone->index = boneIndex;
+                newBone->offsetTransform = *(Math::Matrix*)&aibone->mOffsetMatrix; // Hack: matrices have the same alignment
+
+                // Add it to the array and remember it
+                mBones.push_back(newBone);
+                mBoneIndexMap.insert(std::make_pair(aibone->mName.C_Str(), boneIndex));
+            }
+
+            // Extract the bone weights (number of vertices this bone affects)
+            const u32 numBoneWeights = aibone->mNumWeights;
+            for (u32 j=0; j < numBoneWeights; ++j)
+            {
+                const aiVertexWeight& aivertexweight = aibone->mWeights[j];
+
+                BoneWeight boneWeight;
+                boneWeight.boneIndex = boneIndex;
+                boneWeight.weight = aivertexweight.mWeight;
+
+                // Store the weight for the corresponding vertex
+                vertexWeights[aivertexweight.mVertexId].push_back(boneWeight);
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void Importer::LoadAnimations(const aiScene& scene)
+{
+    mpRoot = BuildSkeleton(*scene.mRootNode, nullptr);
+}
+
+//----------------------------------------------------------------------------------------------------
 
 void Importer::LoadMaterials(const aiScene& scene)
 {
@@ -90,6 +185,8 @@ void Importer::LoadMaterials(const aiScene& scene)
     }
 }
 
+//----------------------------------------------------------------------------------------------------
+
 void Importer::CopyVertexData(const aiMesh& aimesh, f32 scale, Mesh::Vertex* vertices)
 {
     bool hasNormal = aimesh.HasNormals();
@@ -103,6 +200,7 @@ void Importer::CopyVertexData(const aiMesh& aimesh, f32 scale, Mesh::Vertex* ver
         // Cache the vertex
         Mesh::Vertex& vert = vertices[j];
     
+        // Check if this vertex has colors
         bool hasColor = aimesh.HasVertexColors(j);
 
         // Assign corresponding data from importer, or default if doesn't exist
@@ -129,17 +227,22 @@ void Importer::CopyVertexData(const aiMesh& aimesh, f32 scale, Mesh::Vertex* ver
     }
 }
 
+//----------------------------------------------------------------------------------------------------
+
 void Importer::CopyIndexData(const aiMesh& aimesh, u16* indices)
 {
+    // Nothing to do here
     if (!aimesh.HasFaces())
         return;
 
+    // Create local pointers for iterating
     const aiFace* aifaceIter = aimesh.mFaces;
     u16* indexIter = indices;
 
     const u32 numFaces = aimesh.mNumFaces;
     for (u32 j=0; j < numFaces; ++j)
     {
+        // Get all 3 indices per face
         indexIter[0] = aifaceIter->mIndices[0];
 	    indexIter[1] = aifaceIter->mIndices[1];
 	    indexIter[2] = aifaceIter->mIndices[2];
@@ -148,12 +251,58 @@ void Importer::CopyIndexData(const aiMesh& aimesh, u16* indices)
     }
 }
 
+//----------------------------------------------------------------------------------------------------
+
 Math::Vector3 Importer::ToV3(const aiVector3D& v)
 {
     return Math::Vector3(v.x, v.y, v.z);
 }
 
+//----------------------------------------------------------------------------------------------------
+
 Color Importer::ToColor(const aiColor4D& c)
 {
     return Color(c.r, c.g, c.b, c.a);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+Bone* Importer::BuildSkeleton(aiNode& ainode, Bone* parent)
+{
+    Bone* bone = nullptr;
+
+    // See if this bone already exists
+    auto iter = mBoneIndexMap.find(ainode.mName.C_Str());
+    if (iter == mBoneIndexMap.end())
+    {
+        // Create a new bone
+        bone = new Bone();
+        bone->name = ainode.mName.C_Str();
+        bone->index = mBones.size(); // append
+
+        // Add the new bone to our array of bones
+        mBones.push_back(bone);
+        mBoneIndexMap.insert(std::make_pair(bone->name, bone->index));
+    }
+    else
+    {
+        // This bone already exists; added when we populated the meshes
+        bone = mBones[iter->second];
+    }
+
+    bone->transform = *(Math::Matrix*)&ainode.mTransformation;
+    bone->parent = parent;
+
+    // Recursively populate children
+    const u32 numChildren = ainode.mNumChildren;
+    for (u32 i=0; i < numChildren; ++i)
+    {
+        // Build the child and add it to our list
+        aiNode* aichild = ainode.mChildren[i];
+
+        Bone* child = BuildSkeleton(*aichild , bone);
+        bone->children.push_back(child);
+        bone->childrenIndices.push_back(child->index); // Used for loading
+    }
+    return bone;
 }
