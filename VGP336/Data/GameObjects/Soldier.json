@@ -1,0 +1,16 @@
+{
+	"Components" : [
+		{ 
+			"Type" : "Model",
+			"Filename" : "../Data/Stuff/soldier.catm"
+		},
+		{
+			"Type" : "Transform",
+			"Position" : [
+				0.0,
+				0.0,
+				0.0
+			]
+		}
+	]
+}
