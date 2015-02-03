@@ -79,6 +79,7 @@ private:
 	NONCOPYABLE(Mesh);
 
 	friend class MeshBuilder;
+    friend class AssetLoader;
 
 	Vertex* mpVertices;
 	u16* mpIndices;

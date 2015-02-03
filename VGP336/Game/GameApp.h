@@ -25,15 +25,14 @@ private:
 	Camera mCamera;
 	Timer mTimer;
     
-    AssetLoader mAssetLoader;
-
-    Model mModel;
-
-    ID mID;
     GameObjectRepository mGameObjectRepo;
     TransformRepository mTransformRepo;
     ModelRepository mModelRepo;
     RenderService mRenderService;
+
+    GameObjectFactory mGameObjectFactory;
+    
+    ModelManager mModelManager;
 };
 
 #endif //#ifndef INCLUDED_GAMEAPP_H

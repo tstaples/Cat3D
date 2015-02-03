@@ -79,7 +79,6 @@ void FileBuffer::WriteVector(const std::vector<T>& data)
     for (auto it : data)
     {
         Write(it);
-        mWriteOffset += sizeof(it);
     }
 }
 

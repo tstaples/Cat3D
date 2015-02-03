@@ -34,14 +34,16 @@ public:
     void Initialize(GraphicsSystem& gs);
     void Terminate();
     
-    bool LoadModel(const char* pFilename, Model& model);
+    bool LoadModel(const wchar_t* pFilename, Model& model);
 
 private:
-    bool LoadCatmFile(const char* pFilename, Model& model);
+    bool LoadCatmFile(const wchar_t* pFilename, Model& model);
     
-    bool LoadMeshes(SerialReader& reader, Model& model);
-    bool LoadTextures(const StringVec& paths, Model& model);
-    bool LoadTexturesPaths(const char* pModelPath, SerialReader& reader, StringVec& paths);
+    void LoadMeshes(SerialReader& reader, Model& model);
+    void LoadTextures(const StringVec& paths, Model& model);
+    void LoadTexturesPaths(const wchar_t* pModelPath, SerialReader& reader, StringVec& paths);
+    void LoadBones(SerialReader& reader, Model& model);
+    void LoadBoneWeights(SerialReader& reader, Model& model);
 
 private:
     GraphicsSystem* mpGraphicsSystem;

@@ -20,6 +20,7 @@
     <ClCompile Include="FileBuffer.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameObjectFactory.cpp" />
     <ClCompile Include="GraphicsSystem.cpp" />
     <ClCompile Include="Hash.cpp" />
     <ClCompile Include="Heightmap.cpp" />
@@ -33,6 +34,7 @@
     <ClCompile Include="MeshUtil.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelComponent.cpp" />
+    <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="Path.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="Precompiled.cpp">
@@ -68,6 +70,7 @@
     <ClInclude Include="FileBuffer.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectFactory.h" />
     <ClInclude Include="GraphicsSystem.h" />
     <ClInclude Include="Hash.h" />
     <ClInclude Include="Heightmap.h" />
@@ -85,6 +88,7 @@
     <ClInclude Include="MetaTypes.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelComponent.h" />
+    <ClInclude Include="ModelManager.h" />
     <ClInclude Include="Path.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Precompiled.h" />
@@ -131,6 +135,9 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
+    <ProjectReference Include="..\External\jsoncpp\makefiles\msvc2010\lib_json.vcxproj">
+      <Project>{1e6c2c1c-6453-4129-ae3f-0ee8e6599c89}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BF37882E-6717-49C4-B8B2-1C13CE301343}</ProjectGuid>
@@ -170,11 +177,16 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../External/jsoncpp/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -184,6 +196,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../External/jsoncpp/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -191,6 +204,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

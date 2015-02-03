@@ -151,6 +151,12 @@
     <ClCompile Include="Bone.cpp">
       <Filter>Graphics\Animations</Filter>
     </ClCompile>
+    <ClCompile Include="GameObjectFactory.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelManager.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InputEvent.h">
@@ -314,6 +320,12 @@
     </ClInclude>
     <ClInclude Include="Bone.h">
       <Filter>Graphics\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectFactory.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelManager.h">
+      <Filter>Resource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

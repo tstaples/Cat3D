@@ -1,9 +1,14 @@
 #include "GameApp.h"
 
 GameApp::GameApp()
-    : mGameObjectRepo(Meta::GameObjectType, (u16)1)
-    , mTransformRepo(Meta::TransformComponentType, (u16)1)
-    , mModelRepo(Meta::ModelComponentType, (u16)1)
+    : mGameObjectRepo(Meta::GameObjectType, 1)
+    , mTransformRepo(Meta::TransformComponentType, 1)
+    , mModelRepo(Meta::ModelComponentType, 1)
+    , mGameObjectFactory(mGameObjectRepo, 
+                         mTransformRepo, 
+                         mModelRepo, 
+                         mRenderService,
+                         mModelManager)
 {
 }
 
@@ -20,33 +25,15 @@ void GameApp::OnInitialize(u32 width, u32 height)
 	mInputSystem.Initialize(mWindow.GetWindowHandle());
 	mGraphicsSystem.Initialize(mWindow.GetWindowHandle(), false);
 	SimpleDraw::Initialize(mGraphicsSystem);
-
-	mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
-	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -10.0f));
 	mTimer.Initialize();
-
-    mAssetLoader.Initialize(mGraphicsSystem);
-
-
-
-
-
-    mID = mGameObjectRepo.Allocate();
-    GameObject& gameObject = mGameObjectRepo.GetItem(mID);
-    gameObject.mID = mID;
     
-    ID transformId = mTransformRepo.Allocate();
-    gameObject.AddComponent(transformId);
+    mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
+	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -10.0f));
 
-    mAssetLoader.LoadModel("../Data/Stuff/soldier.catm", mModel);
-
-    ID modelID = mModelRepo.Allocate();
-    ModelComponent& modelComponent = mModelRepo.GetItem(modelID);
-    modelComponent.SetModel(&mModel);
-    gameObject.AddComponent(modelID);
-
+    mModelManager.Initialize(mGraphicsSystem);
     mRenderService.Initialize(mGraphicsSystem, mGameObjectRepo, mTransformRepo, mModelRepo, mCamera);
-    mRenderService.Subscribe(mID);
+
+    mGameObjectFactory.Create("", Math::Vector3::Zero());
 }
 
 void GameApp::OnTerminate()
@@ -55,11 +42,8 @@ void GameApp::OnTerminate()
 	mGraphicsSystem.Terminate();
 	SimpleDraw::Terminate();
 	mInputSystem.Terminate();
-    //mRenderer.Terminate();
-
-    mModel.Unload();
-    mAssetLoader.Terminate();
     mRenderService.Terminate();
+    mModelManager.Terminate();
 }
 
 bool GameApp::OnInput(const InputEvent& evt)

@@ -26,6 +26,7 @@
 
 // GameObject headers
 #include "GameObject.h"
+#include "GameObjectFactory.h"
 #include "ID.h"
 #include "MetaTypes.h"
 #include "RepositoryTypes.h"
@@ -67,6 +68,7 @@
 #include "Resource.h"
 #include "ResourceManager.h"
 #include "TextureManager.h"
+#include "ModelManager.h"
 
 // File IO
 #include "AssetLoader.h"

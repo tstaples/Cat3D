@@ -29,6 +29,8 @@ public:
     Meta::Type GetType() const { return mType; }
 
 private:
+    NONCOPYABLE(RepositoryBase);
+
     Meta::Type mType;
 };
 

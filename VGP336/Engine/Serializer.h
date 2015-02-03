@@ -63,6 +63,18 @@ public:
 	}
 
     template <typename T>
+	void ReadVector(std::vector<T> vec, size_t size)
+	{
+        T* buffer = new T[size];
+        ReadArray(buffer, size);
+        for (u32 i=0; i < size; ++i)
+        {
+            vec.push_back(buffer[i]);
+        }
+        SafeDeleteArray(buffer);
+	}
+
+    template <typename T>
 	T Read()
     {
         T data;
