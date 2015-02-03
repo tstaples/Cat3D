@@ -39,9 +39,6 @@ bool Importer::Load(const char* inputFile, f32 scale, u32 flags)
     {
         LoadAnimations(*scene);
     }
-
-    Cleanup();
-
     return true;
 }
 

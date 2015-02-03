@@ -17,8 +17,23 @@
  *		Texture Coords: u v (8)
  *	Indices block:
  *		Number of indicies (4)
- *		- each index is newline (\r\n) delimited (4)
- * 
+ *      indices... (2 bytes each)
+ *  Texture Paths:
+ *      Number of paths (4)
+ *      Length encode byte, Path
+ *  Bones:
+ *      Num bones (4)
+ *      Name length (4)
+ *      Name (len)
+ *      Parent index (4)
+ *      Num child indices (4)
+ *      Child indices (4 each)
+ *      transform (16 * 4)
+ *      offset transform (16 * 4)
+ *  Bone Weights:
+ *      Num bone weights (4)
+ *      Num weights for this vert (numVerts * 4)
+ *      Weights... (4 * Num weights for this vert)
 */
 
 //  TODO:
@@ -40,7 +55,7 @@
 bool Exporter::Export(const char* outpath, const Meshes& meshes, const StringVec& texPaths, const BoneVec& bones)
 {
     // Get total size of all mesh data
-    size_t size = CalculateSize(meshes, texPaths);
+    size_t size = CalculateSize(meshes, texPaths, bones);
 
     // Init our buffer
     FileBuffer buffer(size);
@@ -151,20 +166,26 @@ void Exporter::ExportBoneWeights(const Meshes& meshes, FileBuffer& buffer)
 size_t Exporter::CalculateSize(const Meshes& meshes, const StringVec& texPaths, const BoneVec& bones)
 {
     size_t size = 0;
-    for (auto& mesh : meshes)
-    {
-        size += mesh->GetVertexCount() * sizeof(Mesh::Vertex);
-        size += mesh->GetIndexCount() * sizeof(u16);
 
-        for (auto weights : mesh->GetVertexWeights())
-        {
-            size += weights.size() * sizeof(f32);
-        }
-    }
     size += sizeof(Header);
     size += sizeof(u32);                 // Number of Meshes
     size += sizeof(u32) * meshes.size(); // Number of verticies
     size += sizeof(u32) * meshes.size(); // Number of indices
+
+    for (auto& mesh : meshes)
+    {
+        // Vertex and index blocks
+        size += mesh->GetVertexCount() * sizeof(Mesh::Vertex);
+        size += mesh->GetIndexCount() * sizeof(u16);
+
+        // Size of all the weights per mesh
+        size += sizeof(u32); // number of bone weights
+        for (auto weights : mesh->GetVertexWeights())
+        {
+            size += sizeof(u32); // number of bone weights for this vert
+            size += weights.size() * sizeof(BoneWeight);
+        }
+    }
 
     // Iterate through all the paths and get their size
     for (auto& path : texPaths)
@@ -174,6 +195,7 @@ size_t Exporter::CalculateSize(const Meshes& meshes, const StringVec& texPaths, 
     }
     size += sizeof(u32); // Number of textures
 
+    size += sizeof(u32); // Number of bones   
     for (auto bone : bones)
     {
         size += sizeof(u32); // length encode byte
@@ -183,6 +205,5 @@ size_t Exporter::CalculateSize(const Meshes& meshes, const StringVec& texPaths, 
         size += bone->childrenIndices.size() * sizeof(u32);
         size += sizeof(Math::Matrix) * 2; // transform and offset transform
     }
-
     return size;
 }

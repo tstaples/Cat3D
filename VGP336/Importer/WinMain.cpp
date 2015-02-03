@@ -44,6 +44,8 @@ int main(int argc, char** argv)
         return 1;
     }
 
+    importer.Cleanup();
+
     return 0;
 }
 

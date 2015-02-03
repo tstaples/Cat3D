@@ -12,6 +12,7 @@ public:
     Importer();
 
     bool Load(const char* inputFile, f32 scale, u32 flags);
+    void Cleanup();
 
     const Meshes& GetMeshes() const             { return mMeshes; }
     const StringVec& GetTexturePaths() const    { return mTexturePaths; }
@@ -26,7 +27,6 @@ private:
     void CopyIndexData(const aiMesh& aimesh, u16* indices);
     void LoadBoneData(const aiMesh& aimesh, Mesh* mesh);
 
-    void Cleanup();
 
     // Helpers to convert assimp formats to native
     Math::Vector3 ToV3(const aiVector3D& v);
