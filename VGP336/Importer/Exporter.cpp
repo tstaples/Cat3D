@@ -6,34 +6,34 @@
 
 /* === Format Guidelines ===
  * Layout:
- *	Header size (fixed): 8 bytes
- *	Number of meshes (4 bytes)
- *	Vertex block:
- *		Number of verts (4 bytes)
- *		Position: x y z (12)
- *		Normal: x y z (12)
- *		Tangent: x y z (12)
- *		Color: r g b a (16)
- *		Texture Coords: u v (8)
- *	Indices block:
- *		Number of indicies (4)
- *      indices... (2 bytes each)
- *  Texture Paths:
- *      Number of paths (4)
- *      Length encode byte, Path
- *  Bones:
- *      Num bones (4)
- *      Name length (4)
- *      Name (len)
- *      Parent index (4)
- *      Num child indices (4)
- *      Child indices (4 each)
- *      transform (16 * 4)
- *      offset transform (16 * 4)
- *  Bone Weights:
- *      Num bone weights (4)
- *      Num weights for this vert (numVerts * 4)
- *      Weights... (4 * Num weights for this vert)
+ *	+ Header                    (8)
+ *	+ Number of meshes          (4)
+ *	+ Vertex block:             [64]
+ *	|	Number of verts         (4)
+ *	|	Position                (12)
+ *	|	Normal                  (12)
+ *	|	Tangent                 (12)
+ *	|	Color                   (16)
+ *	|	Texture Coords          (8)
+ *	+ Indices block:            [4 + 2n]
+ *	|	Number of indicies      (4)
+ *  |   indices...              (2 bytes each)
+ *  + Texture Paths:            [n(4 + c) + 4]
+ *  |   Number of paths         (4)
+ *  |   Length byte + Path      (4 + c)
+ *  + Bones:                    [16 + 
+ *  |   Num bones               (4)
+ *  |   Name length             (4)
+ *  |   Name                    (strlen)
+ *  |   Parent index            (4)
+ *  |   Num child indices       (4)
+ *  |   Child indices           (4 each)
+ *  |   transform               (16 * 4)
+ *  |   offset transform        (16 * 4)
+ *  + Bone Weights:
+ *  |    Num bone weights       (4)
+ *  |    Num weights for this vert (numVerts * 4)
+ *  |    Weights... (4 * Num weights for this vert)
 */
 
 //  TODO:

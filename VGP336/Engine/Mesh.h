@@ -23,7 +23,6 @@ struct BoneWeight
     u32 boneIndex;
     f32 weight;
 };
-// TODO: use array2 container
 typedef std::vector<BoneWeight> BoneWeights; // Affecting a single vertex
 typedef std::vector<BoneWeights> VertexWeights;
 

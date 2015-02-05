@@ -88,7 +88,8 @@ bool AssetLoader::LoadCatmFile(const wchar_t* pFilename, Model& model)
         // Load the textures from the files into the model
         LoadTextures(paths, model);
 
-        //LoadBones(sin, model);
+        LoadBones(sin, model);
+        LoadBoneWeights(sin, model);
     }
     return false;
 }
@@ -166,6 +167,8 @@ void AssetLoader::LoadTexturesPaths(const wchar_t* pModelPath, SerialReader& rea
     }
 }
 
+//----------------------------------------------------------------------------------------------------
+
 void AssetLoader::LoadBones(SerialReader& reader, Model& model)
 {
     const u32 numBones = reader.Read<u32>();
@@ -196,15 +199,28 @@ void AssetLoader::LoadBones(SerialReader& reader, Model& model)
     }
 }
 
+//----------------------------------------------------------------------------------------------------
+
 void AssetLoader::LoadBoneWeights(SerialReader& reader, Model& model)
 {
-    const u32 numBoneWeights = reader.Read<u32>();
-    //Mesh* mesh = model.mMeshes[i];
-    //VertexWeights& vertexWeights = mesh->GetVertexWeights();
-    //vertexWeights.resize(numBoneWeights);
-
-    for (u32 i=0; i < numBoneWeights; ++i)
+    for (auto mesh : model.mMeshes)
     {
+        const u32 numBoneWeights = reader.Read<u32>();
         
+        // Get the 2D vert weight array from each mesh and resize it
+        VertexWeights& vertexWeights = mesh->GetVertexWeights();
+        vertexWeights.resize(numBoneWeights);
+
+        for (u32 i=0; i < numBoneWeights; ++i)
+        {
+            // Get how many bone weights this vert has
+            const u32 numWeightsForThisVert = reader.Read<u32>();
+            for (u32 j=0; j < numWeightsForThisVert; ++j)
+            {
+                // Store the boneweight at the corresponding index for this vert
+                BoneWeight boneWeight = reader.Read<BoneWeight>();
+                vertexWeights[i].push_back(boneWeight);
+            }
+        }
     }
 }

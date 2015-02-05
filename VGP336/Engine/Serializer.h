@@ -25,6 +25,7 @@ public:
     {
         memcpy(mBufferHandle + mWriteOffset, data, size);
         mWriteOffset += size;
+		assert(mWriteOffset <= mBufferSize);
     }
 
 private:
@@ -47,7 +48,6 @@ public:
     template <typename T>
 	void Read(T& data)
 	{
-		//data = *reinterpret_cast<T*>(mBufferHandle + mWriteOffset);
         memcpy(&data, mBufferHandle + mWriteOffset, sizeof(data));
 		mWriteOffset += sizeof(data);
 		assert(mWriteOffset <= mBufferSize);
@@ -66,7 +66,7 @@ public:
 	void ReadVector(std::vector<T> vec, size_t size)
 	{
         T* buffer = new T[size];
-        ReadArray(buffer, size);
+        ReadArray(buffer, size * sizeof(T));
         for (u32 i=0; i < size; ++i)
         {
             vec.push_back(buffer[i]);

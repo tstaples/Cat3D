@@ -25,7 +25,7 @@ void TestApp::OnInitialize(u32 width, u32 height)
 	mRenderer.Initialize(mGraphicsSystem);
 
     mAssetLoader.Initialize(mGraphicsSystem);
-    mAssetLoader.LoadModel("../Data/Stuff/soldier.catm", mModel);
+    mAssetLoader.LoadModel(L"../Data/Stuff/soldierv2.catm", mModel);
 }
 
 void TestApp::OnTerminate()

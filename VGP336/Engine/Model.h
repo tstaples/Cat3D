@@ -54,8 +54,7 @@ public:
 
     Bone* mpRoot; // weak ptr
     std::vector<Bone*> mBones;
-    // Used to lookup bones by name O(logn) (offline)
-    std::map<std::string, u32> mBoneIndexMap;
+    std::map<std::string, u32> mBoneIndexMap; // Bone name, index
 
 	std::vector<MeshBuffer*> mMeshBuffers;
     std::vector<Texture*> mTextures;
