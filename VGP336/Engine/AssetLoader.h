@@ -44,6 +44,7 @@ private:
     void LoadTexturesPaths(const wchar_t* pModelPath, SerialReader& reader, StringVec& paths);
     void LoadBones(SerialReader& reader, Model& model);
     void LoadBoneWeights(SerialReader& reader, Model& model);
+    void LinkBones(Model& model);
 
 private:
     GraphicsSystem* mpGraphicsSystem;

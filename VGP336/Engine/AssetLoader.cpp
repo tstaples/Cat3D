@@ -88,8 +88,10 @@ bool AssetLoader::LoadCatmFile(const wchar_t* pFilename, Model& model)
         // Load the textures from the files into the model
         LoadTextures(paths, model);
 
+        // Load bone data and weights, then link up pointers
         LoadBones(sin, model);
         LoadBoneWeights(sin, model);
+        LinkBones(model);
     }
     return false;
 }
@@ -188,6 +190,7 @@ void AssetLoader::LoadBones(SerialReader& reader, Model& model)
         model.mBoneIndexMap.insert(std::make_pair(bone->name, i));
 
         bone->parentIndex = reader.Read<u32>();
+        bone->index = i;
 
         // Read in the children indices
         const u32 numChildIndices = reader.Read<u32>();
@@ -196,6 +199,9 @@ void AssetLoader::LoadBones(SerialReader& reader, Model& model)
         // Read in the transform and offset transform
         bone->transform = reader.Read<Math::Matrix>();
         bone->offsetTransform = reader.Read<Math::Matrix>();
+
+        // Store the bone in the model
+        model.mBones[i] = bone;
     }
 }
 
@@ -221,6 +227,34 @@ void AssetLoader::LoadBoneWeights(SerialReader& reader, Model& model)
                 BoneWeight boneWeight = reader.Read<BoneWeight>();
                 vertexWeights[i].push_back(boneWeight);
             }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void AssetLoader::LinkBones(Model& model)
+{
+    std::vector<Bone*>& bones = model.mBones;
+    for (auto bone : bones)
+    {
+        // Check the bone has a parent
+        const u32 parentIndex = bone->parentIndex;
+        if (parentIndex != NO_PARENT)
+        {
+            // Link parent pointer to element at parentIndex
+            bone->parent = bones[parentIndex];
+        }
+
+        // Expand children array to number of children
+        const u32 numChildren = bone->childrenIndices.size();
+        bone->children.resize(numChildren);
+
+        for (u32 i=0; i < numChildren; ++i)
+        {
+            // Store pointer to bone at childIndex's position in bone array
+            const u32 childIndex = bone->childrenIndices[i];
+            bone->children[i] = bones[childIndex];
         }
     }
 }

@@ -289,6 +289,7 @@ Bone* Importer::BuildSkeleton(aiNode& ainode, Bone* parent)
 
     bone->transform = *(Math::Matrix*)&ainode.mTransformation;
     bone->parent = parent;
+    bone->parentIndex = (parent) ? parent->index : NO_PARENT;
 
     // Recursively populate children
     const u32 numChildren = ainode.mNumChildren;
