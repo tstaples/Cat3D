@@ -5,6 +5,7 @@
 #include "ModelManager.h"
 
 #include <json/json.h>
+#include <fstream>
 
 GameObjectFactory::GameObjectFactory(GameObjectRepository& gameObjectRepository,
                                      TransformRepository& transformRepository,
@@ -31,31 +32,16 @@ ID GameObjectFactory::Create(const char* templateName, const Math::Vector3& star
 {
     std::vector<std::string> componentNames;
     
-    std::string data = "{\
-	\"Components\" : [\
-		{ \
-			\"Type\" : \"Model\",\
-			\"Filename\" : \"../Data/Stuff/soldier.catm\"\
-		},\
-		{\
-			\"Type\" : \"Transform\",\
-			\"Position\" : [\
-				0.0,\
-				0.0,\
-				0.0\
-			]\
-		}\
-	]\
-}";
+    std::ifstream data("../Data/GameObjects/Soldier.json");
 
     Json::Value root;
     Json::Reader reader;
     if (reader.parse(data, root))
     {
         Json::Value components = root["Components"];
-        for (u32 i=0; i < root.size(); ++i)
+        for (u32 i=0; i < components.size(); ++i)
         {
-            componentNames.push_back(components[i].asString());
+            componentNames.push_back(components[i].get("Type", "Model").asString());
         }
     }
     else

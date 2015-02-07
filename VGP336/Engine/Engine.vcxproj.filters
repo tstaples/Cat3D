@@ -157,6 +157,9 @@
     <ClCompile Include="ModelManager.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
+    <ClCompile Include="GameObjectJSON.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InputEvent.h">
@@ -326,6 +329,9 @@
     </ClInclude>
     <ClInclude Include="ModelManager.h">
       <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectJSON.h">
+      <Filter>GameObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -21,6 +21,7 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectFactory.cpp" />
+    <ClCompile Include="GameObjectJSON.cpp" />
     <ClCompile Include="GraphicsSystem.cpp" />
     <ClCompile Include="Hash.cpp" />
     <ClCompile Include="Heightmap.cpp" />
@@ -71,6 +72,7 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectFactory.h" />
+    <ClInclude Include="GameObjectJSON.h" />
     <ClInclude Include="GraphicsSystem.h" />
     <ClInclude Include="Hash.h" />
     <ClInclude Include="Heightmap.h" />
