@@ -41,14 +41,14 @@ inline Quaternion::Quaternion(const Vector3& axis, f32 angle)
 
 //----------------------------------------------------------------------------------------------------
 
-inline Quaternion Identity()
+inline Quaternion Quaternion::Identity()
 {
     return Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline Quaternion Pure(const Vector3& v)
+inline Quaternion Quaternion::Pure(const Vector3& v)
 {
     return Quaternion(v.x, v.y, v.z, 0.0f);
 }
