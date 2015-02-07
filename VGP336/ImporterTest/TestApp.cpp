@@ -19,13 +19,17 @@ void TestApp::OnInitialize(u32 width, u32 height)
 	SimpleDraw::Initialize(mGraphicsSystem);
 
 	mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
-	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -10.0f));
+	mCamera.SetPosition(Math::Vector3(0.0f, 10.0f, -10.0f));
+    mCamera.SetLookAt(Math::Vector3(0.0f, 10.0f, 10.0f));
 	mTimer.Initialize();
 
 	mRenderer.Initialize(mGraphicsSystem);
 
     mAssetLoader.Initialize(mGraphicsSystem);
     mAssetLoader.LoadModel(L"../Data/Stuff/soldierv2.catm", mModel);
+
+    mAnimationController.Initialize(mModel);
+    mAnimationController.StartClip(*mModel.mAnimations[0], true);
 }
 
 void TestApp::OnTerminate()
@@ -84,6 +88,9 @@ void TestApp::OnUpdate()
 	mGraphicsSystem.BeginRender();
 
 	mRenderer.SetCamera(mCamera);
+
+    // TODO: Animation stuff here
+
     mModel.Render(mRenderer, Math::Matrix::Identity());
 
 	mGraphicsSystem.EndRender();

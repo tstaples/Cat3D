@@ -34,6 +34,24 @@
  *  |    Num bone weights       (4)
  *  |    Num weights for this vert (numVerts * 4)
  *  |    Weights... (4 * Num weights for this vert)
+
+ *  + Animations:
+ *  | + Num animation clips     (4)
+ *  | + Animation Clip
+ *  | | + Length encoded name   (4 + c)
+ *  | | + Duration              (4)
+ *  | | + TicksPerSecond        (4)
+ *  | | + KeyFrameCount         (4)
+ *  | | + Num bone animations   (4)
+ *  | | + BoneAnimation
+ *  | | | + Bone index          (4)
+ *  | | | + Num keyframes       (4)
+ *  | | | + Keyframes
+ *  | | | | + Translation       (12)
+ *  | | | | + Rotation          (16)
+ *  | | | | + Scale             (12)
+ *  | | | | + Time              (4)
+
 */
 
 //  TODO:
@@ -52,7 +70,11 @@
 //      - weights...
 
 
-bool Exporter::Export(const char* outpath, const Meshes& meshes, const StringVec& texPaths, const BoneVec& bones)
+bool Exporter::Export(const char* outpath, 
+                      const Meshes& meshes, 
+                      const StringVec& texPaths, 
+                      const BoneVec& bones, 
+                      const Animations& animations)
 {
     // Get total size of all mesh data
     size_t size = CalculateSize(meshes, texPaths, bones);
@@ -77,6 +99,8 @@ bool Exporter::Export(const char* outpath, const Meshes& meshes, const StringVec
     return rc;
 }
 
+//----------------------------------------------------------------------------------------------------
+
 void Exporter::ExportMeshes(const Meshes& meshes, FileBuffer& buffer)
 {
     // Write how many meshes this file contains
@@ -98,6 +122,8 @@ void Exporter::ExportMeshes(const Meshes& meshes, FileBuffer& buffer)
     }
 }
 
+//----------------------------------------------------------------------------------------------------
+
 void Exporter::ExportTextures(const StringVec& texPaths, FileBuffer& buffer)
 {
     // Write the number of textures
@@ -114,6 +140,8 @@ void Exporter::ExportTextures(const StringVec& texPaths, FileBuffer& buffer)
         buffer.WriteArray(path.c_str(), pathSize);
     }
 }
+
+//----------------------------------------------------------------------------------------------------
 
 void Exporter::ExportBones(const BoneVec& bones, FileBuffer& buffer)
 {
@@ -142,6 +170,8 @@ void Exporter::ExportBones(const BoneVec& bones, FileBuffer& buffer)
     }
 }
 
+//----------------------------------------------------------------------------------------------------
+
 void Exporter::ExportBoneWeights(const Meshes& meshes, FileBuffer& buffer)
 {
     for (auto mesh : meshes)
@@ -162,6 +192,43 @@ void Exporter::ExportBoneWeights(const Meshes& meshes, FileBuffer& buffer)
         }
     }
 }
+
+//----------------------------------------------------------------------------------------------------
+
+/*
+ *  + Animations:
+ *  | + Num animation clips     (4)
+ *  | + Animation Clip
+ *  | | + Length encoded name   (4 + c)
+ *  | | + Duration              (4)
+ *  | | + TicksPerSecond        (4)
+ *  | | + KeyFrameCount         (4)
+ *  | | + Num bone animations   (4)
+ *  | | + BoneAnimation
+ *  | | | + Bone index          (4)
+ *  | | | + Num keyframes       (4)
+ *  | | | + Keyframes
+ *  | | | | + Translation       (12)
+ *  | | | | + Rotation          (16)
+ *  | | | | + Scale             (12)
+ *  | | | | + Time              (4)
+
+*/
+
+// NOTE: When loading, resize model.mBoneAnimations to number of bones and init each element to null
+void Exporter::ExportAnimations(const Animations& animations, FileBuffer& buffer)
+{
+    // Write number of animation clips
+    const u32 numAnimations = animations.size();
+    buffer.Write(numAnimations);
+
+    for (auto animClip : animations)
+    {
+        WriteLengthEncodedString(animClip->mName, buffer);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------
 
 size_t Exporter::CalculateSize(const Meshes& meshes, const StringVec& texPaths, const BoneVec& bones)
 {
@@ -206,4 +273,13 @@ size_t Exporter::CalculateSize(const Meshes& meshes, const StringVec& texPaths, 
         size += sizeof(Math::Matrix) * 2; // transform and offset transform
     }
     return size;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void Exporter::WriteLengthEncodedString(const std::string& str, FileBuffer& buffer)
+{
+    u32 len = str.length();
+    buffer.Write(len);
+    buffer.WriteArray(str.c_str(), len);
 }

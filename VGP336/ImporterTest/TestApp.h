@@ -29,6 +29,7 @@ private:
 	Timer mTimer;
 	
 	MeshRenderer mRenderer;
+    AnimationController mAnimationController;
 	Model mModel;
     
     AssetLoader mAssetLoader;
