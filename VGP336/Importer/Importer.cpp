@@ -8,8 +8,8 @@
 *  | | + *Keyframes 
 */
 
-// Load bones
-// Specify bone weights per vertex
+// TODO: Unit test to import model then write it out, then repeat on the output file.
+// Then diff the two output files to ensure they match. Ensures all data is recovered
 
 #include "Importer.h"
 
@@ -91,6 +91,7 @@ void Importer::LoadMeshes(const aiScene& scene, f32 scale)
         SafeDeleteArray(vertices);
         SafeDeleteArray(indices);
 
+        // Load bones for this mesh
         LoadBoneData(*aimesh, mesh);
     }
 }
@@ -122,6 +123,7 @@ void Importer::LoadBoneData(const aiMesh& aimesh, Mesh* mesh)
                 // Set index to the end
                 boneIndex = mBones.size();
                 Bone* newBone = new Bone();
+                ASSERT(aibone->mName.length > 0, "[Importer] Bone %d doesn't have a name!", boneIndex);
                 newBone->name = aibone->mName.C_Str();
                 newBone->index = boneIndex;
                 newBone->offsetTransform = *(Math::Matrix*)&aibone->mOffsetMatrix; // Hack: matrices have the same alignment
@@ -153,6 +155,66 @@ void Importer::LoadBoneData(const aiMesh& aimesh, Mesh* mesh)
 void Importer::LoadAnimations(const aiScene& scene)
 {
     mpRoot = BuildSkeleton(*scene.mRootNode, nullptr);
+
+    const u32 numAnimations = scene.mNumAnimations;
+    for (u32 animIndex=0; animIndex < numAnimations; ++animIndex)
+    {
+        aiAnimation* aiAnimation = scene.mAnimations[animIndex];
+        AnimationClip* animClip = new AnimationClip();
+
+        ASSERT(aiAnimation->mName.length > 0, "[Importer] Animation %d doesn't have a name!", animIndex);
+        animClip->mName = aiAnimation->mName.C_Str();
+        animClip->mDuration = (f32)aiAnimation->mDuration;
+        animClip->mTicksPerSecond = (f32)aiAnimation->mTicksPerSecond;
+
+        if (animClip->mTicksPerSecond == 0.0f)
+        {
+            // If not specified, play back as 1:1 (second:tick)
+            animClip->mTicksPerSecond = 1.0f;
+        }
+
+        const u32 numAnimChannels = aiAnimation->mNumChannels;
+        for (u32 boneAnimIndex=0; boneAnimIndex < numAnimChannels; ++boneAnimIndex)
+        {
+            aiNodeAnim* aiNodeAnim = aiAnimation->mChannels[boneAnimIndex];
+            BoneAnimation* boneAnim = new BoneAnimation();
+
+            // Index of the bone this animation is for
+            boneAnim->mBoneIndex = mBoneIndexMap.at(aiNodeAnim->mNodeName.C_Str());
+
+            // Since we are storing entire transforms per keyframe rather than keyframing
+            // position, rot and scale separately, ensure all keyframes match.
+            // TODO: Support keyframes for the 3 sub channels
+            ASSERT(aiNodeAnim->mNumPositionKeys == aiNodeAnim->mNumRotationKeys, "Invalid keyframe");
+            ASSERT(aiNodeAnim->mNumPositionKeys == aiNodeAnim->mNumScalingKeys, "Invalid keyframe");
+
+            // Assumes position keyframe index aligns with rotation and scaling keyframes
+            for (u32 keyIndex=0; keyIndex < aiNodeAnim->mNumPositionKeys; ++keyIndex)
+            {
+                const aiVectorKey& aiPosKey     = aiNodeAnim->mPositionKeys[keyIndex];
+                const aiQuatKey& aiRotKey       = aiNodeAnim->mRotationKeys[keyIndex];
+                const aiVectorKey& aiScaleKey   = aiNodeAnim->mScalingKeys[keyIndex];
+
+                // Ensure each keyframe is aligned on the timeline
+                ASSERT(aiPosKey.mTime == aiRotKey.mTime, "Mismatched key time");
+                ASSERT(aiPosKey.mTime == aiScaleKey.mTime, "Mismatched key time");
+
+                Keyframe* keyframe = new Keyframe();
+                keyframe->mTranslation  = ToV3(aiPosKey.mValue);
+                keyframe->mRotation     = ToQ(aiRotKey.mValue);
+                keyframe->mScale        = ToV3(aiScaleKey.mValue);
+                keyframe->mTime         = (f32)aiPosKey.mTime;
+
+                // Store the keyframe for this bone animation
+                boneAnim->mKeyframes.push_back(keyframe);
+            }
+
+            // Store the bone animation for this animation clip
+            animClip->mBoneAnimations.push_back(boneAnim);
+        }
+        // Store this animation clip
+        mAnimations.push_back(animClip);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -250,20 +312,6 @@ void Importer::CopyIndexData(const aiMesh& aimesh, u16* indices)
 
 //----------------------------------------------------------------------------------------------------
 
-Math::Vector3 Importer::ToV3(const aiVector3D& v)
-{
-    return Math::Vector3(v.x, v.y, v.z);
-}
-
-//----------------------------------------------------------------------------------------------------
-
-Color Importer::ToColor(const aiColor4D& c)
-{
-    return Color(c.r, c.g, c.b, c.a);
-}
-
-//----------------------------------------------------------------------------------------------------
-
 Bone* Importer::BuildSkeleton(aiNode& ainode, Bone* parent)
 {
     Bone* bone = nullptr;
@@ -274,8 +322,18 @@ Bone* Importer::BuildSkeleton(aiNode& ainode, Bone* parent)
     {
         // Create a new bone
         bone = new Bone();
-        bone->name = ainode.mName.C_Str();
         bone->index = mBones.size(); // append
+
+        // Hack: If the bone has no name, assign temporary name
+        if (ainode.mName.length > 0)
+        {
+            bone->name = ainode.mName.C_Str();
+        }
+        else
+        {
+            // TODO: use a GUID as temp name since this could be taken
+            bone->name = "Unkown" + S(bone->index);
+        }
 
         // Add the new bone to our array of bones
         mBones.push_back(bone);
@@ -287,6 +345,7 @@ Bone* Importer::BuildSkeleton(aiNode& ainode, Bone* parent)
         bone = mBones[iter->second];
     }
 
+    // TODO: Set offset transform?
     bone->transform = *(Math::Matrix*)&ainode.mTransformation;
     bone->parent = parent;
     bone->parentIndex = (parent) ? parent->index : NO_PARENT;
@@ -303,4 +362,25 @@ Bone* Importer::BuildSkeleton(aiNode& ainode, Bone* parent)
         bone->childrenIndices.push_back(child->index); // Used for loading
     }
     return bone;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+Math::Vector3 Importer::ToV3(const aiVector3D& v)
+{
+    return Math::Vector3(v.x, v.y, v.z);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+Math::Quaternion Importer::ToQ(const aiQuaternion& q)
+{
+    return Math::Quaternion(q.x, q.y, q.z, q.w);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+Color Importer::ToColor(const aiColor4D& c)
+{
+    return Color(c.r, c.g, c.b, c.a);
 }
