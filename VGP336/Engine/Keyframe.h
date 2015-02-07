@@ -23,6 +23,7 @@ class Keyframe
 public:
     Keyframe();
 
+    // Not stored in a matrix since we may need to slerp them
     Math::Vector3 mTranslation;
     Math::Quaternion mRotation;
     Math::Vector3 mScale;

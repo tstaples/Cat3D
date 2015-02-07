@@ -143,6 +143,18 @@ inline void SafeRelease(T*& ptr)
 //----------------------------------------------------------------------------------------------------
 
 template<typename T>
+inline void SafeDeleteSTL(T& container)
+{
+    for (auto it : container)
+    {
+        delete it;
+    }
+    container.clear();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+template<typename T>
 std::string S(const T& tostr)
 {
     return std::to_string(tostr);

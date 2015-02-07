@@ -1,11 +1,14 @@
 #include "Precompiled.h"
+
 #include "Model.h"
+
+#include "AnimationClip.h"
+#include "EngineMath.h"
+#include "GraphicsSystem.h"
 #include "Mesh.h"
 #include "MeshBuffer.h"
 #include "MeshRenderer.h"
 #include "Texture.h"
-#include "GraphicsSystem.h"
-#include "EngineMath.h"
 
 void Model::Unload()
 {
@@ -32,6 +35,13 @@ void Model::Unload()
     {
         delete bone;
     }
+
+    for (auto animation : mAnimations)
+    {
+        delete animation;
+    }
+    mAnimations.clear();
+
     mBones.clear();
     mBoneIndexMap.clear();
     mpRoot = nullptr;

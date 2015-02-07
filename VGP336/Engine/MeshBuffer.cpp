@@ -12,7 +12,6 @@
 #include "MeshBuffer.h"
 
 #include "GraphicsSystem.h"
-#include "Mesh.h"
 #include "MeshUtil.h"
 
 //====================================================================================================
@@ -39,7 +38,7 @@ MeshBuffer::~MeshBuffer()
 
 //----------------------------------------------------------------------------------------------------
 
-void MeshBuffer::Initialize(GraphicsSystem& gs, u32 vertexFormat, const void* vertexData, u32 numVertices)
+void MeshBuffer::Initialize(GraphicsSystem& gs, u32 vertexFormat, const void* vertexData, u32 numVertices, bool dynamic)
 {
 	mVertexFormat = vertexFormat;
 	mVertexCount = numVertices;
@@ -48,10 +47,10 @@ void MeshBuffer::Initialize(GraphicsSystem& gs, u32 vertexFormat, const void* ve
 
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
-	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.Usage = (dynamic) ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = mVertexSize * mVertexCount;
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.CPUAccessFlags = 0;
+	bd.CPUAccessFlags = (dynamic) ? D3D11_CPU_ACCESS_WRITE : 0;
 	bd.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA initData;
@@ -63,9 +62,9 @@ void MeshBuffer::Initialize(GraphicsSystem& gs, u32 vertexFormat, const void* ve
 
 //----------------------------------------------------------------------------------------------------
 
-void MeshBuffer::Initialize(GraphicsSystem& gs, u32 vertexFormat, const void* vertexData, u32 numVertices, const u16* indexData, u32 numIndices)
+void MeshBuffer::Initialize(GraphicsSystem& gs, u32 vertexFormat, const void* vertexData, u32 numVertices, const u16* indexData, u32 numIndices, bool dynamic)
 {
-	Initialize(gs, vertexFormat, vertexData, numVertices);
+	Initialize(gs, vertexFormat, vertexData, numVertices, dynamic);
 	
 	mIndexCount = numIndices;
 
@@ -86,9 +85,9 @@ void MeshBuffer::Initialize(GraphicsSystem& gs, u32 vertexFormat, const void* ve
 
 //----------------------------------------------------------------------------------------------------
 
-void MeshBuffer::Initialize(GraphicsSystem& gs,u32 vertexFormat, const Mesh& mesh)
+void MeshBuffer::Initialize(GraphicsSystem& gs,u32 vertexFormat, const Mesh& mesh, bool dynamic)
 {
-	Initialize(gs, vertexFormat, mesh.GetVertices(), mesh.GetVertexCount(), mesh.GetIndices(), mesh.GetIndexCount());
+	Initialize(gs, vertexFormat, mesh.GetVertices(), mesh.GetVertexCount(), mesh.GetIndices(), mesh.GetIndexCount(), dynamic);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -97,6 +96,17 @@ void MeshBuffer::Terminate()
 {
 	SafeRelease(mpVertexBuffer);
 	SafeRelease(mpIndexBuffer);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void MeshBuffer::UpdateBuffer(GraphicsSystem& gs, const Mesh::Vertex* vertices, u32 vertexCount)
+{
+    // Copy the vertex buffer to the vram
+    D3D11_MAPPED_SUBRESOURCE resource;
+    gs.GetContext()->Map(mpVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource); // Lock
+    memcpy(resource.pData, vertices, sizeof(Mesh::Vertex) * vertexCount);
+    gs.GetContext()->Unmap(mpVertexBuffer, 0);  // Unlock
 }
 
 //----------------------------------------------------------------------------------------------------

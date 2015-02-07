@@ -1,65 +1,60 @@
-#ifndef INCLUDED_ENGINE_MODEL_H
-#define INCLUDED_ENGINE_MODEL_H
+#ifndef INCLUDED_ENGINE_ANIMATIONCONTROLLER_H
+#define INCLUDED_ENGINE_ANIMATIONCONTROLLER_H
 
 //====================================================================================================
-// Filename:	Model.h
+// Filename:	AnimationController.h
 // Created by:	Tyler Staples
-// Description: Class for a Model.
+// Description:	Class for controller animation playback.
 //====================================================================================================
 
 //====================================================================================================
 // Includes
 //====================================================================================================
 
-#include "Common.h"
-#include "Resource.h"
+#include "EngineMath.h"
 
 //====================================================================================================
 // Forward Declarations
 //====================================================================================================
 
-namespace Math
-{
-    struct Matrix;
-}
 struct Bone;
 class AnimationClip;
-class Mesh;
-class MeshBuffer;
-class MeshRenderer;
-class Texture;
-class GraphicsSystem;
-class SerialReader;
+class Model;
 
 //====================================================================================================
 // Class Declarations
 //====================================================================================================
 
-class Model : public Resource
+class AnimationController
 {
+    typedef std::vector<Math::Matrix> Transforms;
 public:
-    Model() {}
-    ~Model() {}
+    AnimationController();
+    ~AnimationController();
 
-    void Unload();
+    void Initialize(Model& model);
 
-    // Renders this model at the specified transform
-    void Render(MeshRenderer& renderer, const Math::Matrix& transform) const;
+    void StartClip(AnimationClip& clip, bool loop);
+
+    const Transforms& GetFinalTransforms() const { return mFinalTransforms; }
 
 private:
-    NONCOPYABLE(Model)
+    void GetBindPose(Bone* bone);
 
-public:
-// TODO: Friend assetloader and make these private
-	std::vector<Mesh*> mMeshes;
+private:
+    AnimationClip* mpCurrentAnimationClip;
 
-    Bone* mpRoot; // weak ptr
-    std::vector<Bone*> mBones;
-    std::map<std::string, u32> mBoneIndexMap; // Bone name, index
-    std::vector<AnimationClip*> mAnimations;
+    Transforms mToRootTransforms;
+    Transforms mFinalTransforms;
+    Math::Matrix mInverseRootTransform;
 
-	std::vector<MeshBuffer*> mMeshBuffers;
-    std::vector<Texture*> mTextures;
+    Model* mpModel;
+
+    f32 mCurrentTime;   // MS
+    u32 mCurrentFrame;
+
+    bool mIsPlaying;
+    bool mIsLooping;
 };
 
-#endif // #ifndef INCLUDED_ENGINE_MODEL_H
+#endif // #ifndef INCLUDED_ENGINE_ANIMATIONCONTROLLER_H

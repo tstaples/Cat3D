@@ -32,7 +32,10 @@
 #include "RepositoryTypes.h"
 
 // Graphics headers
+#include "AnimationClip.h"
+#include "AnimationController.h"
 #include "Bone.h"
+#include "BoneAnimation.h"
 #include "Camera.h"
 #include "Color.h"
 #include "ConstantBuffer.h"

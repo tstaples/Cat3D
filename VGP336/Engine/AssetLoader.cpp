@@ -245,6 +245,11 @@ void AssetLoader::LinkBones(Model& model)
             // Link parent pointer to element at parentIndex
             bone->parent = bones[parentIndex];
         }
+        else
+        {
+            // No parent; this bone is the root
+            model.mpRoot = bone;
+        }
 
         // Expand children array to number of children
         const u32 numChildren = bone->childrenIndices.size();

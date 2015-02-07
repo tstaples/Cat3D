@@ -1,10 +1,10 @@
-#ifndef INCLUDED_ENGINE_BONEANIMATION_H
-#define INCLUDED_ENGINE_BONEANIMATION_H
+#ifndef INCLUDED_ENGINE_ANIMATIONCLIP_H
+#define INCLUDED_ENGINE_ANIMATIONCLIP_H
 
 //====================================================================================================
-// Filename:	BoneAnimation.h
+// Filename:	AnimationClip.h
 // Created by:	Tyler Staples
-// Description:	Class for holding animation keyframes for a bone.
+// Description:	Class representing an animation clip.
 //====================================================================================================
 
 //====================================================================================================
@@ -17,22 +17,27 @@
 // Forward Declarations
 //====================================================================================================
 
-struct Bone;
+class BoneAnimation;
 
 //====================================================================================================
 // Class Declarations
 //====================================================================================================
 
 // AKA AnimationTrack
-class BoneAnimation
+class AnimationClip
 {
 public:
-    BoneAnimation();
-    ~BoneAnimation();
+    AnimationClip();
+    ~AnimationClip();
 
-    std::vector<Keyframe*> mKeyframes;
-    Bone* mpBone;
-    u32 mBoneIndex;
+    std::string mName;
+
+    // Padded to number of bones
+    std::vector<BoneAnimation*> mBoneAnimations;
+
+    f32 mDuration;          // Length (time) of animation
+    f32 mTicksPerSecond;
+    u32 mKeyframeCount;
 };
 
-#endif // #ifndef INCLUDED_ENGINE_BONEANIMATION_H
+#endif // #ifndef INCLUDED_ENGINE_ANIMATIONCLIP_H
