@@ -15,12 +15,12 @@ public:
         // Empty
     }
 
-    inline void AddRef()
+    inline void AddRef() const
     {
         ++mRefCount;
     }
 
-    inline void Release()
+    inline void Release() const
     {
         // Prevent refcount from wrapping back to max int
         ASSERT(mRefCount > 0, "[Resource] Cannot release resource with 0 refs");
@@ -39,7 +39,8 @@ public:
 
 private:
     // TODO: make thread safe (atomic)
-    u32 mRefCount;
+    // Allow AddRef and Release to be conceptually const
+    mutable u32 mRefCount;
 };
 
 #endif // #ifndef INCLUDED_ENGINE_RESOURCE_H

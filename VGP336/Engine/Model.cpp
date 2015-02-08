@@ -3,6 +3,7 @@
 #include "Model.h"
 
 #include "AnimationClip.h"
+#include "Bone.h"
 #include "EngineMath.h"
 #include "GraphicsSystem.h"
 #include "Mesh.h"
@@ -35,6 +36,7 @@ void Model::Unload()
     {
         delete bone;
     }
+    mBones.clear();
 
     for (auto animation : mAnimations)
     {
@@ -42,7 +44,6 @@ void Model::Unload()
     }
     mAnimations.clear();
 
-    mBones.clear();
     mBoneIndexMap.clear();
     mpRoot = nullptr;
 }

@@ -10,6 +10,7 @@
 #include "Precompiled.h"
 
 #include "AnimationClip.h"
+#include "BoneAnimation.h"
 
 AnimationClip::AnimationClip()
 {
@@ -17,10 +18,9 @@ AnimationClip::AnimationClip()
 
 AnimationClip::~AnimationClip()
 {
-    SafeDeleteSTL(mBoneAnimations);
-    /*for (auto boneAnimation : mBoneAnimations)
+    for (auto boneAnimation : mBoneAnimations)
     {
         delete boneAnimation;
     }
-    mBoneAnimations.clear();*/
+    mBoneAnimations.clear();
 }

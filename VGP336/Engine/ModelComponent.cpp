@@ -2,6 +2,7 @@
 #include "ModelComponent.h"
 
 ModelComponent::ModelComponent()
+    : mModel(nullptr)
 {
 }
 
@@ -9,4 +10,5 @@ ModelComponent::ModelComponent()
 
 ModelComponent::~ModelComponent()
 {
+    SafeRelease(mModel);
 }

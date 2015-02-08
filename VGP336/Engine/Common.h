@@ -143,13 +143,13 @@ inline void SafeRelease(T*& ptr)
 //----------------------------------------------------------------------------------------------------
 
 template<typename T>
-inline void SafeDeleteSTL(T& container)
+inline void SafeDeleteVector(std::vector<T>& v)
 {
-    for (auto it : container)
+    for (auto it : v)
     {
         delete it;
     }
-    container.clear();
+    v.clear();
 }
 
 //----------------------------------------------------------------------------------------------------

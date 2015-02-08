@@ -43,9 +43,12 @@ public:
     // ID is a u16
     // @param capacity: capacity of mData
     Repository(Meta::Type type, u16 capacity);
+    ~Repository();
 
     ID Allocate();
     void Free(ID& id);
+
+    void Flush();
 
     // Assumes the item does exist. Else assert
     T& GetItem(ID id);
@@ -58,8 +61,12 @@ public:
 private:
     bool IsValid(ID id) const;
 
-    std::vector<T> mData;           // The actual data
-    std::vector<u8> mInstanceCount; // How many times a slot has been used
+    T* mData;                       // The actual data
+    u8* mInstanceCount;             // How many times a slot has been used
+
+    u16 mSize;
+    u16 mCapacity;
+
     std::vector<u16> mFreeSlots;    // If empty, new items must be added to end
 };
 
