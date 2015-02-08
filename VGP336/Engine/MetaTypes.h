@@ -42,6 +42,18 @@ static const u64 Hash[] =
 #undef DEFTYPE
 };
 
+inline Type GetEnumValue(const char* str)
+{
+    for (u32 i=0; i < TypeMax; ++i)
+    {
+        if (strcmp(str, name[i]) == 0)
+        {
+            return Type(i);
+        }
+    }
+    return TypeMax;
+}
+
 } // namespace Meta
 
 #endif // #ifndef INCLUDED_ENGINE_METATYPES_H

@@ -1,20 +1,35 @@
 template<typename T>
 Repository<T>::Repository(Meta::Type type, u16 capacity)
-: RepositoryBase(type)
+    : RepositoryBase(type)
+    , mCapacity(capacity)
+    , mSize(0)
+    , mData(nullptr)
+    , mInstanceCount(nullptr)
 {
-    mData.reserve(capacity);
-    mInstanceCount.resize(capacity, 0);
+    mData = new T[capacity];
+    mInstanceCount = new u8[capacity];
+    memset(mInstanceCount, 0, sizeof(mInstanceCount));
     mFreeSlots.reserve(capacity);
+}
+//----------------------------------------------------------------------------------------------------
+
+template<typename T>
+Repository<T>::~Repository()
+{
+    SafeDeleteArray(mData);
+    SafeDeleteArray(mInstanceCount);
+    mSize = 0;
+    mCapacity = 0;
 }
 //----------------------------------------------------------------------------------------------------
 
 template<typename T>
 ID Repository<T>::Allocate()
 {
-    ASSERT(!mFreeSlots.size() || mData.size() < mData.capacity(), "[Repository(type=%u)] Failed to allocate.", mType);
+    ASSERT(!mFreeSlots.size() || mSize < mCapacity, "[Repository(type=%u)] Failed to allocate.", mType);
 
     // Additional check to prevent crashing during release
-    if (mFreeSlots.size() && mData.size() >= mData.capacity())
+    if (mFreeSlots.size() && mSize >= mCapacity)
     {
         // Return an invalid id
         return ID();
@@ -30,9 +45,14 @@ ID Repository<T>::Allocate()
     else
     {
         // No free slots; append
-        index = (u16)mData.size();
-        mData.push_back(T());
+        index = mSize;
+        ++mSize;
     }
+
+    // Note: placement new skips allocation if it's already allocated
+    // and just does the construction part.
+    new (&mData[index]) T();
+
     return ID(GetType(), mInstanceCount[index], index);
 }
 //----------------------------------------------------------------------------------------------------
@@ -44,8 +64,8 @@ void Repository<T>::Free(ID& id)
     {
         const u16 index = id.GetIndex();
 
-        // Free the data by overwriting it with a default object
-        mData[index] = T();
+        // Free the slot
+        mData[index].~T();
         ++mInstanceCount[index]; // Invalidate all existing ID's
         mFreeSlots.push_back(index);
 
@@ -56,10 +76,26 @@ void Repository<T>::Free(ID& id)
 //----------------------------------------------------------------------------------------------------
 
 template<typename T>
+void Repository<T>::Flush()
+{
+    const u32 count = mSize;
+    for (u32 i=0; i < count; ++i)
+    {
+        // Explicitly call the destructor of the data objects
+        mData[i].~T();
+
+        // Invalidate the ID to this object by offsetting it
+        ++mInstanceCount[i];
+    }
+    mFreeSlots.clear();
+}
+//----------------------------------------------------------------------------------------------------
+
+template<typename T>
 T& Repository<T>::GetItem(ID id)
 {
     ASSERT(IsValid(id), "[Repository(type = %u)] Failed to get item with id(%u/%u/%u).", mType, mType, id.GetInstance(), id.GetIndex());
-    return mData.at(id.GetIndex());
+    return mData[id.GetIndex()];
 }
 //----------------------------------------------------------------------------------------------------
 
@@ -67,7 +103,7 @@ template<typename T>
 const T& Repository<T>::GetItem(ID id) const
 {
     ASSERT(IsValid(id), "[Repository(type = %u)] Failed to get item with id(%u/%u/%u).", mType, mType, id.GetInstance(), id.GetIndex());
-    return mData.at(id.GetIndex());
+    return mData[id.GetIndex()];
 }
 //----------------------------------------------------------------------------------------------------
 
@@ -77,7 +113,7 @@ T* Repository<T>::FindItem(ID id)
     T* item = nullptr;
     if (IsValid(id))
     {
-        item = mData.at(id.GetIndex());
+        item = mData[id.GetIndex()];
     }
     return item;
 }
@@ -89,7 +125,7 @@ const T* Repository<T>::FindItem(ID id) const
     const T* item = nullptr;
     if (IsValid(id))
     {
-        item = mData.at(id.GetIndex());
+        item = mData[id.GetIndex()];
     }
     return item;
 }
@@ -104,6 +140,6 @@ bool Repository<T>::IsValid(ID id) const
     const u16 index = id.GetIndex();
 
     return (type == GetType()
-        && (index < mData.size())
-        && (instance == mInstanceCount.at(index)));
+        && (index < mSize)
+        && (instance == mInstanceCount[index]));
 }

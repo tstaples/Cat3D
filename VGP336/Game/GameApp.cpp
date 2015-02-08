@@ -1,5 +1,21 @@
 #include "GameApp.h"
 
+/* TODO
+Level data file
+- Holds instance specific data
+{
+    "Level" : [
+        "GameObjects" : [
+            "Template file" : "../Data/soldier.tmpl",
+            "Template file" : "../Data/urmum.tmpl",
+        ],
+        "Transforms" : [
+            { "x" : "0", "y" : "0", "z" : "0" },
+            { "x" : "0", "y" : "0", "z" : "0" }
+        ]
+    ]
+*/
+
 GameApp::GameApp()
     : mGameObjectRepo(Meta::GameObjectType, 1)
     , mTransformRepo(Meta::TransformComponentType, 1)
@@ -38,12 +54,17 @@ void GameApp::OnInitialize(u32 width, u32 height)
 
 void GameApp::OnTerminate()
 {
-	mWindow.Terminate();
-	mGraphicsSystem.Terminate();
-	SimpleDraw::Terminate();
-	mInputSystem.Terminate();
-    mRenderService.Terminate();
+    mTransformRepo.Flush();
+    mModelRepo.Flush();
+    mGameObjectRepo.Flush();
+
     mModelManager.Terminate();
+    mRenderService.Terminate();
+
+    SimpleDraw::Terminate();
+	mGraphicsSystem.Terminate();
+	mInputSystem.Terminate();
+	mWindow.Terminate();
 }
 
 bool GameApp::OnInput(const InputEvent& evt)
@@ -96,3 +117,40 @@ void GameApp::OnUpdate()
 
 	mGraphicsSystem.EndRender();
 }
+
+/*
+class StackAllocator
+{
+public:
+    template <typename T>
+    T New()
+    {
+        u8* ptr = buffer + offset;
+        new (ptr) T();
+        offset += sizeof(T);
+        return ptr;
+    }
+
+    template <typename T>
+    T NewArray(u32 size)
+    {
+        u8* ptr = buffer + offset;
+
+        // Write the size of the array in the first slot
+        size_t allocSize = sizeof(T) * size;
+        (*ptr) = allocSize;
+
+        offset += size;
+        for (u32 i=0; i < size; ++i)
+        {
+            // Placement new on each slot
+            new (ptr++) T();
+        }
+        return ptr;
+    }
+
+private:
+    u8 buffer[1024 * 1024];
+    u32 offset;
+};
+*/

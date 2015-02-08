@@ -178,6 +178,9 @@
     <ClCompile Include="AnimationController.cpp">
       <Filter>Graphics\Animations</Filter>
     </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InputEvent.h">
@@ -362,6 +365,9 @@
     </ClInclude>
     <ClInclude Include="AnimationController.h">
       <Filter>Graphics\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>GameObject\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
