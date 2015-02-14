@@ -42,11 +42,11 @@ static const u64 Hash[] =
 #undef DEFTYPE
 };
 
-inline Type GetEnumValue(const char* str)
+inline Type GetEnumValue(const std::string& str)
 {
     for (u32 i=0; i < TypeMax; ++i)
     {
-        if (strcmp(str, name[i]) == 0)
+        if (str.compare(name[i]) == 0)
         {
             return Type(i);
         }

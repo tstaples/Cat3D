@@ -11,13 +11,14 @@
 // Includes
 //====================================================================================================
 
+#include "Component.h"
 #include "EngineMath.h"
 
 //====================================================================================================
 // Class Declarations
 //====================================================================================================
 
-class TransformComponent
+class TransformComponent : public Component
 {
 public:
     TransformComponent();
@@ -28,6 +29,8 @@ public:
 
     Math::Matrix& GetTransform()                { return mTransform; }
     const Math::Matrix& GetTransform() const    { return mTransform; }
+
+    virtual void Load(Json::Value& properties);
 
 private:
     Math::Matrix mTransform;

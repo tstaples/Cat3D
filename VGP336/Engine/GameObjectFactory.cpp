@@ -32,7 +32,6 @@ GameObjectFactory::~GameObjectFactory()
 // TODO: Package all object data as binary during build.
 ID GameObjectFactory::Create(const char* templateName, const Math::Vector3& startPosition)
 {
-    std::vector<std::string> componentNames;
     std::ifstream data("../Data/GameObjects/Soldier.json");
 
     Json::Value root;
@@ -43,7 +42,23 @@ ID GameObjectFactory::Create(const char* templateName, const Math::Vector3& star
         for (u32 i=0; i < components.size(); ++i)
         {
             std::string componentTypeStr = components[i].get("Type", "Model").asString();
-            Meta::Type componentType = Meta::GetEnumValue(componentTypeStr.c_str());
+            Meta::Type componentType = Meta::GetEnumValue(componentTypeStr);
+            
+            ID componentID;
+            switch (componentType)
+            {
+            case Meta::GameObjectType:
+                break;
+            case Meta::ModelComponentType:
+                componentID = mpModelRepository.Allocate();
+                ModelComponent& modelComponent = mpModelRepository.GetItem(componentID);
+                modelComponent.Load(components[i].get("Properties", ""));
+                break;
+            case Meta::TransformComponentType:
+                break;
+            case Meta::RenderServiceType:
+                break;
+            }
         }
     }
     else
