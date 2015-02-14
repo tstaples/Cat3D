@@ -267,9 +267,6 @@
     <ClInclude Include="FileBuffer.h">
       <Filter>FileIO</Filter>
     </ClInclude>
-    <ClInclude Include="Serializer.h">
-      <Filter>FileIO</Filter>
-    </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -369,6 +366,12 @@
     <ClInclude Include="Component.h">
       <Filter>GameObject\Components</Filter>
     </ClInclude>
+    <ClInclude Include="SerialWriter.h">
+      <Filter>FileIO</Filter>
+    </ClInclude>
+    <ClInclude Include="SerialReader.h">
+      <Filter>FileIO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Vector3.inl">
@@ -397,6 +400,12 @@
     </None>
     <None Include="Service.inl">
       <Filter>GameObject\Services</Filter>
+    </None>
+    <None Include="SerialWriter.inl">
+      <Filter>FileIO</Filter>
+    </None>
+    <None Include="SerialReader.inl">
+      <Filter>FileIO</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -79,5 +79,7 @@
 #include "FileBuffer.h"
 #include "IO.h"
 #include "Path.h"
+#include "SerialReader.h"
+#include "SerialWriter.h"
 
 #endif // #ifndef INCLUDED_ENGINE_H

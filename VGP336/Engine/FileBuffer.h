@@ -1,8 +1,6 @@
 #ifndef INCLUDED_ENGINE_FILEBUFFER_H
 #define INCLUDED_ENGINE_FILEBUFFER_H
 
-#include "Serializer.h"
-
 class FileBuffer
 {
 public:
@@ -76,7 +74,8 @@ void FileBuffer::WriteArray(const T* data, u32 bytes)
 template <typename T>
 void FileBuffer::WriteVector(const std::vector<T>& data)
 {
-    for (auto it : data)
+    std::vector<T>::const_iterator it = data.begin();
+    for (it; it != data.end(); ++it)
     {
         Write(it);
     }

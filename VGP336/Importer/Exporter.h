@@ -43,7 +43,7 @@ public:
                 const Animations& animations);
 
 private:
-    size_t CalculateSize(const Meshes& meshes, const StringVec& texPaths, const BoneVec& bones);
+    size_t CalculateSize(const Meshes& meshes, const StringVec& texPaths, const BoneVec& bones, const Animations& animations);
 
     void ExportMeshes(const Meshes& meshes, FileBuffer& buffer);
     void ExportTextures(const StringVec& texPaths, FileBuffer& buffer);

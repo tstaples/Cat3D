@@ -45,6 +45,7 @@ private:
     void LoadBones(SerialReader& reader, Model& model);
     void LoadBoneWeights(SerialReader& reader, Model& model);
     void LinkBones(Model& model);
+    void LoadAnimations(SerialReader& reader, Model& model);
 
 private:
     GraphicsSystem* mpGraphicsSystem;

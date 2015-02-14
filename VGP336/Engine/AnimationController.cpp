@@ -50,11 +50,11 @@ void AnimationController::Initialize(Model& model)
 void AnimationController::StartClip(AnimationClip& clip, bool loop)
 {
     // Reset values
-    mpCurrentAnimationClip = &clip;
-    mCurrentTime = 0.0f;
-    mCurrentFrame = 0;
-    mIsPlaying = true;
-    mIsLooping = loop;
+    mpCurrentAnimationClip  = &clip;
+    mCurrentTime            = 0.0f;
+    mCurrentFrame           = 0;
+    mIsPlaying              = true;
+    mIsLooping              = loop;
 
     // Calculate and store inverse root transform
     mInverseRootTransform = Math::Inverse(mpModel->mpRoot->transform);
@@ -73,8 +73,10 @@ void AnimationController::GetBindPose(Bone* bone)
         toRootTransform = toParentTransform * mToRootTransforms[bone->parent->index];
     }
 
-    mToRootTransforms[bone->index] = toRootTransform;
-    mFinalTransforms[bone->index] = bone->offsetTransform * toRootTransform * mInverseRootTransform;
+    mToRootTransforms[bone->index]  = toRootTransform;
+    mFinalTransforms[bone->index]   = bone->offsetTransform     // Bone space
+                                    * toRootTransform           // Root space
+                                    * mInverseRootTransform;    // Worth space
 
     for (Bone* child : bone->children)
     {

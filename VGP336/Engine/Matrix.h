@@ -38,6 +38,8 @@ struct Matrix
 		, _41(_41), _42(_42), _43(_43), _44(_44)
 	{}
 	
+    Vector3 GetTranslation() const;
+
 	static Matrix Identity();
 	static Matrix Translation(f32 x, f32 y, f32 z);
 	static Matrix Translation(const Vector3& v);
@@ -56,6 +58,8 @@ struct Matrix
 	Matrix operator*(const Matrix& rhs) const;
 	Matrix operator*(f32 s) const;
 	Matrix operator/(f32 s) const;
+
+	Matrix operator+=(const Matrix& rhs) const;
 
     friend bool operator==(const Matrix& lhs, const Matrix& rhs);
     friend bool operator!=(const Matrix& lhs, const Matrix& rhs);

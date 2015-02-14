@@ -25,9 +25,10 @@ class Model;
 // Class Declarations
 //====================================================================================================
 
+typedef std::vector<Math::Matrix> Transforms;
+
 class AnimationController
 {
-    typedef std::vector<Math::Matrix> Transforms;
 public:
     AnimationController();
     ~AnimationController();
@@ -36,7 +37,8 @@ public:
 
     void StartClip(AnimationClip& clip, bool loop);
 
-    const Transforms& GetFinalTransforms() const { return mFinalTransforms; }
+    const Transforms& GetFinalTransforms() const    { return mFinalTransforms; }
+    const Transforms& ToRootTransforms() const      { return mToRootTransforms; }
 
 private:
     void GetBindPose(Bone* bone);
@@ -44,7 +46,7 @@ private:
 private:
     AnimationClip* mpCurrentAnimationClip;
 
-    Transforms mToRootTransforms;
+    Transforms mToRootTransforms;   // Moves bone into root's local space, not root position
     Transforms mFinalTransforms;
     Math::Matrix mInverseRootTransform;
 

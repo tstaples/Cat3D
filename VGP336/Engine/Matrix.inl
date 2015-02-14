@@ -10,6 +10,13 @@
 namespace Math
 {
 
+inline Vector3 Matrix::GetTranslation() const
+{
+    return Vector3(_41, _42, _43);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 inline Matrix Matrix::Identity()
 {
 	return Matrix();
@@ -203,6 +210,13 @@ inline Matrix Matrix::operator/(f32 s) const
 				  _21 * inv, _22 * inv, _23 * inv, _24 * inv,
 				  _31 * inv, _32 * inv, _33 * inv, _34 * inv,
 				  _41 * inv, _42 * inv, _43 * inv, _44 * inv);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+inline Matrix Matrix::operator+=(const Matrix& rhs) const
+{
+    return (*this + rhs);
 }
 
 //----------------------------------------------------------------------------------------------------

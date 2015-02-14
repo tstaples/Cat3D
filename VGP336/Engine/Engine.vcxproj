@@ -113,7 +113,8 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Sampler.h" />
-    <ClInclude Include="Serializer.h" />
+    <ClInclude Include="SerialReader.h" />
+    <ClInclude Include="SerialWriter.h" />
     <ClInclude Include="Service.h" />
     <ClInclude Include="SimpleDraw.h" />
     <ClInclude Include="SpriteRenderer.h" />
@@ -135,6 +136,8 @@
     <None Include="Quaternion.inl" />
     <None Include="Repository.inl" />
     <None Include="ResourceManager.inl" />
+    <None Include="SerialReader.inl" />
+    <None Include="SerialWriter.inl" />
     <None Include="Service.inl" />
     <None Include="Vector3.inl" />
   </ItemGroup>

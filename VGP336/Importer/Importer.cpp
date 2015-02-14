@@ -345,8 +345,8 @@ Bone* Importer::BuildSkeleton(aiNode& ainode, Bone* parent)
         bone = mBones[iter->second];
     }
 
-    // TODO: Set offset transform?
-    bone->transform = *(Math::Matrix*)&ainode.mTransformation;
+    // Assimp stores matrices in right-hand format
+    bone->transform = *(Math::Matrix*)&ainode.mTransformation.Transpose();
     bone->parent = parent;
     bone->parentIndex = (parent) ? parent->index : NO_PARENT;
 

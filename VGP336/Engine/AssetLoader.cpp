@@ -1,6 +1,8 @@
 #include "Precompiled.h"
 #include "AssetLoader.h"
 
+#include "AnimationClip.h"
+#include "BoneAnimation.h"
 #include "GraphicsSystem.h"
 #include "Model.h"
 #include "Mesh.h"
@@ -9,9 +11,10 @@
 #include "TextureManager.h"
 #include "Texture.h"
 #include "IO.h"
-#include "FileBuffer.h"
-#include "Serializer.h"
 #include "Path.h"
+#include "FileBuffer.h"
+#include "SerialReader.h"
+#include "SerialWriter.h"
 
 #include "Bone.h"
 
@@ -19,6 +22,28 @@ struct Header
 {
     u32 signature;
     u32 version;
+
+    Header() {}
+    Header(u8 majver, u8 minver, const char* sig)
+    {
+        version = ((majver << 16) | ('.' << 8) | minver);
+        signature = ( (sig[3] << 24) 
+                    | (sig[2] << 16) 
+                    | (sig[1] << 8) 
+                    | (sig[0]));
+    }
+
+    inline std::pair<u8, u8> GetVersion() const
+    {
+        return GetVersion(version);
+    }
+
+    inline static std::pair<u8, u8> GetVersion(u32 v)
+    {
+        u8 maj = (v >> 16);
+        u8 min = (v >> 24);
+        return std::make_pair(maj, min);
+    }
 };
 
 AssetLoader::AssetLoader()
@@ -73,10 +98,7 @@ bool AssetLoader::LoadCatmFile(const wchar_t* pFilename, Model& model)
         {
             return false;
         }
-        
-        // TODO: eventually do something with version number.
-        // Skip past it for now
-        sin.Seek(sizeof(u32), SerialReader::Current);
+        const u32 version = sin.Read<u32>();
 
         // Load the mesh data into the model
         LoadMeshes(sin, model);
@@ -92,6 +114,12 @@ bool AssetLoader::LoadCatmFile(const wchar_t* pFilename, Model& model)
         LoadBones(sin, model);
         LoadBoneWeights(sin, model);
         LinkBones(model);
+
+        // TODO: fix version
+        //if (Header::GetVersion(version).second == 1)
+        //{
+        LoadAnimations(sin, model);
+        //
     }
     return false;
 }
@@ -124,7 +152,7 @@ void AssetLoader::LoadMeshes(SerialReader& reader, Model& model)
 
         // Create the mesh buffer and add it to the model
 		MeshBuffer* meshBuffer = new MeshBuffer();
-		meshBuffer->Initialize(*mpGraphicsSystem, Mesh::GetVertexFormat(), *mesh);
+		meshBuffer->Initialize(*mpGraphicsSystem, Mesh::GetVertexFormat(), *mesh, true);
 		model.mMeshBuffers.push_back(meshBuffer);
     }
 }
@@ -261,5 +289,64 @@ void AssetLoader::LinkBones(Model& model)
             const u32 childIndex = bone->childrenIndices[i];
             bone->children[i] = bones[childIndex];
         }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------
+
+/*
+ *  + Animations:
+ *  | + Num animation clips     (4)
+ *  | + Animation Clip
+ *  | | + Length encoded name   (4 + c)
+ *  | | + Duration              (4)
+ *  | | + TicksPerSecond        (4)
+ *  | | + KeyFrameCount         (4)
+ *  | | + Num bone animations   (4)
+ *  | | + BoneAnimation
+ *  | | | + Bone index          (4)
+ *  | | | + Num keyframes       (4)
+ *  | | | + Keyframes
+ *  | | | | + Translation       (12)
+ *  | | | | + Rotation          (16)
+ *  | | | | + Scale             (12)
+ *  | | | | + Time              (4)
+*/
+
+void AssetLoader::LoadAnimations(SerialReader& reader, Model& model)
+{
+    // Get the number of animation clips
+    const u32 numAnimClips = reader.Read<u32>();
+    model.mAnimations.resize(numAnimClips);
+
+    for (u32 i=0; i < numAnimClips; ++i)
+    {
+        // Read in the clip data
+        AnimationClip* animClip = new AnimationClip();
+        animClip->mName              = reader.ReadLengthEncodedString();
+        animClip->mDuration          = reader.Read<f32>();
+        animClip->mTicksPerSecond    = reader.Read<f32>();
+
+        // Get the number of bone animations and resize the array
+        const u32 numBoneAnimations = reader.Read<u32>();
+        animClip->mBoneAnimations.resize(numBoneAnimations);
+        for (u32 j=0; j < numBoneAnimations; ++j)
+        {
+            BoneAnimation* boneAnim = new BoneAnimation();
+            boneAnim->mBoneIndex = reader.Read<u32>();
+
+            // Get the number of keyframes and resize the array
+            const u32 numKeyframes = reader.Read<u32>();
+            boneAnim->mKeyframes.resize(numKeyframes);
+            //reader.ReadVector(boneAnim->mKeyframes, numKeyframes);
+            for (u32 k=0; k < numKeyframes; ++k)
+            {
+                // Read in the keyframe
+                boneAnim->mKeyframes[k] = new Keyframe();
+                *boneAnim->mKeyframes[k] = reader.Read<Keyframe>();
+            }
+            animClip->mBoneAnimations[j] = boneAnim;
+        }
+        model.mAnimations[i] = animClip;
     }
 }

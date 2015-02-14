@@ -4,6 +4,9 @@
 #include "FileBuffer.h"
 #include "IO.h"
 
+#define VERSION_MAJOR 1
+#define VERSION_MINOR 1
+
 /* === Format Guidelines ===
  * Layout:
  *	+ Header                    (8)
@@ -34,7 +37,8 @@
  *  |    Num bone weights       (4)
  *  |    Num weights for this vert (numVerts * 4)
  *  |    Weights... (4 * Num weights for this vert)
-
+ *
+ *  VERSION 1.1
  *  + Animations:
  *  | + Num animation clips     (4)
  *  | + Animation Clip
@@ -77,13 +81,13 @@ bool Exporter::Export(const char* outpath,
                       const Animations& animations)
 {
     // Get total size of all mesh data
-    size_t size = CalculateSize(meshes, texPaths, bones);
+    size_t size = CalculateSize(meshes, texPaths, bones, animations);
 
     // Init our buffer
     FileBuffer buffer(size);
 
     // Write header (TODO: read version from config)
-    Header header(1, 0, "CATM");
+    Header header(VERSION_MAJOR, VERSION_MINOR, "CATM");
     buffer.Write(header);
 
     // Export all the model data
@@ -91,6 +95,10 @@ bool Exporter::Export(const char* outpath,
     ExportTextures(texPaths, buffer);
     ExportBones(bones, buffer);
     ExportBoneWeights(meshes, buffer);
+
+#if VERSION_MINOR == 1
+    ExportAnimations(animations, buffer);
+#endif
 
     // Output the buffer
     bool rc = IO::SyncWriteFile(outpath, buffer.GetBuffer(), size);
@@ -162,7 +170,12 @@ void Exporter::ExportBones(const BoneVec& bones, FileBuffer& buffer)
         // Write number of child indices, then the indices themselves
         const u32 numChildrenIndices = bone->childrenIndices.size();
         buffer.Write(numChildrenIndices);
-        buffer.WriteVector(bone->childrenIndices);
+        for (u32 i=0; i < numChildrenIndices; ++i)
+        {
+            u32 childIndex = bone->childrenIndices[i];
+            buffer.Write(childIndex);
+        }
+        //buffer.WriteVector(bone->childrenIndices);
 
         // Write transform and offset transform matrices
         buffer.Write(bone->transform);
@@ -188,7 +201,11 @@ void Exporter::ExportBoneWeights(const Meshes& meshes, FileBuffer& buffer)
             // Write how many weights this vertex contains, then the weights
             const u32 numWeightsForThisVert = weights.size();
             buffer.Write(numWeightsForThisVert);
-            buffer.WriteVector(weights);
+            for (auto weight : weights)
+            {
+                buffer.Write(weight);
+            }
+            //buffer.WriteVector(weights);
         }
     }
 }
@@ -202,7 +219,6 @@ void Exporter::ExportBoneWeights(const Meshes& meshes, FileBuffer& buffer)
  *  | | + Length encoded name   (4 + c)
  *  | | + Duration              (4)
  *  | | + TicksPerSecond        (4)
- *  | | + KeyFrameCount         (4)
  *  | | + Num bone animations   (4)
  *  | | + BoneAnimation
  *  | | | + Bone index          (4)
@@ -212,7 +228,6 @@ void Exporter::ExportBoneWeights(const Meshes& meshes, FileBuffer& buffer)
  *  | | | | + Rotation          (16)
  *  | | | | + Scale             (12)
  *  | | | | + Time              (4)
-
 */
 
 // NOTE: When loading, resize model.mBoneAnimations to number of bones and init each element to null
@@ -224,13 +239,34 @@ void Exporter::ExportAnimations(const Animations& animations, FileBuffer& buffer
 
     for (auto animClip : animations)
     {
+        // Animation clip data
         WriteLengthEncodedString(animClip->mName, buffer);
+        buffer.Write(animClip->mDuration);
+        buffer.Write(animClip->mTicksPerSecond);
+        
+        // Bone animations data
+        const u32 numBoneAnims = animClip->mBoneAnimations.size();
+        buffer.Write(numBoneAnims);
+        for (auto boneAnim : animClip->mBoneAnimations)
+        {
+            // Index of the bone this animation corresponds to
+            buffer.Write(boneAnim->mBoneIndex);
+
+            // Write all the keyframe data
+            const u32 numKeyframes = boneAnim->mKeyframes.size();
+            buffer.Write(numKeyframes);
+            for (Keyframe* keyframe : boneAnim->mKeyframes)
+            {
+                buffer.Write(*keyframe);
+            }
+        }
     }
 }
 
 //----------------------------------------------------------------------------------------------------
 
-size_t Exporter::CalculateSize(const Meshes& meshes, const StringVec& texPaths, const BoneVec& bones)
+
+size_t Exporter::CalculateSize(const Meshes& meshes, const StringVec& texPaths, const BoneVec& bones, const Animations& animations)
 {
     size_t size = 0;
 
@@ -262,6 +298,7 @@ size_t Exporter::CalculateSize(const Meshes& meshes, const StringVec& texPaths, 
     }
     size += sizeof(u32); // Number of textures
 
+    // === Bones ===
     size += sizeof(u32); // Number of bones   
     for (auto bone : bones)
     {
@@ -270,8 +307,27 @@ size_t Exporter::CalculateSize(const Meshes& meshes, const StringVec& texPaths, 
         size += sizeof(u32); // parent index
         size += sizeof(u32); // number of child indices
         size += bone->childrenIndices.size() * sizeof(u32);
-        size += sizeof(Math::Matrix) * 2; // transform and offset transform
+        size += (sizeof(Math::Matrix) * 2); // transform and offset transform
     }
+
+#if VERSION_MINOR == 1
+    // === Animations ===
+    size += sizeof(u32); // Number of animation clips
+    for (auto animClip : animations)
+    {
+        size += sizeof(u32);    // length encode
+        size += animClip->mName.length();
+        size += sizeof(f32);    // duration
+        size += sizeof(f32);    // ticks per second
+        size += sizeof(u32);    // number of bone animations
+        for (auto boneAnim : animClip->mBoneAnimations)
+        {
+            size += sizeof(u32);    // Bone index
+            size += sizeof(u32);    // Num keyframes
+            size += sizeof(Keyframe) * boneAnim->mKeyframes.size();
+        }
+    }
+#endif
     return size;
 }
 

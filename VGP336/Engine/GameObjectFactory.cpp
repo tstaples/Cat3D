@@ -32,39 +32,39 @@ GameObjectFactory::~GameObjectFactory()
 // TODO: Package all object data as binary during build.
 ID GameObjectFactory::Create(const char* templateName, const Math::Vector3& startPosition)
 {
-    std::ifstream data("../Data/GameObjects/Soldier.json");
+    //std::ifstream data("../Data/GameObjects/Soldier.json");
 
-    Json::Value root;
-    Json::Reader reader;
-    if (reader.parse(data, root))
-    {
-        Json::Value components = root["Components"];
-        for (u32 i=0; i < components.size(); ++i)
-        {
-            std::string componentTypeStr = components[i].get("Type", "Model").asString();
-            Meta::Type componentType = Meta::GetEnumValue(componentTypeStr);
-            
-            ID componentID;
-            switch (componentType)
-            {
-            case Meta::GameObjectType:
-                break;
-            case Meta::ModelComponentType:
-                componentID = mpModelRepository.Allocate();
-                ModelComponent& modelComponent = mpModelRepository.GetItem(componentID);
-                modelComponent.Load(components[i].get("Properties", ""));
-                break;
-            case Meta::TransformComponentType:
-                break;
-            case Meta::RenderServiceType:
-                break;
-            }
-        }
-    }
-    else
-    {
-        OutputDebugStringA(reader.getFormattedErrorMessages().c_str());
-    }
+    //Json::Value root;
+    //Json::Reader reader;
+    //if (reader.parse(data, root))
+    //{
+    //    Json::Value components = root["Components"];
+    //    for (u32 i=0; i < components.size(); ++i)
+    //    {
+    //        std::string componentTypeStr = components[i].get("Type", "Model").asString();
+    //        Meta::Type componentType = Meta::GetEnumValue(componentTypeStr);
+    //        
+    //        ID componentID;
+    //        switch (componentType)
+    //        {
+    //        case Meta::GameObjectType:
+    //            break;
+    //        case Meta::ModelComponentType:
+    //            componentID = mpModelRepository.Allocate();
+    //            ModelComponent& modelComponent = mpModelRepository.GetItem(componentID);
+    //            modelComponent.Load(components[i].get("Properties", ""));
+    //            break;
+    //        case Meta::TransformComponentType:
+    //            break;
+    //        case Meta::RenderServiceType:
+    //            break;
+    //        }
+    //    }
+    //}
+    //else
+    //{
+    //    OutputDebugStringA(reader.getFormattedErrorMessages().c_str());
+    //}
 
     // get all components
     //  - compare value from type key to get enum value
