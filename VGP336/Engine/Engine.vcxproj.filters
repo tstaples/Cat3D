@@ -43,6 +43,12 @@
     <Filter Include="Graphics\Shader">
       <UniqueIdentifier>{823f267b-3996-46eb-9455-58ef71696a3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObject\Repository">
+      <UniqueIdentifier>{8034b23a-a441-4082-beac-6debdc5330df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\Meta">
+      <UniqueIdentifier>{325e111e-4b32-448b-9a58-1c5457c7c4c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputSystem.cpp">
@@ -115,9 +121,6 @@
     <ClCompile Include="TString.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
-    <ClCompile Include="AssetLoader.cpp">
-      <Filter>Utility</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
@@ -179,6 +182,15 @@
       <Filter>Graphics\Animations</Filter>
     </ClCompile>
     <ClCompile Include="Component.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetLoader.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="ColliderComponent.cpp">
       <Filter>GameObject\Components</Filter>
     </ClCompile>
   </ItemGroup>
@@ -276,12 +288,6 @@
     <ClInclude Include="TextureManager.h">
       <Filter>Resource</Filter>
     </ClInclude>
-    <ClInclude Include="MetaTypes.h">
-      <Filter>GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="Repository.h">
-      <Filter>GameObject</Filter>
-    </ClInclude>
     <ClInclude Include="ID.h">
       <Filter>GameObject</Filter>
     </ClInclude>
@@ -292,9 +298,6 @@
       <Filter>FileIO</Filter>
     </ClInclude>
     <ClInclude Include="TString.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="AssetLoader.h">
       <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
@@ -311,9 +314,6 @@
     </ClInclude>
     <ClInclude Include="RenderService.h">
       <Filter>GameObject\Services</Filter>
-    </ClInclude>
-    <ClInclude Include="RepositoryTypes.h">
-      <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="Bone.h">
       <Filter>Graphics\Animations</Filter>
@@ -372,6 +372,30 @@
     <ClInclude Include="SerialReader.h">
       <Filter>FileIO</Filter>
     </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetLoader.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderComponent.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AABB.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Repository.h">
+      <Filter>GameObject\Repository</Filter>
+    </ClInclude>
+    <ClInclude Include="RepositoryTypes.h">
+      <Filter>GameObject\Repository</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaTypes.h">
+      <Filter>GameObject\Meta</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Vector3.inl">
@@ -389,12 +413,6 @@
     <None Include="ResourceManager.inl">
       <Filter>Resource</Filter>
     </None>
-    <None Include="MetaTypeDefines.tup">
-      <Filter>GameObject</Filter>
-    </None>
-    <None Include="Repository.inl">
-      <Filter>GameObject</Filter>
-    </None>
     <None Include="Quaternion.inl">
       <Filter>Math</Filter>
     </None>
@@ -406,6 +424,12 @@
     </None>
     <None Include="SerialReader.inl">
       <Filter>FileIO</Filter>
+    </None>
+    <None Include="Repository.inl">
+      <Filter>GameObject\Repository</Filter>
+    </None>
+    <None Include="MetaTypeDefines.tup">
+      <Filter>GameObject\Meta</Filter>
     </None>
   </ItemGroup>
 </Project>

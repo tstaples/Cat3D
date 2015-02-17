@@ -19,12 +19,16 @@ GameObjectFactory::GameObjectFactory(GameObjectRepository& gameObjectRepository,
     , mpRenderService(renderService)
     , mpModelManager(modelManager)
 {
+    mRepositoryMap.insert(std::make_pair(Meta::GameObjectType, &mpGameObjectRepository));
+    mRepositoryMap.insert(std::make_pair(Meta::TransformComponentType, &mpTransformRepository));
+    mRepositoryMap.insert(std::make_pair(Meta::ModelComponentType, &mpModelRepository));
 }
 
 //----------------------------------------------------------------------------------------------------
 
 GameObjectFactory::~GameObjectFactory()
 {
+    mRepositoryMap.clear();
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -41,24 +45,21 @@ ID GameObjectFactory::Create(const char* templateName, const Math::Vector3& star
     //    Json::Value components = root["Components"];
     //    for (u32 i=0; i < components.size(); ++i)
     //    {
-    //        std::string componentTypeStr = components[i].get("Type", "Model").asString();
+    //        std::string componentTypeStr = components[i].get("Type", "").asString();
     //        Meta::Type componentType = Meta::GetEnumValue(componentTypeStr);
     //        
     //        ID componentID;
-    //        switch (componentType)
+    //        Component* component = nullptr;
+    //        RepositoryMap::iterator repositoryIter = mRepositoryMap.find(componentType);
+    //        if (repositoryIter != mRepositoryMap.end())
     //        {
-    //        case Meta::GameObjectType:
-    //            break;
-    //        case Meta::ModelComponentType:
-    //            componentID = mpModelRepository.Allocate();
-    //            ModelComponent& modelComponent = mpModelRepository.GetItem(componentID);
-    //            modelComponent.Load(components[i].get("Properties", ""));
-    //            break;
-    //        case Meta::TransformComponentType:
-    //            break;
-    //        case Meta::RenderServiceType:
-    //            break;
+    //            RepositoryBase* repository = repositoryIter->second;
+    //            componentID = repository->Allocate();
+    //            //component = repository->GetComponent(componentID);
+    //            component->Load(components[i].get("Properties", ""));
     //        }
+    //        //ModelComponent& modelComponent = mpModelRepository.GetItem(componentID);
+    //        //modelComponent.Load(components[i].get("Properties", ""));
     //    }
     //}
     //else

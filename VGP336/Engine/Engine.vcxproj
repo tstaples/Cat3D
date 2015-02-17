@@ -18,6 +18,7 @@
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="BoneAnimation.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ColliderComponent.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="File.cpp" />
@@ -53,6 +54,7 @@
     <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="SimpleDraw.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />
+    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="TString.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -62,6 +64,7 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AABB.h" />
     <ClInclude Include="AnimationClip.h" />
     <ClInclude Include="AnimationController.h" />
     <ClInclude Include="Application.h" />
@@ -69,6 +72,7 @@
     <ClInclude Include="Bone.h" />
     <ClInclude Include="BoneAnimation.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ColliderComponent.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="ComplexNumber.h" />
@@ -117,7 +121,9 @@
     <ClInclude Include="SerialWriter.h" />
     <ClInclude Include="Service.h" />
     <ClInclude Include="SimpleDraw.h" />
+    <ClInclude Include="Sphere.h" />
     <ClInclude Include="SpriteRenderer.h" />
+    <ClInclude Include="Terrain.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="TString.h" />
     <ClInclude Include="Texture.h" />

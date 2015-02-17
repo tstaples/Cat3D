@@ -6,7 +6,8 @@ Repository<T>::Repository(Meta::Type type, u16 capacity)
     , mData(nullptr)
     , mInstanceCount(nullptr)
 {
-    mData = new T[capacity];
+    // Using malloc because we don't want to construct the objects
+    mData = static_cast<T*>(malloc(sizeof(T) * capacity));
     mInstanceCount = new u8[capacity];
     memset(mInstanceCount, 0, sizeof(mInstanceCount));
     mFreeSlots.reserve(capacity);
@@ -16,7 +17,7 @@ Repository<T>::Repository(Meta::Type type, u16 capacity)
 template<typename T>
 Repository<T>::~Repository()
 {
-    SafeDeleteArray(mData);
+    free(mData);
     SafeDeleteArray(mInstanceCount);
     mSize = 0;
     mCapacity = 0;
@@ -88,6 +89,7 @@ void Repository<T>::Flush()
         ++mInstanceCount[i];
     }
     mFreeSlots.clear();
+    mSize = 0;
 }
 //----------------------------------------------------------------------------------------------------
 
@@ -129,6 +131,14 @@ const T* Repository<T>::FindItem(ID id) const
     }
     return item;
 }
+//----------------------------------------------------------------------------------------------------
+
+//template<typename T>
+//Component* Repository<T>::GetComponent(ID id)
+//{
+//    return GetItem(id);
+//}
+
 //----------------------------------------------------------------------------------------------------
 
 template<typename T>

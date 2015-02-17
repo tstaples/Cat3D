@@ -48,12 +48,13 @@
 #include "MeshUtil.h"
 #include "PixelShader.h"
 #include "MeshBuffer.h"
+#include "Model.h"
 #include "Sampler.h"
 #include "SimpleDraw.h"
 #include "SpriteRenderer.h"
 #include "Texture.h"
+#include "Terrain.h"
 #include "VertexShader.h"
-#include "Model.h"
 
 // Input heades
 #include "InputEvent.h"
@@ -68,10 +69,10 @@
 #include "Window.h"
 
 // Resource headers
+#include "ModelManager.h"
 #include "Resource.h"
 #include "ResourceManager.h"
 #include "TextureManager.h"
-#include "ModelManager.h"
 
 // File IO
 #include "AssetLoader.h"

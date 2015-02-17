@@ -26,6 +26,7 @@ class ModelManager;
 
 class GameObjectFactory
 {
+    typedef std::map<Meta::Type, RepositoryBase*> RepositoryMap;
 public:
     /* By taking references to these different systems and services, it enforces
        the proper creation order. 
@@ -56,6 +57,8 @@ private:
     RenderService& mpRenderService;
 
     ModelManager& mpModelManager;
+
+    RepositoryMap mRepositoryMap;
 };
 
 #endif // #ifndef INCLUDED_ENGINE_GAMEOBJECTFACTORY_H

@@ -118,7 +118,7 @@ bool AssetLoader::LoadCatmFile(const wchar_t* pFilename, Model& model)
         // TODO: fix version
         //if (Header::GetVersion(version).second == 1)
         //{
-        LoadAnimations(sin, model);
+        //LoadAnimations(sin, model);
         //
     }
     return false;

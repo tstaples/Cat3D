@@ -56,13 +56,13 @@ typedef double				f64;
 // Type limits
 //====================================================================================================
 
-#define u8_MAX      (u8)-1
-#define u16_MAX     (u16)-1
-#define u32_MAX     (u32)-1
-#define u64_MAX     (u64)-1
+#define U8_MAX      (u8)-1
+#define U16_MAX     (u16)-1
+#define U32_MAX     (u32)-1
+#define U64_MAX     (u64)-1
 
-#define f32_MAX     FLT_MAX
-#define f32_MIN     FLT_MIN
+#define F32_MAX     FLT_MAX
+#define F32_MIN     FLT_MIN
 
 //====================================================================================================
 // Macros

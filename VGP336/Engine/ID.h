@@ -36,8 +36,8 @@ public:
     u8 GetInstance() const      { return flags.instance; }
     u16 GetIndex() const        { return flags.index; }
 
-    bool IsValid() const        { return (blob != u32_MAX); }
-    void Invalidate()           { blob = u32_MAX; }
+    bool IsValid() const        { return (blob != U32_MAX); }
+    void Invalidate()           { blob = U32_MAX; }
 
 private:
     union

@@ -2,7 +2,7 @@
 #include "ID.h"
 
 ID::ID()
-: blob(u32_MAX)
+: blob(U32_MAX)
 {
 }
 

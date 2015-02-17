@@ -13,6 +13,7 @@
 //====================================================================================================
 
 #include "ID.h"
+#include "Component.h"
 
 //====================================================================================================
 // Class Declarations
@@ -25,8 +26,13 @@ public:
         : mType(type)
     {
     }
+    virtual ~RepositoryBase() {}
 
     Meta::Type GetType() const { return mType; }
+
+    virtual ID Allocate() = 0;
+
+    //virtual Component* GetComponent(ID id) = 0;
 
 private:
     NONCOPYABLE(RepositoryBase);
@@ -45,7 +51,7 @@ public:
     Repository(Meta::Type type, u16 capacity);
     ~Repository();
 
-    ID Allocate();
+    virtual ID Allocate();
     void Free(ID& id);
 
     void Flush();
@@ -57,6 +63,8 @@ public:
     // Returns nullptr if the item doesn't exist
     T* FindItem(ID id);
     const T* FindItem(ID id) const;
+
+    //virtual Component* GetComponent(ID id);
 
 private:
     bool IsValid(ID id) const;

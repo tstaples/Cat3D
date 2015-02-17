@@ -29,6 +29,9 @@
 #include "Quaternion.h"
 #include "ComplexNumber.h"
 
+#include "AABB.h"
+#include "Sphere.h"
+
 namespace Math
 {
 
