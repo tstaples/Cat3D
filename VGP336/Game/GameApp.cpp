@@ -38,18 +38,31 @@ void GameApp::OnInitialize(u32 width, u32 height)
 	mWindow.Initialize(GetInstance(), GetAppName(), width, height);
 	HookWindow(mWindow.GetWindowHandle());
 
+    // Subsystems
 	mInputSystem.Initialize(mWindow.GetWindowHandle());
 	mGraphicsSystem.Initialize(mWindow.GetWindowHandle(), false);
 	SimpleDraw::Initialize(mGraphicsSystem);
 	mTimer.Initialize();
-    
-    mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
-	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -10.0f));
 
+    // Camera
+    mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
+	mCamera.SetPosition(Math::Vector3(0.0f, 50.0f, 15.0f));
+    mCamera.SetLookAt(Math::Vector3::Zero());
+
+    // Asset managers
+    mTextureManager.Initialize(mGraphicsSystem);
     mModelManager.Initialize(mGraphicsSystem);
     mRenderService.Initialize(mGraphicsSystem, mGameObjectRepo, mTransformRepo, mModelRepo, mCamera);
 
+    // Terrain
+    mTerrain.Initialize(mGraphicsSystem, "../Data/Heightmaps/heightmap.raw", 256, 256, 30.0f);
+    mTerrain.SetCamera(mCamera);
+    mTerrain.SetLayer(mTextureManager.GetResource(L"../Data/Images/rock.jpg"), 0, 0.0f, 20.0f, 17.0f);
+    mTerrain.SetLayer(mTextureManager.GetResource(L"../Data/Images/grass.jpg"), 1, 10.0f, 30.0f, 21.0f);
+
+    // Create the soldier model
     mGameObjectFactory.Create("", Math::Vector3::Zero());
+    mBallPos = Math::Vector3::Zero();
 }
 
 void GameApp::OnTerminate()
@@ -58,7 +71,10 @@ void GameApp::OnTerminate()
     mModelRepo.Flush();
     mGameObjectRepo.Flush();
 
+    mTerrain.Terminate();
+
     mModelManager.Terminate();
+    mTextureManager.Terminate();
     mRenderService.Terminate();
 
     SimpleDraw::Terminate();
@@ -90,7 +106,7 @@ void GameApp::OnUpdate()
 	mInputSystem.Update();
 
 	const f32 deltatime = mTimer.GetElapsedTime();
-	const f32 kMoveSpeed = 10.0f;
+	const f32 kMoveSpeed = 100.0f;
 
 	// Camera movement
 	f32 mouseSensitivity = 0.25f;
@@ -107,14 +123,25 @@ void GameApp::OnUpdate()
 	else if (mInputSystem.IsKeyDown(Keys::S))
 		mCamera.Walk(-kMoveSpeed * deltatime);
 
+    if (mInputSystem.IsKeyDown(Keys::UP))
+		mBallPos.z += (kMoveSpeed * deltatime);
+	else if (mInputSystem.IsKeyDown(Keys::DOWN))
+		mBallPos.z += (-kMoveSpeed * deltatime);
+	else if (mInputSystem.IsKeyDown(Keys::RIGHT))
+		mBallPos.x += (kMoveSpeed * deltatime);
+	else if (mInputSystem.IsKeyDown(Keys::LEFT))
+		mBallPos.x += (-kMoveSpeed * deltatime);
+    mBallPos.y = mTerrain.GetHeight(mBallPos);
+
 	// Render
 	mGraphicsSystem.BeginRender();
 
+    mTerrain.Render();
     mRenderService.Update();
 
-	/*mRenderer.SetCamera(mCamera);
-    mModel.Render(mRenderer, Math::Matrix::Identity());*/
+    SimpleDraw::AddSphere(mBallPos, 10.0f, Color::Red());
 
+    SimpleDraw::Render(mCamera);
 	mGraphicsSystem.EndRender();
 }
 

@@ -22,17 +22,20 @@ private:
 	InputSystem mInputSystem;
 	GraphicsSystem mGraphicsSystem;
 	
+    TextureManager mTextureManager;
+    ModelManager mModelManager;
+
 	Camera mCamera;
 	Timer mTimer;
+    Terrain mTerrain;
     
     GameObjectRepository mGameObjectRepo;
     TransformRepository mTransformRepo;
     ModelRepository mModelRepo;
     RenderService mRenderService;
-
     GameObjectFactory mGameObjectFactory;
     
-    ModelManager mModelManager;
+    Math::Vector3 mBallPos;
 };
 
 #endif //#ifndef INCLUDED_GAMEAPP_H
