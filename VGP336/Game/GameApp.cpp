@@ -55,13 +55,13 @@ void GameApp::OnInitialize(u32 width, u32 height)
     mRenderService.Initialize(mGraphicsSystem, mGameObjectRepo, mTransformRepo, mModelRepo, mCamera);
 
     // Terrain
-    mTerrain.Initialize(mGraphicsSystem, "../Data/Heightmaps/heightmap.raw", 256, 256, 30.0f);
-    mTerrain.SetCamera(mCamera);
-    mTerrain.SetLayer(mTextureManager.GetResource(L"../Data/Images/rock.jpg"), 0, 0.0f, 20.0f, 17.0f);
-    mTerrain.SetLayer(mTextureManager.GetResource(L"../Data/Images/grass.jpg"), 1, 10.0f, 30.0f, 21.0f);
+    //mTerrain.Initialize(mGraphicsSystem, "../Data/Heightmaps/heightmap.raw", 256, 256, 30.0f);
+    //mTerrain.SetCamera(mCamera);
+    //mTerrain.SetLayer(mTextureManager.GetResource(L"../Data/Images/rock.jpg"), 0, 0.0f, 20.0f, 17.0f);
+    //mTerrain.SetLayer(mTextureManager.GetResource(L"../Data/Images/grass.jpg"), 1, 10.0f, 30.0f, 21.0f);
 
     // Create the soldier model
-    mGameObjectFactory.Create("", Math::Vector3::Zero());
+    mGameObjectFactory.Create("../Data/GameObjects/groundplane.json", Math::Vector3::Zero());
     mBallPos = Math::Vector3::Zero();
 }
 
@@ -71,7 +71,7 @@ void GameApp::OnTerminate()
     mModelRepo.Flush();
     mGameObjectRepo.Flush();
 
-    mTerrain.Terminate();
+    //mTerrain.Terminate();
 
     mModelManager.Terminate();
     mTextureManager.Terminate();
@@ -136,7 +136,7 @@ void GameApp::OnUpdate()
 	// Render
 	mGraphicsSystem.BeginRender();
 
-    mTerrain.Render();
+    //mTerrain.Render();
     mRenderService.Update();
 
     SimpleDraw::AddSphere(mBallPos, 10.0f, Color::Red());
