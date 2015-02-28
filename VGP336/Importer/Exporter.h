@@ -54,4 +54,25 @@ private:
     void WriteLengthEncodedString(const std::string& str, FileBuffer& buffer);
 };
 
+inline void DebugPrint(const char* pFormat, ...)
+{
+    char buffer[2048];
+	va_list va;
+	va_start(va, pFormat);
+	vsprintf_s(buffer, sizeof(buffer), pFormat, va);
+	va_end(va);
+	std::string message;
+	message += (buffer);
+	message += "\n";
+	OutputDebugStringA(message.c_str());
+}
+
+#if defined(_DEBUG)
+	#define WritePlainText DebugPrint
+    #define EndPlainBlock() OutputDebugStringA("\n");
+#else
+	#define WritePlainText(format, ...)
+    #define EndPlainBlock()
+#endif
+
 #endif // #ifndef INCLUDED_EXPORTER_H
