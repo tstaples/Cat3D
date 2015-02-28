@@ -49,6 +49,9 @@
     <Filter Include="GameObject\Meta">
       <UniqueIdentifier>{325e111e-4b32-448b-9a58-1c5457c7c4c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{47afdb53-4215-439f-a7d6-a48b03467eb4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputSystem.cpp">
@@ -192,6 +195,12 @@
     </ClCompile>
     <ClCompile Include="ColliderComponent.cpp">
       <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsWorld.cpp">
+      <Filter>Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -395,6 +404,12 @@
     </ClInclude>
     <ClInclude Include="MetaTypes.h">
       <Filter>GameObject\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsWorld.h">
+      <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

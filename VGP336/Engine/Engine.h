@@ -64,6 +64,10 @@
 // Math headers
 #include "EngineMath.h"
 
+// Physics Headers
+#include "Particle.h"
+#include "PhysicsWorld.h"
+
 // Platform headers
 #include "Timer.h"
 #include "Window.h"
