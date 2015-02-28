@@ -1,10 +1,10 @@
-#ifndef INCLUDED_ENGINE_PHYSICSWORLD_H
-#define INCLUDED_ENGINE_PHYSICSWORLD_H
+#ifndef INCLUDED_ENGINE_CONSTRAINTS_H
+#define INCLUDED_ENGINE_CONSTRAINTS_H
 
 //====================================================================================================
-// Filename:	PhysicsWorld.h
+// Filename:	Constraints.h
 // Created by:	Tyler Staples
-// Description:	Class for simulating a physics world.
+// Description:	Header containing various particle constraints.
 //====================================================================================================
 
 //====================================================================================================
@@ -18,39 +18,36 @@
 //====================================================================================================
 
 class Particle;
-class Constraint;
 
 //====================================================================================================
 // Class Declarations
 //====================================================================================================
 
-class PhysicsWorld
+class Constraint
 {
 public:
-    PhysicsWorld(const Math::Vector3& gravity, f32 timestep);
-    ~PhysicsWorld();
+    virtual ~Constraint() {}
 
-    void StepSimulation(f32 deltatime);
-
-    void AddConstraint(Constraint* c);
-    void AddParticle(Particle* p);
-    void Purge();
-
-    void Render();
-
-private:
-    void AccumulateForces();
-    void Integrate(f32 deltatime);
-    void SatisfyConstraints();
-
-private:
-    std::vector<Particle*> mParticles;
-    std::vector<Constraint*> mConstraints;
-
-    Math::Vector3 mGravity;
-
-    f32 mTimer;
-    f32 mTimeStep;  // Fixed interval
+    virtual void Apply() = 0;
+    virtual void Render() {}
 };
 
-#endif // #ifndef INCLUDED_ENGINE_PHYSICSWORLD_H
+class Spring : public Constraint
+{
+public:
+    // Rest length default as -1 to set current distance between a and b as rest length
+    Spring(Particle* a, Particle* b, f32 restLength = -1.0f);
+
+    // Implements Constraint
+    virtual void Apply();
+    virtual void Render();
+
+private:
+    // Weak ptr
+    Particle* mpParticleA;
+    Particle* mpParticleB;
+
+    f32 mRestLength;
+};
+
+#endif // #ifndef INCLUDED_ENGINE_CONSTRAINTS_H

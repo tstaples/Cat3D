@@ -10,6 +10,7 @@
 #include "Precompiled.h"
 #include "PhysicsWorld.h"
 
+#include "Constraints.h"
 #include "Particle.h"
 
 //====================================================================================================
@@ -49,6 +50,13 @@ void PhysicsWorld::StepSimulation(f32 deltatime)
 
 //----------------------------------------------------------------------------------------------------
 
+void PhysicsWorld::AddConstraint(Constraint* c)
+{
+    mConstraints.push_back(c);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void PhysicsWorld::AddParticle(Particle* p)
 {
     mParticles.push_back(p);
@@ -63,6 +71,12 @@ void PhysicsWorld::Purge()
         SafeDelete(mParticles[i]);
     }
     mParticles.clear();
+
+    for (u32 i=0; i < mConstraints.size(); ++i)
+    {
+        SafeDelete(mConstraints[i]);
+    }
+    mConstraints.clear();
 }
 
 //----------------------------------------------------------------------------------------------------
