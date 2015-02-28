@@ -202,6 +202,9 @@
     <ClCompile Include="PhysicsWorld.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Constraints.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InputEvent.h">
@@ -409,6 +412,9 @@
       <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsWorld.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Constraints.h">
       <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>

@@ -50,7 +50,7 @@ private:
     Math::Vector3 mGravity;
 
     f32 mTimer;
-    f32 mTimeStep;  // Fixed interval
+    const f32 mTimeStep;  // Fixed interval
 };
 
 #endif // #ifndef INCLUDED_ENGINE_PHYSICSWORLD_H

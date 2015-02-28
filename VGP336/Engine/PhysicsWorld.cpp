@@ -87,6 +87,11 @@ void PhysicsWorld::Render()
     {
         particle->Render();
     }
+
+    for (auto constraint : mConstraints)
+    {
+        constraint->Render();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -123,4 +128,12 @@ void PhysicsWorld::Integrate(f32 deltatime)
 
 void PhysicsWorld::SatisfyConstraints()
 {
+    // number of passes allowed to resolve constraints (TODO: move to ctor)
+    for (u32 n=0; n < 5; ++n)
+    {
+        for (auto constraint : mConstraints)
+        {
+            constraint->Apply();
+        }
+    }
 }

@@ -21,6 +21,7 @@
     <ClCompile Include="ColliderComponent.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
+    <ClCompile Include="Constraints.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FileBuffer.cpp" />
     <ClCompile Include="Font.cpp" />
@@ -80,6 +81,7 @@
     <ClInclude Include="ComplexNumber.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="Constraints.h" />
     <ClInclude Include="Delegate.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="File.h" />
