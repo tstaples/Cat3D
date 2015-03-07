@@ -339,7 +339,6 @@ void AssetLoader::LoadAnimations(SerialReader& reader, Model& model)
             // Get the number of keyframes and resize the array
             const u32 numKeyframes = reader.Read<u32>();
             boneAnim->mKeyframes.resize(numKeyframes);
-            //reader.ReadVector(boneAnim->mKeyframes, numKeyframes);
             for (u32 k=0; k < numKeyframes; ++k)
             {
                 // Read in the keyframe

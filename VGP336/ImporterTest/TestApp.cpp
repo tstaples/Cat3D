@@ -1,6 +1,26 @@
 #include "TestApp.h"
 
-void DrawSkeleton(const Transforms& toRootTransforms, const Model& model);
+namespace
+{
+    void DrawSkeleton(const Transforms& toRootTransforms, const Model& model)
+    {
+        for (u32 i=0; i < toRootTransforms.size(); ++i)
+        {
+            const Math::Matrix& transform = toRootTransforms[i];
+            Math::Vector3 position = transform.GetTranslation();
+        
+            SimpleDraw::AddAABB(position, 0.02f, Color::Green());
+
+            const Bone& bone = *model.mBones[i];
+            for (u32 j=0; j < bone.children.size(); ++j)
+            {
+                const u32 childIndex = bone.childrenIndices[j];
+                Math::Vector3 childPosition = toRootTransforms[childIndex].GetTranslation();
+                SimpleDraw::AddLine(position, childPosition, Color::White());
+            }
+        }
+    }
+}
 
 TestApp::TestApp()
 {
@@ -50,11 +70,6 @@ void TestApp::OnTerminate()
 bool TestApp::OnInput(const InputEvent& evt)
 {
 	bool handled = false;
-	if (mInputSystem.IsKeyPressed(Keys::ESCAPE))
-	{
-		PostQuitMessage(0);
-		handled = true;
-	}
 	return handled;
 }
 
@@ -77,6 +92,11 @@ void TestApp::OnUpdate()
 	mCamera.Yaw((f32)(mInputSystem.GetMouseMoveX()) * mouseSensitivity);
 	mCamera.Pitch((f32)(mInputSystem.GetMouseMoveY()) * mouseSensitivity);
 
+    if (mInputSystem.IsKeyPressed(Keys::ESCAPE))
+    {
+        PostQuitMessage(0);
+    }
+
 	// Player movement
 	if (mInputSystem.IsKeyDown(Keys::W))
 		mCamera.Walk(kMoveSpeed * deltatime);
@@ -88,6 +108,22 @@ void TestApp::OnUpdate()
 		mCamera.Walk(-kMoveSpeed * deltatime);
 
     
+    SkinModel();
+
+	// Render
+	mGraphicsSystem.BeginRender();
+
+	mRenderer.SetCamera(mCamera);
+
+    mModel.Render(mRenderer, Math::Matrix::Identity());
+    
+    SimpleDraw::Render(mCamera);
+
+	mGraphicsSystem.EndRender();
+}
+
+void TestApp::SkinModel()
+{
     const std::vector<Bone*>& bones = mModel.mBones;
     const Transforms& toRootTransforms = mAnimationController.ToRootTransforms(); 
     const Transforms& boneTransforms = mAnimationController.GetFinalTransforms();
@@ -107,6 +143,7 @@ void TestApp::OnUpdate()
                 // Get the boneweights for this vertex
                 const BoneWeights& boneWeights = vertexWeights[j];
                 
+                // Init transform with the first boneTransform
                 Math::Matrix transform = boneTransforms[boneWeights[0].boneIndex] * boneWeights[0].weight;
                 for (u32 k=1; k < boneWeights.size(); ++k)
                 {
@@ -122,34 +159,6 @@ void TestApp::OnUpdate()
         }
     }
 
-	// Render
-	mGraphicsSystem.BeginRender();
-
-	mRenderer.SetCamera(mCamera);
-
+    // Debug
     DrawSkeleton(toRootTransforms, mModel);
-
-    mModel.Render(mRenderer, Math::Matrix::Identity());
-    
-    SimpleDraw::Render(mCamera);
-
-	mGraphicsSystem.EndRender();
-}
-
-void DrawSkeleton(const Transforms& toRootTransforms, const Model& model)
-{
-    for (u32 i=0; i < toRootTransforms.size(); ++i)
-    {
-        const Math::Matrix& transform = toRootTransforms[i];
-        Math::Vector3 position = transform.GetTranslation();
-        SimpleDraw::AddAABB(position, 0.02f, Color::Green());
-
-        const Bone& bone = *model.mBones[i];
-        for (u32 j=0; j < bone.children.size(); ++j)
-        {
-            const u32 childIndex = bone.childrenIndices[j];
-            Math::Vector3 childPosition = toRootTransforms[childIndex].GetTranslation();
-            SimpleDraw::AddLine(position, childPosition, Color::White());
-        }
-    }
 }

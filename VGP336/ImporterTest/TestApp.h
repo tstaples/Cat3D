@@ -18,7 +18,7 @@ private:
 	virtual void OnUpdate();
 
 	// Eventually will be a separate tool
-	void LoadModel(const char* filename, Model& model);
+    void SkinModel();
 
 private:
 	Window mWindow;

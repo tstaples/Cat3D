@@ -59,7 +59,7 @@ struct Matrix
 	Matrix operator*(f32 s) const;
 	Matrix operator/(f32 s) const;
 
-	Matrix operator+=(const Matrix& rhs) const;
+	Matrix operator+=(const Matrix& rhs);
 
     friend bool operator==(const Matrix& lhs, const Matrix& rhs);
     friend bool operator!=(const Matrix& lhs, const Matrix& rhs);

@@ -201,6 +201,7 @@ void Exporter::ExportBones(const BoneVec& bones, FileBuffer& buffer)
         u32 nameLen = bone->name.size();
         buffer.Write(nameLen);
         buffer.WriteArray(bone->name.c_str(), nameLen);
+        WritePlainText("[Bone] Index: %u", bone->index);
         WritePlainText("[Bone] Name: %s, length: %u", bone->name.c_str(), nameLen);
 
         // Write the parent index
