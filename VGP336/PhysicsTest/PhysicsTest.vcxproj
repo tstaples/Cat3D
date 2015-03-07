@@ -80,9 +80,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="PhysicsHelper.h" />
     <ClInclude Include="TestApp.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="PhysicsHelper.cpp" />
     <ClCompile Include="TestApp.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>

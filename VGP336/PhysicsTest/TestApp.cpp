@@ -1,6 +1,6 @@
 #include "TestApp.h"
+#include "PhysicsHelper.h"
 
-#include "Random.h"
 
 namespace
 {
@@ -26,7 +26,6 @@ namespace
 }
 
 TestApp::TestApp()
-: mPhysicsWorld(Math::Vector3(0.0f, -10.0f, 0.0f), kTimeStep)
 {
 }
 
@@ -47,7 +46,12 @@ void TestApp::OnInitialize(u32 width, u32 height)
 	SimpleDraw::Initialize(mGraphicsSystem, 1000000);
 
 	mCamera.Setup(Math::kPi / 6.0f, (f32)width / (f32)height, 0.01f, 10000.0f);
-	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -10.0f));
+	mCamera.SetPosition(Math::Vector3(0.0f, 2.0f, -10.0f));
+
+    PhysicsSettings physicsSettings;
+    physicsSettings.timeStep = (1.0f / 60.0f);
+    physicsSettings.drag = 0.01f;
+    mPhysicsWorld.Setup(physicsSettings);
 }
 
 void TestApp::OnTerminate()
@@ -98,38 +102,25 @@ void TestApp::OnUpdate()
 
         for (u32 i=0; i < 1; ++i)
         {
-            Particle* p0 = new Particle();
-            Particle* p1 = new Particle();
-            Particle* p2 = new Particle();
-            Particle* p3 = new Particle();
+            //PhysicsHelper::AddCube(mPhysicsWorld);
+            //PhysicsHelper::AddMesh(mPhysicsWorld);
 
-            p0->SetPosition(0.0f, 5.0f, 0.0f);
-            p1->SetPosition(1.0f, 4.5f, 0.0f);
-            p2->SetPosition(0.0f, 5.0f, 1.0f);
-            p3->SetPosition(1.0f, 4.5f, 0.0f);
+            Math::OBB ground;
+            ground.center = Math::Vector3(0.0f, -0.1f, 0.0f);
+            ground.extend = Math::Vector3(10.0f, 0.1f, 10.0f);
+            mPhysicsWorld.AddOBB(ground);
 
-            p0->SetVelocity(Random::GetF(-1.0f, 1.0f) * kTimeStep, 
-                            Random::GetF(1.0f, 2.0f)  * kTimeStep, 
-                            Random::GetF(-1.0f, 1.0f) * kTimeStep);
-            p0->radius = 0.05f;
-            p1->radius = 0.05f;
-            p2->radius = 0.05f;
-            p3->radius = 0.05f;
+            Math::OBB obb;
+            obb.extend = Math::Vector3(1.0f, 0.2f, 2.0f);
+            obb.center = Math::Vector3(1.0f, 2.0f, 1.0f);
+            obb.rot = Math::Quaternion(Math::Vector3::ZAxis(), Math::kPi / 6.0f);
+            mPhysicsWorld.AddOBB(obb);
 
-            mPhysicsWorld.AddParticle(p0);
-            mPhysicsWorld.AddParticle(p1);
-            mPhysicsWorld.AddParticle(p2);
-            mPhysicsWorld.AddParticle(p3);
-
-            Spring* spring1 = new Spring(p0, p1);
-            Spring* spring2 = new Spring(p1, p2);
-            Spring* spring3 = new Spring(p2, p3);
-            Spring* spring4 = new Spring(p3, p2);
-
-            mPhysicsWorld.AddConstraint(spring1);
-            mPhysicsWorld.AddConstraint(spring2);
-            mPhysicsWorld.AddConstraint(spring3);
-            mPhysicsWorld.AddConstraint(spring4);
+            Math::OBB obb2;
+            obb2.extend = Math::Vector3(1.0f, 0.2f, 2.0f);
+            obb2.center = Math::Vector3(-1.0f, 1.0f, 1.0f);
+            obb2.rot = Math::Quaternion(Math::Vector3::ZAxis(), -(Math::kPi / 6.0f));
+            mPhysicsWorld.AddOBB(obb2);
         }
     }
 

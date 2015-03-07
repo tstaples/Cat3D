@@ -30,6 +30,7 @@
 #include "ComplexNumber.h"
 
 #include "AABB.h"
+#include "OBB.h"
 #include "Sphere.h"
 
 namespace Math

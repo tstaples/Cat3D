@@ -31,7 +31,7 @@ Particle::Particle()
 
 Particle::Particle(f32 x, f32 y, f32 z, f32 radius, f32 invMass)
     : pos(x, y, z)
-    , posOld(0.0f, 0.0f, 0.0f)
+    , posOld(x, y, z)
     , accel(0.0f, 0.0f, 0.0f)
     , radius(radius)
     , invMass(invMass)
