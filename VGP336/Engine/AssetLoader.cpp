@@ -118,8 +118,8 @@ bool AssetLoader::LoadCatmFile(const wchar_t* pFilename, Model& model)
         // TODO: fix version
         //if (Header::GetVersion(version).second == 1)
         //{
-        //LoadAnimations(sin, model);
-        //
+        LoadAnimations(sin, model);
+        //}
     }
     return false;
 }
@@ -212,6 +212,7 @@ void AssetLoader::LoadBones(SerialReader& reader, Model& model)
         const u32 nameLen = reader.Read<u32>();
         char nameBuffer[2048];
         reader.ReadArray(nameBuffer, nameLen);
+        nameBuffer[nameLen] = '\0';
         bone->name = nameBuffer;
 
         // Add the bone to the index map

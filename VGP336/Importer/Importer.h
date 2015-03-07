@@ -33,7 +33,7 @@ private:
 
     // Helpers to convert assimp formats to native
     Math::Vector3 ToV3(const aiVector3D& v);
-    Math::Quaternion ToQ(const aiQuaternion& q);
+    void ToQ(const aiQuaternion& q, Math::Quaternion& out);
     Color ToColor(const aiColor4D& c);
 
 private:

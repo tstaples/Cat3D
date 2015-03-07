@@ -355,12 +355,12 @@ inline Vector3 RotateVector(const Vector3& v, const Quaternion& q)
 
 //----------------------------------------------------------------------------------------------------
 
-bool Intersect(const Vector3& p, const OBB& obb)
+inline bool Intersect(const Vector3& p, const OBB& obb)
 {
     // Transform the point into the box's local space
-    Math::Matrix matTrans = Math::Matrix::Translation(obb.center);
+   /* Math::Matrix matTrans = Math::Matrix::Translation(obb.center);
     Math::Matrix matRot = Math::Convert(obb.rot);
-    Math::Matrix toWorld = matRot * matTrans;
+    Math::Matrix toWorld = matRot * matTrans;*/
     
     // first pass check to see if point is intersecting
 
@@ -380,6 +380,7 @@ bool Intersect(const Vector3& p, const OBB& obb)
     //    vector origin;        // transformCoord
     //    vector direction;     // transformNormal
     //}
+    return false;
 }
 
 } // namespace Math

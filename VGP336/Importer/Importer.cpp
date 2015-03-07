@@ -126,7 +126,7 @@ void Importer::LoadBoneData(const aiMesh& aimesh, Mesh* mesh)
                 ASSERT(aibone->mName.length > 0, "[Importer] Bone %d doesn't have a name!", boneIndex);
                 newBone->name = aibone->mName.C_Str();
                 newBone->index = boneIndex;
-                newBone->offsetTransform = *(Math::Matrix*)&aibone->mOffsetMatrix; // Hack: matrices have the same alignment
+                newBone->offsetTransform = *(Math::Matrix*)&aibone->mOffsetMatrix.Transpose(); // Hack: matrices have the same alignment
 
                 // Add it to the array and remember it
                 mBones.push_back(newBone);
@@ -180,6 +180,7 @@ void Importer::LoadAnimations(const aiScene& scene)
             BoneAnimation* boneAnim = new BoneAnimation();
 
             // Index of the bone this animation is for
+            ASSERT(aiNodeAnim->mNodeName.length > 0, "This animation clip has no name");
             boneAnim->mBoneIndex = mBoneIndexMap.at(aiNodeAnim->mNodeName.C_Str());
 
             // Since we are storing entire transforms per keyframe rather than keyframing
@@ -201,7 +202,7 @@ void Importer::LoadAnimations(const aiScene& scene)
 
                 Keyframe* keyframe = new Keyframe();
                 keyframe->mTranslation  = ToV3(aiPosKey.mValue);
-                keyframe->mRotation     = ToQ(aiRotKey.mValue);
+                ToQ(aiRotKey.mValue, keyframe->mRotation);
                 keyframe->mScale        = ToV3(aiScaleKey.mValue);
                 keyframe->mTime         = (f32)aiPosKey.mTime;
 
@@ -373,9 +374,12 @@ Math::Vector3 Importer::ToV3(const aiVector3D& v)
 
 //----------------------------------------------------------------------------------------------------
 
-Math::Quaternion Importer::ToQ(const aiQuaternion& q)
+void Importer::ToQ(const aiQuaternion& q, Math::Quaternion& out)
 {
-    return Math::Quaternion(q.x, q.y, q.z, q.w);
+    out.x = q.x;
+    out.y = q.y;
+    out.z = q.z;
+    out.w = q.w;
 }
 
 //----------------------------------------------------------------------------------------------------

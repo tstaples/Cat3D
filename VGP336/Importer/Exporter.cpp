@@ -236,7 +236,7 @@ void Exporter::ExportBoneWeights(const Meshes& meshes, FileBuffer& buffer)
 {
     for (auto mesh : meshes)
     {
-        VertexWeights& vertexWeights = mesh->GetVertexWeights();
+        const VertexWeights& vertexWeights = mesh->GetVertexWeights();
 
         // Write the number of weights
         const u32 numBoneWeights = vertexWeights.size();
