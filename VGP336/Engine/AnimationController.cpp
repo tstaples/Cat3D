@@ -63,6 +63,34 @@ void AnimationController::StartClip(AnimationClip& clip, bool loop)
 
 //----------------------------------------------------------------------------------------------------
 
+void AnimationController::Update(f32 deltaTime)
+{
+    if (!mIsPlaying)
+    {
+        return;
+    }
+
+    mCurrentTime += deltaTime * mpCurrentAnimationClip->mTicksPerSecond;
+    if(mCurrentTime >= mpCurrentAnimationClip->mDuration)
+    {
+        if (mIsLooping)
+        {
+            mCurrentTime = 0.0f;
+        }
+        else
+        {
+            mIsPlaying = false;
+        }
+    }
+ 
+    if (mIsPlaying)
+    {
+        GetPose(mCurrentTime, mpModel->mpRoot);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void AnimationController::GetBindPose(Bone* bone)
 {
     Math::Matrix toParentTransform = bone->transform;
@@ -81,5 +109,28 @@ void AnimationController::GetBindPose(Bone* bone)
     for (Bone* child : bone->children)
     {
         GetBindPose(child);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void AnimationController::GetPose(f32 time, Bone* bone)
+{
+    // dont use toParent. check based on current Animation clip
+    Math::Matrix toParentTransform;// = bone->transform;  // allows bone to go to parent's space
+    toParentTransform = mpCurrentAnimationClip->GetTransform(time, bone); // Get transform for that bone at particular time
+       
+    Math::Matrix toRootTransform = toParentTransform;
+    if (bone->parent != nullptr)
+    {
+        toRootTransform = toParentTransform * mToRootTransforms[bone->parent->index];
+    }
+       
+    mToRootTransforms[bone->index] = toRootTransform;
+    mFinalTransforms[bone->index] = bone->offsetTransform * toRootTransform * mInverseRootTransform;
+       
+    for (Bone* child : bone->children)
+    {
+        GetPose(time, child);
     }
 }

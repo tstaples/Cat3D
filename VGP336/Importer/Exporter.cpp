@@ -298,7 +298,7 @@ void Exporter::ExportAnimations(const Animations& animations, FileBuffer& buffer
         WriteLengthEncodedString(animClip->mName, buffer);
         buffer.Write(animClip->mDuration);
         buffer.Write(animClip->mTicksPerSecond);
-        WritePlainText("[Animation clip] Name: %s", animClip->mName);
+        WritePlainText("[Animation clip] Name: %s", animClip->mName.c_str());
         WritePlainText("[Animation clip] Duration: %f", animClip->mDuration);
         WritePlainText("[Animation clip] Ticks per second: %f", animClip->mTicksPerSecond);
 

@@ -36,12 +36,14 @@ public:
     void Initialize(Model& model);
 
     void StartClip(AnimationClip& clip, bool loop);
+    void Update(f32 deltaTime);
 
     const Transforms& GetFinalTransforms() const    { return mFinalTransforms; }
     const Transforms& ToRootTransforms() const      { return mToRootTransforms; }
 
 private:
     void GetBindPose(Bone* bone);
+    void GetPose(f32 time, Bone* bone);
 
 private:
     AnimationClip* mpCurrentAnimationClip;

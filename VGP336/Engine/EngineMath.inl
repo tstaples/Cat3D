@@ -281,6 +281,18 @@ inline Vector3 Lerp(const Vector3& v0, const Vector3& v1, f32 t)
 
 //----------------------------------------------------------------------------------------------------
 
+inline Quaternion Lerp(const Quaternion& q1, const Quaternion& q2, f32 t)
+{
+    Quaternion q;
+    q.x = q1.x + ((q2.x - q1.x) * t);
+    q.y = q1.y + ((q2.y - q1.y) * t);
+    q.z = q1.z + ((q2.z - q1.z) * t);
+    q.w = q1.w + ((q2.w - q1.w) * t);
+    return q;
+}
+
+//----------------------------------------------------------------------------------------------------
+
 inline Quaternion Slerp(const Quaternion& q1, const Quaternion& q2, f32 t)
 {
     Quaternion qa = q1;
@@ -293,11 +305,16 @@ inline Quaternion Slerp(const Quaternion& q1, const Quaternion& q2, f32 t)
         qa = qa * -1.0f;
         angle *= -1.0f;
     }
+    else if (angle > 0.999f)
+    {
+        // Just use regular lerp
+        return Normalize(Lerp(q1, q2, t));
+    }
 
-    const f32 theta = acosf(angle);
-    const f32 invSinTheta = asinf(sinf(theta));
-    const f32 scale = sinf(theta * (1.0f - t)) * invSinTheta;
-    const f32 invScale = sinf(theta * t) * invSinTheta;
+    const f32 theta         = acosf(angle);
+    const f32 invSinTheta   = 1.0f / sinf(theta);
+    const f32 scale         = sinf(theta * (1.0f - t)) * invSinTheta;
+    const f32 invScale      = sinf(theta * t) * invSinTheta;
     return Quaternion((qa * scale) + (qb * invScale));
 }
 

@@ -328,9 +328,11 @@ void AssetLoader::LoadAnimations(SerialReader& reader, Model& model)
         animClip->mDuration          = reader.Read<f32>();
         animClip->mTicksPerSecond    = reader.Read<f32>();
 
-        // Get the number of bone animations and resize the array
+        // Resize the bone animation array to the number of bones
+        const u32 numBones = model.mBones.size();
+        animClip->mBoneAnimations.resize(numBones);
+
         const u32 numBoneAnimations = reader.Read<u32>();
-        animClip->mBoneAnimations.resize(numBoneAnimations);
         for (u32 j=0; j < numBoneAnimations; ++j)
         {
             BoneAnimation* boneAnim = new BoneAnimation();
@@ -345,7 +347,8 @@ void AssetLoader::LoadAnimations(SerialReader& reader, Model& model)
                 boneAnim->mKeyframes[k] = new Keyframe();
                 *boneAnim->mKeyframes[k] = reader.Read<Keyframe>();
             }
-            animClip->mBoneAnimations[j] = boneAnim;
+            // Store the animation at the corresponding bone's index
+            animClip->mBoneAnimations[boneAnim->mBoneIndex] = boneAnim;
         }
         model.mAnimations[i] = animClip;
     }

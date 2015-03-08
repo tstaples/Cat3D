@@ -95,6 +95,7 @@ Vector3 TransformNormal(const Vector3& v, const Matrix& m);
 Vector3 RotateVector(const Vector3& v, const Quaternion& q);
 
 Vector3 Lerp(const Vector3& v0, const Vector3& v1, f32 t);
+Quaternion Lerp(const Quaternion& q1, const Quaternion& q2, f32 t);
 Quaternion Slerp(const Quaternion& q1, const Quaternion& q2, f32 t);
 
 bool Intersect(const Vector3& p, const OBB& obb);

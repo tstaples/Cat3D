@@ -18,6 +18,7 @@
 //====================================================================================================
 
 class BoneAnimation;
+struct Bone;
 
 //====================================================================================================
 // Class Declarations
@@ -29,6 +30,8 @@ class AnimationClip
 public:
     AnimationClip();
     ~AnimationClip();
+
+    Math::Matrix GetTransform(f32 time, Bone* bone) const;
 
     std::string mName;
 

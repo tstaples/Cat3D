@@ -23,6 +23,8 @@ class Keyframe
 public:
     Keyframe();
 
+    Math::Matrix GetTransform() const;
+
     // Not stored in a matrix since we may need to slerp them
     Math::Vector3 mTranslation;
     Math::Quaternion mRotation;

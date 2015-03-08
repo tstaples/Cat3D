@@ -18,3 +18,13 @@ Keyframe::Keyframe()
     , mTime(0.0f)
 {
 }
+
+//----------------------------------------------------------------------------------------------------
+
+Math::Matrix Keyframe::GetTransform() const
+{
+    Math::Matrix scale = Math::Matrix::Scaling(mScale);
+    Math::Matrix rot = Math::Convert(mRotation);
+    Math::Matrix translation = Math::Matrix::Translation(mTranslation);
+    return (scale * rot * translation);
+}
