@@ -62,6 +62,7 @@ void GameApp::OnInitialize(u32 width, u32 height)
 
     // Create the soldier model
     mGameObjectFactory.Create("../Data/GameObjects/groundplane.json", Math::Vector3::Zero());
+//    mGameObjectFactory.Create("../Data/GameObjects/Soldier.json", Math::Vector3::Zero());
     mBallPos = Math::Vector3::Zero();
 }
 

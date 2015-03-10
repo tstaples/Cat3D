@@ -7,4 +7,17 @@
   <ItemGroup>
     <ClInclude Include="GameApp.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Filter Include="GameObjects">
+      <UniqueIdentifier>{2778e685-e350-4b17-b961-33dd0959198a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Data\GameObjects\groundplane.json">
+      <Filter>GameObjects</Filter>
+    </None>
+    <None Include="..\Data\GameObjects\Soldier.json">
+      <Filter>GameObjects</Filter>
+    </None>
+  </ItemGroup>
 </Project>

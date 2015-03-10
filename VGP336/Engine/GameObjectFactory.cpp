@@ -64,6 +64,7 @@ ID GameObjectFactory::Create(const char* templateName, const Math::Vector3& star
                 componentID = mpModelRepository.Allocate();
                 ModelComponent& modelComponent = mpModelRepository.GetItem(componentID);
 
+                // Get the path for the model to load
                 Json::Value properties = components[i].get("Properties", "");
                 std::string filenameStr = properties.get("Filename", "").asString();
                 std::wstring filename = IO::CharToWChar(filenameStr);
