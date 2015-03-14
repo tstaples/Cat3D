@@ -54,7 +54,7 @@ void Model::Render(MeshRenderer& renderer, const Math::Matrix& transform) const
     for (u32 i = 0; i < meshBufferSize; ++i)
     {              
         // Check that there is a corresponding texture for this mesh buffer
-        if (mTextures.size() < i)
+        if (i < mTextures.size())
         {
             renderer.SetTexture(*mTextures[i]);
         }
