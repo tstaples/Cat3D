@@ -31,6 +31,8 @@
 
 #include "AABB.h"
 #include "OBB.h"
+#include "Plane.h"
+#include "Ray.h"
 #include "Sphere.h"
 
 namespace Math
@@ -98,7 +100,14 @@ Vector3 Lerp(const Vector3& v0, const Vector3& v1, f32 t);
 Quaternion Lerp(const Quaternion& q1, const Quaternion& q2, f32 t);
 Quaternion Slerp(const Quaternion& q1, const Quaternion& q2, f32 t);
 
-bool Intersect(const Vector3& p, const OBB& obb);
+bool Intersect(const Ray& ray, const OBB& obb, f32& distance);
+bool Intersect(const Ray& ray, const AABB& aabb, f32& distEntry, f32& distExit);
+bool Intersect(const Ray& ray, const Plane& plane, f32& distance);
+bool Intersect(const Vector3& point, const AABB& aabb);
+bool Intersect(const Vector3& point, const OBB& obb);
+
+bool GetContactPoint(const Ray& ray, const OBB& obb, Vector3& point, Vector3& normal);
+//void GetCorners(
 
 } // namespace Math
 

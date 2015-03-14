@@ -18,6 +18,7 @@
 //====================================================================================================
 
 class Particle;
+class OBB;
 
 //====================================================================================================
 // Class Declarations
@@ -48,6 +49,21 @@ private:
     Particle* mpParticleB;
 
     f32 mRestLength;
+};
+
+class Collision : public Constraint
+{
+public:
+    // Rest length default as -1 to set current distance between a and b as rest length
+    Collision(Particle* p, OBB* b);
+
+    // Implements Constraint
+    virtual void Apply();
+
+private:
+    // Weak ptr
+    Particle* mpParticle;
+    OBB* mpOBB;
 };
 
 #endif // #ifndef INCLUDED_ENGINE_CONSTRAINTS_H

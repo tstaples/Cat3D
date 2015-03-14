@@ -14,10 +14,10 @@ namespace PhysicsHelper
         Particle* p2 = new Particle();
         Particle* p3 = new Particle();
 
-        p0->SetPosition(-0.5f, 5.0f, 0.5f);
-        p1->SetPosition(0.5f, 5.0f, 0.0f);
-        p2->SetPosition(0.5f, 5.0f, 0.5f);
-        p3->SetPosition(0.5f, 5.5f, 0.5f);
+        p0->SetPosition(-0.25f, 5.0f, -0.25f);
+        p1->SetPosition(0.25f, 5.0f, -0.25f);
+        p2->SetPosition(0.0f, 5.0f, 0.25f);
+        p3->SetPosition(0.0f, 5.5f, 0.0f);
 
         p0->SetVelocity(Random::GetF(-1.0f, 1.0f) * kTimeStep, 
                         Random::GetF(1.0f, 2.0f)  * kTimeStep, 

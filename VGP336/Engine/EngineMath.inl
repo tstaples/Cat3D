@@ -370,34 +370,4 @@ inline Vector3 RotateVector(const Vector3& v, const Quaternion& q)
     return rot;
 }
 
-//----------------------------------------------------------------------------------------------------
-
-inline bool Intersect(const Vector3& p, const OBB& obb)
-{
-    // Transform the point into the box's local space
-   /* Math::Matrix matTrans = Math::Matrix::Translation(obb.center);
-    Math::Matrix matRot = Math::Convert(obb.rot);
-    Math::Matrix toWorld = matRot * matTrans;*/
-    
-    // first pass check to see if point is intersecting
-
-    // second pass - ray box intersection test (ray in particle's direction)
-    //  check against a 'slab'
-    //      min/max x/y form a slab
-    //      all 4 would be cross by the ray
-    //      if you hit all the mins first, then the max's, you're intersecting
-
-    // get the point on the box where the intersection occurs
-    // get the normal of that face, then reflect the point over that normal
-    // hack: set old position to inverse of reflected vector to change direction point travels
-
-    // TODO: Add to Math lib
-    // struct ray
-    //{
-    //    vector origin;        // transformCoord
-    //    vector direction;     // transformNormal
-    //}
-    return false;
-}
-
 } // namespace Math

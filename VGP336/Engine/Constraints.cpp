@@ -11,6 +11,7 @@
 #include "Constraints.h"
 
 #include "Color.h"
+#include "EngineMath.h"
 #include "Particle.h"
 #include "SimpleDraw.h"
 
@@ -45,4 +46,22 @@ void Spring::Apply()
 void Spring::Render()
 {
     SimpleDraw::AddLine(mpParticleA->pos, mpParticleB->pos, Color::Blue());
+}
+
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+
+Collision::Collision(Particle* p, OBB* b)
+    : mpParticle(p)
+    , mpOBB(b)
+{
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void Collision::Apply()
+{
+    //if (Math::Intersect(mpParticle->pos, *mpOBB))
+    //{
+    //}
 }

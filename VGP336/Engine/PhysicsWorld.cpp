@@ -213,19 +213,33 @@ void PhysicsWorld::SatisfyConstraints()
 
     for (u32 n=0; n < mSettings.resolutionCount; ++n)
     {
+        // Apply all constraints
         for (auto constraint : mConstraints)
         {
             constraint->Apply();
         }
 
-        // Hack
         for (u32 i=0; i < kNumParticles; ++i)
         {
             Particle* p = mParticles[i];
-            if (p->pos.y < 0.0f)
+            for (u32 j=0; j < kNumOBBs; ++j)
             {
-                p->pos.y *= -1.0f;
-                p->posOld.y *= -1.0f;
+                const Math::OBB& obb = mOBBs[j];
+                if (Math::Intersect(p->pos, obb))
+                {
+                    Math::Vector3 vel(p->pos - p->posOld);
+                    Math::Vector3 dir = Math::Normalize(vel);
+
+                    Math::Ray ray(p->posOld, dir);
+                    Math::Vector3 point, normal;
+                    Math::GetContactPoint(ray, mOBBs[j], point, normal);
+
+                    Math::Vector3 velN = normal * Math::Dot(normal, vel);
+                    Math::Vector3 velT = vel - velN;
+
+                    p->pos = point + (normal * 0.005f);
+                    p->posOld = p->pos - (velT - velN * p->bounce);
+                }
             }
         }
     }

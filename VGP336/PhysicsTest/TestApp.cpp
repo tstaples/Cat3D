@@ -52,6 +52,23 @@ void TestApp::OnInitialize(u32 width, u32 height)
     physicsSettings.timeStep = (1.0f / 60.0f);
     physicsSettings.drag = 0.01f;
     mPhysicsWorld.Setup(physicsSettings);
+
+    Math::OBB ground;
+    ground.center = Math::Vector3(0.0f, -0.1f, 0.0f);
+    ground.extend = Math::Vector3(10.0f, 0.1f, 10.0f);
+    mPhysicsWorld.AddOBB(ground);
+
+    Math::OBB obb;
+    obb.extend = Math::Vector3(1.0f, 0.2f, 2.0f);
+    obb.center = Math::Vector3(0.0f, 2.0f, 1.0f);
+    obb.rot = Math::Quaternion(Math::Vector3::ZAxis(), Math::kPi / 6.0f);
+    mPhysicsWorld.AddOBB(obb);
+
+    Math::OBB obb2;
+    obb2.extend = Math::Vector3(1.0f, 0.2f, 2.0f);
+    obb2.center = Math::Vector3(-1.0f, 1.0f, 1.0f);
+    obb2.rot = Math::Quaternion(Math::Vector3::ZAxis(), -(Math::kPi / 6.0f));
+    mPhysicsWorld.AddOBB(obb2);
 }
 
 void TestApp::OnTerminate()
@@ -90,7 +107,7 @@ void TestApp::OnUpdate()
     // Spawn particles
     if (mInputSystem.IsKeyPressed(Keys::SPACE))
     {
-        mPhysicsWorld.Purge();
+        //mPhysicsWorld.Purge();
         //for (u32 i=0; i < 1000; ++i)
         //{
         //    Particle* p = new Particle(0.0f, 1.0f, 0.0f, 0.01f, 1.0f);
@@ -102,25 +119,9 @@ void TestApp::OnUpdate()
 
         for (u32 i=0; i < 1; ++i)
         {
+            PhysicsHelper::AddTetrahydron(mPhysicsWorld);
             //PhysicsHelper::AddCube(mPhysicsWorld);
             //PhysicsHelper::AddMesh(mPhysicsWorld);
-
-            Math::OBB ground;
-            ground.center = Math::Vector3(0.0f, -0.1f, 0.0f);
-            ground.extend = Math::Vector3(10.0f, 0.1f, 10.0f);
-            mPhysicsWorld.AddOBB(ground);
-
-            Math::OBB obb;
-            obb.extend = Math::Vector3(1.0f, 0.2f, 2.0f);
-            obb.center = Math::Vector3(1.0f, 2.0f, 1.0f);
-            obb.rot = Math::Quaternion(Math::Vector3::ZAxis(), Math::kPi / 6.0f);
-            mPhysicsWorld.AddOBB(obb);
-
-            Math::OBB obb2;
-            obb2.extend = Math::Vector3(1.0f, 0.2f, 2.0f);
-            obb2.center = Math::Vector3(-1.0f, 1.0f, 1.0f);
-            obb2.rot = Math::Quaternion(Math::Vector3::ZAxis(), -(Math::kPi / 6.0f));
-            mPhysicsWorld.AddOBB(obb2);
         }
     }
 

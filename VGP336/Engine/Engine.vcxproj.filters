@@ -420,6 +420,12 @@
     <ClInclude Include="OBB.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="Ray.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Plane.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Vector3.inl">
