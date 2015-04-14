@@ -1,8 +1,13 @@
 #include "EditorApp.h"
 
 EditorApp::EditorApp()
+    : mMouseX(0)
+    , mMouseY(0)
+    , mMouseMoveX(0)
+    , mMouseMoveY(0)
 {
     memset(mKeyStates, 0, sizeof(bool) * 256);
+    memset(mMouseStates, 0, sizeof(bool) * 3);
 }
 
 EditorApp::~EditorApp()
@@ -33,36 +38,47 @@ bool EditorApp::OnInput(const InputEvent& evt)
     switch(evt.type)
     {
     case InputEvent::KeyDown:
-    {
-        if(evt.value == VK_ESCAPE)
         {
-            PostQuitMessage(0);
-        }
+            if(evt.value == VK_ESCAPE)
+            {
+                PostQuitMessage(0);
+            }
                
-        mKeyStates[evt.value] = true;
-        handled = true;
-    }
-    break;
-    case InputEvent::KeyUp:
-    {
-        mKeyStates[evt.value] = false;
-        handled = true;
-    }
-    break;
-    case InputEvent::MouseMove:
-    {
-        if(mMouseX != -1 && mMouseY != -1)
-        {
-            f32 deltaX = (f32)(evt.x - mMouseX);
-            f32 deltaY = (f32)(evt.y - mMouseY);
-            mCamera.Yaw(deltaX);
-            mCamera.Pitch(deltaY);
+            mKeyStates[evt.value] = true;
+            handled = true;
         }
-        mMouseX = evt.x;
-        mMouseY = evt.y;
-        handled = true;
-    }
-    break;
+        break;
+    case InputEvent::KeyUp:
+        {
+            mKeyStates[evt.value] = false;
+            handled = true;
+        }
+        break;
+    case InputEvent::MouseMove:
+        {
+            if (mMouseX != -1 && mMouseY != -1)
+            {
+                // Get the offset since the last frame
+                mMouseMoveX = (f32)(evt.x - mMouseX);
+                mMouseMoveY = (f32)(evt.y - mMouseY);
+            }
+            mMouseX = evt.x;
+            mMouseY = evt.y;
+            handled = true;
+        }
+        break;
+    case InputEvent::MouseDown:
+        {
+            mMouseStates[evt.value] = true;
+            handled = true;
+        }
+        break;
+    case InputEvent::MouseUp:
+        {
+            mMouseStates[evt.value] = false;
+            handled = true;
+        }
+        break;
     }
     return handled;
 }
@@ -76,8 +92,22 @@ void EditorApp::OnUpdate()
 
 	// Camera movement
 	f32 mouseSensitivity = 0.25f;
-	mCamera.Yaw((f32)(mInputSystem.GetMouseMoveX()) * mouseSensitivity);
-	mCamera.Pitch((f32)(mInputSystem.GetMouseMoveY()) * mouseSensitivity);
+
+    // Rotate
+    if (mMouseStates[Mouse::RBUTTON])
+    {
+        // TODO: Add invert option
+        mCamera.Yaw(mMouseMoveX);
+        mCamera.Pitch(mMouseMoveY);
+    }
+    // Move camera
+    if (mMouseStates[Mouse::MBUTTON])
+    {
+        Math::Vector3 cameraPos = mCamera.GetPosition();
+        cameraPos.x -= mMouseMoveX;
+        cameraPos.y += (mMouseMoveY);
+        mCamera.SetPosition(cameraPos);
+    }
 
 	// Player movement
     if(mKeyStates['W'])
@@ -98,11 +128,7 @@ void EditorApp::OnUpdate()
     }
 
 	// Render
-	mGraphicsSystem.BeginRender(Color::Red());
-
-	//SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::XAxis(), Color::Red());
-	//SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::YAxis(), Color::Green());
-	//SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::ZAxis(), Color::Blue());
+	mGraphicsSystem.BeginRender(Color::Black());
 
 	SimpleDraw::AddSphere(Math::Vector3(-2.0f, 0.0f, 0.0f), 2.0f, Color::White());
 	SimpleDraw::AddSphere(Math::Vector3(2.0f, 0.0f, 0.0f), 2.0f, Color::White());

@@ -79,10 +79,19 @@ void Application::Update()
 // Window Message Procedure
 //====================================================================================================
 
+void MakeInputEvent(InputEvent& inputEvent, InputEvent::Type type, u32 value, LPARAM lParam)
+{
+    inputEvent.type = type;
+    inputEvent.value = value;
+	inputEvent.x = GET_X_LPARAM(lParam);
+	inputEvent.y = GET_Y_LPARAM(lParam);
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 	HDC hdc;
+	InputEvent inputEvent;
 
 	switch (message)
 	{
@@ -99,91 +108,89 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_CHAR:
 		{
-			Application* myApp = (Application*)GetWindowLongPtrA(hWnd, GWL_USERDATA);
-			if (myApp != nullptr)
-			{
-				InputEvent inputEvent;
-				inputEvent.type = InputEvent::Character;
-				inputEvent.value = wParam;
-
-				if (!myApp->OnInput(inputEvent))
-				{
-					return DefWindowProcA(hWnd, message, wParam, lParam);
-				}
-			}
+			inputEvent.type = InputEvent::Character;
+			inputEvent.value = wParam;
 		}
 		break;
 	case WM_KEYDOWN:
 		{
-			Application* myApp = (Application*)GetWindowLongPtrA(hWnd, GWL_USERDATA);
-			if (myApp != nullptr)
-			{
-				InputEvent inputEvent;
-				inputEvent.type = InputEvent::KeyDown;
-				inputEvent.value = wParam;
-
-				if (!myApp->OnInput(inputEvent))
-				{
-					return DefWindowProcA(hWnd, message, wParam, lParam);
-				}
-			}
+			inputEvent.type = InputEvent::KeyDown;
+			inputEvent.value = wParam;
 		}
 		break;
 	case WM_KEYUP:
 		{
-			Application* myApp = (Application*)GetWindowLongPtrA(hWnd, GWL_USERDATA);
-			if (myApp != nullptr)
-			{
-				InputEvent inputEvent;
-				inputEvent.type = InputEvent::KeyUp;
-				inputEvent.value = wParam;
-
-				if (!myApp->OnInput(inputEvent))
-				{
-					return DefWindowProcA(hWnd, message, wParam, lParam);
-				}
-			}
+			inputEvent.type = InputEvent::KeyUp;
+			inputEvent.value = wParam;
 		}
 		break;
 	case WM_MOUSEMOVE:
 		{
-			Application* myApp = (Application*)GetWindowLongPtrA(hWnd, GWL_USERDATA);
-			if (myApp != nullptr)
-			{
-				InputEvent inputEvent;
-				inputEvent.type = InputEvent::MouseMove;
-				inputEvent.x = GET_X_LPARAM(lParam);
-				inputEvent.y = GET_Y_LPARAM(lParam);
-
-				if (!myApp->OnInput(inputEvent))
-				{
-					return DefWindowProcA(hWnd, message, wParam, lParam);
-				}
-			}
+			inputEvent.type = InputEvent::MouseMove;
+			inputEvent.x = GET_X_LPARAM(lParam);
+			inputEvent.y = GET_Y_LPARAM(lParam);
 		}
 		break;
         // TODO: rest of mouse button cases
     case WM_LBUTTONDOWN:
 		{
-			Application* myApp = (Application*)GetWindowLongPtrA(hWnd, GWL_USERDATA);
-			if (myApp != nullptr)
-			{
-				InputEvent inputEvent;
-				inputEvent.type = InputEvent::MouseDown;
-                inputEvent.value = Mouse::LBUTTON;
-				inputEvent.x = GET_X_LPARAM(lParam);
-				inputEvent.y = GET_Y_LPARAM(lParam);
-
-				if (!myApp->OnInput(inputEvent))
-				{
-					return DefWindowProcA(hWnd, message, wParam, lParam);
-				}
-			}
+			inputEvent.type = InputEvent::MouseDown;
+            inputEvent.value = Mouse::LBUTTON;
+			inputEvent.x = GET_X_LPARAM(lParam);
+			inputEvent.y = GET_Y_LPARAM(lParam);
 		}
 		break;
+    case WM_RBUTTONDOWN:
+        {
+			inputEvent.type = InputEvent::MouseDown;
+            inputEvent.value = Mouse::RBUTTON;
+			inputEvent.x = GET_X_LPARAM(lParam);
+			inputEvent.y = GET_Y_LPARAM(lParam);
+        }
+        break;
+    case WM_MBUTTONDOWN:
+        {
+			inputEvent.type = InputEvent::MouseDown;
+            inputEvent.value = Mouse::MBUTTON;
+			inputEvent.x = GET_X_LPARAM(lParam);
+			inputEvent.y = GET_Y_LPARAM(lParam);
+        }
+        break;
+    case WM_LBUTTONUP:
+		{
+			inputEvent.type = InputEvent::MouseUp;
+            inputEvent.value = Mouse::LBUTTON;
+			inputEvent.x = GET_X_LPARAM(lParam);
+			inputEvent.y = GET_Y_LPARAM(lParam);
+		}
+		break;
+    case WM_RBUTTONUP:
+        {
+			inputEvent.type = InputEvent::MouseUp;
+            inputEvent.value = Mouse::RBUTTON;
+			inputEvent.x = GET_X_LPARAM(lParam);
+			inputEvent.y = GET_Y_LPARAM(lParam);
+        }
+        break;
+    case WM_MBUTTONUP:
+        {
+			inputEvent.type = InputEvent::MouseUp;
+            inputEvent.value = Mouse::MBUTTON;
+			inputEvent.x = GET_X_LPARAM(lParam);
+			inputEvent.y = GET_Y_LPARAM(lParam);
+        }
+        break;
 	default:
 		return DefWindowProcA(hWnd, message, wParam, lParam);
 	}
-		
+
+    Application* myApp = (Application*)GetWindowLongPtrA(hWnd, GWL_USERDATA);
+	if (myApp != nullptr)
+	{
+        if (!myApp->OnInput(inputEvent))
+		{
+			return DefWindowProcA(hWnd, message, wParam, lParam);
+		}
+    }
 	return 0;
 }

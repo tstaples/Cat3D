@@ -17,9 +17,11 @@ namespace Editor
         {
             InitializeComponent();
 
+            // Get handles to current instance and window
             IntPtr hInstance = Marshal.GetHINSTANCE(this.GetType().Module);
             IntPtr hWnd = this.ViewPanel.Handle;
 
+            // Initialize the engine within the view panel
             NativeMethods.Initialize(hInstance, IntPtr.Zero, hWnd, 1, this.ViewPanel.Width, this.ViewPanel.Height);
         }
 
