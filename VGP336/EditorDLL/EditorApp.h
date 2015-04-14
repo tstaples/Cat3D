@@ -23,11 +23,12 @@ private:
 	Camera mCamera;
 
     bool mKeyStates[256];
-    bool mMouseStates[3];
+    bool mMouseStates[4];
     s32 mMouseX;
     s32 mMouseY;
     f32 mMouseMoveX;
     f32 mMouseMoveY;
+    f32 mMouseScrollDelta;
 };
 
 #endif //#ifndef INCLUDED_EDITORAPP_H

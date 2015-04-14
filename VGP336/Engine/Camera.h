@@ -41,6 +41,8 @@ public:
 	f32 GetAspectRatio() const					{ return mAspectRatio; }
 	f32 GetNearPlane() const					{ return mNearPlane; }
 	f32 GetFarPlane() const						{ return mFarPlane; }
+
+    const Math::Vector3& GetLookAt() const      { return mLook; }
 	
 	Math::Matrix GetViewMatrix() const;
 	Math::Matrix GetProjectionMatrix() const;

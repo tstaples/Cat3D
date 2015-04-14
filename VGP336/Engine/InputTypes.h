@@ -142,6 +142,7 @@ namespace Mouse
 	const u32 LBUTTON		= 0;
 	const u32 RBUTTON		= 1;
 	const u32 MBUTTON		= 2;
+    const u32 SCROLL        = 3;
 }
 
 //----------------------------------------------------------------------------------------------------

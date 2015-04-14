@@ -5,9 +5,10 @@ EditorApp::EditorApp()
     , mMouseY(0)
     , mMouseMoveX(0)
     , mMouseMoveY(0)
+    , mMouseScrollDelta(0.0f)
 {
     memset(mKeyStates, 0, sizeof(bool) * 256);
-    memset(mMouseStates, 0, sizeof(bool) * 3);
+    memset(mMouseStates, 0, sizeof(bool) * 4);
 }
 
 EditorApp::~EditorApp()
@@ -79,6 +80,12 @@ bool EditorApp::OnInput(const InputEvent& evt)
             handled = true;
         }
         break;
+    case InputEvent::MouseScroll:
+        {
+            mMouseScrollDelta = evt.y;
+            handled = true;
+        }
+        break;
     }
     return handled;
 }
@@ -90,23 +97,31 @@ void EditorApp::OnUpdate()
 	const f32 deltaTime = mTimer.GetElapsedTime();
 	const f32 kMoveSpeed = 10.0f;
 
-	// Camera movement
-	f32 mouseSensitivity = 0.25f;
+	// Camera movement modifiers (TODO: Make these configurable)
+	const f32 lookSensitivity = 0.5f;
+    const f32 moveSensitivity = 0.25f;
 
-    // Rotate
+    // Camera look
     if (mMouseStates[Mouse::RBUTTON])
     {
-        // TODO: Add invert option
-        mCamera.Yaw(mMouseMoveX);
-        mCamera.Pitch(mMouseMoveY);
+        mCamera.Yaw(mMouseMoveX * lookSensitivity);
+        mCamera.Pitch(mMouseMoveY * lookSensitivity);
     }
     // Move camera
     if (mMouseStates[Mouse::MBUTTON])
     {
-        Math::Vector3 cameraPos = mCamera.GetPosition();
-        cameraPos.x -= mMouseMoveX;
-        cameraPos.y += (mMouseMoveY);
-        mCamera.SetPosition(cameraPos);
+        mCamera.Strafe((-mMouseMoveX) * moveSensitivity);
+        mCamera.Rise(mMouseMoveY * moveSensitivity);
+    }
+    // Camera zoom (TODO)
+    if (mMouseScrollDelta > 0)
+    {
+    }
+
+    bool temp = false; // used for testing below statement
+    if (mMouseStates[Mouse::LBUTTON])
+    {
+        // TODO: http://antongerdelan.net/opengl/raycasting.html
     }
 
 	// Player movement
@@ -130,7 +145,8 @@ void EditorApp::OnUpdate()
 	// Render
 	mGraphicsSystem.BeginRender(Color::Black());
 
-	SimpleDraw::AddSphere(Math::Vector3(-2.0f, 0.0f, 0.0f), 2.0f, Color::White());
+    Color sphereCol = (temp) ? Color::Red() : Color::White();
+	SimpleDraw::AddSphere(Math::Vector3(-2.0f, 0.0f, 0.0f), 2.0f, sphereCol);
 	SimpleDraw::AddSphere(Math::Vector3(2.0f, 0.0f, 0.0f), 2.0f, Color::White());
 
 	SimpleDraw::Render(mCamera);

@@ -20,7 +20,8 @@ struct InputEvent
 		KeyDown,
 		MouseUp,
 		MouseDown,
-		MouseMove
+		MouseMove,
+        MouseScroll
 	};
 
 	Type type;

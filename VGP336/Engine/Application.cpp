@@ -180,6 +180,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			inputEvent.y = GET_Y_LPARAM(lParam);
         }
         break;
+    case WM_MOUSEWHEEL:
+        {
+            inputEvent.type = InputEvent::MouseScroll;
+            inputEvent.value = Mouse::SCROLL;
+            // Hack: storing wheel delta in y
+            inputEvent.x = 0;
+            inputEvent.y = GET_WHEEL_DELTA_WPARAM(wParam);
+        }
+        break;
 	default:
 		return DefWindowProcA(hWnd, message, wParam, lParam);
 	}
