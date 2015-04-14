@@ -16,12 +16,27 @@ private:
 	virtual bool OnInput(const InputEvent& evt);
 	virtual void OnUpdate();
 
+    Math::Vector3 MouseToWorld();
+    bool SelectedObjectInWorld(const Math::AABB& aabb);
+
 private:
 	Window mWindow;
 	Timer mTimer;
-	InputSystem mInputSystem;
 	GraphicsSystem mGraphicsSystem;
 	Camera mCamera;
+
+    // Screen
+    u32 mWidth;
+    u32 mHeight;
+
+    // Input
+    bool mKeyStates[256];
+    bool mMouseStates[4];
+    s32 mMouseX;
+    s32 mMouseY;
+    f32 mMouseMoveX;
+    f32 mMouseMoveY;
+    f32 mMouseScrollDelta;
 };
 
 #endif //#ifndef INCLUDED_TESTAPP_H

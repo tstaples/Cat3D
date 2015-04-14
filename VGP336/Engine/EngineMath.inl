@@ -252,12 +252,19 @@ inline Matrix Transpose(const Matrix& m)
 
 inline Vector3 TransformCoord(const Vector3& v, const Matrix& m)
 {
-	return Vector3
+    f32 x = v.x * m._11 + v.y * m._21 + v.z * m._31 + m._41;
+    f32 y = v.x * m._12 + v.y * m._22 + v.z * m._32 + m._42;
+    f32 z = v.x * m._13 + v.y * m._23 + v.z * m._33 + m._43;
+    f32 w = v.x * m._14 + v.y * m._24 + v.z * m._34 + m._44;
+
+    return Vector3( x/w, y/w, z/w );
+
+	/*return Vector3
 	(
 		v.x * m._11 + v.y * m._21 + v.z * m._31 + m._41,
 		v.x * m._12 + v.y * m._22 + v.z * m._32 + m._42,
 		v.x * m._13 + v.y * m._23 + v.z * m._33 + m._43
-	);
+	);*/
 }
 
 //----------------------------------------------------------------------------------------------------

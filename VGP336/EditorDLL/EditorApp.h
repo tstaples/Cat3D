@@ -16,12 +16,20 @@ private:
 	virtual bool OnInput(const InputEvent& evt);
 	virtual void OnUpdate();
 
+    Math::Vector3 MouseToWorld();
+    bool SelectedObjectInWorld(const Math::AABB& aabb);
+
 private:
 	Timer mTimer;
 	InputSystem mInputSystem;
 	GraphicsSystem mGraphicsSystem;
 	Camera mCamera;
 
+    // Screen
+    u32 mWidth;
+    u32 mHeight;
+
+    // Input
     bool mKeyStates[256];
     bool mMouseStates[4];
     s32 mMouseX;

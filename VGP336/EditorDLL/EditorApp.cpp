@@ -1,7 +1,9 @@
 #include "EditorApp.h"
 
 EditorApp::EditorApp()
-    : mMouseX(0)
+    : mWidth(0)
+    , mHeight(0)
+    , mMouseX(0)
     , mMouseY(0)
     , mMouseMoveX(0)
     , mMouseMoveY(0)
@@ -11,13 +13,21 @@ EditorApp::EditorApp()
     memset(mMouseStates, 0, sizeof(bool) * 4);
 }
 
+//----------------------------------------------------------------------------------------------------
+
 EditorApp::~EditorApp()
 {
 }
 
+//----------------------------------------------------------------------------------------------------
 
 void EditorApp::OnInitialize(u32 width, u32 height)
 {
+    // Store width and height for later use
+    // TODO: update when resize event occurs
+    mWidth = width;
+    mHeight = height;
+
 	mTimer.Initialize();
 
 	mGraphicsSystem.Initialize(GetWindow(), false);
@@ -27,11 +37,15 @@ void EditorApp::OnInitialize(u32 width, u32 height)
 	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -10.0f));
 }
 
+//----------------------------------------------------------------------------------------------------
+
 void EditorApp::OnTerminate()
 {
 	SimpleDraw::Terminate();
 	mGraphicsSystem.Terminate();
 }
+
+//----------------------------------------------------------------------------------------------------
 
 bool EditorApp::OnInput(const InputEvent& evt)
 {
@@ -90,6 +104,8 @@ bool EditorApp::OnInput(const InputEvent& evt)
     return handled;
 }
 
+//----------------------------------------------------------------------------------------------------
+
 void EditorApp::OnUpdate()
 {
 	mTimer.Update();
@@ -122,6 +138,8 @@ void EditorApp::OnUpdate()
     if (mMouseStates[Mouse::LBUTTON])
     {
         // TODO: http://antongerdelan.net/opengl/raycasting.html
+        Math::AABB testAABB(Math::Vector3::Zero(), Math::Vector3(2.0f, 2.0f, 2.0f));
+        temp = SelectedObjectInWorld(testAABB);
     }
 
 	// Player movement
@@ -146,9 +164,42 @@ void EditorApp::OnUpdate()
 	mGraphicsSystem.BeginRender(Color::Black());
 
     Color sphereCol = (temp) ? Color::Red() : Color::White();
-	SimpleDraw::AddSphere(Math::Vector3(-2.0f, 0.0f, 0.0f), 2.0f, sphereCol);
-	SimpleDraw::AddSphere(Math::Vector3(2.0f, 0.0f, 0.0f), 2.0f, Color::White());
+    SimpleDraw::AddAABB(Math::Vector3::Zero(), 2.0f, sphereCol);
+	//SimpleDraw::AddSphere(Math::Vector3(-2.0f, 0.0f, 0.0f), 2.0f, sphereCol);
+	//SimpleDraw::AddSphere(Math::Vector3(2.0f, 0.0f, 0.0f), 2.0f, Color::White());
 
 	SimpleDraw::Render(mCamera);
 	mGraphicsSystem.EndRender();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+Math::Vector3 EditorApp::MouseToWorld()
+{
+    Math::Vector3 mouseNDC;
+    mouseNDC.x = (2.0f * mMouseX) / mWidth - 1.0f;
+    mouseNDC.y = 1.0f - (2.0f * mMouseY) / mHeight;
+    mouseNDC.z = 0.0f;
+
+    // Transform the mouse NDC coords into world space
+    Math::Matrix projection     = mCamera.GetProjectionMatrix();
+    Math::Matrix invProjection  = Math::Inverse(projection);
+    Math::Matrix cameraView     = Math::Inverse(mCamera.GetViewMatrix());
+    Math::Matrix transform      = invProjection * cameraView;
+    Math::Vector3 mouseWorld    = Math::TransformCoord(mouseNDC, transform);
+
+    return mouseWorld;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool EditorApp::SelectedObjectInWorld(const Math::AABB& aabb)
+{
+    Math::Vector3 mouseWorld    = MouseToWorld();
+    Math::Vector3 cameraPos     = mCamera.GetPosition();
+    Math::Vector3 dir           = Math::Normalize(mouseWorld - cameraPos);
+    Math::Ray ray(cameraPos, dir);
+
+    f32 dEntry, dExit;
+    return Math::Intersect(ray, aabb, dEntry, dExit);
 }

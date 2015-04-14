@@ -44,6 +44,7 @@ public:
 
     const Math::Vector3& GetLookAt() const      { return mLook; }
 	
+    // TODO: Store these as members
 	Math::Matrix GetViewMatrix() const;
 	Math::Matrix GetProjectionMatrix() const;
 

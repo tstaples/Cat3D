@@ -1,7 +1,30 @@
 #include "TestApp.h"
 
-TestApp::TestApp()
+#define DEBUG_INPUT 0
+
+namespace
 {
+    void DebugLogInput(const InputEvent& e)
+    {
+#if DEBUG_INPUT
+        char buff[256];
+        sprintf_s(buff, "[InputEvent] Type: %d, Value: %u, X: %d, Y: %d\n", e.type, e.value, e.x, e.y);
+        OutputDebugStringA(buff);
+#endif
+    }
+}
+
+TestApp::TestApp()
+    : mWidth(0)
+    , mHeight(0)
+    , mMouseX(0)
+    , mMouseY(0)
+    , mMouseMoveX(0)
+    , mMouseMoveY(0)
+    , mMouseScrollDelta(0.0f)
+{
+    memset(mKeyStates, 0, sizeof(bool) * 256);
+    memset(mMouseStates, 0, sizeof(bool) * 4);
 }
 
 TestApp::~TestApp()
@@ -49,16 +72,16 @@ void TestPath()
 
 void TestApp::OnInitialize(u32 width, u32 height)
 {
-    TestQuaternion();
-
-    TestPath();
+    // Store width and height for later use
+    // TODO: update when resize event occurs
+    mWidth = width;
+    mHeight = height;
 
 	// Init the window
 	mWindow.Initialize(GetInstance(), GetAppName(), width, height);
 	HookWindow(mWindow.GetWindowHandle());
 
 	mTimer.Initialize();
-	mInputSystem.Initialize(mWindow.GetWindowHandle());
 
 	mGraphicsSystem.Initialize(mWindow.GetWindowHandle(), false);
 	SimpleDraw::Initialize(mGraphicsSystem);
@@ -69,7 +92,6 @@ void TestApp::OnInitialize(u32 width, u32 height)
 
 void TestApp::OnTerminate()
 {
-	mInputSystem.Terminate();
 	SimpleDraw::Terminate();
 	mGraphicsSystem.Terminate();
 	mWindow.Terminate();
@@ -77,13 +99,62 @@ void TestApp::OnTerminate()
 
 bool TestApp::OnInput(const InputEvent& evt)
 {
-	bool handled = false;
-	if (mInputSystem.IsKeyPressed(Keys::ESCAPE))
-	{
-		PostQuitMessage(0);
-		handled = true;
-	}
-	return handled;
+    DebugLogInput(evt);
+
+    bool handled = false;
+    switch(evt.type)
+    {
+    case InputEvent::KeyDown:
+        {
+            if(evt.value == VK_ESCAPE)
+            {
+                PostQuitMessage(0);
+            }
+               
+            mKeyStates[evt.value] = true;
+            handled = true;
+        }
+        break;
+    case InputEvent::KeyUp:
+        {
+            mKeyStates[evt.value] = false;
+            handled = true;
+        }
+        break;
+    case InputEvent::MouseMove:
+        {
+            if (mMouseX != -1 && mMouseY != -1)
+            {
+                // Get the offset since the last frame
+                mMouseMoveX = (f32)(evt.x - mMouseX);
+                mMouseMoveY = (f32)(evt.y - mMouseY);
+            }
+            mMouseX = evt.x;
+            mMouseY = evt.y;
+            handled = true;
+        }
+        break;
+    case InputEvent::MouseDown:
+        {
+            mMouseStates[evt.value] = true;
+            handled = true;
+        }
+        break;
+    case InputEvent::MouseUp:
+        {
+            mMouseStates[evt.value] = false;
+            handled = true;
+        }
+        break;
+    case InputEvent::MouseScroll:
+        {
+            // TODO
+            mMouseScrollDelta = (f32)evt.y;
+            handled = true;
+        }
+        break;
+    }
+    return handled;
 }
 
 void TestApp::OnUpdate()
@@ -95,36 +166,93 @@ void TestApp::OnUpdate()
 	}
 
 	mTimer.Update();
-	mInputSystem.Update();
+	const f32 deltaTime = mTimer.GetElapsedTime();
 
-	const f32 deltatime = mTimer.GetElapsedTime();
+	// Camera movement modifiers (TODO: Make these configurable)
 	const f32 kMoveSpeed = 10.0f;
+	const f32 lookSensitivity = 0.25f;
+    const f32 moveSensitivity = 0.25f;
 
-	// Camera movement
-	f32 mouseSensitivity = 0.25f;
-	mCamera.Yaw((f32)(mInputSystem.GetMouseMoveX()) * mouseSensitivity);
-	mCamera.Pitch((f32)(mInputSystem.GetMouseMoveY()) * mouseSensitivity);
+    // Camera look
+    if (mMouseStates[Mouse::RBUTTON])
+    {
+        mCamera.Yaw(mMouseMoveX * lookSensitivity);
+        mCamera.Pitch(mMouseMoveY * lookSensitivity);
+    }
+    // Move camera
+    if (mMouseStates[Mouse::MBUTTON])
+    {
+        mCamera.Strafe((-mMouseMoveX) * moveSensitivity);
+        mCamera.Rise(mMouseMoveY * moveSensitivity);
+    }
+    // Camera zoom (TODO)
+    if (mMouseScrollDelta > 0)
+    {
+    }
+
+    bool temp = false; // used for testing below statement
+    if (mMouseStates[Mouse::LBUTTON])
+    {
+        // TODO: http://antongerdelan.net/opengl/raycasting.html
+        Math::AABB testAABB(Math::Vector3::Zero(), Math::Vector3(2.0f, 2.0f, 2.0f));
+        temp = SelectedObjectInWorld(testAABB);
+    }
 
 	// Player movement
-	if (mInputSystem.IsKeyDown(Keys::W))
-		mCamera.Walk(kMoveSpeed * deltatime);
-	else if (mInputSystem.IsKeyDown(Keys::A))
-		mCamera.Strafe(-kMoveSpeed * deltatime);
-	else if (mInputSystem.IsKeyDown(Keys::D))
-		mCamera.Strafe(kMoveSpeed * deltatime);
-	else if (mInputSystem.IsKeyDown(Keys::S))
-		mCamera.Walk(-kMoveSpeed * deltatime);
+    if(mKeyStates['W'])
+    {
+        mCamera.Walk(kMoveSpeed * deltaTime);
+    }
+    else if(mKeyStates['S'])
+    {
+        mCamera.Walk(-kMoveSpeed * deltaTime);
+    }
+    else if(mKeyStates['D'])
+    {
+        mCamera.Strafe(kMoveSpeed * deltaTime);
+    }
+    else if(mKeyStates['A'])
+    {
+        mCamera.Strafe(-kMoveSpeed * deltaTime);
+    }
 
 	// Render
-	mGraphicsSystem.BeginRender(Color::Red());
+	mGraphicsSystem.BeginRender(Color::Black());
+    
+    Color sphereCol = (temp) ? Color::Red() : Color::White();
+    SimpleDraw::AddAABB(Math::Vector3::Zero(), 2.0f, sphereCol);
 
-	//SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::XAxis(), Color::Red());
-	//SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::YAxis(), Color::Green());
-	//SimpleDraw::AddLine(Math::Vector3::Zero(), Math::Vector3::ZAxis(), Color::Blue());
-
-	SimpleDraw::AddSphere(Math::Vector3(-2.0f, 0.0f, 0.0f), 2.0f, Color::White());
-	SimpleDraw::AddSphere(Math::Vector3(2.0f, 0.0f, 0.0f), 2.0f, Color::White());
+	//SimpleDraw::AddSphere(Math::Vector3(-2.0f, 0.0f, 0.0f), 2.0f, Color::White());
+	//SimpleDraw::AddSphere(Math::Vector3(2.0f, 0.0f, 0.0f), 2.0f, Color::White());
 
 	SimpleDraw::Render(mCamera);
 	mGraphicsSystem.EndRender();
+}
+
+Math::Vector3 TestApp::MouseToWorld()
+{
+    Math::Vector3 mouseNDC;
+    mouseNDC.x = (2.0f * mMouseX) / mWidth - 1.0f;
+    mouseNDC.y = 1.0f - (2.0f * mMouseY) / mHeight;
+    mouseNDC.z = 0.0f;
+
+    // Transform the mouse NDC coords into world space
+    Math::Matrix projection     = mCamera.GetProjectionMatrix();
+    Math::Matrix invProjection  = Math::Inverse(projection);
+    Math::Matrix cameraView     = Math::Inverse(mCamera.GetViewMatrix());
+    Math::Matrix transform      = invProjection * cameraView;
+    Math::Vector3 mouseWorld    = Math::TransformCoord(mouseNDC, transform);
+
+    return mouseWorld;
+}
+
+bool TestApp::SelectedObjectInWorld(const Math::AABB& aabb)
+{
+    Math::Vector3 mouseWorld    = MouseToWorld();
+    Math::Vector3 cameraPos     = mCamera.GetPosition();
+    Math::Vector3 dir           = Math::Normalize(mouseWorld - cameraPos);
+    Math::Ray ray(cameraPos, dir);
+
+    f32 dEntry, dExit;
+    return Math::Intersect(ray, aabb, dEntry, dExit);
 }
