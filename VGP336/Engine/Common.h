@@ -72,11 +72,8 @@ typedef double				f64;
 	#define LOG(format, ...)\
 	{\
 		{\
-			va_list va;\
 			char buffer[1024];\
-			va_start(va, (#format));\
-			vsprintf_s(buffer, 1024, (#format), va);\
-			va_end(va);\
+            sprintf_s(buffer, 1024, (#format), __VA_ARGS__);\
 			std::string message;\
 			message += (buffer);\
 			message += "\n";\
