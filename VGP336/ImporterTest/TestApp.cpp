@@ -107,6 +107,7 @@ void TestApp::OnUpdate()
 	else if (mInputSystem.IsKeyDown(Keys::S))
 		mCamera.Walk(-kMoveSpeed * deltatime);
 
+    // Uncomment to debug animation frame by frame
     //if (mInputSystem.IsKeyPressed(Keys::SPACE))
     {
         mAnimationController.Update(deltatime * 1000.0f);

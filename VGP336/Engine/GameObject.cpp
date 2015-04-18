@@ -1,6 +1,8 @@
 #include "Precompiled.h"
 #include "GameObject.h"
 
+#include "Component.h"
+
 GameObject::GameObject()
     : mName("Unknown")
 {
@@ -53,4 +55,15 @@ ID GameObject::FindComponentID(Meta::Type type)
         id = component->second;
     }
     return id;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+Component* GameObject::GetComponent(Meta::Type type)
+{
+    ComponentMap::iterator it = mComponents.find(type);
+    if (it != mComponents.end())
+    {
+        return it->second;
+    }
 }

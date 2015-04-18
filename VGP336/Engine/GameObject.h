@@ -13,6 +13,8 @@
 
 #include "ID.h"
 
+class Component;
+
 //====================================================================================================
 // Class Declarations
 //====================================================================================================
@@ -33,6 +35,8 @@ public:
 
     ID GetComponentID(Meta::Type type);   // Garuntees ID
     ID FindComponentID(Meta::Type type);  // Returns invalid ID if component doesn't exist
+
+    Component* GetComponent(Meta::Type type);
 
     const char* GetName() const                 { return mName.c_str(); }
     ID GetID() const                            { return mID; }

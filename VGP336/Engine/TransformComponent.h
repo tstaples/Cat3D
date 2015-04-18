@@ -30,6 +30,8 @@ public:
     Math::Matrix& GetTransform()                { return mTransform; }
     const Math::Matrix& GetTransform() const    { return mTransform; }
 
+    Math::Vector3 GetPosition() const;
+
     virtual void Load(Json::Value& properties);
 
 private:

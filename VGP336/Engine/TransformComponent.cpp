@@ -22,6 +22,13 @@ TransformComponent::~TransformComponent()
 
 //----------------------------------------------------------------------------------------------------
 
+Math::Vector3 TransformComponent::GetPosition() const
+{
+    return mTransform.GetTranslation();
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void TransformComponent::Load(Json::Value& properties)
 {
     Json::Value pos = properties.get("Position", "");

@@ -205,6 +205,9 @@
     <ClCompile Include="Constraints.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Octree.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InputEvent.h">
@@ -425,6 +428,9 @@
     </ClInclude>
     <ClInclude Include="Plane.h">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Octree.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
