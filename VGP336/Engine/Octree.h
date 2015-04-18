@@ -24,6 +24,7 @@ public:
 
 private:
     void BuildTree();
+    void CreateNode(const Math::AABB& region, const GameObjects& objs);
     bool IsRegionValid(const Math::AABB& region);
 
 private:

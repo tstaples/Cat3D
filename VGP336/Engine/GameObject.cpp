@@ -56,14 +56,3 @@ ID GameObject::FindComponentID(Meta::Type type)
     }
     return id;
 }
-
-//----------------------------------------------------------------------------------------------------
-
-Component* GameObject::GetComponent(Meta::Type type)
-{
-    ComponentMap::iterator it = mComponents.find(type);
-    if (it != mComponents.end())
-    {
-        return it->second;
-    }
-}
