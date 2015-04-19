@@ -91,7 +91,7 @@ typedef double				f64;
 	{\
 		if (!(condition))\
 		{\
-			LOG(format, ...)\
+			LOG(format, __VA_ARGS__)\
 			DebugBreak();\
 		}\
 	}
