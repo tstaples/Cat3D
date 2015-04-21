@@ -18,12 +18,16 @@ private:
 
     Math::Vector3 MouseToWorld();
     bool SelectedObjectInWorld(const Math::AABB& aabb);
+    Math::Ray GetMouseRay();
 
 private:
 	Window mWindow;
 	Timer mTimer;
 	GraphicsSystem mGraphicsSystem;
 	Camera mCamera;
+
+    Octree mOctree;
+    Math::AABB testAABB;
 
     // Screen
     u32 mWidth;

@@ -8,6 +8,7 @@ EditorApp::EditorApp()
     , mMouseMoveX(0)
     , mMouseMoveY(0)
     , mMouseScrollDelta(0.0f)
+    , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(50.0f, 50.0f, 50.0f)))
 {
     memset(mKeyStates, 0, sizeof(bool) * 256);
     memset(mMouseStates, 0, sizeof(bool) * 4);

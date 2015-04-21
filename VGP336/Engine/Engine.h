@@ -63,6 +63,7 @@
 
 // Math headers
 #include "EngineMath.h"
+#include "Octree.h"
 
 // Physics Headers
 #include "Constraints.h"

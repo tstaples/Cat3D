@@ -193,6 +193,14 @@ bool Intersect(const Ray& ray, const AABB& aabb, f32& distEntry, f32& distExit)
 
 //----------------------------------------------------------------------------------------------------
 
+bool Intersect(const Ray& ray, const AABB& aabb)
+{
+    f32 dEntry, dExit; // Do nothing with these
+    return Intersect(ray, aabb, dEntry, dExit);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 bool Intersect(const Ray& ray, const Plane& plane, f32& distance)
 {
     // Can't assume plane's normal is passed in normalized

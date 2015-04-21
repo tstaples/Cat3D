@@ -102,6 +102,7 @@ Quaternion Slerp(const Quaternion& q1, const Quaternion& q2, f32 t);
 
 bool Intersect(const Ray& ray, const OBB& obb, f32& distance);
 bool Intersect(const Ray& ray, const AABB& aabb, f32& distEntry, f32& distExit);
+bool Intersect(const Ray& ray, const AABB& aabb);
 bool Intersect(const Ray& ray, const Plane& plane, f32& distance);
 bool Intersect(const Vector3& point, const AABB& aabb);
 bool Intersect(const Vector3& point, const OBB& obb);

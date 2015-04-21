@@ -1,9 +1,12 @@
 #include "TestApp.h"
+#include "Random.h"
 
 #define DEBUG_INPUT 0
 
 namespace
 {
+    static Math::Vector3 vel(1.0f, 1.0f, 0.0f);
+
     void DebugLogInput(const InputEvent& e)
     {
 #if DEBUG_INPUT
@@ -22,6 +25,7 @@ TestApp::TestApp()
     , mMouseMoveX(0)
     , mMouseMoveY(0)
     , mMouseScrollDelta(0.0f)
+    , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(50.0f, 50.0f, 50.0f)))
 {
     memset(mKeyStates, 0, sizeof(bool) * 256);
     memset(mMouseStates, 0, sizeof(bool) * 4);
@@ -88,10 +92,18 @@ void TestApp::OnInitialize(u32 width, u32 height)
 
 	mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
 	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -10.0f));
+
+    testAABB = Math::AABB(
+        Math::Vector3(Random::GetF(-10.0f, 10.0f),
+                      Random::GetF(-10.0f, 10.0f),
+                      Random::GetF(-10.0f, 10.0f)),
+        Math::Vector3(2.0f, 2.0f, 2.0f));
 }
 
 void TestApp::OnTerminate()
 {
+    mOctree.Destroy();
+
 	SimpleDraw::Terminate();
 	mGraphicsSystem.Terminate();
 	mWindow.Terminate();
@@ -168,10 +180,15 @@ void TestApp::OnUpdate()
 	mTimer.Update();
 	const f32 deltaTime = mTimer.GetElapsedTime();
 
+    // Apply some velocity to move the cube
+    //testAABB.center += vel * deltaTime;
+    mOctree.Destroy();
+    mOctree.Insert(testAABB);
+
 	// Camera movement modifiers (TODO: Make these configurable)
-	const f32 kMoveSpeed = 10.0f;
-	const f32 lookSensitivity = 0.25f;
-    const f32 moveSensitivity = 0.25f;
+	const f32 kMoveSpeed = 1.0f;
+	const f32 lookSensitivity = 0.0025f;
+    const f32 moveSensitivity = 0.0025f;
 
     // Camera look
     if (mMouseStates[Mouse::RBUTTON])
@@ -190,37 +207,47 @@ void TestApp::OnUpdate()
     {
     }
 
-    bool temp = false; // used for testing below statement
+    bool objectClicked = false; // used for testing below statement
+    std::vector<Math::AABB> objects;
+
     if (mMouseStates[Mouse::LBUTTON])
     {
-        // TODO: http://antongerdelan.net/opengl/raycasting.html
-        Math::AABB testAABB(Math::Vector3::Zero(), Math::Vector3(2.0f, 2.0f, 2.0f));
-        temp = SelectedObjectInWorld(testAABB);
+        Math::Ray ray = GetMouseRay();
+        objectClicked = mOctree.GetIntersectingObjects(ray, objects);
     }
 
-	// Player movement
-    if(mKeyStates['W'])
-    {
-        mCamera.Walk(kMoveSpeed * deltaTime);
-    }
-    else if(mKeyStates['S'])
-    {
-        mCamera.Walk(-kMoveSpeed * deltaTime);
-    }
-    else if(mKeyStates['D'])
-    {
-        mCamera.Strafe(kMoveSpeed * deltaTime);
-    }
-    else if(mKeyStates['A'])
-    {
-        mCamera.Strafe(-kMoveSpeed * deltaTime);
-    }
+    // Player movement
+    //if(mKeyStates['W'])
+    //{
+    //    mCamera.Walk(kMoveSpeed * deltaTime);
+    //}
+    //else if(mKeyStates['S'])
+    //{
+    //    mCamera.Walk(-kMoveSpeed * deltaTime);
+    //}
+    //else if(mKeyStates['D'])
+    //{
+    //    mCamera.Strafe(kMoveSpeed * deltaTime);
+    //}
+    //else if(mKeyStates['A'])
+    //{
+    //    mCamera.Strafe(-kMoveSpeed * deltaTime);
+    //}
 
 	// Render
 	mGraphicsSystem.BeginRender(Color::Black());
     
-    Color sphereCol = (temp) ? Color::Red() : Color::White();
-    SimpleDraw::AddAABB(Math::Vector3::Zero(), 2.0f, sphereCol);
+    if (objectClicked)
+    {
+        for (auto it : objects)
+        {
+            SimpleDraw::AddAABB(it.center, it.extend.x, Color::Red());
+        }
+    }
+    else
+    {
+        SimpleDraw::AddAABB(testAABB.center, testAABB.extend.x, Color::White());
+    }
 
 	//SimpleDraw::AddSphere(Math::Vector3(-2.0f, 0.0f, 0.0f), 2.0f, Color::White());
 	//SimpleDraw::AddSphere(Math::Vector3(2.0f, 0.0f, 0.0f), 2.0f, Color::White());
@@ -248,11 +275,15 @@ Math::Vector3 TestApp::MouseToWorld()
 
 bool TestApp::SelectedObjectInWorld(const Math::AABB& aabb)
 {
+    Math::Ray ray(GetMouseRay());
+    f32 dEntry, dExit;
+    return Math::Intersect(ray, aabb, dEntry, dExit);
+}
+
+Math::Ray TestApp::GetMouseRay()
+{
     Math::Vector3 mouseWorld    = MouseToWorld();
     Math::Vector3 cameraPos     = mCamera.GetPosition();
     Math::Vector3 dir           = Math::Normalize(mouseWorld - cameraPos);
-    Math::Ray ray(cameraPos, dir);
-
-    f32 dEntry, dExit;
-    return Math::Intersect(ray, aabb, dEntry, dExit);
+    return Math::Ray(cameraPos, dir);
 }

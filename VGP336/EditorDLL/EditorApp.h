@@ -25,6 +25,8 @@ private:
 	GraphicsSystem mGraphicsSystem;
 	Camera mCamera;
 
+    Octree mOctree;
+
     // Screen
     u32 mWidth;
     u32 mHeight;
