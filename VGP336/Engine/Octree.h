@@ -2,40 +2,48 @@
 #define INCLUDED_ENGINE_OCTREE_H
 
 #include "EngineMath.h"
-#include "GameObject.h"
-#include "RepositoryTypes.h"
 
 class Octree
 {
 public:
-    typedef std::vector<GameObject> GameObjects;
-    typedef std::vector<Octree> Children;
+    typedef std::vector<Math::Vector3> Points; // Temp until able to access transform from gameobject
+    //typedef std::vector<Octree> Children;
 
 public:
     static const u16 kNumChildren = 8;
     static const u16 kMinSize = 1;  // Smallest is 1x1x1 cube
     
-    Octree(TransformRepository& transformRepo);
-    Octree(TransformRepository& transformRepo, const Math::AABB& region);
-    Octree(TransformRepository& transformRepo, const Math::AABB& region, const GameObjects& objects);
+    Octree();
+    Octree(const Math::AABB& region);
+    Octree(const Math::AABB& region, const Math::Vector3& point);
+    Octree(const Math::AABB& region, const Points& objects);
     ~Octree();
+
+    void Insert(const Math::Vector3& point);
+    void Destroy();
 
     const Math::AABB& GetBoundingBox() const { return mAABB; }
 
 private:
-    void BuildTree();
-    void CreateNode(const Math::AABB& region, const GameObjects& objs);
-    bool IsRegionValid(const Math::AABB& region);
+    //void BuildTree();
+    bool IsLeaf();
 
 private:
     Math::AABB mAABB; // Bounding volume
 
-    GameObjects mObjects; // Objects in this volume
-    TransformRepository& mTransformRepository;
+    Points mObjects; // Objects in this volume
 
     Octree* mpParent;
 
-    Children mChildren;
+    /*
+	    Children follow a predictable pattern to make accesses simple.
+	    Here, - means less than 'origin' in that dimension, + means greater than.
+	    child:	0 1 2 3 4 5 6 7
+	    x:      - - - - + + + +
+	    y:      - - + + - - + +
+	    z:      - + - + - + - +
+	*/
+    Octree* mpChildren[kNumChildren];
     u8 mActiveChildren; // Bitmask indicating which children are active
 };
 
