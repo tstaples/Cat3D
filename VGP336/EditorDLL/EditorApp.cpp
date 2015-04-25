@@ -1,4 +1,14 @@
 #include "EditorApp.h"
+#include "Random.h"
+
+namespace
+{
+    Math::AABB testAABB(
+        Math::Vector3(Random::GetF(-10.0f, 10.0f),
+                      Random::GetF(-10.0f, 10.0f),
+                      Random::GetF(-10.0f, 10.0f)),
+        Math::Vector3(2.0f, 2.0f, 2.0f));
+}
 
 EditorApp::EditorApp()
     : mWidth(0)
@@ -109,14 +119,44 @@ bool EditorApp::OnInput(const InputEvent& evt)
 
 void EditorApp::OnUpdate()
 {
-	mTimer.Update();
+    mOctree.Destroy();
+    mOctree.Insert(testAABB);
+    mOctree.Debug_DrawTree();
 
+    mTimer.Update();
 	const f32 deltaTime = mTimer.GetElapsedTime();
-	const f32 kMoveSpeed = 10.0f;
+    UpdateControls(deltaTime);
 
+
+	// Render
+	mGraphicsSystem.BeginRender(Color::Black());
+
+    Color sphereCol = (temp) ? Color::Red() : Color::White();
+    SimpleDraw::AddAABB(Math::Vector3::Zero(), 2.0f, sphereCol);
+
+	SimpleDraw::Render(mCamera);
+	mGraphicsSystem.EndRender();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void EditorApp::UpdateControls(f32 deltaTime)
+{
 	// Camera movement modifiers (TODO: Make these configurable)
+    const f32 kMoveSpeed = 10.0f;
 	const f32 lookSensitivity = 0.5f;
     const f32 moveSensitivity = 0.25f;
+    const f32 zoomDistance = 1.0f;
+
+    // Object selection
+    bool objectClicked = false; // used for testing below statement
+    std::vector<Math::AABB> objects;
+
+    if (mMouseStates[Mouse::LBUTTON])
+    {
+        Math::Ray ray = mCamera.GetMouseRay(mMouseX, mMouseY, mWidth, mHeight);
+        objectClicked = mOctree.GetIntersectingObjects(ray, objects);
+    }
 
     // Camera look
     if (mMouseStates[Mouse::RBUTTON])
@@ -130,20 +170,17 @@ void EditorApp::OnUpdate()
         mCamera.Strafe((-mMouseMoveX) * moveSensitivity);
         mCamera.Rise(mMouseMoveY * moveSensitivity);
     }
-    // Camera zoom (TODO)
-    if (mMouseScrollDelta > 0)
+    // Camera zoom
+    if (mMouseScrollDelta == WHEEL_SCROLL_UP)
     {
+        mCamera.Walk(zoomDistance);
+    }
+    else if (mMouseScrollDelta == WHEEL_SCROLL_DOWN)
+    {
+        mCamera.Walk(-zoomDistance);
     }
 
-    bool temp = false; // used for testing below statement
-    if (mMouseStates[Mouse::LBUTTON])
-    {
-        // TODO: http://antongerdelan.net/opengl/raycasting.html
-        Math::AABB testAABB(Math::Vector3::Zero(), Math::Vector3(2.0f, 2.0f, 2.0f));
-        temp = SelectedObjectInWorld(testAABB);
-    }
-
-	// Player movement
+    // Camera movement
     if(mKeyStates['W'])
     {
         mCamera.Walk(kMoveSpeed * deltaTime);
@@ -160,47 +197,36 @@ void EditorApp::OnUpdate()
     {
         mCamera.Strafe(-kMoveSpeed * deltaTime);
     }
-
-	// Render
-	mGraphicsSystem.BeginRender(Color::Black());
-
-    Color sphereCol = (temp) ? Color::Red() : Color::White();
-    SimpleDraw::AddAABB(Math::Vector3::Zero(), 2.0f, sphereCol);
-	//SimpleDraw::AddSphere(Math::Vector3(-2.0f, 0.0f, 0.0f), 2.0f, sphereCol);
-	//SimpleDraw::AddSphere(Math::Vector3(2.0f, 0.0f, 0.0f), 2.0f, Color::White());
-
-	SimpleDraw::Render(mCamera);
-	mGraphicsSystem.EndRender();
 }
 
 //----------------------------------------------------------------------------------------------------
 
-Math::Vector3 EditorApp::MouseToWorld()
-{
-    Math::Vector3 mouseNDC;
-    mouseNDC.x = (2.0f * mMouseX) / mWidth - 1.0f;
-    mouseNDC.y = 1.0f - (2.0f * mMouseY) / mHeight;
-    mouseNDC.z = 0.0f;
-
-    // Transform the mouse NDC coords into world space
-    Math::Matrix projection     = mCamera.GetProjectionMatrix();
-    Math::Matrix invProjection  = Math::Inverse(projection);
-    Math::Matrix cameraView     = Math::Inverse(mCamera.GetViewMatrix());
-    Math::Matrix transform      = invProjection * cameraView;
-    Math::Vector3 mouseWorld    = Math::TransformCoord(mouseNDC, transform);
-
-    return mouseWorld;
-}
-
-//----------------------------------------------------------------------------------------------------
-
-bool EditorApp::SelectedObjectInWorld(const Math::AABB& aabb)
-{
-    Math::Vector3 mouseWorld    = MouseToWorld();
-    Math::Vector3 cameraPos     = mCamera.GetPosition();
-    Math::Vector3 dir           = Math::Normalize(mouseWorld - cameraPos);
-    Math::Ray ray(cameraPos, dir);
-
-    f32 dEntry, dExit;
-    return Math::Intersect(ray, aabb, dEntry, dExit);
-}
+//Math::Vector3 EditorApp::MouseToWorld()
+//{
+//    Math::Vector3 mouseNDC;
+//    mouseNDC.x = (2.0f * mMouseX) / mWidth - 1.0f;
+//    mouseNDC.y = 1.0f - (2.0f * mMouseY) / mHeight;
+//    mouseNDC.z = 0.0f;
+//
+//    // Transform the mouse NDC coords into world space
+//    Math::Matrix projection     = mCamera.GetProjectionMatrix();
+//    Math::Matrix invProjection  = Math::Inverse(projection);
+//    Math::Matrix cameraView     = Math::Inverse(mCamera.GetViewMatrix());
+//    Math::Matrix transform      = invProjection * cameraView;
+//    Math::Vector3 mouseWorld    = Math::TransformCoord(mouseNDC, transform);
+//
+//    return mouseWorld;
+//}
+//
+////----------------------------------------------------------------------------------------------------
+//
+//bool EditorApp::SelectedObjectInWorld(const Math::AABB& aabb)
+//{
+//    Math::Vector3 mouseWorld    = MouseToWorld();
+//    Math::Vector3 cameraPos     = mCamera.GetPosition();
+//    Math::Vector3 dir           = Math::Normalize(mouseWorld - cameraPos);
+//    Math::Ray ray(cameraPos, dir);
+//
+//    f32 dEntry, dExit;
+//    return Math::Intersect(ray, aabb, dEntry, dExit);
+//}

@@ -15,6 +15,7 @@ namespace Math
 {
 	struct Vector2;
 	struct Vector3;
+    struct AABB;
 }
 
 struct Color;
@@ -35,6 +36,7 @@ void Terminate();
 // Functions for world space rendering
 void AddLine(const Math::Vector3& v0, const Math::Vector3& v1, const Color& color);
 void AddLine(f32 x0, f32 y0, f32 z0, f32 x1, f32 y1, f32 z1, const Color& color);
+void AddAABB(const Math::AABB& aabb, const Color& color);
 void AddAABB(const Math::Vector3& min, const Math::Vector3& max, const Color& color);
 void AddAABB(const Math::Vector3& center, f32 extend, const Color& color);
 void AddAABB(f32 minX, f32 minY, f32 minZ, f32 maxX, f32 maxY, f32 maxZ, const Color& color);

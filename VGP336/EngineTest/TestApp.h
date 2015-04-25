@@ -16,9 +16,10 @@ private:
 	virtual bool OnInput(const InputEvent& evt);
 	virtual void OnUpdate();
 
-    Math::Vector3 MouseToWorld();
+private:
+    //Math::Vector3 MouseToWorld();
     bool SelectedObjectInWorld(const Math::AABB& aabb);
-    Math::Ray GetMouseRay();
+    //Math::Ray GetMouseRay();
 
 private:
 	Window mWindow;
@@ -40,7 +41,11 @@ private:
     s32 mMouseY;
     f32 mMouseMoveX;
     f32 mMouseMoveY;
-    f32 mMouseScrollDelta;
+    s8 mMouseScrollDelta;
+
+    std::map<u32, Delegate0<void>> mActionMap;  // called when the corresponding input is fired
+    std::map<bool*, Delegate0<void>> mAxisMap;    // Called every frame
+    void OnMouseRightClick();
 };
 
 #endif //#ifndef INCLUDED_TESTAPP_H

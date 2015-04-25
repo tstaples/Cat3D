@@ -184,9 +184,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             inputEvent.type = InputEvent::MouseScroll;
             inputEvent.value = Mouse::SCROLL;
-            // Hack: storing wheel delta in y
-            inputEvent.x = 0;
-            inputEvent.y = GET_WHEEL_DELTA_WPARAM(wParam);
+            inputEvent.wheeldelta = (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ? 1 : -1;
+            inputEvent.x = GET_X_LPARAM(lParam);
+			inputEvent.y = GET_Y_LPARAM(lParam);
         }
         break;
 	default:

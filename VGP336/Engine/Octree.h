@@ -26,6 +26,8 @@ public:
 
     const Math::AABB& GetBoundingBox() const { return mAABB; }
 
+    void Debug_DrawTree();
+
 private:
     void Insert(const Math::AABB& point, s32 depth);
     bool IsLeaf();

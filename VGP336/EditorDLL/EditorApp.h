@@ -16,12 +16,14 @@ private:
 	virtual bool OnInput(const InputEvent& evt);
 	virtual void OnUpdate();
 
-    Math::Vector3 MouseToWorld();
+private:
+    //Math::Vector3 MouseToWorld();
     bool SelectedObjectInWorld(const Math::AABB& aabb);
+
+    void UpdateControls(f32 deltaTime);
 
 private:
 	Timer mTimer;
-	InputSystem mInputSystem;
 	GraphicsSystem mGraphicsSystem;
 	Camera mCamera;
 
@@ -38,7 +40,7 @@ private:
     s32 mMouseY;
     f32 mMouseMoveX;
     f32 mMouseMoveY;
-    f32 mMouseScrollDelta;
+    s8 mMouseScrollDelta;
 };
 
 #endif //#ifndef INCLUDED_EDITORAPP_H

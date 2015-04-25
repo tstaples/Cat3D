@@ -152,3 +152,24 @@ void Camera::Renormalize()
 	mLook = Math::Normalize(mLook);
 	mRight = Math::Normalize(Math::Cross(Math::Vector3::YAxis(), mLook));
 }
+
+//----------------------------------------------------------------------------------------------------
+
+Math::Ray Camera::GetMouseRay(s32 mx, s32 my, u32 screenW, u32 screenH) const
+{
+    // Transform 2d mouse coords to NDC
+    Math::Vector3 mouseNDC;
+    mouseNDC.x = (2.0f * (f32)mx) / (f32)screenW - 1.0f;
+    mouseNDC.y = 1.0f - (2.0f * (f32)my) / (f32)screenH;
+    mouseNDC.z = 0.0f;
+
+    // Transform the mouse NDC coords into world space
+    Math::Matrix projection     = GetProjectionMatrix();
+    Math::Matrix invProjection  = Math::Inverse(projection);
+    Math::Matrix cameraView     = Math::Inverse(GetViewMatrix());
+    Math::Matrix transform      = invProjection * cameraView;
+    Math::Vector3 mouseWorld    = Math::TransformCoord(mouseNDC, transform);
+
+    Math::Vector3 dir = Math::Normalize(mouseWorld - mPosition);
+    return Math::Ray(mPosition, dir);
+}

@@ -491,6 +491,17 @@ void AddLine(f32 x0, f32 y0, f32 z0, f32 x1, f32 y1, f32 z1, const Color& color)
 
 //----------------------------------------------------------------------------------------------------
 
+void AddAABB(const Math::AABB& aabb, const Color& color)
+{
+    ASSERT(sSimpleDrawImpl != nullptr, "[SimpleDraw] Not initialized.");
+	sSimpleDrawImpl->AddAABB(aabb.center.x - aabb.extend.x, aabb.center.y - aabb.extend.y, 
+                             aabb.center.z - aabb.extend.z, aabb.center.x + aabb.extend.x, 
+                             aabb.center.y + aabb.extend.y, aabb.center.z + aabb.extend.z, 
+                             color);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void AddAABB(const Math::Vector3& center, f32 extend, const Color& color)
 {
 	ASSERT(sSimpleDrawImpl != nullptr, "[SimpleDraw] Not initialized.");

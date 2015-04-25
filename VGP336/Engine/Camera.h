@@ -48,8 +48,14 @@ public:
 	Math::Matrix GetViewMatrix() const;
 	Math::Matrix GetProjectionMatrix() const;
 
+    Math::Ray GetMouseRay(s32 mx, s32 my, u32 screenW, u32 screenH) const;
+
 private:
 	void Renormalize();
+
+private:
+    Math::Matrix mView;
+    Math::Matrix mProjection;
 
 	Math::Vector3 mPosition;
 	Math::Vector3 mLook;

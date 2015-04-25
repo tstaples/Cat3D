@@ -1,6 +1,9 @@
 #include "Precompiled.h"
 #include "Octree.h"
 
+#include "SimpleDraw.h"
+#include "Color.h"
+
 namespace
 {
     /*
@@ -222,4 +225,16 @@ bool Octree::GetIntersectingObjects(const Math::Ray& ray, std::vector<Math::AABB
         return anyIntersect; // May not have intersected with any objects
     }
     return false;
+}
+
+void Octree::Debug_DrawTree()
+{
+    SimpleDraw::AddAABB(mAABB, Color::Green());
+    for (u32 i=0; i < kNumChildren; ++i)
+    {
+        if (mpChildren[i] != nullptr)
+        {
+            mpChildren[i]->Debug_DrawTree();
+        }
+    }
 }
