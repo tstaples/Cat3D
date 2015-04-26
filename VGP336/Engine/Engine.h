@@ -28,6 +28,8 @@
 #include "GameObject.h"
 #include "GameObjectFactory.h"
 #include "ID.h"
+#include "MemHandle.h"
+#include "MemoryPool.h"
 #include "MetaTypes.h"
 #include "RepositoryTypes.h"
 

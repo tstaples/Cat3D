@@ -432,6 +432,12 @@
     <ClInclude Include="Octree.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="MemHandle.h">
+      <Filter>GameObject\Repository</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryPool.h">
+      <Filter>GameObject\Repository</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Vector3.inl">
@@ -466,6 +472,9 @@
     </None>
     <None Include="MetaTypeDefines.tup">
       <Filter>GameObject\Meta</Filter>
+    </None>
+    <None Include="MemoryPool.inl">
+      <Filter>GameObject\Repository</Filter>
     </None>
   </ItemGroup>
 </Project>

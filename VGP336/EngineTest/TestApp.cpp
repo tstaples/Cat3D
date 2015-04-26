@@ -16,6 +16,45 @@ namespace
         OutputDebugStringA(buff);
 #endif
     }
+
+    void TestQuaternion()
+    {
+        using namespace Math;
+
+        f32 angle = kPi / 6.0f; // 60 degrees
+
+        Quaternion q(Vector3::ZAxis(), angle);
+        Quaternion qn = Normalize(q);
+
+        Vector3 v(0.0f, 1.5f, 0.0f);
+        Vector3 rot = RotateVector(v, qn);
+
+        Matrix mZ = Matrix::RotationZ(angle);
+        Matrix qm = Convert(q);
+        ASSERT(qm == mZ, "Incorrect result: Converting quaternion to matrix");
+
+        int i=0;
+    }
+
+    void TestPath()
+    {
+        Path path("../Data/Stuff/soldier.catm");
+
+        std::wstring extension = path.GetExtension();
+        ASSERT(extension.compare(L"catm") == 0, "GetExtension() Failed");
+
+        std::wstring filename = path.GetFileName();
+        ASSERT(filename.compare(L"soldier.catm") == 0, "GetFileName() Failed");
+
+        std::wstring filenameNoExt = path.GetFileNameWithoutExtension();
+        ASSERT(filenameNoExt.compare(L"soldier") == 0, "GetFileNameWithoutExtension() Failed");
+
+        std::wstring originalPath = path.GetPath();
+        ASSERT(originalPath.compare(L"../Data/Stuff/soldier.catm") == 0, "GetPath() Failed");
+
+        std::string originalPathString = path.GetPathString();
+        ASSERT(originalPathString.compare("../Data/Stuff/soldier.catm") == 0, "GetPathString() Failed");
+    }
 }
 
 TestApp::TestApp()
@@ -34,45 +73,6 @@ TestApp::TestApp()
 
 TestApp::~TestApp()
 {
-}
-
-void TestQuaternion()
-{
-    using namespace Math;
-
-    f32 angle = kPi / 6.0f; // 60 degrees
-
-    Quaternion q(Vector3::ZAxis(), angle);
-    Quaternion qn = Normalize(q);
-
-    Vector3 v(0.0f, 1.5f, 0.0f);
-    Vector3 rot = RotateVector(v, qn);
-
-    Matrix mZ = Matrix::RotationZ(angle);
-    Matrix qm = Convert(q);
-    ASSERT(qm == mZ, "Incorrect result: Converting quaternion to matrix");
-
-    int i=0;
-}
-
-void TestPath()
-{
-    Path path("../Data/Stuff/soldier.catm");
-
-    std::wstring extension = path.GetExtension();
-    ASSERT(extension.compare(L"catm") == 0, "GetExtension() Failed");
-
-    std::wstring filename = path.GetFileName();
-    ASSERT(filename.compare(L"soldier.catm") == 0, "GetFileName() Failed");
-
-    std::wstring filenameNoExt = path.GetFileNameWithoutExtension();
-    ASSERT(filenameNoExt.compare(L"soldier") == 0, "GetFileNameWithoutExtension() Failed");
-
-    std::wstring originalPath = path.GetPath();
-    ASSERT(originalPath.compare(L"../Data/Stuff/soldier.catm") == 0, "GetPath() Failed");
-
-    std::string originalPathString = path.GetPathString();
-    ASSERT(originalPathString.compare("../Data/Stuff/soldier.catm") == 0, "GetPathString() Failed");
 }
 
 void TestApp::OnInitialize(u32 width, u32 height)
@@ -116,8 +116,6 @@ bool TestApp::OnInput(const InputEvent& evt)
 {
     DebugLogInput(evt);
 
-    mMouseMoveX = 0.0f;
-    mMouseMoveY = 0.0f;
 
     bool handled = false;
     switch(evt.type)
@@ -280,33 +278,14 @@ void TestApp::OnMouseRightClick()
 {
     // TODO: Smoothing by interpolating between desired angle and current
     // (reference steering behaviours)
-	const f32 lookSensitivity = 0.0025f;
+	const f32 lookSensitivity = 0.025f;
 
     mCamera.Yaw(mMouseMoveX * lookSensitivity);
     mCamera.Pitch(mMouseMoveY * lookSensitivity);
-    //Math::Vector2 m(mMouseMoveX, mMouseMoveY);
-    //f32 mag = Math::Sqrt(Math::Abs(Math::Sqr(m.x) + Math::Sqr(m.y)));
-    //m.x = (m.x / mag) * lookSensitivity;
-    //m.y = (m.y / mag) * lookSensitivity;
 
-    //mCamera.Yaw(m.x);
-    //mCamera.Pitch(m.y);
-
-    //v0 + ((v1 - v0) * t);
-    /*f32 moveXdelta = 0.0f;
-    f32 moveYdelta = 0.0f;
-    
-    if (mMouseMoveX != 0.0f)
-    {
-        moveXdelta = (mMouseMoveX > 0.0f) ? 1.0f : -1.0f;
-    }
-    if (mMouseMoveY != 0.0f)
-    {
-        moveYdelta = (mMouseMoveY > 0.0f) ? 1.0f : -1.0f;
-    }*/
-    
-    /*mCamera.Yaw(moveXdelta * lookSensitivity);
-    mCamera.Pitch(moveYdelta * lookSensitivity);*/
+    // Zero out mouse move so the camera doesn't continue to rotate
+    mMouseMoveX = 0.0f;
+    mMouseMoveY = 0.0f;
 }
 
 //Math::Vector3 TestApp::MouseToWorld()
@@ -339,3 +318,36 @@ bool TestApp::SelectedObjectInWorld(const Math::AABB& aabb)
 //    Math::Vector3 dir           = Math::Normalize(mouseWorld - cameraPos);
 //    return Math::Ray(cameraPos, dir);
 //}
+
+
+/*
+    // http://www.gamedev.net/blog/355/entry-2250186-designing-a-robust-input-handling-system-for-games/
+
+    Input types:
+    1. Actions - 1 input : 1 output
+    2. States - continous action (ie. running)
+    3. Ranges - joystick
+
+    Input context:
+    - each context defines an input map (std::map<keycode, name>)
+        - raw keycode is mapped to the higher level action (ie. w mapped to "run")
+        
+
+    - Input callbacks will return a flag if the input was handled
+        - if it returns false, the input will be passed down to the next handler
+
+    class InputManager
+    {
+        // Ordered set or something might be preferred to prioritize certain contexts
+        std::vector<InputContext> mContexts;
+    };
+
+    Handlers:
+    - Editor
+        - editor controls (camera movement, object selection etc.)
+    - Game
+        - Additional contexts can be created by the user (ie. main menu input, game etc.)
+        - This layer would be responsible for passing the input down to any of these additional layers
+
+
+*/

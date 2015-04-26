@@ -11,7 +11,11 @@
 // Includes
 //====================================================================================================
 
-#include "ID.h"
+#include "MemHandle.h"
+
+//====================================================================================================
+// Forward Declarations
+//====================================================================================================
 
 class Component;
 
@@ -19,11 +23,10 @@ class Component;
 // Class Declarations
 //====================================================================================================
 
-
 class GameObject
 {
 public:
-    typedef std::map<Meta::Type, ID> ComponentMap;
+    typedef std::vector<Component*> Components;
     typedef std::vector<Meta::Type> ServiceList;
 
 public:
@@ -33,23 +36,33 @@ public:
     void AddComponent(ID id);
     void AddService(Meta::Type type);
 
-    ID GetComponentID(Meta::Type type);   // Garuntees ID
-    ID FindComponentID(Meta::Type type);  // Returns invalid ID if component doesn't exist
+    //ID GetComponentID(Meta::Type type);   // Garuntees ID
+    //ID FindComponentID(Meta::Type type);  // Returns invalid ID if component doesn't exist
+
+    // TODO: meta system for getting type
+    // Returns bool rather than pointer to force caching local pointer
+    template<typename T>
+    bool GetComponent(T*& component);
+    template<typename T>
+    bool GetComponent(T*& component) const;
+
+    template<typename T>
+    bool FindComponent(T*& component);
+    template<typename T>
+    bool FindComponent(T*& component) const;
 
     const char* GetName() const                 { return mName.c_str(); }
     ID GetID() const                            { return mID; }
-    const ComponentMap& GetComponents() const   { return mComponents; }
+    const Components& GetComponents() const   { return mComponents; }
     const ServiceList& GetServices() const      { return mServices; }
 
-    // Hack: expose members since there isn't a factory to assign them values yet
-
-//private:
+private:
     //NONCOPYABLE(GameObject)
 
     std::string mName; // See TODO in TString
     ID mID;
 
-    ComponentMap mComponents;
+    Components mComponents;
     ServiceList mServices;
 };
 

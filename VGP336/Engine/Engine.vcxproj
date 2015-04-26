@@ -102,6 +102,8 @@
     <ClInclude Include="IO.h" />
     <ClInclude Include="Keyframe.h" />
     <ClInclude Include="Matrix.h" />
+    <ClInclude Include="MemHandle.h" />
+    <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshBuilder.h" />
     <ClInclude Include="MeshRenderer.h" />
@@ -149,6 +151,7 @@
     <None Include="ComplexNumber.inl" />
     <None Include="EngineMath.inl" />
     <None Include="Matrix.inl" />
+    <None Include="MemoryPool.inl" />
     <None Include="MetaTypeDefines.tup" />
     <None Include="Quaternion.inl" />
     <None Include="Repository.inl" />
