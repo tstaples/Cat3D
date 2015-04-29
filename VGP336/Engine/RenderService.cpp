@@ -88,6 +88,6 @@ void RenderService::OnSubscribe(ID ObjId, RenderInfo& info)
     // Get the object associated with the ID from the GameObject repository
     // and populate info with its ID and model ID.
     GameObject& object  = mpGameObjectRepo->GetItem(ObjId);
-    info.transformId    = object.GetComponentID(Meta::TransformComponentType);
-    info.modelId        = object.GetComponentID(Meta::ModelComponentType);
+    //info.transformId    = object.GetComponentID(Meta::TransformComponentType);
+    //info.modelId        = object.GetComponentID(Meta::ModelComponentType);
 }

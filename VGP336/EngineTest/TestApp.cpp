@@ -6,6 +6,9 @@
 
 namespace
 {
+    bool objectClicked = false;
+    std::vector<Math::AABB> objects;
+
     static Math::Vector3 vel(1.0f, 1.0f, 0.0f);
 
     void DebugLogInput(const InputEvent& e)
@@ -57,23 +60,24 @@ namespace
     }
 }
 
+//----------------------------------------------------------------------------------------------------
+
 TestApp::TestApp()
     : mWidth(0)
     , mHeight(0)
-    , mMouseX(0)
-    , mMouseY(0)
-    , mMouseMoveX(0)
-    , mMouseMoveY(0)
-    , mMouseScrollDelta(0)
     , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(50.0f, 50.0f, 50.0f)))
 {
-    memset(mKeyStates, 0, sizeof(bool) * 256);
-    memset(mMouseStates, 0, sizeof(bool) * 4);
+    memset(mInputData.keyStates, 0, sizeof(bool) * 256);
+    memset(mInputData.mouseStates, 0, sizeof(bool) * 4);
 }
+
+//----------------------------------------------------------------------------------------------------
 
 TestApp::~TestApp()
 {
 }
+
+//----------------------------------------------------------------------------------------------------
 
 void TestApp::OnInitialize(u32 width, u32 height)
 {
@@ -100,8 +104,15 @@ void TestApp::OnInitialize(u32 width, u32 height)
                       Random::GetF(-10.0f, 10.0f)),
         Math::Vector3(2.0f, 2.0f, 2.0f));
 
-    mAxisMap.insert(std::make_pair(&mMouseStates[Mouse::RBUTTON], Delegate0<void>::Make<TestApp, &TestApp::OnMouseRightClick>(this)));
+    // Bind controls
+    mInputManager.BindAction(Mouse::LBUTTON, Input::MouseUp, MAKE_ACTION_DELEGATE(TestApp, &TestApp::OnSelectObject));
+    mInputManager.BindAction(Mouse::SCROLL, Input::MouseScroll, MAKE_ACTION_DELEGATE(TestApp, &TestApp::OnZoom));
+
+    mInputManager.BindAxis(Mouse::RBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(TestApp, &TestApp::OnCameraLook));
+    mInputManager.BindAxis(Mouse::MBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(TestApp, &TestApp::OnPanCamera));
 }
+
+//----------------------------------------------------------------------------------------------------
 
 void TestApp::OnTerminate()
 {
@@ -112,6 +123,8 @@ void TestApp::OnTerminate()
 	mWindow.Terminate();
 }
 
+//----------------------------------------------------------------------------------------------------
+
 bool TestApp::OnInput(const InputEvent& evt)
 {
     DebugLogInput(evt);
@@ -120,58 +133,61 @@ bool TestApp::OnInput(const InputEvent& evt)
     bool handled = false;
     switch(evt.type)
     {
-    case InputEvent::KeyDown:
+    case Input::KeyDown:
         {
             if(evt.value == VK_ESCAPE)
             {
                 PostQuitMessage(0);
             }
-            mKeyStates[evt.value] = true;
+            mInputData.keyStates[evt.value] = true;
             handled = true;
         }
         break;
-    case InputEvent::KeyUp:
+    case Input::KeyUp:
         {
-            mKeyStates[evt.value] = false;
+            mInputData.keyStates[evt.value] = false;
             handled = true;
         }
         break;
-    case InputEvent::MouseMove:
+    case Input::MouseMove:
         {
-            if (mMouseX != -1 && mMouseY != -1)
+            if (mInputData.mouseX != -1 && mInputData.mouseY != -1)
             {
                 // Get the offset since the last frame
-                mMouseMoveX = (f32)(evt.x - mMouseX);
-                mMouseMoveY = (f32)(evt.y - mMouseY);
-                if (Math::Abs(mMouseMoveX) < 1.0f) mMouseMoveX = 0.0f;
-                if (Math::Abs(mMouseMoveY) < 1.0f) mMouseMoveY = 0.0f;
+                mInputData.mouseMoveX = (f32)(evt.x - mInputData.mouseX);
+                mInputData.mouseMoveY = (f32)(evt.y - mInputData.mouseY);
             }
-            mMouseX = evt.x;
-            mMouseY = evt.y;
+            mInputData.mouseX = evt.x;
+            mInputData.mouseY = evt.y;
             handled = true;
         }
         break;
-    case InputEvent::MouseDown:
+    case Input::MouseDown:
         {
-            mMouseStates[evt.value] = true;
+            mInputData.mouseStates[evt.value] = true;
             handled = true;
         }
         break;
-    case InputEvent::MouseUp:
+    case Input::MouseUp:
         {
-            mMouseStates[evt.value] = false;
+            mInputData.mouseStates[evt.value] = false;
             handled = true;
         }
         break;
-    case InputEvent::MouseScroll:
+    case Input::MouseScroll:
         {
-            mMouseScrollDelta = evt.wheeldelta;
+            mInputData.mouseScrollDelta = evt.wheeldelta;
             handled = true;
         }
         break;
     }
+
+    mInputManager.OnAction(evt);
+
     return handled;
 }
+
+//----------------------------------------------------------------------------------------------------
 
 void TestApp::OnUpdate()
 {
@@ -189,53 +205,7 @@ void TestApp::OnUpdate()
     mOctree.Insert(testAABB);
     mOctree.Debug_DrawTree();
 
-	// Camera movement modifiers (TODO: Make these configurable)
-	const f32 kMoveSpeed = 1.0f;
-	const f32 lookSensitivity = 0.0025f;
-    const f32 moveSensitivity = 0.0025f;
-    const f32 zoomDistance = 1.0f;
-
-    for (auto it : mAxisMap)
-    {
-        if (*it.first)
-        {
-            it.second();
-        }
-    }
-
-    // Camera look
-    //if (mMouseStates[Mouse::RBUTTON])
-    //{
-    //    mCamera.Yaw(mMouseMoveX * lookSensitivity);
-    //    mCamera.Pitch(mMouseMoveY * lookSensitivity);
-    //}
-    // Move camera
-    if (mMouseStates[Mouse::MBUTTON])
-    {
-        mCamera.Strafe((-mMouseMoveX) * moveSensitivity);
-        mCamera.Rise(mMouseMoveY * moveSensitivity);
-    }
-
-    // Camera zoom
-    if (mMouseScrollDelta == WHEEL_SCROLL_UP)
-    {
-        mCamera.Walk(zoomDistance);
-    }
-    else if (mMouseScrollDelta == WHEEL_SCROLL_DOWN)
-    {
-        mCamera.Walk(-zoomDistance);
-    }
-    // Reset to prevent infinite zoom
-    mMouseScrollDelta = 0;
-
-    bool objectClicked = false; // used for testing below statement
-    std::vector<Math::AABB> objects;
-
-    if (mMouseStates[Mouse::LBUTTON])
-    {
-        Math::Ray ray = mCamera.GetMouseRay(mMouseX, mMouseY, mWidth, mHeight);
-        objectClicked = mOctree.GetIntersectingObjects(ray, objects);
-    }
+    mInputManager.Update(mInputData);
 
     // Player movement
     //if(mKeyStates['W'])
@@ -272,52 +242,78 @@ void TestApp::OnUpdate()
 
 	SimpleDraw::Render(mCamera);
 	mGraphicsSystem.EndRender();
+
+    objectClicked = false;
+    objects.clear();
 }
 
-void TestApp::OnMouseRightClick()
+//----------------------------------------------------------------------------------------------------
+
+bool TestApp::OnCameraLook(s32 val)
 {
+    if (val == 0)
+    {
+        return false;
+    }
+
     // TODO: Smoothing by interpolating between desired angle and current
     // (reference steering behaviours)
 	const f32 lookSensitivity = 0.025f;
 
-    mCamera.Yaw(mMouseMoveX * lookSensitivity);
-    mCamera.Pitch(mMouseMoveY * lookSensitivity);
+    mCamera.Yaw(mInputData.mouseMoveX * lookSensitivity);
+    mCamera.Pitch(mInputData.mouseMoveY * lookSensitivity);
 
     // Zero out mouse move so the camera doesn't continue to rotate
-    mMouseMoveX = 0.0f;
-    mMouseMoveY = 0.0f;
+    mInputData.mouseMoveX = 0.0f;
+    mInputData.mouseMoveY = 0.0f;
+
+    return true;
 }
 
-//Math::Vector3 TestApp::MouseToWorld()
-//{
-//    Math::Vector3 mouseNDC;
-//    mouseNDC.x = (2.0f * mMouseX) / mWidth - 1.0f;
-//    mouseNDC.y = 1.0f - (2.0f * mMouseY) / mHeight;
-//    mouseNDC.z = 0.0f;
-//
-//    // Transform the mouse NDC coords into world space
-//    Math::Matrix projection     = mCamera.GetProjectionMatrix();
-//    Math::Matrix invProjection  = Math::Inverse(projection);
-//    Math::Matrix cameraView     = Math::Inverse(mCamera.GetViewMatrix());
-//    Math::Matrix transform      = invProjection * cameraView;
-//    Math::Vector3 mouseWorld    = Math::TransformCoord(mouseNDC, transform);
-//
-//    return mouseWorld;
-//}
+//----------------------------------------------------------------------------------------------------
 
-bool TestApp::SelectedObjectInWorld(const Math::AABB& aabb)
+bool TestApp::OnZoom()
 {
-    Math::Ray ray(mCamera.GetMouseRay(mMouseX, mMouseY, mWidth, mHeight));
-    return Math::Intersect(ray, aabb);
+    const f32 zoomDistance = 1.0f;
+    s8 delta = mInputData.mouseScrollDelta;
+    if (delta == WHEEL_SCROLL_UP)
+    {
+        mCamera.Walk(zoomDistance);
+    }
+    else if (delta == WHEEL_SCROLL_DOWN)
+    {
+        mCamera.Walk(-zoomDistance);
+    }
+    // Reset to prevent infinite zoom
+    delta = 0;
+
+    return true;
 }
 
-//Math::Ray TestApp::GetMouseRay()
-//{
-//    Math::Vector3 mouseWorld    = MouseToWorld();
-//    Math::Vector3 cameraPos     = mCamera.GetPosition();
-//    Math::Vector3 dir           = Math::Normalize(mouseWorld - cameraPos);
-//    return Math::Ray(cameraPos, dir);
-//}
+//----------------------------------------------------------------------------------------------------
+
+bool TestApp::OnPanCamera(s32 val)
+{
+    if (val == 0)
+    {
+        return false;
+    }
+
+    const f32 moveSensitivity = 0.0025f;
+    mCamera.Strafe((-mInputData.mouseMoveX) * moveSensitivity);
+    mCamera.Rise(mInputData.mouseMoveY * moveSensitivity);
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool TestApp::OnSelectObject()
+{
+    Math::Ray ray = mCamera.GetMouseRay(mInputData.mouseX, mInputData.mouseY, mWidth, mHeight);
+    objectClicked = mOctree.GetIntersectingObjects(ray, objects);
+    testAABB.center *= 1.1f;
+    return true;
+}
 
 
 /*

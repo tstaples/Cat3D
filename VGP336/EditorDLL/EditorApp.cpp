@@ -131,6 +131,7 @@ void EditorApp::OnUpdate()
 	// Render
 	mGraphicsSystem.BeginRender(Color::Black());
 
+    bool temp = false;
     Color sphereCol = (temp) ? Color::Red() : Color::White();
     SimpleDraw::AddAABB(Math::Vector3::Zero(), 2.0f, sphereCol);
 

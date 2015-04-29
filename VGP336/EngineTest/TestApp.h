@@ -3,6 +3,9 @@
 
 #include <Engine.h>
 
+#include "InputManager.h"
+#include "InputData.h"
+
 class TestApp : public Application
 {
 public:
@@ -17,35 +20,30 @@ private:
 	virtual void OnUpdate();
 
 private:
-    //Math::Vector3 MouseToWorld();
-    bool SelectedObjectInWorld(const Math::AABB& aabb);
-    //Math::Ray GetMouseRay();
-
-private:
 	Window mWindow;
 	Timer mTimer;
 	GraphicsSystem mGraphicsSystem;
 	Camera mCamera;
 
-    Octree mOctree;
-    Math::AABB testAABB;
-
     // Screen
     u32 mWidth;
     u32 mHeight;
 
-    // Input
-    bool mKeyStates[256];
-    bool mMouseStates[4];
-    s32 mMouseX;
-    s32 mMouseY;
-    f32 mMouseMoveX;
-    f32 mMouseMoveY;
-    s8 mMouseScrollDelta;
+    Octree mOctree;
+    Math::AABB testAABB;
 
-    std::map<u32, Delegate0<void>> mActionMap;  // called when the corresponding input is fired
-    std::map<bool*, Delegate0<void>> mAxisMap;    // Called every frame
-    void OnMouseRightClick();
+    // Input
+    InputData mInputData;
+    InputManager mInputManager;
+
+private:
+    // Input Actions
+    bool OnSelectObject();
+    bool OnZoom();
+
+    // Input Axis events
+    bool OnPanCamera(s32 val);
+    bool OnCameraLook(s32 val);
 };
 
 #endif //#ifndef INCLUDED_TESTAPP_H

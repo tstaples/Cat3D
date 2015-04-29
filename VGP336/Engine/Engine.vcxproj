@@ -32,6 +32,7 @@
     <ClCompile Include="Hash.cpp" />
     <ClCompile Include="Heightmap.cpp" />
     <ClCompile Include="ID.cpp" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="EngineMath.cpp" />
     <ClCompile Include="IO.cpp" />
@@ -95,7 +96,9 @@
     <ClInclude Include="Hash.h" />
     <ClInclude Include="Heightmap.h" />
     <ClInclude Include="ID.h" />
+    <ClInclude Include="InputData.h" />
     <ClInclude Include="InputEvent.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="InputTypes.h" />
     <ClInclude Include="EngineMath.h" />

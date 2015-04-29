@@ -208,6 +208,9 @@
     <ClCompile Include="Octree.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InputEvent.h">
@@ -437,6 +440,12 @@
     </ClInclude>
     <ClInclude Include="MemoryPool.h">
       <Filter>GameObject\Repository</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="InputData.h">
+      <Filter>Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
