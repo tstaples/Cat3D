@@ -30,5 +30,11 @@ namespace Editor
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern int IsGameRunning();
+
+        [StructLayout(LayoutKind.Sequential)]
+        public class Vector3
+        {
+            public float x, y, z;
+        }
     }
 }

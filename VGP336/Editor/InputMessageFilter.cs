@@ -24,7 +24,7 @@ namespace Editor
             bool ret = false;
             if (m.Msg == WM_KEYUP || m.Msg == WM_KEYDOWN || m.Msg == WM_SCROLL)
             {
-                if (Owner.PanelIsFocused())
+                if (Owner.PanelFocused)
                 {
                     // Send the input to the engine for further processing
                     NativeMethods.WndProc(Owner.Handle, m.Msg, (int)m.WParam, (int)m.LParam);

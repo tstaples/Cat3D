@@ -190,19 +190,6 @@ void EditorApp::OnUpdate()
 
 //----------------------------------------------------------------------------------------------------
 
-void EditorApp::UpdateControls(f32 deltaTime)
-{
-	// Camera movement modifiers (TODO: Make these configurable)
-    const f32 kMoveSpeed = 10.0f;
-	const f32 lookSensitivity = 0.5f;
-    const f32 moveSensitivity = 0.25f;
-    const f32 zoomDistance = 1.0f;
-}
-
-//----------------------------------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------------------------------
-
 bool EditorApp::OnCameraLook(s32 val)
 {
     if (val == 0)

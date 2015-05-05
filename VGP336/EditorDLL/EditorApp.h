@@ -21,12 +21,6 @@ private:
 	virtual void OnUpdate();
 
 private:
-    //Math::Vector3 MouseToWorld();
-    bool SelectedObjectInWorld(const Math::AABB& aabb);
-
-    void UpdateControls(f32 deltaTime);
-
-private:
 	Window mWindow;
 	Timer mTimer;
 	GraphicsSystem mGraphicsSystem;

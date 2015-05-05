@@ -80,10 +80,14 @@
   <ItemGroup>
     <ClCompile Include="EditorAPI.cpp" />
     <ClCompile Include="EditorApp.cpp" />
+    <ClCompile Include="EditorObject.cpp" />
+    <ClCompile Include="Gizmo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EditorAPI.h" />
     <ClInclude Include="EditorApp.h" />
+    <ClInclude Include="EditorObject.h" />
+    <ClInclude Include="Gizmo.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">

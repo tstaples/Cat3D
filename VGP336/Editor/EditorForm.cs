@@ -13,6 +13,8 @@ namespace Editor
 {
     public partial class EditorForm : Form
     {
+        public bool PanelFocused { get; private set; }
+
         public EditorForm()
         {
             InitializeComponent();
@@ -23,6 +25,9 @@ namespace Editor
 
             // Initialize the engine within the view panel
             NativeMethods.Initialize(hInstance, IntPtr.Zero, hWnd, 1, this.ViewPanel.Width, this.ViewPanel.Height);
+
+            ViewPanel.Focus();
+            PanelFocused = true;
         }
 
         private void Terminate()
@@ -35,11 +40,6 @@ namespace Editor
             NativeMethods.UpdateFrame();
         }
 
-        public bool PanelIsFocused()
-        {
-            return ViewPanel.Focus();
-        }
-
         private void EditorForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             NativeMethods.Terminate();
@@ -47,7 +47,22 @@ namespace Editor
 
         public void OnResize(object sender, EventArgs e)
         {
+            // TODO
+        }
 
+        private void ViewPanel_MouseUp(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void ViewPanel_MouseEnter(object sender, EventArgs e)
+        {
+            PanelFocused = true;
+        }
+
+        private void ViewPanel_MouseLeave(object sender, EventArgs e)
+        {
+            PanelFocused = false;
         }
     }
 }

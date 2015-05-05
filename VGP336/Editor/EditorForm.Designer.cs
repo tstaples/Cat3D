@@ -54,6 +54,10 @@
             this.ViewPanel.Name = "ViewPanel";
             this.ViewPanel.Size = new System.Drawing.Size(843, 562);
             this.ViewPanel.TabIndex = 0;
+            this.ViewPanel.TabStop = true;
+            this.ViewPanel.MouseEnter += new System.EventHandler(this.ViewPanel_MouseEnter);
+            this.ViewPanel.MouseLeave += new System.EventHandler(this.ViewPanel_MouseLeave);
+            this.ViewPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ViewPanel_MouseUp);
             // 
             // EditorTableLayout
             // 
