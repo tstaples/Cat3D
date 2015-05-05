@@ -14,12 +14,13 @@ void Initialize(int* instancePtrAddress, int* hPrevInstancePtrAddress, int* hWnd
     HINSTANCE hPrevInstance = (HINSTANCE)hPrevInstancePtrAddress;
     HWND hWnd = (HWND)hWndPtrAddress;
 
-    app.HookWindow(hWnd);
+    app.HookWindow(hWnd, false);
     app.Initialize(hInstance, "Editor", screenWidth, screenHeight);
 }
 
 void WndProc(int* hWndPtrAddress, int msg, int wParam, int lParam)
 {
+    app.ForwardInput((HWND)hWndPtrAddress, msg, wParam, lParam);
 }
 
 void UpdateFrame()

@@ -29,6 +29,13 @@ Math::Vector3 TransformComponent::GetPosition() const
 
 //----------------------------------------------------------------------------------------------------
 
+void TransformComponent::Translate(const Math::Vector3& t)
+{
+    mTransform = mTransform * Math::Matrix::Translation(t);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void TransformComponent::Load(Json::Value& properties)
 {
     Json::Value pos = properties.get("Position", "");

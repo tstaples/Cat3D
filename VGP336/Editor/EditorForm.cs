@@ -35,9 +35,19 @@ namespace Editor
             NativeMethods.UpdateFrame();
         }
 
+        public bool PanelIsFocused()
+        {
+            return ViewPanel.Focus();
+        }
+
         private void EditorForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             NativeMethods.Terminate();
+        }
+
+        public void OnResize(object sender, EventArgs e)
+        {
+
         }
     }
 }

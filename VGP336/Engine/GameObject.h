@@ -14,6 +14,7 @@
 #include "MemHandle.h"
 
 // Temp
+#include "TransformComponent.h"
 #include "MetaTypes.h"
 #include "ID.h"
 
@@ -43,6 +44,9 @@ public:
     //ID GetComponentID(Meta::Type type);   // Garuntees ID
     //ID FindComponentID(Meta::Type type);  // Returns invalid ID if component doesn't exist
 
+    // TEMP UNTIL META SYSTEM DONE
+    TransformComponent& GetTransform() { return mTransform; }
+
     // TODO: meta system for getting type
     // Returns bool rather than pointer to force caching local pointer
     template<typename T>
@@ -65,6 +69,9 @@ private:
 
     std::string mName; // See TODO in TString
     ID mID;
+
+    // TEMP UNTIL META SYSTEM DONE
+    TransformComponent mTransform;
 
     Components mComponents;
     ServiceList mServices;

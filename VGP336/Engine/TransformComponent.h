@@ -25,12 +25,14 @@ public:
     TransformComponent(const Math::Matrix& transform);
     ~TransformComponent();
 
-    void SetTransform(const Math::Matrix& transform) { mTransform = transform; }
+    void Translate(const Math::Vector3& t);
+
+    Math::Vector3 GetPosition() const;
 
     Math::Matrix& GetTransform()                { return mTransform; }
     const Math::Matrix& GetTransform() const    { return mTransform; }
 
-    Math::Vector3 GetPosition() const;
+    void SetTransform(const Math::Matrix& transform) { mTransform = transform; }
 
     virtual void Load(Json::Value& properties);
 

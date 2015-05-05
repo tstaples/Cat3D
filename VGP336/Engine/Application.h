@@ -26,13 +26,16 @@ public:
 	void Initialize(HINSTANCE instance, LPCSTR appName, u32 width, u32 height);
 	void Terminate();
 	
-	void HookWindow(HWND hWnd);
+	void HookWindow(HWND hWnd, bool owner=true);
 	void UnhookWindow();
 
 	void Update();
 	
 	bool IsRunning() const			{ return mRunning; }
-	
+    bool IsOwner() const            { return mOwner; }
+
+    void ForwardInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
 protected:
 	HINSTANCE GetInstance() const	{ return mInstance; }
 	HWND GetWindow() const			{ return mWindow; }
@@ -42,6 +45,7 @@ protected:
 
 private:
 	friend LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+    bool ProcessInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, InputEvent& evt);
 
 	virtual void OnInitialize(u32 width, u32 height) {}
 	virtual void OnTerminate() {}
@@ -50,6 +54,7 @@ private:
 
 	HINSTANCE mInstance;
 	HWND mWindow;
+    bool mOwner; // Flag representing if we own the window
 
 	std::string mAppName;
 };

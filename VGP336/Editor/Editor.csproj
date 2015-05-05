@@ -51,6 +51,7 @@
     <Compile Include="EditorForm.Designer.cs">
       <DependentUpon>EditorForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="InputMessageFilter.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

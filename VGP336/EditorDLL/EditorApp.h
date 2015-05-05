@@ -3,6 +3,10 @@
 
 #include <Engine.h>
 
+#include "InputManager.h"
+#include "InputData.h"
+#include "EditorObject.h"
+
 class EditorApp : public Application
 {
 public:
@@ -23,24 +27,32 @@ private:
     void UpdateControls(f32 deltaTime);
 
 private:
+	Window mWindow;
 	Timer mTimer;
 	GraphicsSystem mGraphicsSystem;
 	Camera mCamera;
 
-    Octree mOctree;
+    std::vector<EditorObject> mObjects;
+    std::vector<EditorObject*> mSelectedObjects;
+    Octree<EditorObject> mOctree;
 
     // Screen
     u32 mWidth;
     u32 mHeight;
 
     // Input
-    bool mKeyStates[256];
-    bool mMouseStates[4];
-    s32 mMouseX;
-    s32 mMouseY;
-    f32 mMouseMoveX;
-    f32 mMouseMoveY;
-    s8 mMouseScrollDelta;
+    InputData mInputData;
+    InputManager mInputManager;
+
+private:
+    // Input Actions
+    bool OnSelectObject();
+    bool OnZoom();
+
+    // Input Axis events
+    bool OnPanCamera(s32 val);
+    bool OnCameraLook(s32 val);
+    bool OnCamerWalkForward(s32 val);
 };
 
 #endif //#ifndef INCLUDED_EDITORAPP_H

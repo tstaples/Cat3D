@@ -22,6 +22,7 @@ Application::Application()
 	: mInstance(nullptr)
 	, mWindow(nullptr)
 	, mRunning(true)
+    , mOwner(true)
 {
 }
 
@@ -50,12 +51,13 @@ void Application::Terminate()
 
 //----------------------------------------------------------------------------------------------------
 
-void Application::HookWindow(HWND hWnd)
+void Application::HookWindow(HWND hWnd, bool owner)
 {
 	SetWindowLongPtrA(hWnd, GWL_USERDATA, (LONG)this);
 	SetWindowLong(hWnd, GWL_WNDPROC, (LONG)WndProc);
 
 	mWindow = hWnd;
+    mOwner = owner;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -75,29 +77,23 @@ void Application::Update()
 	OnUpdate();
 }
 
-//====================================================================================================
-// Window Message Procedure
-//====================================================================================================
+//----------------------------------------------------------------------------------------------------
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+void Application::ForwardInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	PAINTSTRUCT ps;
-	HDC hdc;
-	InputEvent inputEvent;
+    InputEvent inputEvent;
+    ProcessInput(hWnd, message, wParam, lParam, inputEvent);
+    OnInput(inputEvent);
+}
 
-	switch (message)
+//----------------------------------------------------------------------------------------------------
+
+bool Application::ProcessInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, InputEvent& inputEvent)
+{
+    bool handled = true;
+
+    switch (message)
 	{
-	case WM_PAINT:
-		{
-			hdc = BeginPaint(hWnd, &ps);
-			EndPaint(hWnd, &ps);
-		}
-		break;
-	case WM_DESTROY:
-		{
-			PostQuitMessage(0);
-		}
-		break;
 	case WM_CHAR:
 		{
 			inputEvent.type = Input::Character;
@@ -181,17 +177,49 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			inputEvent.y = GET_Y_LPARAM(lParam);
         }
         break;
-	default:
-		return DefWindowProcA(hWnd, message, wParam, lParam);
+    default:
+        handled = false;
+        break;
 	}
+    return handled;
+}
+
+//====================================================================================================
+// Window Message Procedure
+//====================================================================================================
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    PAINTSTRUCT ps;
+	HDC hdc;
+
+    switch (message)
+    {
+    case WM_PAINT:
+		{
+			hdc = BeginPaint(hWnd, &ps);
+			EndPaint(hWnd, &ps);
+		}
+		break;
+    }
 
     Application* myApp = (Application*)GetWindowLongPtrA(hWnd, GWL_USERDATA);
 	if (myApp != nullptr)
 	{
-        if (!myApp->OnInput(inputEvent))
-		{
-			return DefWindowProcA(hWnd, message, wParam, lParam);
-		}
+        // Only quit if we own the window instance
+        if (message == WM_DESTROY && myApp->IsOwner())
+        {
+			PostQuitMessage(0);
+        }
+
+        InputEvent evt;
+        if (myApp->ProcessInput(hWnd, message, wParam, lParam, evt))
+        {
+            if (myApp->OnInput(evt))
+		    {
+            	return 0;
+		    }
+        }
     }
-	return 0;
+	return DefWindowProcA(hWnd, message, wParam, lParam);
 }

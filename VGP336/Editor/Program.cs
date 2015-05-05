@@ -19,6 +19,7 @@ namespace Editor
 
             EditorForm editorForm = new EditorForm();
             Application.Idle += new EventHandler(editorForm.OnIdle);
+            Application.AddMessageFilter(new Editor.InputMessageFilter(editorForm));
             Application.Run(editorForm);
         }
     }
