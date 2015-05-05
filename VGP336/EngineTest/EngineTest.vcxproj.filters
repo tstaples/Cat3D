@@ -2,9 +2,13 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="TestApp.h" />
+    <ClInclude Include="EditorObject.h" />
+    <ClInclude Include="Gizmo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestApp.cpp" />
     <ClCompile Include="WinMain.cpp" />
+    <ClCompile Include="EditorObject.cpp" />
+    <ClCompile Include="Gizmo.cpp" />
   </ItemGroup>
 </Project>

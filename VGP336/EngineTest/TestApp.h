@@ -5,6 +5,7 @@
 
 #include "InputManager.h"
 #include "InputData.h"
+#include "EditorObject.h"
 
 class TestApp : public Application
 {
@@ -29,8 +30,9 @@ private:
     u32 mWidth;
     u32 mHeight;
 
-    Octree mOctree;
-    Math::AABB testAABB;
+    std::vector<EditorObject> mObjects;
+    std::vector<EditorObject*> mSelectedObjects;
+    Octree<EditorObject> mOctree;
 
     // Input
     InputData mInputData;

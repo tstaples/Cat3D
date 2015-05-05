@@ -6,8 +6,11 @@
 
 namespace
 {
-    bool objectClicked = false;
-    std::vector<Math::AABB> objects;
+    Math::AABB testAABB(
+        Math::Vector3(Random::GetF(-10.0f, 10.0f),
+                      Random::GetF(-10.0f, 10.0f),
+                      Random::GetF(-10.0f, 10.0f)),
+        Math::Vector3(2.0f, 2.0f, 2.0f));
 
     static Math::Vector3 vel(1.0f, 1.0f, 0.0f);
 
@@ -19,46 +22,25 @@ namespace
         OutputDebugStringA(buff);
 #endif
     }
-
-    void TestQuaternion()
+    
+    void DrawGroundPlane()
     {
-        using namespace Math;
-
-        f32 angle = kPi / 6.0f; // 60 degrees
-
-        Quaternion q(Vector3::ZAxis(), angle);
-        Quaternion qn = Normalize(q);
-
-        Vector3 v(0.0f, 1.5f, 0.0f);
-        Vector3 rot = RotateVector(v, qn);
-
-        Matrix mZ = Matrix::RotationZ(angle);
-        Matrix qm = Convert(q);
-        ASSERT(qm == mZ, "Incorrect result: Converting quaternion to matrix");
-
-        int i=0;
-    }
-
-    void TestPath()
-    {
-        Path path("../Data/Stuff/soldier.catm");
-
-        std::wstring extension = path.GetExtension();
-        ASSERT(extension.compare(L"catm") == 0, "GetExtension() Failed");
-
-        std::wstring filename = path.GetFileName();
-        ASSERT(filename.compare(L"soldier.catm") == 0, "GetFileName() Failed");
-
-        std::wstring filenameNoExt = path.GetFileNameWithoutExtension();
-        ASSERT(filenameNoExt.compare(L"soldier") == 0, "GetFileNameWithoutExtension() Failed");
-
-        std::wstring originalPath = path.GetPath();
-        ASSERT(originalPath.compare(L"../Data/Stuff/soldier.catm") == 0, "GetPath() Failed");
-
-        std::string originalPathString = path.GetPathString();
-        ASSERT(originalPathString.compare("../Data/Stuff/soldier.catm") == 0, "GetPathString() Failed");
+        const s32 groundSize = 25;
+        for (s32 x = -groundSize; x <= groundSize; ++x)
+        {
+            Math::Vector3   a((f32)x, 0.0f, (f32)-groundSize),
+                            b((f32)x, 0.0f, (f32)groundSize);
+            SimpleDraw::AddLine(a, b, Color::White());
+        }
+        for (s32 z = -groundSize; z <= groundSize; ++z)
+        {
+            Math::Vector3   a((f32)-groundSize, 0.0f, (f32)z),
+                            b((f32)groundSize, 0.0f, (f32)z);
+            SimpleDraw::AddLine(a, b, Color::White());
+        }
     }
 }
+
 
 //----------------------------------------------------------------------------------------------------
 
@@ -98,18 +80,18 @@ void TestApp::OnInitialize(u32 width, u32 height)
 	mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
 	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -100.0f));
 
-    testAABB = Math::AABB(
-        Math::Vector3(Random::GetF(-10.0f, 10.0f),
-                      Random::GetF(-10.0f, 10.0f),
-                      Random::GetF(-10.0f, 10.0f)),
-        Math::Vector3(2.0f, 2.0f, 2.0f));
-
     // Bind controls
-    mInputManager.BindAction(Mouse::LBUTTON, Input::MouseUp, MAKE_ACTION_DELEGATE(TestApp, &TestApp::OnSelectObject));
+    mInputManager.BindAction(Mouse::LBUTTON, Input::MouseDown, MAKE_ACTION_DELEGATE(TestApp, &TestApp::OnSelectObject));
     mInputManager.BindAction(Mouse::SCROLL, Input::MouseScroll, MAKE_ACTION_DELEGATE(TestApp, &TestApp::OnZoom));
 
     mInputManager.BindAxis(Mouse::RBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(TestApp, &TestApp::OnCameraLook));
     mInputManager.BindAxis(Mouse::MBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(TestApp, &TestApp::OnPanCamera));
+
+    // TEMP
+    mObjects.push_back(EditorObject(new GameObject()));
+    mObjects.push_back(EditorObject(new GameObject()));
+    mObjects[0].Translate(Math::Vector3(15.0f, 3.0f, 5.0f));
+    mObjects[1].Translate(Math::Vector3(-15.0f, 3.0f, 5.0f));
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -200,9 +182,12 @@ void TestApp::OnUpdate()
 	mTimer.Update();
 	const f32 deltaTime = mTimer.GetElapsedTime();
 
-    // Apply some velocity to move the cube
+    // Destroy and re-create the entire tree
     mOctree.Destroy();
-    mOctree.Insert(testAABB);
+    for (int i=0; i < mObjects.size(); ++i)
+    {
+        mOctree.Insert(mObjects[i], mObjects[i].GetCollider());
+    }
     mOctree.Debug_DrawTree();
 
     mInputManager.Update(mInputData);
@@ -228,23 +213,29 @@ void TestApp::OnUpdate()
 	// Render
 	mGraphicsSystem.BeginRender(Color::Black());
     
-    if (objectClicked)
+    //DrawGroundPlane();
+
+    for (auto object : mObjects)
     {
-        for (auto it : objects)
+        Color col = Color::White();
+        if (object.IsSelected())
         {
-            SimpleDraw::AddAABB(it.center, it.extend.x, Color::Red());
+            if (mInputData.mouseStates[Mouse::LBUTTON])
+            {
+                Math::Ray mouseRay = mCamera.GetMouseRay(mInputData.mouseX, mInputData.mouseY, mWidth, mHeight);
+                Math::Vector3 translation = object.GetSelectedAxis(mouseRay);
+                SimpleDraw::AddLine(object.GetPosition(), translation * 15.0f, Color::Cyan());
+                //object.Translate(translation * mInputData.mouseMoveX);
+            }
+
+            object.DrawGizmo();
+            col = Color::Red();
         }
-    }
-    else
-    {
-        SimpleDraw::AddAABB(testAABB.center, testAABB.extend.x, Color::White());
+        SimpleDraw::AddAABB(object.GetCollider(), col);
     }
 
 	SimpleDraw::Render(mCamera);
 	mGraphicsSystem.EndRender();
-
-    objectClicked = false;
-    objects.clear();
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -258,7 +249,7 @@ bool TestApp::OnCameraLook(s32 val)
 
     // TODO: Smoothing by interpolating between desired angle and current
     // (reference steering behaviours)
-	const f32 lookSensitivity = 0.025f;
+	const f32 lookSensitivity = 0.25f;
 
     mCamera.Yaw(mInputData.mouseMoveX * lookSensitivity);
     mCamera.Pitch(mInputData.mouseMoveY * lookSensitivity);
@@ -274,7 +265,7 @@ bool TestApp::OnCameraLook(s32 val)
 
 bool TestApp::OnZoom()
 {
-    const f32 zoomDistance = 1.0f;
+    const f32 zoomDistance = 2.0f;
     s8 delta = mInputData.mouseScrollDelta;
     if (delta == WHEEL_SCROLL_UP)
     {
@@ -299,9 +290,12 @@ bool TestApp::OnPanCamera(s32 val)
         return false;
     }
 
-    const f32 moveSensitivity = 0.0025f;
+    const f32 moveSensitivity = 0.25f;
     mCamera.Strafe((-mInputData.mouseMoveX) * moveSensitivity);
     mCamera.Rise(mInputData.mouseMoveY * moveSensitivity);
+
+    mInputData.mouseMoveX = 0.0f;
+    mInputData.mouseMoveY = 0.0f;
     return true;
 }
 
@@ -309,10 +303,37 @@ bool TestApp::OnPanCamera(s32 val)
 
 bool TestApp::OnSelectObject()
 {
+    bool handled = true;
+    
+    // De-select the objects
+    // Remove any existing objects
+    // TODO: check if shift or w/e is pressed for multiple selection
+    for (auto object : mSelectedObjects)
+    {
+        object->DeSelect();
+    }
+    mSelectedObjects.clear();
+
+    // Convert the mouse click into a ray cast in world space and test collision
     Math::Ray ray = mCamera.GetMouseRay(mInputData.mouseX, mInputData.mouseY, mWidth, mHeight);
-    objectClicked = mOctree.GetIntersectingObjects(ray, objects);
-    testAABB.center *= 1.1f;
-    return true;
+    if (!mOctree.GetIntersectingObjects(ray, mSelectedObjects))
+    {
+        return handled;
+    }
+
+    // Invert the selection flag so previously selected objects are now de-selected
+    std::vector<EditorObject*>::iterator it = mSelectedObjects.begin();
+    for (it; it != mSelectedObjects.end(); ++it)
+    {
+        EditorObject* object = *it;
+
+        // Select the object if it hasn't been already
+        if (!object->IsSelected())
+        {
+            object->Select();
+        }
+    }
+    return handled;
 }
 
 
