@@ -8,7 +8,6 @@ META_CLASS_END
 
 GameObject::GameObject()
     : mName("Unknown")
-    //, mTransform(this)
 {
 }
 

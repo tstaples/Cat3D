@@ -93,24 +93,24 @@ void MemoryPool<DataType>::Flush()
 //----------------------------------------------------------------------------------------------------
 
 template<typename DataType>
-DataType* MemoryPool<DataType>::GetItem(MemHandle<DataType> handle)
+DataType* MemoryPool<DataType>::Get(MemHandle<DataType> handle)
 {
     DataType* item = nullptr;
     if (IsValid(handle))
     {
-        item = mData[handle.GetIndex()];
+        item = &mData[handle.GetIndex()];
     }
     return item;
 }
 //----------------------------------------------------------------------------------------------------
 
 template<typename DataType>
-const DataType* MemoryPool<DataType>::GetItem(MemHandle<DataType> handle) const
+const DataType* MemoryPool<DataType>::Get(MemHandle<DataType> handle) const
 {
     const DataType* item = nullptr;
     if (IsValid(handle))
     {
-        item = mData[handle.GetIndex()];
+        item = &mData[handle.GetIndex()];
     }
     return item;
 }

@@ -2,15 +2,14 @@
 #include "GameObjectFactory.h"
 
 #include "Component.h"
-#include "ModelManager.h"
-#include "RenderService.h"
-
+#include "MemoryPool.h"
 #include "IO.h"
 
 #include <json/json.h>
 #include <fstream>
 
-GameObjectFactory::GameObjectFactory()
+GameObjectFactory::GameObjectFactory(GameObjectPool& gameObjectPool)
+    : mGameObjectPool(gameObjectPool)
 {
 }
 
@@ -21,6 +20,20 @@ GameObjectFactory::~GameObjectFactory()
 }
 
 //----------------------------------------------------------------------------------------------------
+
+GameObjectHandle GameObjectFactory::Create(const char* templateFile)
+{
+    GameObjectHandle handle = mGameObjectPool.Allocate();
+    GameObject* gameObject = handle.Get();
+
+    // TODO
+    //MetaClass* metaClass = MetaDB::Get("transform");
+    //void* var = metaClass->Create();
+    //MetaType* varType = GameObject::GetMetaClass()->FindVar("transform");
+    //gameObject->AddComponent(component);
+
+    return handle;
+}
 
 // TODO: Package all object data as binary during build.
 //ID GameObjectFactory::Create(const char* templateName, const Math::Vector3& startPosition)

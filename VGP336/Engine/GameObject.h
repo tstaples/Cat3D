@@ -14,11 +14,6 @@
 #include "MemHandle.h"
 #include "Meta.h"
 
-// Temp
-#include "TransformComponent.h"
-#include "MetaTypes.h"
-#include "ID.h"
-
 //====================================================================================================
 // Forward Declarations
 //====================================================================================================
@@ -42,10 +37,6 @@ public:
 
     void AddComponent(Component* component);
 
-    // TEMP UNTIL META SYSTEM DONE
-    //TransformComponent& GetTransform() { return mTransform; }
-
-    // TODO: meta system for getting type
     // Returns bool rather than pointer to force caching local pointer
     template<typename T>
     bool GetComponent(T*& component);
@@ -58,18 +49,21 @@ public:
     bool FindComponent(const T*& component) const;
 
     const char* GetName() const                 { return mName.c_str(); }
-    const Components& GetComponents() const   { return mComponents; }
+    const Components& GetComponents() const     { return mComponents; }
 
 private:
     //NONCOPYABLE(GameObject)
 
     std::string mName; // See TODO in TString
-
-    // TEMP UNTIL META SYSTEM DONE
-    //TransformComponent mTransform;
-
     Components mComponents;
 };
+
+//====================================================================================================
+// Typedefs
+//====================================================================================================
+
+typedef MemHandle<GameObject> GameObjectHandle;
+typedef MemoryPool<GameObject> GameObjectPool;
 
 //====================================================================================================
 // Inline Definitions

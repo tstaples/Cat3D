@@ -52,7 +52,7 @@ ID Repository<T>::Allocate()
 
     // Note: placement new skips allocation if it's already allocated
     // and just does the construction part.
-    new (&mData[index]) T();
+    //new (&mData[index]) T();
 
     return ID(GetType(), mInstanceCount[index], index);
 }

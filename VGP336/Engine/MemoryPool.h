@@ -31,7 +31,7 @@ public:
 
     // Reserves a slot.
     // Returns: handle associated with the allocated block.
-    MemHandle Allocate();
+    MemHandle<DataType> Allocate();
 
     // Free's the slot referred to by the handle.
     // @param handle: handle associated with the slot to be freed.
@@ -48,8 +48,8 @@ public:
     // Gets a pointer to the memory associated with the handle.
     // @param handle: handle associated with desired memory.
     // Returns: pointer to the data, or null if it doesn't exist.
-    DataType* GetItem(MemHandle<DataType> handle);
-    const DataType* GetItem(MemHandle<DataType> handle) const;
+    DataType* Get(MemHandle<DataType> handle);
+    const DataType* Get(MemHandle<DataType> handle) const;
 
     // TODO: store pointer to memory pool so we can have a "Get" method
     // which returns a pointer to the data in the pool. Requires memhandle to be templatized

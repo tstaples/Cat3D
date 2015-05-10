@@ -11,6 +11,8 @@
 // Includes
 //====================================================================================================
 
+#include "GameObject.h"
+
 //====================================================================================================
 // Forward Declarations
 //====================================================================================================
@@ -22,11 +24,13 @@
 class GameObjectFactory
 {
 public:
-    GameObjectFactory();
+    GameObjectFactory(GameObjectPool& gameObjectPool);
     ~GameObjectFactory();
 
-private:
+    GameObjectHandle Create(const char* templateFileName);
 
+private:
+    GameObjectPool& mGameObjectPool;
 };
 
 #endif // #ifndef INCLUDED_ENGINE_GAMEOBJECTFACTORY_H

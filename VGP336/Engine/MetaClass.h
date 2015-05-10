@@ -39,6 +39,9 @@ public:
     {
     }
 
+    // TODO: Take create and destroy function pointers in constructor so the objects
+    // can be created from the metaclass
+
     const char* GetName() const { return mName; }
 
 private:
