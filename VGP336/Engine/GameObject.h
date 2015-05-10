@@ -12,6 +12,7 @@
 //====================================================================================================
 
 #include "MemHandle.h"
+#include "Meta.h"
 
 // Temp
 #include "TransformComponent.h"
@@ -32,49 +33,98 @@ class GameObject
 {
 public:
     typedef std::vector<Component*> Components;
-    typedef std::vector<Meta::Type> ServiceList;
 
 public:
+    META_DECLARE_CLASS
+
     GameObject();
     ~GameObject();
 
-    void AddComponent(ID id);
-    void AddService(Meta::Type type);
-
-    //ID GetComponentID(Meta::Type type);   // Garuntees ID
-    //ID FindComponentID(Meta::Type type);  // Returns invalid ID if component doesn't exist
+    void AddComponent(Component* component);
 
     // TEMP UNTIL META SYSTEM DONE
-    TransformComponent& GetTransform() { return mTransform; }
+    //TransformComponent& GetTransform() { return mTransform; }
 
     // TODO: meta system for getting type
     // Returns bool rather than pointer to force caching local pointer
     template<typename T>
     bool GetComponent(T*& component);
     template<typename T>
-    bool GetComponent(T*& component) const;
+    bool GetComponent(const T*& component) const;
 
     template<typename T>
     bool FindComponent(T*& component);
     template<typename T>
-    bool FindComponent(T*& component) const;
+    bool FindComponent(const T*& component) const;
 
     const char* GetName() const                 { return mName.c_str(); }
-    ID GetID() const                            { return mID; }
     const Components& GetComponents() const   { return mComponents; }
-    const ServiceList& GetServices() const      { return mServices; }
 
 private:
     //NONCOPYABLE(GameObject)
 
     std::string mName; // See TODO in TString
-    ID mID;
 
     // TEMP UNTIL META SYSTEM DONE
-    TransformComponent mTransform;
+    //TransformComponent mTransform;
 
     Components mComponents;
-    ServiceList mServices;
 };
+
+//====================================================================================================
+// Inline Definitions
+//====================================================================================================
+
+template<typename T>
+bool GameObject::GetComponent(T*& component)
+{
+    bool result = FindComponent(component);
+    ASSERT(result, "[GameObject] could not find component");
+    return result;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+template<typename T>
+bool GameObject::GetComponent(const T*& component) const
+{
+    bool result = FindComponent(component);
+    ASSERT(result, "[GameObject] could not find component");
+    return result;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+template<typename T>
+bool GameObject::FindComponent(T*& component)
+{
+    component = nullptr;
+    for (Component* c : mComponents)
+    {
+        if (c->GetMetaClass() == T::StaticGetMetaClass())
+        {
+            component = static_cast<T*>(c);
+            break;
+        }
+    }
+    return (component != nullptr);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+template<typename T>
+bool GameObject::FindComponent(const T*& component) const
+{
+    component = nullptr;
+    for (Component* c : mComponents)
+    {
+        if (c->GetMetaClass() == T::StaticGetMetaClass())
+        {
+            component = static_cast<const T*>(c);
+            break;
+        }
+    }
+    return (component != nullptr);
+}
 
 #endif // #ifndef INCLUDED_ENGINE_GAMEOBJECT_H

@@ -21,10 +21,8 @@
 class ColliderComponent : public Component
 {
 public:
-    ColliderComponent();
+    ColliderComponent(GameObject* gameObject);
     ~ColliderComponent();
-
-    virtual void Load(Json::Value& properties);
 
     Math::AABB& GetBoundary()                { return mAABB; }
     const Math::AABB& GetBoundary() const    { return mAABB; }

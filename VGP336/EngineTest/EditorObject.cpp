@@ -18,7 +18,12 @@ EditorObject::~EditorObject()
 
 void EditorObject::DrawGizmo()
 {
-    const Math::Matrix& transform = mpGameObject->GetTransform().GetTransform();
+    TransformComponent* transformComponent = nullptr;
+    if (!mpGameObject->GetComponent(transformComponent))
+    {
+        return;
+    }
+    const Math::Matrix& transform = transformComponent->GetTransform();
     mGizmo.Draw(transform);
     //Math::Vector3 xAxis = Math::TransformCoord(Math::Vector3::XAxis() * 10.0f, transform);
     //Math::Vector3 yAxis = Math::TransformCoord(Math::Vector3::YAxis() * 10.0f, transform);
@@ -32,7 +37,12 @@ void EditorObject::DrawGizmo()
 
 Math::Vector3 EditorObject::GetPosition() const
 {
-    return mpGameObject->GetTransform().GetPosition();
+    TransformComponent* transformComponent = nullptr;
+    if (!mpGameObject->GetComponent(transformComponent))
+    {
+        return Math::Vector3();
+    }
+    return transformComponent->GetPosition();
 }
 
 const Math::AABB& EditorObject::GetCollider() const
@@ -43,17 +53,29 @@ const Math::AABB& EditorObject::GetCollider() const
 
 void EditorObject::Translate(const Math::Vector3& t)
 {
+    TransformComponent* transformComponent = nullptr;
+    if (!mpGameObject->GetComponent(transformComponent))
+    {
+        return;
+    }
+
     // Translate the GameObject
-    mpGameObject->GetTransform().Translate(t);
+    transformComponent->Translate(t);
     // Move the collider to the object's new position
-    mDefaultCollider.center = mpGameObject->GetTransform().GetPosition();
+    mDefaultCollider.center = transformComponent->GetPosition();
     mGizmo.Translate(t);
     //mGizmo.center = mpGameObject->GetTransform().GetPosition();
 }
 
 Math::Vector3 EditorObject::GetSelectedAxis(const Math::Ray& mouseRay) const
 {
-    Math::Matrix transform = mpGameObject->GetTransform().GetTransform();
+    TransformComponent* transformComponent = nullptr;
+    if (!mpGameObject->GetComponent(transformComponent))
+    {
+        return Math::Vector3();
+    }
+    Math::Matrix transform = transformComponent->GetTransform();
+
     //Math::Vector3 org = Math::TransformCoord(mouseRay.org, transform);
     //Math::Vector3 dir = Math::TransformNormal(mouseRay.dir, transform);
     //Math::Ray ray(org, dir);

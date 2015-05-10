@@ -41,6 +41,7 @@
     <ClCompile Include="MeshBuilder.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="MeshUtil.cpp" />
+    <ClCompile Include="MetaType.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelComponent.cpp" />
     <ClCompile Include="ModelManager.cpp" />
@@ -111,6 +112,10 @@
     <ClInclude Include="MeshBuilder.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="MeshUtil.h" />
+    <ClInclude Include="Meta.h" />
+    <ClInclude Include="MetaClass.h" />
+    <ClInclude Include="MetaField.h" />
+    <ClInclude Include="MetaType.h" />
     <ClInclude Include="MetaTypes.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelComponent.h" />
@@ -128,8 +133,6 @@
     <ClInclude Include="MeshBuffer.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RenderService.h" />
-    <ClInclude Include="Repository.h" />
-    <ClInclude Include="RepositoryTypes.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Sampler.h" />
@@ -154,11 +157,11 @@
     <None Include="ComplexNumber.inl" />
     <None Include="EngineMath.inl" />
     <None Include="Matrix.inl" />
+    <None Include="MemHandle.inl" />
     <None Include="MemoryPool.inl" />
     <None Include="MetaTypeDefines.tup" />
     <None Include="Octree.inl" />
     <None Include="Quaternion.inl" />
-    <None Include="Repository.inl" />
     <None Include="ResourceManager.inl" />
     <None Include="SerialReader.inl" />
     <None Include="SerialWriter.inl" />

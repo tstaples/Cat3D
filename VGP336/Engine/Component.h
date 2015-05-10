@@ -11,14 +11,13 @@
 // Includes
 //====================================================================================================
 
+#include "Meta.h"
+
 //====================================================================================================
 // Forward Declarations
 //====================================================================================================
 
-namespace Json
-{
-    class Value;
-}
+class GameObject;
 
 //====================================================================================================
 // Class Declarations
@@ -27,12 +26,19 @@ namespace Json
 class Component
 {
 public:
-    Component();
+    META_DECLARE_CLASS
+
+    Component(GameObject* gameObject);
     virtual ~Component();
 
-    virtual void Load(Json::Value& properties) = 0;
+    virtual void Initialize() {}
+    virtual void Terminate() {}
+
+    GameObject* GetObj()                { return mpGameObject; }
+    const GameObject* GetObj() const    { return mpGameObject; }
 
 private:
+    GameObject* mpGameObject;
 };
 
 #endif // #ifndef INCLUDED_ENGINE_COMPONENT_H

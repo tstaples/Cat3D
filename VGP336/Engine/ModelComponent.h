@@ -21,15 +21,13 @@
 class ModelComponent : public Component
 {
 public:
-    ModelComponent();
+    ModelComponent(GameObject* gameObject);
     ~ModelComponent();
 
     void SetModel(const Model* model) { mModel = model; }
 
     //Model* GetModel() { return mModel; }
     const Model* GetModel() const { return mModel; }
-
-    virtual void Load(Json::Value& properties);
 
 private:
     // TODO: hold ref to model which is managed elsewhere

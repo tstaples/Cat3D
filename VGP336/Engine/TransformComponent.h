@@ -21,8 +21,10 @@
 class TransformComponent : public Component
 {
 public:
-    TransformComponent();
-    TransformComponent(const Math::Matrix& transform);
+    META_DECLARE_CLASS
+
+    TransformComponent(GameObject* gameObject);
+    TransformComponent(GameObject* gameObject, const Math::Matrix& transform);
     ~TransformComponent();
 
     void Translate(const Math::Vector3& t);
@@ -33,8 +35,6 @@ public:
     const Math::Matrix& GetTransform() const    { return mTransform; }
 
     void SetTransform(const Math::Matrix& transform) { mTransform = transform; }
-
-    virtual void Load(Json::Value& properties);
 
 private:
     Math::Matrix mTransform;

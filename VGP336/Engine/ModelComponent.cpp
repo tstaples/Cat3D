@@ -5,8 +5,9 @@
 
 #include <json/json.h>
 
-ModelComponent::ModelComponent()
-    : mModel(nullptr)
+ModelComponent::ModelComponent(GameObject* gameObject)
+    : Component(gameObject)
+    , mModel(nullptr)
 {
 }
 
@@ -15,12 +16,4 @@ ModelComponent::ModelComponent()
 ModelComponent::~ModelComponent()
 {
     SafeRelease(mModel);
-}
-
-//----------------------------------------------------------------------------------------------------
-
-void ModelComponent::Load(Json::Value& properties)
-{
-    Json::Value filename = properties.get("Filename", "");
-
 }

@@ -92,6 +92,14 @@ void TestApp::OnInitialize(u32 width, u32 height)
     mObjects.push_back(EditorObject(new GameObject()));
     mObjects[0].Translate(Math::Vector3(15.0f, 3.0f, 5.0f));
     mObjects[1].Translate(Math::Vector3(-15.0f, 3.0f, 5.0f));
+
+    GameObject* g = new GameObject();
+    TransformComponent* t = new TransformComponent(g);
+    g->AddComponent(t);
+    const MetaClass* gc = g->GetMetaClass();
+    const MetaClass* tc = t->GetMetaClass();
+    TransformComponent* tt = nullptr;
+    bool result = g->GetComponent(tt);
 }
 
 //----------------------------------------------------------------------------------------------------
