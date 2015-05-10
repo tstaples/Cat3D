@@ -1,5 +1,5 @@
-template<typename Handle, typename DataType>
-MemoryPool<Handle, DataType>::MemoryPool(u16 capacity)
+template<typename DataType>
+MemoryPool<DataType>::MemoryPool(u16 capacity)
     : MemoryPoolBase(type)
     , mCapacity(capacity)
     , mSize(0)
@@ -9,13 +9,15 @@ MemoryPool<Handle, DataType>::MemoryPool(u16 capacity)
     // Using malloc because we don't want to construct the objects
     mData = static_cast<DataType*>(malloc(sizeof(DataType) * capacity));
     mInstanceCount = new u8[capacity];
-    memset(mInstanceCount, 0, sizeof(mInstanceCount) * capacity);
+    memset(mInstanceCount, 0, sizeof(u16) * capacity);
     mFreeSlots.reserve(capacity);
+
+    MemHandle<DataType>::sMemoryPool = this;
 }
 //----------------------------------------------------------------------------------------------------
 
-template<typename Handle, typename DataType>
-MemoryPool<Handle, DataType>::~MemoryPool()
+template<typename DataType>
+MemoryPool<DataType>::~MemoryPool()
 {
     SafeDeleteArray(mInstanceCount);
     free(mData);
@@ -24,8 +26,8 @@ MemoryPool<Handle, DataType>::~MemoryPool()
 }
 //----------------------------------------------------------------------------------------------------
 
-template<typename Handle, typename DataType>
-MemHandle MemoryPool<Handle, DataType>::Allocate()
+template<typename DataType>
+MemHandle<DataType> MemoryPool<DataType>::Allocate()
 {
     ASSERT(!mFreeSlots.size() || mSize < mCapacity, "[MemoryPool] Failed to allocate.");
 
@@ -33,7 +35,7 @@ MemHandle MemoryPool<Handle, DataType>::Allocate()
     if (mFreeSlots.size() && mSize >= mCapacity)
     {
         // Return an invalid MemHandle
-        return MemHandle();
+        return MemHandle<DataType>();
     }
 
     u16 index = 0;
@@ -54,12 +56,12 @@ MemHandle MemoryPool<Handle, DataType>::Allocate()
     // and just does the construction part.
     new (&mData[index]) DataType();
 
-    return MemHandle(mInstanceCount[index], index);
+    return MemHandle<DataType>(mInstanceCount[index], index);
 }
 //----------------------------------------------------------------------------------------------------
 
-template<typename Handle, typename DataType>
-void MemoryPool<Handle, DataType>::Free(MemHandle& handle)
+template<typename DataType>
+void MemoryPool<DataType>::Free(MemHandle<DataType>& handle)
 {
     if (IsValid(handle))
     {
@@ -73,8 +75,8 @@ void MemoryPool<Handle, DataType>::Free(MemHandle& handle)
 }
 //----------------------------------------------------------------------------------------------------
 
-template<typename Handle, typename DataType>
-void MemoryPool<Handle, DataType>::Flush()
+template<typename DataType>
+void MemoryPool<DataType>::Flush()
 {
     const u32 count = mSize;
     for (u32 i=0; i < count; ++i)
@@ -90,8 +92,8 @@ void MemoryPool<Handle, DataType>::Flush()
 }
 //----------------------------------------------------------------------------------------------------
 
-template<typename Handle, typename DataType>
-DataType* MemoryPool<Handle, DataType>::GetItem(MemHandle handle)
+template<typename DataType>
+DataType* MemoryPool<DataType>::GetItem(MemHandle<DataType> handle)
 {
     DataType* item = nullptr;
     if (IsValid(handle))
@@ -102,8 +104,8 @@ DataType* MemoryPool<Handle, DataType>::GetItem(MemHandle handle)
 }
 //----------------------------------------------------------------------------------------------------
 
-template<typename Handle, typename DataType>
-const DataType* MemoryPool<Handle, DataType>::GetItem(MemHandle handle) const
+template<typename DataType>
+const DataType* MemoryPool<DataType>::GetItem(MemHandle<DataType> handle) const
 {
     const DataType* item = nullptr;
     if (IsValid(handle))
@@ -114,8 +116,8 @@ const DataType* MemoryPool<Handle, DataType>::GetItem(MemHandle handle) const
 }
 //----------------------------------------------------------------------------------------------------
 
-template<typename Handle, typename DataType>
-bool MemoryPool<Handle, DataType>::IsValid(MemHandle handle) const
+template<typename DataType>
+bool MemoryPool<DataType>::IsValid(MemHandle<DataType> handle) const
 {
     // Cache values for debug purpose. Possible todo: wrap with prepro build type (#if _DEBUG)
     const u16 instance = handle.GetInstance();

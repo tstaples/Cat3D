@@ -19,7 +19,7 @@
 //====================================================================================================
 
 // Handle type
-template<typename Handle, typename DataType>
+template<typename DataType>
 class MemoryPool
 {
 public:
@@ -35,7 +35,7 @@ public:
 
     // Free's the slot referred to by the handle.
     // @param handle: handle associated with the slot to be freed.
-    void Free(MemHandle& handle);
+    void Free(MemHandle<DataType>& handle);
 
     // Clear everything (ungraceful).
     void Flush();
@@ -43,13 +43,13 @@ public:
     // Validates the memory associated with the handle.
     // @param handle: handle to verify.
     // Returns: true if the handle is valid.
-    bool IsValid(MemHandle handle) const;
+    bool IsValid(MemHandle<DataType> handle) const;
 
     // Gets a pointer to the memory associated with the handle.
     // @param handle: handle associated with desired memory.
     // Returns: pointer to the data, or null if it doesn't exist.
-    DataType* GetItem(MemHandle handle);
-    const DataType* GetItem(MemHandle handle) const;
+    DataType* GetItem(MemHandle<DataType> handle);
+    const DataType* GetItem(MemHandle<DataType> handle) const;
 
     // TODO: store pointer to memory pool so we can have a "Get" method
     // which returns a pointer to the data in the pool. Requires memhandle to be templatized
