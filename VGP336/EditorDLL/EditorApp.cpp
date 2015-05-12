@@ -193,7 +193,7 @@ void EditorApp::OnUpdate()
             {
                 Math::Ray mouseRay = mCamera.GetMouseRay(mInputData.mouseX, mInputData.mouseY, mWidth, mHeight);
                 Math::Vector3 translation = object.GetSelectedAxis(mouseRay);
-                SimpleDraw::AddLine(object.GetPosition(), translation * 15.0f, Color::Cyan());
+                //SimpleDraw::AddLine(object.GetPosition(), translation * 15.0f, Color::Cyan());
                 //object.Translate(translation * mInputData.mouseMoveX);
             }
 

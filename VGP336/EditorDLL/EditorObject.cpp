@@ -26,14 +26,14 @@ void EditorObject::DrawGizmo()
     const Math::Matrix& transform = transformComponent->GetTransform();
     mGizmo.Draw(transform);
 
-    //Math::Vector3 xAxis = Math::TransformCoord(Math::Vector3::XAxis() * 10.0f, transform);
-    //Math::Vector3 yAxis = Math::TransformCoord(Math::Vector3::YAxis() * 10.0f, transform);
-    //Math::Vector3 zAxis = Math::TransformCoord(Math::Vector3::ZAxis() * 10.0f, transform);
-    //Math::Vector3 center = mpGameObject->GetTransform().GetPosition();
+    Math::Vector3 xAxis = Math::TransformCoord(Math::Vector3::XAxis() * 10.0f, transform);
+    Math::Vector3 yAxis = Math::TransformCoord(Math::Vector3::YAxis() * 10.0f, transform);
+    Math::Vector3 zAxis = Math::TransformCoord(Math::Vector3::ZAxis() * 10.0f, transform);
+    Math::Vector3 center = transformComponent->GetPosition();
 
-    //SimpleDraw::AddLine(center, xAxis, Color::Green());
-    //SimpleDraw::AddLine(center, yAxis, Color::Yellow());
-    //SimpleDraw::AddLine(center, zAxis, Color::Blue());
+    SimpleDraw::AddLine(center, xAxis, Color::Green());
+    SimpleDraw::AddLine(center, yAxis, Color::Yellow());
+    SimpleDraw::AddLine(center, zAxis, Color::Blue());
 }
 
 Math::Vector3 EditorObject::GetPosition() const
