@@ -21,5 +21,11 @@ extern "C" DllExport void UpdateFrame();
 extern "C" DllExport void Terminate();
 extern "C" DllExport int IsGameRunning();
 
+extern "C" DllExport unsigned int GetSelectedObjectData(unsigned char* buffer);
+
+extern "C" struct Matrix;
+extern "C" struct Vector3;
+
+extern "C" DllExport void GetMatrixRotation(float* m, Vector3& V);
 
 #endif //#ifndef INCLUDED_EDITORAPI_H

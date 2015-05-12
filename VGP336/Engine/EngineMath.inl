@@ -377,4 +377,31 @@ inline Vector3 RotateVector(const Vector3& v, const Quaternion& q)
     return rot;
 }
 
+//----------------------------------------------------------------------------------------------------
+
+// http://gamedev.stackexchange.com/a/50968/51098
+inline Vector3 GetRotation(const Matrix& m)
+{
+    Vector3 rot;
+    if (m._11 == 1.0f)
+    {
+        rot.x = atan2f(m._13, m._34);
+        rot.y = 0.0f;
+        rot.z = 0.0f;
+    }
+    else if (m._11 == -1.0f)
+    {
+        rot.x = atan2f(-m._31, m._11);
+        rot.y = 0.0f;
+        rot.z = 0.0f;
+    }
+    else
+    {
+        rot.x = atan2f(-m._31, m._11) * kRadToDeg;
+        rot.y = asinf(m._21) * kRadToDeg;
+        rot.z = atan2f(-m._23, m._22) * kRadToDeg;
+    }
+    return rot;
+}
+
 } // namespace Math

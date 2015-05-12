@@ -27,6 +27,7 @@ public:
     MemHandle(u16 instance, u16 index);
 
     DataType* Get();
+    const DataType* Get() const;
 
     u16 GetInstance() const     { return mInstance; }
     u16 GetIndex() const        { return mIndex; }

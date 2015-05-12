@@ -1,14 +1,13 @@
 template<typename DataType>
 MemoryPool<DataType>::MemoryPool(u16 capacity)
-    : MemoryPoolBase(type)
-    , mCapacity(capacity)
+    : mCapacity(capacity)
     , mSize(0)
     , mData(nullptr)
     , mInstanceCount(nullptr)
 {
     // Using malloc because we don't want to construct the objects
     mData = static_cast<DataType*>(malloc(sizeof(DataType) * capacity));
-    mInstanceCount = new u8[capacity];
+    mInstanceCount = new u16[capacity];
     memset(mInstanceCount, 0, sizeof(u16) * capacity);
     mFreeSlots.reserve(capacity);
 
@@ -124,6 +123,7 @@ bool MemoryPool<DataType>::IsValid(MemHandle<DataType> handle) const
     const u16 index = handle.GetIndex();
 
     // Index cannot be the last slot since it is reserved for an "invalid" slot
-    return ((index < (mSize - 1)) &&
+    // TODO: Why?
+    return ((index < (mSize)) &&
             (instance == mInstanceCount[index]));
 }

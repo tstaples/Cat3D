@@ -2,10 +2,51 @@
 
 #include "EditorApp.h"
 
+//====================================================================================================
+// Macros
+//====================================================================================================
+
+#define EXTERNAL_VEC(v)\
+    *(Vector3*)&v
+#define NATIVE_VEC(v)\
+    *(Math::Vector3*)&v
+
+#define EXTERNAL_MATRIX(v)\
+    *(Matrix*)&v
+#define NATIVE_MATRIX(v)\
+    *(Math::Matrix*)&v
+
+//====================================================================================================
+// Namespaces
+//====================================================================================================
+
 namespace
 {
     EditorApp app;
 }
+
+//====================================================================================================
+// Structs
+//====================================================================================================
+
+struct Vector3
+{
+    float x, y, z;
+};
+
+//----------------------------------------------------------------------------------------------------
+
+struct Matrix
+{
+    float _11, _12, _13, _14;
+	float _21, _22, _23, _24;
+	float _31, _32, _33, _34;
+	float _41, _42, _43, _44;
+};
+
+//====================================================================================================
+// Functions
+//====================================================================================================
 
 void Initialize(int* instancePtrAddress, int* hPrevInstancePtrAddress, int* hWndPtrAddress, int nCmdShow, int screenWidth, int screenHeight)
 {
@@ -18,22 +59,54 @@ void Initialize(int* instancePtrAddress, int* hPrevInstancePtrAddress, int* hWnd
     app.Initialize(hInstance, "Editor", screenWidth, screenHeight);
 }
 
+//----------------------------------------------------------------------------------------------------
+
 void WndProc(int* hWndPtrAddress, int msg, int wParam, int lParam)
 {
     app.ForwardInput((HWND)hWndPtrAddress, msg, wParam, lParam);
 }
+
+//----------------------------------------------------------------------------------------------------
 
 void UpdateFrame()
 {
     app.Update();
 }
 
+//----------------------------------------------------------------------------------------------------
+
 void Terminate()
 {
     app.Terminate();
 }
 
+//----------------------------------------------------------------------------------------------------
+
 int IsGameRunning()
 {
     return (int)app.IsRunning();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+unsigned int GetSelectedObjectData(unsigned char* buffer)
+{
+    unsigned int size = 0;
+    unsigned char* buff = (unsigned char*)app.GetSelectedObjectData(size);
+    memcpy(buffer, buff, size);
+    return size;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void GetMatrixRotation(float* m, Vector3& v)
+{
+    Math::Matrix mat = NATIVE_MATRIX(m);
+    Math::Vector3 rot = Math::GetRotation(mat);
+    v = EXTERNAL_VEC(rot);
+    //Vector3 test;
+    //test.x = 1.0f;
+    //test.y = 2.0f;
+    //test.z = 3.0f;
+    //v = test;
 }

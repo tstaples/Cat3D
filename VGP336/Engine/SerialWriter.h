@@ -38,6 +38,9 @@ public:
     */
     void WriteLengthEncodedString(const std::string& str);
 
+    u32 GetSize() const     { return mBufferSize; }
+    u32 GetOffset() const   { return mWriteOffset; }
+
 private:
 	u8* mBufferHandle;	// Buffer we are reading/writing to
 	u32 mWriteOffset;	// Position in buffer

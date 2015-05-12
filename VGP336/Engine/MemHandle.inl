@@ -25,3 +25,14 @@ DataType* MemHandle<DataType>::Get()
     }
     return data;
 }
+
+template <typename DataType>
+const DataType* MemHandle<DataType>::Get() const
+{
+    DataType* data = nullptr;
+    if (sMemoryPool)
+    {
+        data = sMemoryPool->Get(*this);
+    }
+    return data;
+}

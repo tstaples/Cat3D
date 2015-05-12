@@ -43,6 +43,7 @@ u32 GetFieldOffset(DataType ClassType::* field)
     // create a nullptr of that class type at address 0
     // get the adress of the field within the null class, giving us a byte offset
     return (u32)(void*)&(((ClassType*)nullptr)->*field);
+    //return (char*)&((ClassType*)nullptr->*field) - (char*)nullptr;
 }
 
 //====================================================================================================

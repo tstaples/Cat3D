@@ -7,7 +7,7 @@
 class EditorObject
 {
 public:
-    EditorObject(GameObject* gameObject);
+    EditorObject(GameObjectHandle gameObjectHandle);
     ~EditorObject();
 
     void DrawGizmo();
@@ -18,14 +18,15 @@ public:
     Math::Vector3 GetPosition() const;
     const Math::AABB& GetCollider() const;
 
-    GameObject* GetGameObject() const   { return mpGameObject; }
+    GameObject* GetGameObject()         { return mGameObjectHandle.Get(); }
+    GameObjectHandle GetHandle() const  { return mGameObjectHandle; }
     bool IsSelected() const             { return mIsSelected; }
     void Select()                       { mIsSelected = true; }
     void DeSelect()                     { mIsSelected = false; }
 
 private:
     // GameObject this class wraps
-    GameObject* mpGameObject;   // Weak ptr
+    GameObjectHandle mGameObjectHandle;
 
     // Scene graph data
     EditorObject* mpParent;

@@ -14,9 +14,11 @@ EditorApp::EditorApp()
     : mWidth(0)
     , mHeight(0)
     , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(50.0f, 50.0f, 50.0f)))
+    , mGameObjectPool(10)
 {
     memset(mInputData.keyStates, 0, sizeof(bool) * 256);
     memset(mInputData.mouseStates, 0, sizeof(bool) * 4);
+    memset(mObjBuffer, 0, 2048);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -50,16 +52,33 @@ void EditorApp::OnInitialize(u32 width, u32 height)
     mInputManager.BindAxis(Mouse::MBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(EditorApp, &EditorApp::OnPanCamera));
 
     // TEMP
-    mObjects.push_back(EditorObject(new GameObject()));
-    mObjects.push_back(EditorObject(new GameObject()));
-    mObjects[0].Translate(Math::Vector3(15.0f, 3.0f, 5.0f));
-    mObjects[1].Translate(Math::Vector3(-15.0f, 3.0f, 5.0f));
+    GameObjectHandle handle1 = mGameObjectPool.Allocate();
+    GameObjectHandle handle2 = mGameObjectPool.Allocate();
+
+    GameObject* g1 = handle1.Get();
+    GameObject* g2 = handle2.Get();
+
+    // leak
+    TransformComponent* t1 = new TransformComponent(g1);
+    TransformComponent* t2 = new TransformComponent(g2);
+    t1->Translate(Math::Vector3(15.0f, 3.0f, 5.0f));
+    t2->Translate(Math::Vector3(-15.0f, 3.0f, 5.0f));
+
+    g1->AddComponent(t1);
+    g2->AddComponent(t2);
+
+    mObjects.push_back(EditorObject(handle1));
+    mObjects.push_back(EditorObject(handle2));
 }
 
 //----------------------------------------------------------------------------------------------------
 
 void EditorApp::OnTerminate()
 {
+    mOctree.Destroy();
+    mObjects.clear();
+    mGameObjectPool.Flush();
+
 	SimpleDraw::Terminate();
 	mGraphicsSystem.Terminate();
 }
@@ -134,7 +153,7 @@ void EditorApp::OnUpdate()
 
     // Destroy and re-create the entire tree
     mOctree.Destroy();
-    for (int i=0; i < mObjects.size(); ++i)
+    for (u32 i=0; i < mObjects.size(); ++i)
     {
         mOctree.Insert(mObjects[i], mObjects[i].GetCollider());
     }
@@ -189,6 +208,51 @@ void EditorApp::OnUpdate()
 }
 
 //----------------------------------------------------------------------------------------------------
+
+const u8* EditorApp::GetSelectedObjectData(u32& size)
+{
+    if (mSelectedObjects.empty())
+    {
+        size = 0;
+        return nullptr;
+    }
+
+    memset(mObjBuffer, 0, 2048);
+    SerialWriter writer(mObjBuffer, 2048);
+
+    EditorObject* editorObject = mSelectedObjects[0];
+    GameObject* gameObject = editorObject->GetGameObject();
+    const MetaClass* metaClass = gameObject->GetMetaClass();
+
+    writer.WriteLengthEncodedString(metaClass->GetName());
+    writer.Write(editorObject->GetHandle().GetIndex()); // used as object identifier
+
+    const std::vector<Component*>& components = gameObject->GetComponents();
+    writer.Write((u32)components.size());
+    for (Component* c : components)
+    {
+        const MetaClass* compMetaClass = c->GetMetaClass();
+        writer.WriteLengthEncodedString(compMetaClass->GetName());
+
+        const MetaField* fields = compMetaClass->GetFields();
+        const u32 numFields = compMetaClass->GetNumFields();
+        writer.Write(numFields);
+        for (u32 i=0; i < numFields; ++i)
+        {
+            const MetaField* field = &fields[i];
+            const u32 offset = field->GetOffset();
+            const u32 fieldSize = field->GetType()->GetSize();
+            char* fieldData = ((char*)c) + offset;
+
+            writer.WriteLengthEncodedString(field->GetName());
+            writer.Write(field->GetType());
+            writer.Write(fieldSize);
+            writer.WriteArray(fieldData, fieldSize);
+        }
+    }
+    size = writer.GetOffset();
+    return mObjBuffer;
+}
 
 bool EditorApp::OnCameraLook(s32 val)
 {

@@ -13,6 +13,8 @@ public:
 	EditorApp();
 	virtual ~EditorApp();
 
+    const u8* GetSelectedObjectData(u32& size);
+
 private:
 	// Application implementation
 	virtual void OnInitialize(u32 width, u32 height);
@@ -26,9 +28,11 @@ private:
 	GraphicsSystem mGraphicsSystem;
 	Camera mCamera;
 
+    GameObjectPool mGameObjectPool;
+    Octree<EditorObject> mOctree;
+
     std::vector<EditorObject> mObjects;
     std::vector<EditorObject*> mSelectedObjects;
-    Octree<EditorObject> mOctree;
 
     // Screen
     u32 mWidth;
@@ -37,6 +41,8 @@ private:
     // Input
     InputData mInputData;
     InputManager mInputManager;
+
+    u8 mObjBuffer[2048];
 
 private:
     // Input Actions

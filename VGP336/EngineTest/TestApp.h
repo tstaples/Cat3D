@@ -12,6 +12,8 @@ class TestApp : public Application
 public:
 	TestApp();
 	virtual ~TestApp();
+    
+    const u8* GetSelectedObjectData(u32& size);
 
 private:
 	// Application implementation
@@ -30,9 +32,12 @@ private:
     u32 mWidth;
     u32 mHeight;
 
+    GameObjectPool mGameObjectPool;
+    Octree<EditorObject> mOctree;
     std::vector<EditorObject> mObjects;
     std::vector<EditorObject*> mSelectedObjects;
-    Octree<EditorObject> mOctree;
+    
+    u8 mObjBuffer[2048];
 
     // Input
     InputData mInputData;

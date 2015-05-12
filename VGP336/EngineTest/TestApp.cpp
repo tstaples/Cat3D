@@ -1,8 +1,9 @@
 #include "TestApp.h"
 #include "Random.h"
 
+#include "FileBuffer.h"
 
-#define DEBUG_INPUT 1
+#define DEBUG_INPUT 0
 
 namespace
 {
@@ -48,6 +49,7 @@ TestApp::TestApp()
     : mWidth(0)
     , mHeight(0)
     , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(50.0f, 50.0f, 50.0f)))
+    , mGameObjectPool(10)
 {
     memset(mInputData.keyStates, 0, sizeof(bool) * 256);
     memset(mInputData.mouseStates, 0, sizeof(bool) * 4);
@@ -88,18 +90,54 @@ void TestApp::OnInitialize(u32 width, u32 height)
     mInputManager.BindAxis(Mouse::MBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(TestApp, &TestApp::OnPanCamera));
 
     // TEMP
-    mObjects.push_back(EditorObject(new GameObject()));
-    mObjects.push_back(EditorObject(new GameObject()));
-    mObjects[0].Translate(Math::Vector3(15.0f, 3.0f, 5.0f));
-    mObjects[1].Translate(Math::Vector3(-15.0f, 3.0f, 5.0f));
+    GameObjectHandle handle1 = mGameObjectPool.Allocate();
+    GameObjectHandle handle2 = mGameObjectPool.Allocate();
 
-    GameObject* g = new GameObject();
-    TransformComponent* t = new TransformComponent(g);
-    g->AddComponent(t);
-    const MetaClass* gc = g->GetMetaClass();
-    const MetaClass* tc = t->GetMetaClass();
-    TransformComponent* tt = nullptr;
-    bool result = g->GetComponent(tt);
+    GameObject* g1 = handle1.Get();
+    GameObject* g2 = handle2.Get();
+
+    TransformComponent* t1 = new TransformComponent(g1);
+    TransformComponent* t2 = new TransformComponent(g2);
+    t1->Translate(Math::Vector3(15.0f, 3.0f, 5.0f));
+    t2->Translate(Math::Vector3(-15.0f, 3.0f, 5.0f));
+
+    g1->AddComponent(t1);
+    g2->AddComponent(t2);
+
+    mObjects.push_back(EditorObject(handle1));
+    mObjects.push_back(EditorObject(handle2));
+
+    f32 m[16] = 
+    {
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f,
+    };
+    Math::Matrix mat = *(Math::Matrix*)&m;
+    Math::Matrix mrot = Math::Matrix::RotationX(Math::kPiByTwo);
+    Math::Vector3 rot = Math::GetRotation(mrot);
+
+    char temp[128];
+    int sz = sprintf(temp, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\0",
+                    m[0], m[1], m[2], m[3],
+                    m[4], m[5], m[6], m[7],
+                    m[8], m[9], m[10], m[11],
+                    m[12], m[13], m[14], m[15]);
+
+    //mSelectedObjects.push_back(&mObjects[1]);
+
+    u32 sizz = 0;
+    //const char* data = GetSelectedObjectData(sz);
+
+    //GameObject* g = new GameObject();
+    //TransformComponent* t = new TransformComponent(g);
+    //g->AddComponent(t);
+    //const MetaClass* gc = g->GetMetaClass();
+    //const MetaClass* tc = t->GetMetaClass();
+    //
+    //TransformComponent* tt = nullptr;
+    //bool result = g->GetComponent(tt);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -107,6 +145,7 @@ void TestApp::OnInitialize(u32 width, u32 height)
 void TestApp::OnTerminate()
 {
     mOctree.Destroy();
+    mGameObjectPool.Flush();
 
 	SimpleDraw::Terminate();
 	mGraphicsSystem.Terminate();
@@ -247,6 +286,56 @@ void TestApp::OnUpdate()
 }
 
 //----------------------------------------------------------------------------------------------------
+
+/*
+- object name (LE)
+- num components
+    - component name (LE)
+    - num fields
+    - field name (LE)
+    - field size
+    - field data
+*/
+
+const u8* TestApp::GetSelectedObjectData(u32& size)
+{
+    if (mSelectedObjects.empty())
+    {
+        size = 0;
+        return nullptr;
+    }
+
+    memset(mObjBuffer, 0, 2048);
+    SerialWriter writer(mObjBuffer, 2048);
+
+    GameObject* gameObject = mSelectedObjects[0]->GetGameObject();
+    const MetaClass* metaClass = gameObject->GetMetaClass();
+    writer.WriteLengthEncodedString(metaClass->GetName());
+
+    const std::vector<Component*>& components = gameObject->GetComponents();
+    writer.Write((u32)components.size());
+    for (Component* c : components)
+    {
+        const MetaClass* compMetaClass = c->GetMetaClass();
+        writer.WriteLengthEncodedString(compMetaClass->GetName());
+
+        const MetaField* fields = compMetaClass->GetFields();
+        const u32 numFields = compMetaClass->GetNumFields();
+        writer.Write(numFields);
+        for (u32 i=0; i < numFields; ++i)
+        {
+            const MetaField* field = &fields[i];
+            const u32 offset = field->GetOffset();
+            const u32 fieldSize = field->GetType()->GetSize();
+
+            writer.WriteLengthEncodedString(field->GetName());
+            writer.Write(fieldSize);
+            writer.WriteArray(c + offset, fieldSize);
+        }
+    }
+    size = writer.GetSize();
+    return mObjBuffer;
+}
 
 bool TestApp::OnCameraLook(s32 val)
 {

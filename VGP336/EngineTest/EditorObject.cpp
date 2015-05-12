@@ -1,7 +1,7 @@
 #include "EditorObject.h"
 
-EditorObject::EditorObject(GameObject* gameObject)
-    : mpGameObject(gameObject)
+EditorObject::EditorObject(GameObjectHandle gameObjectHandle)
+    : mGameObjectHandle(gameObjectHandle)
     , mpParent(nullptr)
     , mpChildren(nullptr)
     , mNumChildren(0)
@@ -19,7 +19,7 @@ EditorObject::~EditorObject()
 void EditorObject::DrawGizmo()
 {
     TransformComponent* transformComponent = nullptr;
-    if (!mpGameObject->GetComponent(transformComponent))
+    if (!mGameObjectHandle.Get()->GetComponent(transformComponent))
     {
         return;
     }
@@ -37,8 +37,8 @@ void EditorObject::DrawGizmo()
 
 Math::Vector3 EditorObject::GetPosition() const
 {
-    TransformComponent* transformComponent = nullptr;
-    if (!mpGameObject->GetComponent(transformComponent))
+    const TransformComponent* transformComponent = nullptr;
+    if (!mGameObjectHandle.Get()->FindComponent(transformComponent))
     {
         return Math::Vector3();
     }
@@ -54,7 +54,7 @@ const Math::AABB& EditorObject::GetCollider() const
 void EditorObject::Translate(const Math::Vector3& t)
 {
     TransformComponent* transformComponent = nullptr;
-    if (!mpGameObject->GetComponent(transformComponent))
+    if (!mGameObjectHandle.Get()->FindComponent(transformComponent))
     {
         return;
     }
@@ -69,8 +69,8 @@ void EditorObject::Translate(const Math::Vector3& t)
 
 Math::Vector3 EditorObject::GetSelectedAxis(const Math::Ray& mouseRay) const
 {
-    TransformComponent* transformComponent = nullptr;
-    if (!mpGameObject->GetComponent(transformComponent))
+    const TransformComponent* transformComponent = nullptr;
+    if (!mGameObjectHandle.Get()->FindComponent(transformComponent))
     {
         return Math::Vector3();
     }

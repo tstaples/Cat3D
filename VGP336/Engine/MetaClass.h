@@ -43,6 +43,8 @@ public:
     // can be created from the metaclass
 
     const char* GetName() const { return mName; }
+    u32 GetNumFields() const    { return mNumFields; }
+    const MetaField* GetFields() const { return mFields; }
 
 private:
     // Will point to literal constant, so shallow copy is fine.
