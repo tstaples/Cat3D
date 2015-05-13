@@ -46,13 +46,32 @@ namespace Editor
             // Store fields in base class
             base.Load(fields);
 
-            float[] m = new float[16];
-            Buffer.BlockCopy(fields[0].data, 0, m, 0, 16 * sizeof(float));
+            float[] m = new float[9];
+            Buffer.BlockCopy(fields[0].data, 0, m, 0, 9 * sizeof(float));
+            Buffer.BlockCopy(fields[1].data, 0, m, 3, 9 * sizeof(float));
+            Buffer.BlockCopy(fields[2].data, 0, m, 6, 9 * sizeof(float));
+            
+            pos = new Vector3(m[0], m[1], m[2]);
+            rot = new Vector3(m[3], m[4], m[5]);
+            scale = new Vector3(m[6], m[7], m[8]);
+        }
 
-            pos = new Vector3(m[12], m[13], m[14]);
-            rot = new Vector3(0.0f, 0.0f, 0.0f); // zero for now until i figure out how to get rotation
-            //NativeMethods.GetMatrixRotation(m, rot); // Probably wrong
-            scale = new Vector3(m[0], m[5], m[10]);
+        public override void OnModify(string propertyName, object newVal)
+        {
+            Vector3 v = (Vector3)newVal;
+            if (propertyName == "Position")
+            {
+                Position = v;
+            }
+            else if (propertyName == "Rotation")
+            {
+                Rotation = v;
+            }
+            else if (propertyName == "Scale")
+            {
+                Scale = v;
+            }
+            // TODO: Reflect changes in field data
         }
     }
 }

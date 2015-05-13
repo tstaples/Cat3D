@@ -226,6 +226,7 @@ const u8* EditorApp::GetSelectedObjectData(u32& size)
 
     writer.WriteLengthEncodedString(metaClass->GetName());
     writer.Write(editorObject->GetHandle().GetIndex()); // used as object identifier
+    writer.Write(editorObject->GetHandle().GetInstance());
 
     const std::vector<Component*>& components = gameObject->GetComponents();
     writer.Write((u32)components.size());
@@ -245,13 +246,52 @@ const u8* EditorApp::GetSelectedObjectData(u32& size)
             char* fieldData = ((char*)c) + offset;
 
             writer.WriteLengthEncodedString(field->GetName());
-            writer.Write(field->GetType());
+            writer.Write(field->GetType()->GetType());
             writer.Write(fieldSize);
+            writer.Write(offset);
             writer.WriteArray(fieldData, fieldSize);
         }
     }
     size = writer.GetOffset();
     return mObjBuffer;
+}
+
+void EditorApp::UpdateComponent(const u8* buffer, u32 buffsize)
+{
+    SerialReader reader((u8*)buffer, buffsize);
+
+    // Get handle data to find corresponding gameobject
+    u16 index = reader.Read<u16>();
+    u16 instance = reader.Read<u16>();
+    GameObjectHandle handle(instance, index);
+    GameObject* gameObject = mGameObjectPool.Get(handle);
+
+    std::string compName = reader.ReadLengthEncodedString();
+    const std::vector<Component*>& components = gameObject->GetComponents();
+    for (Component* c : components)
+    {
+        // Find the component by name
+        const MetaClass* compMetaClass = c->GetMetaClass();
+        if (compName.compare(compMetaClass->GetName()) == 0)
+        {
+            // Read remaining data (component data)
+            u32 sz = buffsize - reader.GetOffset();
+            char data[2048];
+
+            const MetaField* fields = compMetaClass->GetFields();
+            const u32 numFields = compMetaClass->GetNumFields();
+            for (u32 i=0; i < numFields; ++i)
+            {
+                u32 offset = fields[i].GetOffset();
+                u32 fieldSize = fields[i].GetType()->GetSize();
+                reader.ReadArray(data, fieldSize);
+
+                char* cdata = ((char*)c) + offset;
+                memcpy(cdata, data, fieldSize);
+            }
+            break;
+        }
+    }
 }
 
 bool EditorApp::OnCameraLook(s32 val)

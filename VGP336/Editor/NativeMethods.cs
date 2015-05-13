@@ -37,6 +37,9 @@ namespace Editor
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern void GetMatrixRotation(float[] m, Vector3 v);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern void UpdateComponent(byte[] buffer, uint size);
     }
 
 

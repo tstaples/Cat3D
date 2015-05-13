@@ -32,6 +32,10 @@ namespace Editor
             {
                 data = BitConverter.ToInt16(buffer, offset);
             }
+            else if (typeof(T) == typeof(ushort))
+            {
+                data = BitConverter.ToUInt16(buffer, offset);
+            }
             else
             {
                 throw new Exception("Type unsupported");

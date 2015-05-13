@@ -40,5 +40,21 @@ namespace Editor
             //GridView.BindData(arrayList, component.Name);
             Components.Add(component);
         }
+
+        public void OnComponentModified(string name, string propertyName, object newVal)
+        {
+            foreach (Component c in Components)
+            {
+                if (c.Name == name)
+                {
+                    c.OnModify(propertyName, newVal);
+                    //GridView.SelectedObject = c;
+
+                    byte[] buffer = ComponentReader.WriteComponent(c);
+                    NativeMethods.UpdateComponent(buffer, (uint)buffer.Length);
+                    break;
+                }
+            }
+        }
     }
 }

@@ -31,12 +31,15 @@ public:
 
     Math::Vector3 GetPosition() const;
 
-    Math::Matrix& GetTransform()                { return mTransform; }
-    const Math::Matrix& GetTransform() const    { return mTransform; }
+    Math::Matrix GetTransform() const;
 
     void SetTransform(const Math::Matrix& transform) { mTransform = transform; }
 
 private:
+    Math::Vector3 mPosition;
+    Math::Vector3 mRotation;
+    Math::Vector3 mScale;
+
     Math::Matrix mTransform;
 };
 

@@ -59,5 +59,11 @@ namespace Editor
             return ViewPanel.Bounds.Contains(mpos);
             //return ViewPanel.IsFocused;
         }
+
+        private void InspectorGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            string compName = e.ChangedItem.Parent.Label;
+            InspectorPanel.OnComponentModified(compName, e.ChangedItem.Label, e.ChangedItem.Value);
+        }
     }
 }

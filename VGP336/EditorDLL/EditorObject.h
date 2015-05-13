@@ -16,7 +16,7 @@ public:
     void Translate(const Math::Vector3& v);
 
     Math::Vector3 GetPosition() const;
-    const Math::AABB& GetCollider() const;
+    Math::AABB GetCollider() const;
 
     GameObject* GetGameObject()         { return mGameObjectHandle.Get(); }
     GameObjectHandle GetHandle() const  { return mGameObjectHandle; }

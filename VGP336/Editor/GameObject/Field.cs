@@ -11,17 +11,19 @@ namespace Editor
         public string name;
         public int type;
         public int size;
+        public int offset;
         public byte[] data;
 
         public Field()
         {
         }
 
-        public Field(string fname, int ftype, int fsize, byte[] fdata)
+        public Field(string fname, int ftype, int fsize, int foffset, byte[] fdata)
         {
             name = fname;
             type = ftype;
             size = fsize;
+            offset = foffset;
             data = fdata;
         }
     }

@@ -67,6 +67,9 @@ public:
     */
     inline void Seek(s32 offset, Origin origin);
 
+    u32 GetSize() const     { return mBufferSize; }
+    u32 GetOffset() const   { return mWriteOffset; }
+
 private:
 	const u8* mBufferHandle;    // Buffer we are reading/writing to
 	u32 mWriteOffset;	        // Position in buffer

@@ -24,15 +24,15 @@ void EditorObject::DrawGizmo()
         return;
     }
     const Math::Matrix& transform = transformComponent->GetTransform();
-    mGizmo.Draw(transform);
-    //Math::Vector3 xAxis = Math::TransformCoord(Math::Vector3::XAxis() * 10.0f, transform);
-    //Math::Vector3 yAxis = Math::TransformCoord(Math::Vector3::YAxis() * 10.0f, transform);
-    //Math::Vector3 zAxis = Math::TransformCoord(Math::Vector3::ZAxis() * 10.0f, transform);
-    //Math::Vector3 center = mpGameObject->GetTransform().GetPosition();
+    //mGizmo.Draw(transform);
+    Math::Vector3 xAxis = Math::TransformCoord(Math::Vector3::XAxis() * 10.0f, transform);
+    Math::Vector3 yAxis = Math::TransformCoord(Math::Vector3::YAxis() * 10.0f, transform);
+    Math::Vector3 zAxis = Math::TransformCoord(Math::Vector3::ZAxis() * 10.0f, transform);
+    Math::Vector3 center = GetPosition();
 
-    //SimpleDraw::AddLine(center, xAxis, Color::Green());
-    //SimpleDraw::AddLine(center, yAxis, Color::Yellow());
-    //SimpleDraw::AddLine(center, zAxis, Color::Blue());
+    SimpleDraw::AddLine(center, xAxis, Color::Green());
+    SimpleDraw::AddLine(center, yAxis, Color::Yellow());
+    SimpleDraw::AddLine(center, zAxis, Color::Blue());
 }
 
 Math::Vector3 EditorObject::GetPosition() const
@@ -45,10 +45,10 @@ Math::Vector3 EditorObject::GetPosition() const
     return transformComponent->GetPosition();
 }
 
-const Math::AABB& EditorObject::GetCollider() const
+Math::AABB EditorObject::GetCollider() const
 {
     // TODO: Check if gameobject has a collider component and return that instead
-    return mDefaultCollider;
+    return Math::AABB(GetPosition(), Math::Vector3(5.0f, 5.0f, 5.0f));
 }
 
 void EditorObject::Translate(const Math::Vector3& t)

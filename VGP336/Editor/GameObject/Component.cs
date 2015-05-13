@@ -12,10 +12,17 @@ namespace Editor
     {
         public string Name;
         public Field[] Fields;
+        public ushort HandleIndex;
+        public ushort HandleInstance;
 
         public virtual void Load(Field[] fields) 
         {
             Fields = fields;
+        }
+
+        public virtual void OnModify(string propertyName, object newVal)
+        {
+
         }
     }
 }

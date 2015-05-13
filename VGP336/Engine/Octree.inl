@@ -142,8 +142,17 @@ inline void Octree<T>::Insert(T& object, const Math::AABB& region, s32 depth)
             {
                 // Find which octant the point belongs and and create a new child there
                 const s32 index = GetOctantContainingPoint(mAABB.center, objectIter.second.center);
-                mpChildren[index] = new Octree(octants[index], *objectIter.first, objectIter.second);
-                mActiveChildren |= index; // Set the flag for the new child
+                if (mpChildren[index] == nullptr)
+                {
+                    // Create a new child if it doesn't exist already
+                    mpChildren[index] = new Octree(octants[index], *objectIter.first, objectIter.second);
+                    mActiveChildren |= index; // Set the flag for the new child
+                }
+                else
+                {
+                    // Child already exists; insert
+                    mpChildren[index]->Insert(object, region, depth + 1);
+                }
                 //break;
             }
         }

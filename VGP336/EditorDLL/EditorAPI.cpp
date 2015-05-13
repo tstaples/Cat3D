@@ -99,6 +99,13 @@ unsigned int GetSelectedObjectData(unsigned char* buffer)
 
 //----------------------------------------------------------------------------------------------------
 
+void UpdateComponent(unsigned char* buffer, unsigned int size)
+{
+    app.UpdateComponent(buffer, size);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void GetMatrixRotation(float* m, Vector3& v)
 {
     Math::Matrix mat = NATIVE_MATRIX(m);

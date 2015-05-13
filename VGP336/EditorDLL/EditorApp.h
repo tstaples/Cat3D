@@ -14,6 +14,7 @@ public:
 	virtual ~EditorApp();
 
     const u8* GetSelectedObjectData(u32& size);
+    void UpdateComponent(const u8* buffer, u32 buffsize);
 
 private:
 	// Application implementation

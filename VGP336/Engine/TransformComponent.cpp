@@ -3,12 +3,15 @@
 
 META_CLASS_BEGIN(TransformComponent)
 META_FIELD_BEGIN
-    META_FIELD(mTransform, "transform")
+    META_FIELD(mPosition, "position")
+    META_FIELD(mRotation, "rotation")
+    META_FIELD(mScale, "scale")
 META_FIELD_END
 META_CLASS_END
 
 TransformComponent::TransformComponent(GameObject* gameObject)
     : Component(gameObject)
+    , mScale(1.0f, 1.0f, 1.0f)
 {
 }
 
@@ -17,6 +20,7 @@ TransformComponent::TransformComponent(GameObject* gameObject)
 TransformComponent::TransformComponent(GameObject* gameObject, const Math::Matrix& transform)
     : Component(gameObject)
     , mTransform(transform)
+    , mScale(1.0f, 1.0f, 1.0f)
 {
 }
 
@@ -30,12 +34,23 @@ TransformComponent::~TransformComponent()
 
 Math::Vector3 TransformComponent::GetPosition() const
 {
-    return mTransform.GetTranslation();
+    return mPosition;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+Math::Matrix TransformComponent::GetTransform() const
+{
+    Math::Matrix rot =  Math::Matrix::RotationX(mRotation.x) * 
+                        Math::Matrix::RotationY(mRotation.y) * 
+                        Math::Matrix::RotationZ(mRotation.z);
+    return Math::Matrix::Scaling(mScale) * rot * Math::Matrix::Translation(mPosition);
 }
 
 //----------------------------------------------------------------------------------------------------
 
 void TransformComponent::Translate(const Math::Vector3& t)
 {
+    mPosition += t;
     mTransform = mTransform * Math::Matrix::Translation(t);
 }

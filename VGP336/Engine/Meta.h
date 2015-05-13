@@ -76,6 +76,6 @@ u32 GetFieldOffset(DataType ClassType::* field)
 #define META_FIELD_END\
     };\
     fields = sFields;\
-    numFields = sizeof(sFields) / sizeof(sFields);
+    numFields = sizeof(sFields) / sizeof(sFields[0]);
 
 #endif // #ifndef INCLUDED_ENGINE_META_H

@@ -85,6 +85,7 @@
     </Compile>
     <Compile Include="GameObject\Components\TransformComponent.cs" />
     <Compile Include="Util\SerializeIn.cs" />
+    <Compile Include="Util\SerializeOut.cs" />
     <Compile Include="Util\Vector3.cs" />
     <EmbeddedResource Include="Forms\EditorForm.resx">
       <DependentUpon>EditorForm.cs</DependentUpon>
