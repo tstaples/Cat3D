@@ -45,13 +45,14 @@ namespace Editor
         {
             foreach (Component c in Components)
             {
-                if (c.Name == name)
+                // Hack: match based on substr. Won't work (likely) later when there are more properties
+                if (c.Name.Contains(name))
                 {
                     c.OnModify(propertyName, newVal);
-                    //GridView.SelectedObject = c;
 
                     byte[] buffer = ComponentReader.WriteComponent(c);
                     NativeMethods.UpdateComponent(buffer, (uint)buffer.Length);
+                    GridView.SelectedObject = c;
                     break;
                 }
             }

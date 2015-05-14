@@ -27,6 +27,4 @@ extern "C" DllExport void UpdateComponent(unsigned char* buffer, unsigned int si
 extern "C" struct Matrix;
 extern "C" struct Vector3;
 
-extern "C" DllExport void GetMatrixRotation(float* m, Vector3& V);
-
 #endif //#ifndef INCLUDED_EDITORAPI_H

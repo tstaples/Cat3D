@@ -163,23 +163,23 @@ void EditorApp::OnUpdate()
 
 
     // Player movement
-    const f32 kMoveSpeed = 20.0f;
-    if(mInputData.keyStates['W'])
-    {
-        mCamera.Walk(kMoveSpeed * deltaTime);
-    }
-    else if(mInputData.keyStates['S'])
-    {
-        mCamera.Walk(-kMoveSpeed * deltaTime);
-    }
-    else if(mInputData.keyStates['D'])
-    {
-        mCamera.Strafe(kMoveSpeed * deltaTime);
-    }
-    else if(mInputData.keyStates['A'])
-    {
-        mCamera.Strafe(-kMoveSpeed * deltaTime);
-    }
+    //const f32 kMoveSpeed = 20.0f;
+    //if(mInputData.keyStates['W'])
+    //{
+    //    mCamera.Walk(kMoveSpeed * deltaTime);
+    //}
+    //else if(mInputData.keyStates['S'])
+    //{
+    //    mCamera.Walk(-kMoveSpeed * deltaTime);
+    //}
+    //else if(mInputData.keyStates['D'])
+    //{
+    //    mCamera.Strafe(kMoveSpeed * deltaTime);
+    //}
+    //else if(mInputData.keyStates['A'])
+    //{
+    //    mCamera.Strafe(-kMoveSpeed * deltaTime);
+    //}
 
 	// Render
 	mGraphicsSystem.BeginRender(Color::Black());
@@ -274,8 +274,6 @@ void EditorApp::UpdateComponent(const u8* buffer, u32 buffsize)
         const MetaClass* compMetaClass = c->GetMetaClass();
         if (compName.compare(compMetaClass->GetName()) == 0)
         {
-            // Read remaining data (component data)
-            u32 sz = buffsize - reader.GetOffset();
             char data[2048];
 
             const MetaField* fields = compMetaClass->GetFields();

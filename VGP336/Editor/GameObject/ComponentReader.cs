@@ -14,9 +14,9 @@ namespace Editor
 
             // Get GameObject data
             string objName = sIn.ReadStringLE();
-            ushort handleIndex = sIn.Read<ushort>();
-            ushort handleInstance = sIn.Read<ushort>();
-            int numComponents = sIn.Read<int>();
+            ushort handleIndex = sIn.ReadUShort();
+            ushort handleInstance = sIn.ReadUShort();
+            uint numComponents = sIn.ReadUInt();
             Component[] components = new Component[numComponents];
 
             for (int i = 0; i < numComponents; ++i)
@@ -28,14 +28,14 @@ namespace Editor
                 component.HandleInstance = handleInstance;
 
                 // Load the component's fields
-                int numFields = sIn.Read<int>();
+                uint numFields = sIn.ReadUInt();
                 Field[] fields = new Field[numFields];
-                for (int j = 0; j < numFields; ++j)
+                for (uint j = 0; j < numFields; ++j)
                 {
                     string fname = sIn.ReadStringLE();
-                    int ftype = sIn.Read<int>();    // TODO: convert to local enum of types matching c++ ones
-                    int fsize = sIn.Read<int>();
-                    int foffset = sIn.Read<int>();
+                    int ftype = sIn.ReadInt();
+                    int fsize = sIn.ReadInt();
+                    int foffset = sIn.ReadInt();
                     byte[] fdata= sIn.GetBlock(fsize);
                     fields[j] = new Field(fname, ftype, fsize, foffset, fdata);
                 }
@@ -56,18 +56,13 @@ namespace Editor
             sOut.Write(c.HandleInstance);
             sOut.WriteStringLE(c.Name);
 
-            //sOut.Write(numFields);
             int numFields = c.Fields.Length;
             for (int i = 0; i < numFields; ++i)
             {
                 Field field = c.Fields[i];
-                // FIELD ISN'T BEING UPDATED
-                float[] temp = new float[16];
-                Buffer.BlockCopy(field.data, 0, temp, 0, 16 * sizeof(float));
-
                 sOut.WriteArray(field.data);
             }
-            return sOut.GetBuffer();
+            return buffer;
         }
 
         private static Component CreateComponentFromName(string name)

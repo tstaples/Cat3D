@@ -7,6 +7,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace Editor
 {
@@ -21,34 +22,35 @@ namespace Editor
             offset = 0;
         }
 
-        public T Read<T>()
-        {
-            var data = 0;
-            if (typeof(T) == typeof(int))
-            {
-                data = BitConverter.ToInt32(buffer, offset);
-            }
-            else if (typeof(T) == typeof(short))
-            {
-                data = BitConverter.ToInt16(buffer, offset);
-            }
-            else if (typeof(T) == typeof(ushort))
-            {
-                data = BitConverter.ToUInt16(buffer, offset);
-            }
-            else
-            {
-                throw new Exception("Type unsupported");
-            }
-            offset += Marshal.SizeOf(typeof(T));
-            return (T)Convert.ChangeType(data, typeof(T));
-        }
+        //public T Read<T>()
+        //{
+        //    var data = 0;
+        //    if (typeof(T) == typeof(int))
+        //    {
+        //        data = BitConverter.ToInt32(buffer, offset);
+        //    }
+        //    else if (typeof(T) == typeof(short))
+        //    {
+        //        data = BitConverter.ToInt16(buffer, offset);
+        //    }
+        //    else if (typeof(T) == typeof(ushort))
+        //    {
+        //        data = BitConverter.ToUInt16(buffer, offset);
+        //    }
+        //    else
+        //    {
+        //        throw new Exception("Type unsupported");
+        //    }
+        //    offset += Marshal.SizeOf(typeof(T));
+        //    return (T)Convert.ChangeType(data, typeof(T));
+        //}
 
         public string ReadStringLE()
         {
             int len = ReadInt();
             string s = GetString(buffer, offset, len);
             offset += len;
+            Debug.Assert(offset < buffer.Length);
             return s;
         }
 
@@ -56,13 +58,40 @@ namespace Editor
         {
             byte[] block = new byte[size];
             Buffer.BlockCopy(buffer, offset, block, 0, size);
+            offset += size;
+            Debug.Assert(offset < buffer.Length);
             return block;
         }
 
-        private int ReadInt()
+        public int ReadInt()
         {
             int data = BitConverter.ToInt32(buffer, offset);
             offset += sizeof(int);
+            Debug.Assert(offset < buffer.Length);
+            return data;
+        }
+
+        public uint ReadUInt()
+        {
+            uint data = BitConverter.ToUInt32(buffer, offset);
+            offset += sizeof(uint);
+            Debug.Assert(offset < buffer.Length);
+            return data;
+        }
+
+        public short ReadShort()
+        {
+            short data = BitConverter.ToInt16(buffer, offset);
+            offset += sizeof(short);
+            Debug.Assert(offset < buffer.Length);
+            return data;
+        }
+
+        public ushort ReadUShort()
+        {
+            ushort data = BitConverter.ToUInt16(buffer, offset);
+            offset += sizeof(ushort);
+            Debug.Assert(offset < buffer.Length);
             return data;
         }
 

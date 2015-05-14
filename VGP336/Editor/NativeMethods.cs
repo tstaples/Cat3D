@@ -35,10 +35,7 @@ namespace Editor
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern uint GetSelectedObjectData(byte[] buffer);
 
-        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern void GetMatrixRotation(float[] m, Vector3 v);
-
-        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl, CharSet=CharSet.Ansi)]
         public unsafe static extern void UpdateComponent(byte[] buffer, uint size);
     }
 

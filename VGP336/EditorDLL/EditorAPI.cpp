@@ -103,17 +103,3 @@ void UpdateComponent(unsigned char* buffer, unsigned int size)
 {
     app.UpdateComponent(buffer, size);
 }
-
-//----------------------------------------------------------------------------------------------------
-
-void GetMatrixRotation(float* m, Vector3& v)
-{
-    Math::Matrix mat = NATIVE_MATRIX(m);
-    Math::Vector3 rot = Math::GetRotation(mat);
-    v = EXTERNAL_VEC(rot);
-    //Vector3 test;
-    //test.x = 1.0f;
-    //test.y = 2.0f;
-    //test.z = 3.0f;
-    //v = test;
-}

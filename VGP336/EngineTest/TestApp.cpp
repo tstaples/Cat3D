@@ -118,28 +118,9 @@ void TestApp::OnInitialize(u32 width, u32 height)
     Math::Matrix mrot = Math::Matrix::RotationX(Math::kPiByTwo);
     Math::Vector3 rot = Math::GetRotation(mrot);
 
-    mSelectedObjects.push_back(&mObjects[1]);
+    //mSelectedObjects.push_back(&mObjects[1]);
 
-    u32 size = 0;
-    const u8* temp = GetSelectedObjectData(size);
-    TransformComponent tcomp(*t2);
-    tcomp.Translate(Math::Vector3(20.0f, 10.0f, 1.0f));
 
-    u8 tempBuff[2048];
-    SerialWriter w(tempBuff, 2048);
-    w.Write(mObjects[1].GetHandle().GetIndex());
-    w.Write(mObjects[1].GetHandle().GetInstance());
-    w.WriteLengthEncodedString(tcomp.GetMetaClass()->GetName());
-    for (u32 i=0; i < 3; ++i)
-    {
-        MetaField field = tcomp.GetMetaClass()->GetFields()[i];
-        u32 foffset = field.GetOffset();
-        u32 fsize = field.GetType()->GetSize();
-        char* fieldData = ((char*)&tcomp) + foffset;
-        w.WriteArray(fieldData, fsize);
-    }
-
-    UpdateComponent(tempBuff, w.GetOffset());
 
     u32 sizz = 0;
     //const char* data = GetSelectedObjectData(sz);
@@ -231,6 +212,8 @@ bool TestApp::OnInput(const InputEvent& evt)
 }
 
 //----------------------------------------------------------------------------------------------------
+bool doneonce = false;
+bool doneonce2 = false;
 
 void TestApp::OnUpdate()
 {
@@ -242,6 +225,59 @@ void TestApp::OnUpdate()
 
 	mTimer.Update();
 	const f32 deltaTime = mTimer.GetElapsedTime();
+
+    if (mInputData.keyStates['W'] && !doneonce)
+    {
+        u32 size = 0;
+        const u8* temp = GetSelectedObjectData(size);
+        TransformComponent* tcomp = nullptr;
+        if (mObjects[1].GetGameObject()->GetComponent(tcomp))
+        {
+            tcomp->Translate(Math::Vector3(20.0f, -10.0f, 1.0f));
+
+            u8 tempBuff[2048];
+            SerialWriter w(tempBuff, 2048);
+            w.Write(mObjects[1].GetHandle().GetIndex());
+            w.Write(mObjects[1].GetHandle().GetInstance());
+            w.WriteLengthEncodedString(tcomp->GetMetaClass()->GetName());
+            for (u32 i=0; i < 3; ++i)
+            {
+                MetaField field = tcomp->GetMetaClass()->GetFields()[i];
+                u32 foffset = field.GetOffset();
+                u32 fsize = field.GetType()->GetSize();
+                char* fieldData = ((char*)tcomp) + foffset;
+                w.WriteArray(fieldData, fsize);
+            }
+            UpdateComponent(tempBuff, w.GetOffset());
+        }
+        doneonce = true;
+    }
+    if (mInputData.keyStates['E'] && !doneonce2)
+    {
+        u32 size = 0;
+        const u8* temp = GetSelectedObjectData(size);
+        TransformComponent* tcomp = nullptr;
+        if (mObjects[0].GetGameObject()->GetComponent(tcomp))
+        {
+            tcomp->Translate(Math::Vector3(0.0f, -20.0f, 0.0f));
+
+            u8 tempBuff[2048];
+            SerialWriter w(tempBuff, 2048);
+            w.Write(mObjects[0].GetHandle().GetIndex());
+            w.Write(mObjects[0].GetHandle().GetInstance());
+            w.WriteLengthEncodedString(tcomp->GetMetaClass()->GetName());
+            for (u32 i=0; i < 3; ++i)
+            {
+                MetaField field = tcomp->GetMetaClass()->GetFields()[i];
+                u32 foffset = field.GetOffset();
+                u32 fsize = field.GetType()->GetSize();
+                char* fieldData = ((char*)tcomp) + foffset;
+                w.WriteArray(fieldData, fsize);
+            }
+            UpdateComponent(tempBuff, w.GetOffset());
+        }
+        doneonce2 = true;
+    }
 
     // Destroy and re-create the entire tree
     mOctree.Destroy();
