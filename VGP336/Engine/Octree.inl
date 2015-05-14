@@ -229,7 +229,11 @@ inline bool Octree<T>::GetIntersectingObjects(const Math::Ray& ray, std::vector<
                 if (Math::Intersect(ray, region))
                 {
                     // Traverse that child's tree
-                    return child->GetIntersectingObjects(ray, objects, depth + 1);
+                    if (child->GetIntersectingObjects(ray, objects, depth + 1))
+                    {
+                        // return if this was the correct child, otherwise continue checking the rest
+                        return true;
+                    }
                 }
             }
         }
@@ -246,7 +250,6 @@ inline bool Octree<T>::GetIntersectingObjects(const Math::Ray& ray, std::vector<
         
         // See which objects the ray intersects with and add them to the list
         bool anyIntersect = false;
-        //for (u32 i=0; i < numObjects; ++i)
         for (auto object : mObjects)
         {
             if (Math::Intersect(ray, object.second))
