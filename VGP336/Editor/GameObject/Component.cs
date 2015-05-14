@@ -22,7 +22,11 @@ namespace Editor
 
         public virtual void OnModify(string propertyName, object newVal)
         {
+        }
 
+        public virtual bool OnChildModified(string propertyName, string childName, object newVal)
+        {
+            return false;
         }
     }
 }

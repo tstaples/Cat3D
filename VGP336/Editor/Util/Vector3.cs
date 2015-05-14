@@ -14,6 +14,7 @@ namespace Editor
     {
         public float x, y, z;
 
+        #region accessors
         public float X
         {
             get { return x; }
@@ -29,7 +30,9 @@ namespace Editor
             get { return z; }
             set { z = value; }
         }
+        #endregion
 
+        #region constructor
         public Vector3()
         {
         }
@@ -40,6 +43,7 @@ namespace Editor
             y = _y;
             z = _z;
         }
+        #endregion
 
         public override string ToString()
         {
@@ -49,6 +53,7 @@ namespace Editor
 
     public class VectorConverter : ExpandableObjectConverter
     {
+        #region property sheet conversion methods
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
         {
             if (destinationType == typeof(Vector3))
@@ -96,8 +101,7 @@ namespace Editor
                     float.TryParse(sy, out y);
                     float.TryParse(sz, out z);
 
-                    Vector3 v = new Vector3(x, y, z);
-                    return v;
+                    return new Vector3(x, y, z);
                 }
                 catch
                 {
@@ -106,5 +110,6 @@ namespace Editor
             }
             return base.ConvertFrom(context, culture, value);
         }
+        #endregion
     }
 }

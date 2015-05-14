@@ -62,8 +62,17 @@ namespace Editor
 
         private void InspectorGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
-            string compName = e.ChangedItem.Parent.Label;
-            InspectorPanel.OnComponentModified(compName, e.ChangedItem.Label, e.ChangedItem.Value);
+            if (e.ChangedItem.Expandable)
+            {
+                string compName = e.ChangedItem.Parent.Label;
+                InspectorPanel.OnComponentModified(compName, e.ChangedItem.Label, e.ChangedItem.Value);
+            }
+            else
+            {
+                string propertyName = e.ChangedItem.Parent.Label;
+                string childName = e.ChangedItem.Label;
+                InspectorPanel.OnComponentChildModified(propertyName, childName, e.ChangedItem.Value);
+            }
         }
     }
 }
