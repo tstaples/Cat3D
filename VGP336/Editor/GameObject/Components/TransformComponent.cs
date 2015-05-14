@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace Editor
 {
@@ -15,6 +16,7 @@ namespace Editor
         private Vector3 rot;
         private Vector3 scale;
 
+        #region accessors
         [CategoryAttribute("Transform")]
         public Vector3 Position
         {
@@ -35,10 +37,11 @@ namespace Editor
             get { return scale; }
             set { scale = value; }
         }
+        #endregion accessors
 
         public TransformComponent()
         {
-            Name = "Transform";
+            base.Name = "TransformComponent";
         }
 
         public override void Load(Field[] fields)
@@ -46,32 +49,38 @@ namespace Editor
             // Store fields in base class
             base.Load(fields);
 
-            float[] m = new float[9];
-            Buffer.BlockCopy(fields[0].data, 0, m, 0, 9 * sizeof(float));
-            Buffer.BlockCopy(fields[1].data, 0, m, 3, 9 * sizeof(float));
-            Buffer.BlockCopy(fields[2].data, 0, m, 6, 9 * sizeof(float));
-            
+            float[] m = new float[3];
+            Buffer.BlockCopy(fields[0].data, 0, m, 0, 3 * sizeof(float));
             pos = new Vector3(m[0], m[1], m[2]);
-            rot = new Vector3(m[3], m[4], m[5]);
-            scale = new Vector3(m[6], m[7], m[8]);
+            Buffer.BlockCopy(fields[1].data, 0, m, 0, 3 * sizeof(float));
+            rot = new Vector3(m[0], m[1], m[2]);
+            Buffer.BlockCopy(fields[2].data, 0, m, 0, 3 * sizeof(float));
+            scale = new Vector3(m[0], m[1], m[2]);
         }
 
         public override void OnModify(string propertyName, object newVal)
         {
+            int fieldIndex = -1;
             Vector3 v = (Vector3)newVal;
-            if (propertyName == "Position")
+            if (propertyName.ToLower() == "position")
             {
                 Position = v;
+                fieldIndex = 0;
             }
-            else if (propertyName == "Rotation")
+            else if (propertyName.ToLower() == "rotation")
             {
                 Rotation = v;
+                fieldIndex = 1;
             }
-            else if (propertyName == "Scale")
+            else if (propertyName.ToLower() == "scale")
             {
                 Scale = v;
+                fieldIndex = 2;
             }
-            // TODO: Reflect changes in field data
+            // Update the field data so it can be serialized back out
+            Debug.Assert(fieldIndex != -1);
+            float[] m = { v.x, v.y, v.z };
+            Buffer.BlockCopy(m, 0, Fields[fieldIndex].data, 0, 3 * sizeof(float));
         }
     }
 }
