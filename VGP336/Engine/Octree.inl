@@ -113,7 +113,6 @@ inline void Octree<T>::Insert(T& object, const Math::AABB& region)
 
 //----------------------------------------------------------------------------------------------------
 
-//void Octree<T>::Insert(const Math::AABB& object, s32 depth)
 template <typename T>
 inline void Octree<T>::Insert(T& object, const Math::AABB& region, s32 depth)
 {
@@ -127,7 +126,6 @@ inline void Octree<T>::Insert(T& object, const Math::AABB& region, s32 depth)
     if (IsLeaf())
     {
         mObjects.insert(std::make_pair(&object, region));
-        //mObjects.push_back(object);
 
         // Check if this node currently contains anything
         const u32 numObjects = mObjects.size();
@@ -136,8 +134,7 @@ inline void Octree<T>::Insert(T& object, const Math::AABB& region, s32 depth)
             // Split the region into octants
             std::vector<Math::AABB> octants = BuildRegions(mAABB);
 
-            // We're only going to ever have 2 objects, but it may be modified in the future
-            //for (u32 i=0; i < numObjects; ++i)
+            // Push all the objects down the tree
             for (auto objectIter : mObjects)
             {
                 // Find which octant the point belongs and and create a new child there
@@ -153,7 +150,6 @@ inline void Octree<T>::Insert(T& object, const Math::AABB& region, s32 depth)
                     // Child already exists; insert
                     mpChildren[index]->Insert(object, region, depth + 1);
                 }
-                //break;
             }
         }
     }
@@ -161,8 +157,16 @@ inline void Octree<T>::Insert(T& object, const Math::AABB& region, s32 depth)
     {
         // Not a leaf, traverse recursivley
         const u32 index = GetOctantContainingPoint(mAABB.center, region.center);
-        ASSERT(mpChildren[index] != nullptr, "[Octree] Invalid child index");
-        mpChildren[index]->Insert(object, region, depth + 1);
+        if (mpChildren[index] == nullptr)
+        {
+            std::vector<Math::AABB> octants = BuildRegions(mAABB);
+            mpChildren[index] = new Octree(octants[index], object, region);
+            mActiveChildren |= index; // Set the flag for the new child
+        }
+        else
+        {
+            mpChildren[index]->Insert(object, region, depth + 1);
+        }
     }
 }
 
@@ -184,6 +188,7 @@ inline void Octree<T>::Destroy()
     {
         SafeDelete(mpChildren[i]);
     }
+    mObjects.clear();
     mActiveChildren = 0;
 }
 
