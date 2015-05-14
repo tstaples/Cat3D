@@ -7,6 +7,8 @@
 #include "InputData.h"
 #include "EditorObject.h"
 
+class Gizmo;
+
 class TestApp : public Application
 {
 public:
@@ -38,6 +40,8 @@ private:
     std::vector<EditorObject> mObjects;
     std::vector<EditorObject*> mSelectedObjects;
     
+    Gizmo* mpGizmo;
+
     u8 mObjBuffer[2048];
 
     // Input
@@ -52,6 +56,7 @@ private:
     // Input Axis events
     bool OnPanCamera(s32 val);
     bool OnCameraLook(s32 val);
+    bool OnMouseDrag(s32 val);
 };
 
 #endif //#ifndef INCLUDED_TESTAPP_H

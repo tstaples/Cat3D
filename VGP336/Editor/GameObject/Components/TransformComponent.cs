@@ -78,9 +78,53 @@ namespace Editor
                 fieldIndex = 2;
             }
             // Update the field data so it can be serialized back out
-            Debug.Assert(fieldIndex != -1);
+            UpdateField(fieldIndex, v);
+        }
+
+        public override bool OnChildModified(string propertyName, string childName, object newVal)
+        {
+            float val = (float)newVal;
+            if (propertyName.ToLower() == "position")
+            {
+                ParseVector(ref pos, childName, val);
+                UpdateField(0, pos);
+                return true;
+            }
+            else if (propertyName.ToLower() == "rotation")
+            {
+                ParseVector(ref rot, childName, val);
+                UpdateField(1, rot);
+                return true;
+            }
+            else if (propertyName.ToLower() == "scale")
+            {
+                ParseVector(ref scale, childName, val);
+                UpdateField(2, scale);
+                return true;
+            }
+            return false;
+        }
+
+        private void ParseVector(ref Vector3 v, string component, float val)
+        {
+            if (component == "X")
+            {
+                v.x = val;
+            }
+            else if (component == "Y")
+            {
+                v.y = val;
+            }
+            else if (component == "Z")
+            {
+                v.z = val;
+            }
+        }
+
+        private void UpdateField(int index, Vector3 v)
+        {
             float[] m = { v.x, v.y, v.z };
-            Buffer.BlockCopy(m, 0, Fields[fieldIndex].data, 0, 3 * sizeof(float));
+            Buffer.BlockCopy(m, 0, Fields[index].data, 0, 3 * sizeof(float));
         }
     }
 }

@@ -2,24 +2,35 @@
 #include "Random.h"
 
 #include "FileBuffer.h"
+#include "Gizmo.h"
 
 #define DEBUG_INPUT 0
 
 namespace
 {
-    Math::AABB testAABB(
-        Math::Vector3(Random::GetF(-10.0f, 10.0f),
-                      Random::GetF(-10.0f, 10.0f),
-                      Random::GetF(-10.0f, 10.0f)),
-        Math::Vector3(2.0f, 2.0f, 2.0f));
+    const char* types[7] =
+    {
+        "Character",
+		"KeyUp",
+		"KeyDown",
+		"MouseUp",
+		"MouseDown",
+		"MouseMove",
+        "MouseScroll"
+    };
 
-    static Math::Vector3 vel(1.0f, 1.0f, 0.0f);
-
-    void DebugLogInput(const InputEvent& e)
+    void DebugLogInput(const InputEvent& e, const InputData& d)
     {
 #if DEBUG_INPUT
         char buff[256];
-        sprintf_s(buff, "[InputEvent] Type: %d, Value: %u, X: %d, Y: %d\n", e.type, e.value, e.x, e.y);
+        if (e.type == 5 && d.mouseMoveX != 0.0f || d.mouseMoveY != 0.0f)
+        {
+            sprintf_s(buff, "[InputEvent] Type: %s, Value: %u, dist moved in X: %f, Y: %f\n", types[e.type], e.value, d.mouseMoveX, d.mouseMoveY);
+        }
+        else
+        {
+            sprintf_s(buff, "[InputEvent] Type: %s, Value: %u, X: %d, Y: %d\n", types[e.type], e.value, e.x, e.y);
+        }
         OutputDebugStringA(buff);
 #endif
     }
@@ -50,6 +61,7 @@ TestApp::TestApp()
     , mHeight(0)
     , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(50.0f, 50.0f, 50.0f)))
     , mGameObjectPool(10)
+    , mpGizmo(nullptr)
 {
     memset(mInputData.keyStates, 0, sizeof(bool) * 256);
     memset(mInputData.mouseStates, 0, sizeof(bool) * 4);
@@ -82,10 +94,13 @@ void TestApp::OnInitialize(u32 width, u32 height)
 	mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
 	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -100.0f));
 
+    mpGizmo = new TranslateGizmo(mCamera, 15.0f, 5.0f);
+
     // Bind controls
     mInputManager.BindAction(Mouse::LBUTTON, Input::MouseDown, MAKE_ACTION_DELEGATE(TestApp, &TestApp::OnSelectObject));
     mInputManager.BindAction(Mouse::SCROLL, Input::MouseScroll, MAKE_ACTION_DELEGATE(TestApp, &TestApp::OnZoom));
 
+    mInputManager.BindAxis(Mouse::LBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(TestApp, &TestApp::OnMouseDrag));
     mInputManager.BindAxis(Mouse::RBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(TestApp, &TestApp::OnCameraLook));
     mInputManager.BindAxis(Mouse::MBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(TestApp, &TestApp::OnPanCamera));
 
@@ -107,22 +122,8 @@ void TestApp::OnInitialize(u32 width, u32 height)
     mObjects.push_back(EditorObject(handle1));
     mObjects.push_back(EditorObject(handle2));
 
-    f32 m[16] = 
-    {
-        1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f,
-    };
-    Math::Matrix mat = *(Math::Matrix*)&m;
-    Math::Matrix mrot = Math::Matrix::RotationX(Math::kPiByTwo);
-    Math::Vector3 rot = Math::GetRotation(mrot);
-
     //mSelectedObjects.push_back(&mObjects[1]);
 
-
-
-    u32 sizz = 0;
     //const char* data = GetSelectedObjectData(sz);
 
     //GameObject* g = new GameObject();
@@ -139,6 +140,7 @@ void TestApp::OnInitialize(u32 width, u32 height)
 
 void TestApp::OnTerminate()
 {
+    SafeDelete(mpGizmo);
     mOctree.Destroy();
     mGameObjectPool.Flush();
 
@@ -151,8 +153,6 @@ void TestApp::OnTerminate()
 
 bool TestApp::OnInput(const InputEvent& evt)
 {
-    DebugLogInput(evt);
-
 
     bool handled = false;
     switch(evt.type)
@@ -206,6 +206,7 @@ bool TestApp::OnInput(const InputEvent& evt)
         break;
     }
 
+    DebugLogInput(evt, mInputData);
     mInputManager.OnAction(evt);
 
     return handled;
@@ -222,62 +223,64 @@ void TestApp::OnUpdate()
 		mRunning = false;
 		return;
 	}
+    mInputManager.Update(mInputData);
 
 	mTimer.Update();
 	const f32 deltaTime = mTimer.GetElapsedTime();
 
-    if (mInputData.keyStates['W'] && !doneonce)
-    {
-        u32 size = 0;
-        const u8* temp = GetSelectedObjectData(size);
-        TransformComponent* tcomp = nullptr;
-        if (mObjects[1].GetGameObject()->GetComponent(tcomp))
-        {
-            tcomp->Translate(Math::Vector3(20.0f, -10.0f, 1.0f));
+    //if (mInputData.keyStates['W'] && !doneonce)
+    //{
+    //    u32 size = 0;
+    //    const u8* temp = GetSelectedObjectData(size);
+    //    TransformComponent* tcomp = nullptr;
+    //    if (mObjects[1].GetGameObject()->GetComponent(tcomp))
+    //    {
+    //        tcomp->Translate(Math::Vector3(20.0f, -10.0f, 1.0f));
 
-            u8 tempBuff[2048];
-            SerialWriter w(tempBuff, 2048);
-            w.Write(mObjects[1].GetHandle().GetIndex());
-            w.Write(mObjects[1].GetHandle().GetInstance());
-            w.WriteLengthEncodedString(tcomp->GetMetaClass()->GetName());
-            for (u32 i=0; i < 3; ++i)
-            {
-                MetaField field = tcomp->GetMetaClass()->GetFields()[i];
-                u32 foffset = field.GetOffset();
-                u32 fsize = field.GetType()->GetSize();
-                char* fieldData = ((char*)tcomp) + foffset;
-                w.WriteArray(fieldData, fsize);
-            }
-            UpdateComponent(tempBuff, w.GetOffset());
-        }
-        doneonce = true;
-    }
-    if (mInputData.keyStates['E'] && !doneonce2)
-    {
-        u32 size = 0;
-        const u8* temp = GetSelectedObjectData(size);
-        TransformComponent* tcomp = nullptr;
-        if (mObjects[0].GetGameObject()->GetComponent(tcomp))
-        {
-            tcomp->Translate(Math::Vector3(0.0f, -20.0f, 0.0f));
+    //        u8 tempBuff[2048];
+    //        SerialWriter w(tempBuff, 2048);
+    //        w.Write(mObjects[1].GetHandle().GetIndex());
+    //        w.Write(mObjects[1].GetHandle().GetInstance());
+    //        w.WriteLengthEncodedString(tcomp->GetMetaClass()->GetName());
+    //        for (u32 i=0; i < 3; ++i)
+    //        {
+    //            MetaField field = tcomp->GetMetaClass()->GetFields()[i];
+    //            u32 foffset = field.GetOffset();
+    //            u32 fsize = field.GetType()->GetSize();
+    //            char* fieldData = ((char*)tcomp) + foffset;
+    //            w.WriteArray(fieldData, fsize);
+    //        }
+    //        UpdateComponent(tempBuff, w.GetOffset());
+    //    }
+    //    doneonce = true;
+    //}
+    //if (mInputData.keyStates['E'] && !doneonce2)
+    //{
+    //    u32 size = 0;
+    //    const u8* temp = GetSelectedObjectData(size);
+    //    TransformComponent* tcomp = nullptr;
+    //    if (mObjects[0].GetGameObject()->GetComponent(tcomp))
+    //    {
+    //        tcomp->Translate(Math::Vector3(0.0f, -20.0f, 0.0f));
 
-            u8 tempBuff[2048];
-            SerialWriter w(tempBuff, 2048);
-            w.Write(mObjects[0].GetHandle().GetIndex());
-            w.Write(mObjects[0].GetHandle().GetInstance());
-            w.WriteLengthEncodedString(tcomp->GetMetaClass()->GetName());
-            for (u32 i=0; i < 3; ++i)
-            {
-                MetaField field = tcomp->GetMetaClass()->GetFields()[i];
-                u32 foffset = field.GetOffset();
-                u32 fsize = field.GetType()->GetSize();
-                char* fieldData = ((char*)tcomp) + foffset;
-                w.WriteArray(fieldData, fsize);
-            }
-            UpdateComponent(tempBuff, w.GetOffset());
-        }
-        doneonce2 = true;
-    }
+    //        u8 tempBuff[2048];
+    //        SerialWriter w(tempBuff, 2048);
+    //        w.Write(mObjects[0].GetHandle().GetIndex());
+    //        w.Write(mObjects[0].GetHandle().GetInstance());
+    //        w.WriteLengthEncodedString(tcomp->GetMetaClass()->GetName());
+    //        for (u32 i=0; i < 3; ++i)
+    //        {
+    //            MetaField field = tcomp->GetMetaClass()->GetFields()[i];
+    //            u32 foffset = field.GetOffset();
+    //            u32 fsize = field.GetType()->GetSize();
+    //            char* fieldData = ((char*)tcomp) + foffset;
+    //            w.WriteArray(fieldData, fsize);
+    //        }
+    //        UpdateComponent(tempBuff, w.GetOffset());
+    //    }
+    //    doneonce2 = true;
+    //}
+
 
     // Destroy and re-create the entire tree
     mOctree.Destroy();
@@ -287,7 +290,6 @@ void TestApp::OnUpdate()
     }
     mOctree.Debug_DrawTree();
 
-    mInputManager.Update(mInputData);
 
 	// Render
 	mGraphicsSystem.BeginRender(Color::Black());
@@ -299,34 +301,21 @@ void TestApp::OnUpdate()
         Color col = Color::White();
         if (object.IsSelected())
         {
-            if (mInputData.mouseStates[Mouse::LBUTTON])
-            {
-                Math::Ray mouseRay = mCamera.GetMouseRay(mInputData.mouseX, mInputData.mouseY, mWidth, mHeight);
-                Math::Vector3 translation = object.GetSelectedAxis(mouseRay);
-                //object.Translate(translation * mInputData.mouseMoveX);
-            }
-
-            object.DrawGizmo();
             col = Color::Red();
         }
         SimpleDraw::AddAABB(object.GetCollider(), col);
     }
+    // Draw the gizmo on top of everything
+    mpGizmo->Draw(mSelectedObjects);
 
 	SimpleDraw::Render(mCamera);
 	mGraphicsSystem.EndRender();
+
+    mInputData.mouseMoveX = 0.0f;
+    mInputData.mouseMoveY = 0.0f;
 }
 
 //----------------------------------------------------------------------------------------------------
-
-/*
-- object name (LE)
-- num components
-    - component name (LE)
-    - num fields
-    - field name (LE)
-    - field size
-    - field data
-*/
 
 const u8* TestApp::GetSelectedObjectData(u32& size)
 {
@@ -477,37 +466,48 @@ bool TestApp::OnSelectObject()
 {
     bool handled = true;
     
-    // De-select the objects
-    // Remove any existing objects
-    // TODO: check if shift or w/e is pressed for multiple selection
-    for (auto object : mSelectedObjects)
-    {
-        object->DeSelect();
-    }
-    mSelectedObjects.clear();
-
-    // Convert the mouse click into a ray cast in world space and test collision
     Math::Ray ray = mCamera.GetMouseRay(mInputData.mouseX, mInputData.mouseY, mWidth, mHeight);
-    if (!mOctree.GetIntersectingObjects(ray, mSelectedObjects))
+    if (!mpGizmo->IsSelected(mSelectedObjects, ray))
     {
-        return handled;
-    }
-
-    // Invert the selection flag so previously selected objects are now de-selected
-    std::vector<EditorObject*>::iterator it = mSelectedObjects.begin();
-    for (it; it != mSelectedObjects.end(); ++it)
-    {
-        EditorObject* object = *it;
-
-        // Select the object if it hasn't been already
-        if (!object->IsSelected())
+        // De-select the objects and remove any existing objects
+        // TODO: check if shift or w/e is pressed for multiple selection
+        for (auto object : mSelectedObjects)
         {
-            object->Select();
+            object->DeSelect();
+        }
+        mSelectedObjects.clear();
+
+        // Convert the mouse click into a ray cast in world space and test collision
+        if (!mOctree.GetIntersectingObjects(ray, mSelectedObjects))
+        {
+            return handled;
+        }
+        
+        // Invert the selection flag so previously selected objects are now de-selected
+        std::vector<EditorObject*>::iterator it = mSelectedObjects.begin();
+        for (it; it != mSelectedObjects.end(); ++it)
+        {
+            EditorObject* object = *it;
+
+            // Select the object if it hasn't been already
+            if (!object->IsSelected())
+            {
+                object->Select();
+            }
         }
     }
     return handled;
 }
 
+bool TestApp::OnMouseDrag(s32 val)
+{
+    if (val == 0)
+    {
+        return false;
+    }
+    mpGizmo->Update(mSelectedObjects, mInputData, mWidth, mHeight);
+    return true;
+}
 
 /*
     // http://www.gamedev.net/blog/355/entry-2250186-designing-a-robust-input-handling-system-for-games/

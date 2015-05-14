@@ -35,19 +35,19 @@ public:
 	void Yaw(f32 degree);
 	void Pitch(f32 degree);
 
-	const Math::Vector3& GetPosition() const	{ return mPosition; }
-
 	f32 GetFOV() const							{ return mFOV; }
 	f32 GetAspectRatio() const					{ return mAspectRatio; }
 	f32 GetNearPlane() const					{ return mNearPlane; }
 	f32 GetFarPlane() const						{ return mFarPlane; }
 
+    const Math::Vector3& GetPosition() const    { return mPosition; }
     const Math::Vector3& GetLookAt() const      { return mLook; }
 	
     // TODO: Store these as members
 	Math::Matrix GetViewMatrix() const;
 	Math::Matrix GetProjectionMatrix() const;
 
+    Math::Vector3 GetMouseWorld(s32 mx, s32 my, u32 screenW, u32 screenH) const;
     Math::Ray GetMouseRay(s32 mx, s32 my, u32 screenW, u32 screenH) const;
 
 private:

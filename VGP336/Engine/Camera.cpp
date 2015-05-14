@@ -155,7 +155,7 @@ void Camera::Renormalize()
 
 //----------------------------------------------------------------------------------------------------
 
-Math::Ray Camera::GetMouseRay(s32 mx, s32 my, u32 screenW, u32 screenH) const
+Math::Vector3 Camera::GetMouseWorld(s32 mx, s32 my, u32 screenW, u32 screenH) const
 {
     // Transform 2d mouse coords to NDC
     Math::Vector3 mouseNDC;
@@ -169,7 +169,14 @@ Math::Ray Camera::GetMouseRay(s32 mx, s32 my, u32 screenW, u32 screenH) const
     Math::Matrix cameraView     = Math::Inverse(GetViewMatrix());
     Math::Matrix transform      = invProjection * cameraView;
     Math::Vector3 mouseWorld    = Math::TransformCoord(mouseNDC, transform);
+    return mouseWorld;
+}
 
+//----------------------------------------------------------------------------------------------------
+
+Math::Ray Camera::GetMouseRay(s32 mx, s32 my, u32 screenW, u32 screenH) const
+{
+    Math::Vector3 mouseWorld = GetMouseWorld(mx, my, screenW, screenH);
     Math::Vector3 dir = Math::Normalize(mouseWorld - mPosition);
     return Math::Ray(mPosition, dir);
 }

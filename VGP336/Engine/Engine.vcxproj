@@ -45,7 +45,6 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelComponent.cpp" />
     <ClCompile Include="ModelManager.cpp" />
-    <ClCompile Include="Octree.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Path.cpp" />
     <ClCompile Include="PhysicsWorld.cpp" />
