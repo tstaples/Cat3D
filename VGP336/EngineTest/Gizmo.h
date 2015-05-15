@@ -25,9 +25,10 @@ public:
     virtual void Draw(const Objects& selectedObjs) = 0;
 
 protected:
-    Camera& mCamera;
+    f32 CalcScaleFactor(const Math::Vector3& pos) const;
 
-    Math::Vector3 mSelectedAxis;
+protected:
+    Camera& mCamera;
     f32 mExtend;
     f32 mArmWidth;
     u8 mSelectedArm; // using bitflag because multiple axes can be selected

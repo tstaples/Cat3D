@@ -47,6 +47,9 @@ public:
 	Math::Matrix GetViewMatrix() const;
 	Math::Matrix GetProjectionMatrix() const;
 
+    // Converts 3D world coords into 2D screen coords
+    Math::Vector2 Unproject(const Math::Vector3& pos);
+
     Math::Vector3 GetMouseWorld(s32 mx, s32 my, u32 screenW, u32 screenH) const;
     Math::Ray GetMouseRay(s32 mx, s32 my, u32 screenW, u32 screenH) const;
 

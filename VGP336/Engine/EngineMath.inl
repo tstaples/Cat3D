@@ -187,6 +187,14 @@ inline Vector3 Project(const Vector3& v, const Vector3& n)
 
 //----------------------------------------------------------------------------------------------------
 
+inline Vector3 Project(const Vector3& v, const Plane& p)
+{
+    f32 dist = Dot(v, p.n);
+    return (v - (p.n * dist));
+}
+
+//----------------------------------------------------------------------------------------------------
+
 inline f32 Determinant(const Matrix& m)
 {
 	f32 det = 0.0f;

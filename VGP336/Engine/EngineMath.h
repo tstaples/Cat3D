@@ -82,6 +82,7 @@ f32 Dot(const Vector3& a, const Vector3& b);
 Vector3 Cross(const Vector3& a, const Vector3& b);
 
 Vector3 Project(const Vector3& v, const Vector3& n);
+Vector3 Project(const Vector3& v, const Plane& p);
 
 f32 Determinant(const Matrix& m);
 Matrix Adjoint(const Matrix& m);
@@ -109,6 +110,7 @@ bool Intersect(const Ray& ray, const Plane& plane, f32& distance);
 bool Intersect(const Vector3& point, const AABB& aabb);
 bool Intersect(const Vector3& point, const OBB& obb);
 
+bool GetIntersectPoint(const Ray& ray, const Plane& plane, Vector3& point);
 bool GetContactPoint(const Ray& ray, const OBB& obb, Vector3& point, Vector3& normal);
 //void GetCorners(
 

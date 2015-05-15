@@ -48,6 +48,10 @@ private:
     InputData mInputData;
     InputManager mInputManager;
 
+    MeshBuffer mBuffer;
+    MeshRenderer mRenderer;
+    Mesh mCube;
+
 private:
     // Input Actions
     bool OnSelectObject();

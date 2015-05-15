@@ -155,6 +155,21 @@ void Camera::Renormalize()
 
 //----------------------------------------------------------------------------------------------------
 
+Math::Vector2 Camera::Unproject(const Math::Vector3& pos)
+{
+    Math::Matrix view = GetViewMatrix();
+    Math::Matrix proj = GetProjectionMatrix();
+    Math::Vector3 worldView = Math::TransformCoord(pos, view);
+    Math::Vector3 hcspos = Math::TransformCoord(worldView, proj);
+
+    Math::Vector2 screenPos;
+    screenPos.x = 0.5f + (0.5f * hcspos.x);
+    screenPos.y = 0.5f + (0.5f * hcspos.y);
+    return screenPos;
+}
+
+//----------------------------------------------------------------------------------------------------
+
 Math::Vector3 Camera::GetMouseWorld(s32 mx, s32 my, u32 screenW, u32 screenH) const
 {
     // Transform 2d mouse coords to NDC

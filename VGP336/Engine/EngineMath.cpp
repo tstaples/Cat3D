@@ -223,6 +223,21 @@ bool Intersect(const Ray& ray, const Plane& plane, f32& distance)
     return true;
 }
 
+//----------------------------------------------------------------------------------------------------
+
+bool GetIntersectPoint(const Ray& ray, const Plane& plane, Vector3& point)
+{
+    f32 dist = 0;
+    if (Intersect(ray, plane, dist))
+    {
+        point = ray.org + (ray.dir * dist);
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
 // first pass check to see if point is intersecting
 // second pass - ray box intersection test (ray in particle's direction)
 //  check against a 'slab'

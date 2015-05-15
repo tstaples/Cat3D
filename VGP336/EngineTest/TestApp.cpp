@@ -59,7 +59,7 @@ namespace
 TestApp::TestApp()
     : mWidth(0)
     , mHeight(0)
-    , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(50.0f, 50.0f, 50.0f)))
+    , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(100.0f, 100.0f, 100.0f)))
     , mGameObjectPool(10)
     , mpGizmo(nullptr)
 {
@@ -94,7 +94,7 @@ void TestApp::OnInitialize(u32 width, u32 height)
 	mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
 	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -100.0f));
 
-    mpGizmo = new TranslateGizmo(mCamera, 15.0f, 5.0f);
+    mpGizmo = new TranslateGizmo(mCamera, 1.0f, 5.0f);
 
     // Bind controls
     mInputManager.BindAction(Mouse::LBUTTON, Input::MouseDown, MAKE_ACTION_DELEGATE(TestApp, &TestApp::OnSelectObject));
@@ -122,10 +122,17 @@ void TestApp::OnInitialize(u32 width, u32 height)
     mObjects.push_back(EditorObject(handle1));
     mObjects.push_back(EditorObject(handle2));
 
+    //mRenderer.Initialize(mGraphicsSystem);
+    //mRenderer.SetCamera(mCamera);
+    //MeshBuilder::CreateCube(mCube);
+    //mBuffer.Initialize(mGraphicsSystem, mCube.GetVertexFormat(), mCube);
+
+    //Math::Vector3 v(10.f, 20.f, -5.f);
+    //Math::Plane p(0.f, 1.f, 0.f, -10.f);
+    //Math::Vector3 proj = Math::Project(v, p);
+
     //mSelectedObjects.push_back(&mObjects[1]);
-
     //const char* data = GetSelectedObjectData(sz);
-
     //GameObject* g = new GameObject();
     //TransformComponent* t = new TransformComponent(g);
     //g->AddComponent(t);
@@ -145,6 +152,7 @@ void TestApp::OnTerminate()
     mGameObjectPool.Flush();
 
 	SimpleDraw::Terminate();
+    //mRenderer.Terminate();
 	mGraphicsSystem.Terminate();
 	mWindow.Terminate();
 }
@@ -284,7 +292,7 @@ void TestApp::OnUpdate()
 
     // Destroy and re-create the entire tree
     mOctree.Destroy();
-    for (int i=0; i < mObjects.size(); ++i)
+    for (u32 i=0; i < mObjects.size(); ++i)
     {
         mOctree.Insert(mObjects[i], mObjects[i].GetCollider());
     }
@@ -294,6 +302,7 @@ void TestApp::OnUpdate()
 	// Render
 	mGraphicsSystem.BeginRender(Color::Black());
     
+    //mRenderer.Render(mBuffer, Math::Matrix::Translation(Math::Vector3::Zero()));
     //DrawGroundPlane();
 
     for (auto object : mObjects)
