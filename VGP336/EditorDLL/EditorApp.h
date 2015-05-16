@@ -6,6 +6,9 @@
 #include "InputManager.h"
 #include "InputData.h"
 #include "EditorObject.h"
+#include "InputCallbacks.h"
+
+class Gizmo;
 
 class EditorApp : public Application
 {
@@ -15,6 +18,8 @@ public:
 
     const u8* GetSelectedObjectData(u32& size);
     void UpdateComponent(const u8* buffer, u32 buffsize);
+    const u8* DiscoverGameObjects(u32& buffsize);
+    const u8* GetGameObject(u16 index, u32& buffsize);
 
 private:
 	// Application implementation
@@ -35,6 +40,8 @@ private:
     std::vector<EditorObject> mObjects;
     std::vector<EditorObject*> mSelectedObjects;
 
+    Gizmo* mpGizmo;
+
     // Screen
     u32 mWidth;
     u32 mHeight;
@@ -42,18 +49,10 @@ private:
     // Input
     InputData mInputData;
     InputManager mInputManager;
-
-    u8 mObjBuffer[2048];
+    InputCallbacks mCallbacks;
 
 private:
-    // Input Actions
-    bool OnSelectObject();
-    bool OnZoom();
-
-    // Input Axis events
-    bool OnPanCamera(s32 val);
-    bool OnCameraLook(s32 val);
-    bool OnCamerWalkForward(s32 val);
+    friend class InputCallbacks;
 };
 
 #endif //#ifndef INCLUDED_EDITORAPP_H

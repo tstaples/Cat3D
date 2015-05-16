@@ -23,6 +23,8 @@ extern "C" DllExport int IsGameRunning();
 
 extern "C" DllExport unsigned int GetSelectedObjectData(unsigned char* buffer);
 extern "C" DllExport void UpdateComponent(unsigned char* buffer, unsigned int size);
+extern "C" DllExport unsigned int DiscoverGameObjects(unsigned char* buffer);
+extern "C" DllExport unsigned int GetGameObject(unsigned short index, unsigned char* buffer);
 
 extern "C" struct Matrix;
 extern "C" struct Vector3;

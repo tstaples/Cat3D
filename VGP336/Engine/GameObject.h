@@ -33,6 +33,7 @@ public:
     META_DECLARE_CLASS
 
     GameObject();
+    GameObject(const char* name);
     ~GameObject();
 
     void AddComponent(Component* component);
@@ -48,8 +49,12 @@ public:
     template<typename T>
     bool FindComponent(const T*& component) const;
 
+    void SetName(const char* name)              { mName = name; }
     const char* GetName() const                 { return mName.c_str(); }
     const Components& GetComponents() const     { return mComponents; }
+
+    void SerializeOut(u8* buffer, u32 size, u32& offset);
+    void SerializeIn(const u8* buffer, u32 size);
 
 private:
     //NONCOPYABLE(GameObject)

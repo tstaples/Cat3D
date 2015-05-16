@@ -2,16 +2,12 @@
 #define INCLUDED_EDITOROBJECT_H
 
 #include <Engine.h>
-#include "Gizmo.h"
 
 class EditorObject
 {
 public:
     EditorObject(GameObjectHandle gameObjectHandle);
     ~EditorObject();
-
-    void DrawGizmo();
-    Math::Vector3 GetSelectedAxis(const Math::Ray& mouseRay) const;
 
     void Translate(const Math::Vector3& v);
 
@@ -34,7 +30,6 @@ private:
     u32 mNumChildren;
 
     bool mIsSelected;
-    Gizmo mGizmo;
     Math::AABB mDefaultCollider;
 };
 

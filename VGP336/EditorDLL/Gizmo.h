@@ -3,39 +3,46 @@
 
 #include <Engine.h>
 
-struct GizmoArm
-{
-    GizmoArm() {}
-    GizmoArm(Math::Vector3 c, Math::Vector3 end, Math::Vector3 ext)
-    : end(end)
-    {
-        Math::Vector3 half = (end - c) / 2.0f;
-        collider.center = half;
-        collider.extend = ext;
-    }
-
-    Math::Vector3 end;
-    Math::AABB collider;
-};
+class EditorObject;
+struct InputData;
 
 class Gizmo
 {
 public:
-    Gizmo();
-    Gizmo(Math::Vector3 c, f32 ext);
+    typedef std::vector<EditorObject*> Objects;
 
-    void Draw(const Math::Matrix& transform);
-    void Translate(const Math::Vector3& pos);
-    // Returns axis vector for corresponding arm. Zero vector if no collision
-    Math::Vector3 IsArmSelected(const Math::Matrix& transform, const Math::Ray& mouseRay) const;
+    Gizmo(Camera& camera, f32 extend, f32 armWidth);
+    virtual ~Gizmo();
 
-private:
-    GizmoArm arms[3];
-    Math::Vector3 xAxis;
-    Math::Vector3 yAxis;
-    Math::Vector3 zAxis;
-    Math::Vector3 center;
-    f32 extend;
+    // Checks if the gizmo is selected.
+    // @param transform: transform of the object this gizmo is attached to.
+    // @param mouseRay: mouse's ray in world space.
+    // Returns true if selected, false if not.
+    virtual bool IsSelected(const Objects& selectedObjs, const Math::Ray& mouseRay) = 0;
+
+    virtual void Update(const Objects& selectedObjs, const InputData& input, u32 screenW, u32 screenH) = 0;
+
+    virtual void Draw(const Objects& selectedObjs) = 0;
+
+protected:
+    f32 CalcScaleFactor(const Math::Vector3& pos) const;
+
+protected:
+    Camera& mCamera;
+    f32 mExtend;
+    f32 mArmWidth;
+    u8 mSelectedArm; // using bitflag because multiple axes can be selected
+};
+
+class TranslateGizmo : public Gizmo
+{
+public:
+    TranslateGizmo(Camera& camera, f32 extend, f32 armWidth);
+    ~TranslateGizmo();
+
+    virtual bool IsSelected(const Objects& selectedObjs, const Math::Ray& mouseRay);
+    virtual void Update(const Objects& selectedObjs, const InputData& input, u32 screenW, u32 screenH);
+    virtual void Draw(const Objects& selectedObjs);
 };
 
 #endif // #ifndef INCLUDED_GIZMO_H

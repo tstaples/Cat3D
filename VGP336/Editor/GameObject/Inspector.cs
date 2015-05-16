@@ -13,6 +13,7 @@ namespace Editor
     {
         private PropertyGrid GridView;
         private List<Component> Components;
+        private GameObject CurrentGameObject; // Currently displayed in panel
 
         public Inspector(ref PropertyGrid gridView)
         {

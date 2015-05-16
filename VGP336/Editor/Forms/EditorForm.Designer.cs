@@ -31,9 +31,12 @@
             this.EditorTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.InspectorBox = new System.Windows.Forms.GroupBox();
             this.InspectorGrid = new System.Windows.Forms.PropertyGrid();
+            this.SceneHierarchyBox = new System.Windows.Forms.GroupBox();
+            this.SceneHierarchyTree = new System.Windows.Forms.TreeView();
             this.ViewPanel = new Editor.SelectablePanel();
             this.EditorTableLayout.SuspendLayout();
             this.InspectorBox.SuspendLayout();
+            this.SceneHierarchyBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // EditorTableLayout
@@ -44,27 +47,28 @@
             this.EditorTableLayout.AutoSize = true;
             this.EditorTableLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.EditorTableLayout.ColumnCount = 3;
-            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 9.065156F));
-            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 90.93484F));
-            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 335F));
+            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 21.67266F));
+            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 78.32734F));
+            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 315F));
             this.EditorTableLayout.Controls.Add(this.InspectorBox, 2, 1);
             this.EditorTableLayout.Controls.Add(this.ViewPanel, 1, 1);
+            this.EditorTableLayout.Controls.Add(this.SceneHierarchyBox, 0, 1);
             this.EditorTableLayout.Location = new System.Drawing.Point(0, 0);
             this.EditorTableLayout.Name = "EditorTableLayout";
             this.EditorTableLayout.RowCount = 3;
             this.EditorTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.95335F));
             this.EditorTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 89.04665F));
             this.EditorTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 169F));
-            this.EditorTableLayout.Size = new System.Drawing.Size(1229, 784);
+            this.EditorTableLayout.Size = new System.Drawing.Size(1447, 782);
             this.EditorTableLayout.TabIndex = 1;
             // 
             // InspectorBox
             // 
             this.InspectorBox.Controls.Add(this.InspectorGrid);
             this.InspectorBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.InspectorBox.Location = new System.Drawing.Point(896, 70);
+            this.InspectorBox.Location = new System.Drawing.Point(1134, 70);
             this.InspectorBox.Name = "InspectorBox";
-            this.InspectorBox.Size = new System.Drawing.Size(330, 541);
+            this.InspectorBox.Size = new System.Drawing.Size(310, 539);
             this.InspectorBox.TabIndex = 1;
             this.InspectorBox.TabStop = false;
             this.InspectorBox.Text = "Inspector";
@@ -75,17 +79,37 @@
             this.InspectorGrid.Location = new System.Drawing.Point(3, 16);
             this.InspectorGrid.Name = "InspectorGrid";
             this.InspectorGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.InspectorGrid.Size = new System.Drawing.Size(324, 522);
+            this.InspectorGrid.Size = new System.Drawing.Size(304, 520);
             this.InspectorGrid.TabIndex = 0;
             this.InspectorGrid.ToolbarVisible = false;
             this.InspectorGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.InspectorGrid_PropertyValueChanged);
             // 
+            // SceneHierarchyBox
+            // 
+            this.SceneHierarchyBox.Controls.Add(this.SceneHierarchyTree);
+            this.SceneHierarchyBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SceneHierarchyBox.Location = new System.Drawing.Point(3, 70);
+            this.SceneHierarchyBox.Name = "SceneHierarchyBox";
+            this.SceneHierarchyBox.Size = new System.Drawing.Size(239, 539);
+            this.SceneHierarchyBox.TabIndex = 3;
+            this.SceneHierarchyBox.TabStop = false;
+            this.SceneHierarchyBox.Text = "Scene Hierarchy";
+            // 
+            // SceneHierarchyTree
+            // 
+            this.SceneHierarchyTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SceneHierarchyTree.Location = new System.Drawing.Point(3, 16);
+            this.SceneHierarchyTree.Name = "SceneHierarchyTree";
+            this.SceneHierarchyTree.Size = new System.Drawing.Size(233, 520);
+            this.SceneHierarchyTree.TabIndex = 0;
+            this.SceneHierarchyTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.SceneHierarchyTree_NodeMouseClick);
+            // 
             // ViewPanel
             // 
             this.ViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ViewPanel.Location = new System.Drawing.Point(84, 70);
+            this.ViewPanel.Location = new System.Drawing.Point(248, 70);
             this.ViewPanel.Name = "ViewPanel";
-            this.ViewPanel.Size = new System.Drawing.Size(806, 541);
+            this.ViewPanel.Size = new System.Drawing.Size(880, 539);
             this.ViewPanel.TabIndex = 2;
             this.ViewPanel.TabStop = true;
             // 
@@ -93,7 +117,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1253, 807);
+            this.ClientSize = new System.Drawing.Size(1473, 807);
             this.Controls.Add(this.EditorTableLayout);
             this.Name = "EditorForm";
             this.Text = "Editor";
@@ -101,6 +125,7 @@
             this.ResizeBegin += new System.EventHandler(this.OnResize);
             this.EditorTableLayout.ResumeLayout(false);
             this.InspectorBox.ResumeLayout(false);
+            this.SceneHierarchyBox.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -112,6 +137,8 @@
         private System.Windows.Forms.GroupBox InspectorBox;
         private SelectablePanel ViewPanel;
         private System.Windows.Forms.PropertyGrid InspectorGrid;
+        private System.Windows.Forms.GroupBox SceneHierarchyBox;
+        private System.Windows.Forms.TreeView SceneHierarchyTree;
     }
 }
 

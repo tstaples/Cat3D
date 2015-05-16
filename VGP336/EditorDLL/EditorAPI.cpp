@@ -103,3 +103,23 @@ void UpdateComponent(unsigned char* buffer, unsigned int size)
 {
     app.UpdateComponent(buffer, size);
 }
+
+//----------------------------------------------------------------------------------------------------
+
+unsigned int DiscoverGameObjects(unsigned char* buffer)
+{
+    unsigned int size = 0;
+    unsigned char* buff = (unsigned char*)app.DiscoverGameObjects(size);
+    memcpy(buffer, buff, size);
+    return size;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+unsigned int GetGameObject(unsigned short index, unsigned char* buffer)
+{
+    unsigned int size = 0;
+    unsigned char* buff = (unsigned char*)app.GetGameObject(index, size);
+    memcpy(buffer, buff, size);
+    return size;
+}

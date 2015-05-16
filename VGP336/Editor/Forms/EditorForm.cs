@@ -14,6 +14,7 @@ namespace Editor
     public partial class EditorForm : Form
     {
         private Inspector InspectorPanel;
+        private SceneHierarchy SceneTree;
 
         public EditorForm()
         {
@@ -29,6 +30,8 @@ namespace Editor
             ViewPanel.Focus();
 
             InspectorPanel = new Inspector(ref InspectorGrid);
+            SceneTree = new SceneHierarchy(ref SceneHierarchyTree, ref InspectorPanel);
+            SceneTree.Popualate();
         }
 
         private void Terminate()
@@ -62,6 +65,7 @@ namespace Editor
 
         private void InspectorGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
+            // Hack: determine parent cells by if they can be expanded or not
             if (e.ChangedItem.Expandable)
             {
                 string compName = e.ChangedItem.Parent.Label;
@@ -73,6 +77,11 @@ namespace Editor
                 string childName = e.ChangedItem.Label;
                 InspectorPanel.OnComponentChildModified(propertyName, childName, e.ChangedItem.Value);
             }
+        }
+
+        private void SceneHierarchyTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            SceneTree.OnNodeSelected(e.Node);
         }
     }
 }

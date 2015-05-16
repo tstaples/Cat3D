@@ -1,13 +1,12 @@
 #include "EditorApp.h"
 #include "Random.h"
 
+#include "Gizmo.h"
+#include "InputCallbacks.h"
+
 namespace
 {
-    Math::AABB testAABB(
-        Math::Vector3(Random::GetF(-10.0f, 10.0f),
-                      Random::GetF(-10.0f, 10.0f),
-                      Random::GetF(-10.0f, 10.0f)),
-        Math::Vector3(2.0f, 2.0f, 2.0f));
+    u8 objBuffer[2048];
 }
 
 EditorApp::EditorApp()
@@ -15,10 +14,11 @@ EditorApp::EditorApp()
     , mHeight(0)
     , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(50.0f, 50.0f, 50.0f)))
     , mGameObjectPool(10)
+    , mCallbacks(*this)
 {
     memset(mInputData.keyStates, 0, sizeof(bool) * 256);
     memset(mInputData.mouseStates, 0, sizeof(bool) * 4);
-    memset(mObjBuffer, 0, 2048);
+    memset(objBuffer, 0, 2048);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -44,12 +44,9 @@ void EditorApp::OnInitialize(u32 width, u32 height)
 	mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
 	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -10.0f));
 
-    // Bind controls
-    mInputManager.BindAction(Mouse::LBUTTON, Input::MouseDown, MAKE_ACTION_DELEGATE(EditorApp, &EditorApp::OnSelectObject));
-    mInputManager.BindAction(Mouse::SCROLL, Input::MouseScroll, MAKE_ACTION_DELEGATE(EditorApp, &EditorApp::OnZoom));
+    mCallbacks.RegisterCallbacks();
 
-    mInputManager.BindAxis(Mouse::RBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(EditorApp, &EditorApp::OnCameraLook));
-    mInputManager.BindAxis(Mouse::MBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(EditorApp, &EditorApp::OnPanCamera));
+    mpGizmo = new TranslateGizmo(mCamera, 1.0f, 5.0f);
 
     // TEMP
     GameObjectHandle handle1 = mGameObjectPool.Allocate();
@@ -57,6 +54,8 @@ void EditorApp::OnInitialize(u32 width, u32 height)
 
     GameObject* g1 = handle1.Get();
     GameObject* g2 = handle2.Get();
+    g1->SetName("Object 1");
+    g2->SetName("Object 2");
 
     // leak
     TransformComponent* t1 = new TransformComponent(g1);
@@ -75,6 +74,7 @@ void EditorApp::OnInitialize(u32 width, u32 height)
 
 void EditorApp::OnTerminate()
 {
+    SafeDelete(mpGizmo);
     mOctree.Destroy();
     mObjects.clear();
     mGameObjectPool.Flush();
@@ -151,6 +151,8 @@ void EditorApp::OnUpdate()
 	mTimer.Update();
 	const f32 deltaTime = mTimer.GetElapsedTime();
 
+    mInputManager.Update(mInputData);
+
     // Destroy and re-create the entire tree
     mOctree.Destroy();
     for (u32 i=0; i < mObjects.size(); ++i)
@@ -158,8 +160,6 @@ void EditorApp::OnUpdate()
         mOctree.Insert(mObjects[i], mObjects[i].GetCollider());
     }
     mOctree.Debug_DrawTree();
-
-    mInputManager.Update(mInputData);
 
 
     // Player movement
@@ -189,19 +189,12 @@ void EditorApp::OnUpdate()
         Color col = Color::White();
         if (object.IsSelected())
         {
-            if (mInputData.mouseStates[Mouse::LBUTTON])
-            {
-                Math::Ray mouseRay = mCamera.GetMouseRay(mInputData.mouseX, mInputData.mouseY, mWidth, mHeight);
-                Math::Vector3 translation = object.GetSelectedAxis(mouseRay);
-                //SimpleDraw::AddLine(object.GetPosition(), translation * 15.0f, Color::Cyan());
-                //object.Translate(translation * mInputData.mouseMoveX);
-            }
-
-            object.DrawGizmo();
             col = Color::Red();
         }
         SimpleDraw::AddAABB(object.GetCollider(), col);
     }
+
+    mpGizmo->Draw(mSelectedObjects);
 
 	SimpleDraw::Render(mCamera);
 	mGraphicsSystem.EndRender();
@@ -217,8 +210,8 @@ const u8* EditorApp::GetSelectedObjectData(u32& size)
         return nullptr;
     }
 
-    memset(mObjBuffer, 0, 2048);
-    SerialWriter writer(mObjBuffer, 2048);
+    memset(objBuffer, 0, 2048);
+    SerialWriter writer(objBuffer, 2048);
 
     EditorObject* editorObject = mSelectedObjects[0];
     GameObject* gameObject = editorObject->GetGameObject();
@@ -228,32 +221,35 @@ const u8* EditorApp::GetSelectedObjectData(u32& size)
     writer.Write(editorObject->GetHandle().GetIndex()); // used as object identifier
     writer.Write(editorObject->GetHandle().GetInstance());
 
-    const std::vector<Component*>& components = gameObject->GetComponents();
-    writer.Write((u32)components.size());
-    for (Component* c : components)
-    {
-        const MetaClass* compMetaClass = c->GetMetaClass();
-        writer.WriteLengthEncodedString(compMetaClass->GetName());
+    u32 offset = 0;
+    gameObject->SerializeOut(objBuffer + writer.GetOffset(), 2048 - writer.GetOffset(), offset);
 
-        const MetaField* fields = compMetaClass->GetFields();
-        const u32 numFields = compMetaClass->GetNumFields();
-        writer.Write(numFields);
-        for (u32 i=0; i < numFields; ++i)
-        {
-            const MetaField* field = &fields[i];
-            const u32 offset = field->GetOffset();
-            const u32 fieldSize = field->GetType()->GetSize();
-            char* fieldData = ((char*)c) + offset;
+    //const std::vector<Component*>& components = gameObject->GetComponents();
+    //writer.Write((u32)components.size());
+    //for (Component* c : components)
+    //{
+    //    const MetaClass* compMetaClass = c->GetMetaClass();
+    //    writer.WriteLengthEncodedString(compMetaClass->GetName());
 
-            writer.WriteLengthEncodedString(field->GetName());
-            writer.Write(field->GetType()->GetType());
-            writer.Write(fieldSize);
-            writer.Write(offset);
-            writer.WriteArray(fieldData, fieldSize);
-        }
-    }
-    size = writer.GetOffset();
-    return mObjBuffer;
+    //    const MetaField* fields = compMetaClass->GetFields();
+    //    const u32 numFields = compMetaClass->GetNumFields();
+    //    writer.Write(numFields);
+    //    for (u32 i=0; i < numFields; ++i)
+    //    {
+    //        const MetaField* field = &fields[i];
+    //        const u32 offset = field->GetOffset();
+    //        const u32 fieldSize = field->GetType()->GetSize();
+    //        char* fieldData = ((char*)c) + offset;
+
+    //        writer.WriteLengthEncodedString(field->GetName());
+    //        writer.Write(field->GetType()->GetType());
+    //        writer.Write(fieldSize);
+    //        writer.Write(offset);
+    //        writer.WriteArray(fieldData, fieldSize);
+    //    }
+    //}
+    size = writer.GetOffset() + offset;
+    return objBuffer;
 }
 
 void EditorApp::UpdateComponent(const u8* buffer, u32 buffsize)
@@ -292,98 +288,39 @@ void EditorApp::UpdateComponent(const u8* buffer, u32 buffsize)
     }
 }
 
-bool EditorApp::OnCameraLook(s32 val)
+const u8* EditorApp::DiscoverGameObjects(u32& buffsize)
 {
-    if (val == 0)
+    memset(objBuffer, 0, 2048);
+    SerialWriter writer(objBuffer, 2048);
+
+    const u32 numObjects = mObjects.size();
+    writer.Write(numObjects);
+    for (EditorObject editorObj : mObjects)
     {
-        return false;
+        GameObject* gameObject = editorObj.GetGameObject();
+        GameObjectHandle handle = editorObj.GetHandle();
+
+        writer.Write(handle.GetIndex());
+        writer.Write(handle.GetInstance());
+        writer.WriteLengthEncodedString(gameObject->GetName());
     }
-
-    // TODO: Smoothing by interpolating between desired angle and current
-    // (reference steering behaviours)
-	const f32 lookSensitivity = 0.25f;
-
-    mCamera.Yaw(mInputData.mouseMoveX * lookSensitivity);
-    mCamera.Pitch(mInputData.mouseMoveY * lookSensitivity);
-
-    // Zero out mouse move so the camera doesn't continue to rotate
-    mInputData.mouseMoveX = 0.0f;
-    mInputData.mouseMoveY = 0.0f;
-
-    return true;
+    buffsize = writer.GetOffset();
+    return objBuffer;
 }
 
-//----------------------------------------------------------------------------------------------------
-
-bool EditorApp::OnZoom()
+const u8* EditorApp::GetGameObject(u16 index, u32& buffsize)
 {
-    const f32 zoomDistance = 2.0f;
-    s8 delta = mInputData.mouseScrollDelta;
-    if (delta == WHEEL_SCROLL_UP)
+    memset(objBuffer, 0, 2048);
+    for (EditorObject eobj : mObjects)
     {
-        mCamera.Walk(zoomDistance);
-    }
-    else if (delta == WHEEL_SCROLL_DOWN)
-    {
-        mCamera.Walk(-zoomDistance);
-    }
-    // Reset to prevent infinite zoom
-    delta = 0;
-
-    return true;
-}
-
-//----------------------------------------------------------------------------------------------------
-
-bool EditorApp::OnPanCamera(s32 val)
-{
-    if (val == 0)
-    {
-        return false;
-    }
-
-    const f32 moveSensitivity = 0.25f;
-    mCamera.Strafe((-mInputData.mouseMoveX) * moveSensitivity);
-    mCamera.Rise(mInputData.mouseMoveY * moveSensitivity);
-
-    mInputData.mouseMoveX = 0.0f;
-    mInputData.mouseMoveY = 0.0f;
-    return true;
-}
-
-//----------------------------------------------------------------------------------------------------
-
-bool EditorApp::OnSelectObject()
-{
-    bool handled = true;
-    
-    // De-select the objects
-    // Remove any existing objects
-    // TODO: check if shift or w/e is pressed for multiple selection
-    for (auto object : mSelectedObjects)
-    {
-        object->DeSelect();
-    }
-    mSelectedObjects.clear();
-
-    // Convert the mouse click into a ray cast in world space and test collision
-    Math::Ray ray = mCamera.GetMouseRay(mInputData.mouseX, mInputData.mouseY, mWidth, mHeight);
-    if (!mOctree.GetIntersectingObjects(ray, mSelectedObjects))
-    {
-        return handled;
-    }
-
-    // Invert the selection flag so previously selected objects are now de-selected
-    std::vector<EditorObject*>::iterator it = mSelectedObjects.begin();
-    for (it; it != mSelectedObjects.end(); ++it)
-    {
-        EditorObject* object = *it;
-
-        // Select the object if it hasn't been already
-        if (!object->IsSelected())
+        GameObjectHandle handle = eobj.GetHandle();
+        if (handle.GetIndex() == index)
         {
-            object->Select();
+            GameObject* gameobject = eobj.GetGameObject();
+            gameobject->SerializeOut(objBuffer, 2048, buffsize);
+            return objBuffer;
         }
     }
-    return handled;
+    buffsize = 0;
+    return nullptr;
 }

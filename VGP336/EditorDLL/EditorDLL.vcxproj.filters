@@ -5,11 +5,13 @@
     <ClCompile Include="EditorAPI.cpp" />
     <ClCompile Include="EditorObject.cpp" />
     <ClCompile Include="Gizmo.cpp" />
+    <ClCompile Include="InputCallbacks.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EditorApp.h" />
     <ClInclude Include="EditorAPI.h" />
     <ClInclude Include="EditorObject.h" />
     <ClInclude Include="Gizmo.h" />
+    <ClInclude Include="InputCallbacks.h" />
   </ItemGroup>
 </Project>
