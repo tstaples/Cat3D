@@ -51,6 +51,8 @@ namespace
             SimpleDraw::AddLine(a, b, Color::White());
         }
     }
+
+    
 }
 
 
@@ -77,6 +79,9 @@ TestApp::~TestApp()
 
 void TestApp::OnInitialize(u32 width, u32 height)
 {
+    // Build Meta database
+    Meta::MetaRegistration();
+
     // Store width and height for later use
     // TODO: update when resize event occurs
     mWidth = width;
@@ -104,6 +109,11 @@ void TestApp::OnInitialize(u32 width, u32 height)
     mInputManager.BindAxis(Mouse::RBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(TestApp, &TestApp::OnCameraLook));
     mInputManager.BindAxis(Mouse::MBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(TestApp, &TestApp::OnPanCamera));
 
+    Delegate<bool, s32> del = Delegate<bool, s32>::Make<TestApp, &TestApp::OnCameraLook>(this);
+    Delegate<bool, s32, s32, bool> del2 = Delegate<bool, s32, s32, bool>::Make<TestApp, &TestApp::OnPanCamera>(this);
+    del(1);
+    del2(1, 2, true);
+
     // TEMP
     GameObjectHandle handle1 = mGameObjectPool.Allocate();
     GameObjectHandle handle2 = mGameObjectPool.Allocate();
@@ -111,8 +121,8 @@ void TestApp::OnInitialize(u32 width, u32 height)
     GameObject* g1 = handle1.Get();
     GameObject* g2 = handle2.Get();
 
-    TransformComponent* t1 = new TransformComponent(g1);
-    TransformComponent* t2 = new TransformComponent(g2);
+    TransformComponent* t1 = new TransformComponent();
+    TransformComponent* t2 = new TransformComponent();
     t1->Translate(Math::Vector3(15.0f, 3.0f, 5.0f));
     t2->Translate(Math::Vector3(-15.0f, 3.0f, 5.0f));
 
@@ -121,6 +131,9 @@ void TestApp::OnInitialize(u32 width, u32 height)
 
     mObjects.push_back(EditorObject(handle1));
     mObjects.push_back(EditorObject(handle2));
+
+    const MetaClass* mc = MetaDB::GetMetaClass("TransformComponent");
+    const char* name = mc->GetName();
 
     //mRenderer.Initialize(mGraphicsSystem);
     //mRenderer.SetCamera(mCamera);
@@ -352,12 +365,11 @@ const u8* TestApp::GetSelectedObjectData(u32& size)
         const MetaClass* compMetaClass = c->GetMetaClass();
         writer.WriteLengthEncodedString(compMetaClass->GetName());
 
-        const MetaField* fields = compMetaClass->GetFields();
         const u32 numFields = compMetaClass->GetNumFields();
         writer.Write(numFields);
         for (u32 i=0; i < numFields; ++i)
         {
-            const MetaField* field = &fields[i];
+            const MetaField* field = metaClass->GetFieldAtIndex(i);
             const u32 offset = field->GetOffset();
             const u32 fieldSize = field->GetType()->GetSize();
             char* fieldData = ((char*)c) + offset;
@@ -394,12 +406,12 @@ void TestApp::UpdateComponent(const u8* buffer, u32 buffsize)
             u32 sz = buffsize - reader.GetOffset();
             char data[2048];
 
-            const MetaField* fields = compMetaClass->GetFields();
             const u32 numFields = compMetaClass->GetNumFields();
             for (u32 i=0; i < numFields; ++i)
             {
-                u32 offset = fields[i].GetOffset();
-                u32 fieldSize = fields[i].GetType()->GetSize();
+                const MetaField* field = compMetaClass->GetFieldAtIndex(i);
+                u32 offset = field->GetOffset();
+                u32 fieldSize = field->GetType()->GetSize();
                 reader.ReadArray(data, fieldSize);
 
                 char* cdata = ((char*)c) + offset;

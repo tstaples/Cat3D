@@ -59,47 +59,35 @@ namespace
         return center;
     }
 
-    Math::Plane GetTranslationPlane(const Math::Vector3& pos, const Math::Ray& mouseRay)
+    Math::Plane GetTranslationPlane(u8 selectedAxis, const Math::Vector3& pos, const Math::Ray& mouseRay)
     {
-        f32 mag = Math::Magnitude(pos);
-        f32 dist = Math::Distance(mouseRay.org, pos);
-        Math::Vector3 n = Math::Normalize(pos);
-        //Math::Plane px(Math::Vector3::XAxis(), mag);
-        //Math::Plane py(Math::Vector3::YAxis(), mag);
-        //Math::Plane pz(Math::Vector3::ZAxis(), mag);
-        Math::Plane px(Math::Vector3(n.x, 0.0f, 0.0f), mag);
-        Math::Plane py(Math::Vector3(0.0f, n.y, 0.0f), mag);
-        Math::Plane pz(Math::Vector3(0.0f, 0.0f, n.z), mag);
-
-        // Project onto each potential translation planes
-        Math::Vector3 vX = Math::Project(mouseRay.dir, px);
-        Math::Vector3 vY = Math::Project(mouseRay.dir, py);
-        Math::Vector3 vZ = Math::Project(mouseRay.dir, pz);
-
-        f32 magx = Math::MagnitudeSqr(vX);
-        f32 magy = Math::MagnitudeSqr(vY);
-        f32 magz = Math::MagnitudeSqr(vZ);
-
-        f32 dx = Math::Dot(mouseRay.dir, px.n);
-        f32 dy = Math::Dot(mouseRay.dir, py.n);
-        f32 dz = Math::Dot(mouseRay.dir, pz.n);
-
-        if (magx < magy && magx < magz)
+        Math::Plane px(Math::Vector3::XAxis(), pos.x);
+        Math::Plane py(Math::Vector3::YAxis(), pos.y);
+        Math::Plane pz(Math::Vector3::ZAxis(), pos.z);
+        
+        // eliminate one of the planes based on the selected axis
+        Math::Plane a, b;
+        if (selectedAxis == Axis::X)
         {
-            return px;
+            a = py;
+            b = pz;
+        }
+        else if (selectedAxis == Axis::Y)
+        {
+            a = px;
+            b = pz;
         }
         else
         {
-            if (magy < magx && magy < magz)
-            {
-                return py;
-            }
-            else
-            {
-                return pz;
-            }
+            a = px;
+            b = py;
         }
-        return Math::Plane();
+        // dot ray dir with normal of 2 remaining planes
+        f32 dotA = Math::Dot(mouseRay.dir, a.n);
+        f32 dotB = Math::Dot(mouseRay.dir, b.n);
+
+        // use plane whose abs result was greater.
+        return (fabsf(dotA) > fabsf(dotB)) ? a : b;
     }
 }
 
@@ -216,7 +204,7 @@ void TranslateGizmo::Update(const Objects& selectedObjs, const InputData& input,
 
         Math::Ray mouseRay = mCamera.GetMouseRay(mx, my, screenW, screenH);
         Math::Ray prevMouseRay = mCamera.GetMouseRay(dx, dy, screenW, screenH);
-        Math::Plane transPlane = GetTranslationPlane(center, mouseRay);
+        Math::Plane transPlane = GetTranslationPlane(mSelectedArm, center, mouseRay);
         Math::Vector3 intersect, oldIntersect;
         Math::GetIntersectPoint(prevMouseRay, transPlane, oldIntersect);
         Math::GetIntersectPoint(mouseRay, transPlane, intersect);
