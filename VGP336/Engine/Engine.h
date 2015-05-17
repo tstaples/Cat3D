@@ -16,6 +16,7 @@
 // Core headers
 #include "Application.h"
 #include "Delegate.h"
+#include "Random.h"
 
 // Component headers
 #include "ModelComponent.h"
@@ -27,11 +28,12 @@
 // GameObject headers
 #include "GameObject.h"
 #include "GameObjectFactory.h"
-#include "ID.h"
 #include "MemHandle.h"
 #include "MemoryPool.h"
-#include "MetaTypes.h"
 #include "RepositoryTypes.h"
+
+// Meta
+#include "Meta.h"
 
 // Graphics headers
 #include "AnimationClip.h"

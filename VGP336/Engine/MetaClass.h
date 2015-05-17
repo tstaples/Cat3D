@@ -26,25 +26,38 @@ class MetaField;
 class MetaClass : public MetaType
 {
 public:
+    typedef void* (*CreateFunc)();
+    typedef void (*DestroyFunc)(void*);
+
     // Constructor
     // @param name: name of the class.
     // @param classSize: sizeof the class.
     // @param fields: pointer to a static array of fields that represent the class members.
     // @param numFields: number of fields in the array.
-    MetaClass(const char* name, u32 classSize, const MetaField* fields, u32 numFields)
-        : MetaType(MetaType::Class, classSize)
-        , mName(name)
-        , mFields(fields)
-        , mNumFields(numFields)
-    {
-    }
+    // @param create: function pointer running the logic to create a new instance of the class.
+    // @param destroy: unction pointer running the logic to destroy the instance of the class.
+    MetaClass(const char* name, u32 classSize, const MetaField* fields, u32 numFields, CreateFunc create, DestroyFunc destroy);
 
-    // TODO: Take create and destroy function pointers in constructor so the objects
-    // can be created from the metaclass
+    // Creates an instance of the class.
+    // Returns a void pointer to the class.
+    void* Create() const;
+
+    // Destroys the instance of a class.
+    // @param data: void pointer to the class.
+    void Destroy(void* data) const;
+
+    // Looks up a field by name.
+    // @param name: name of the meta field.
+    // Returns a pointer to the MetaField with that name, or nullptr if the field was not found.
+    const MetaField* FindField(const char* name) const;
+
+    // Gets the field associated with the index.
+    // @param index: index of the field in mFields.
+    // Returns a pointer to the MetaField.
+    const MetaField* GetFieldAtIndex(u32 index) const;
 
     const char* GetName() const { return mName; }
     u32 GetNumFields() const    { return mNumFields; }
-    const MetaField* GetFields() const { return mFields; }
 
 private:
     // Will point to literal constant, so shallow copy is fine.
@@ -52,6 +65,9 @@ private:
 
     const MetaField* mFields;
     const u32 mNumFields;
+
+    CreateFunc mConstruct;
+    DestroyFunc mDestruct;
 };
 
 #endif // #ifndef INCLUDED_ENGINE_METACLASS_H

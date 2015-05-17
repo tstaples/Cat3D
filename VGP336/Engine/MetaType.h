@@ -19,11 +19,12 @@ public:
         Int,
         Float,
         Bool,
+        String,
         Vector3,
         Matrix,
-        // Array    // TODO
-        // Pointer
-        Class
+        Class,
+        Array,
+        Pointer
     };
 
     MetaType(Type type, u32 size)
@@ -38,6 +39,7 @@ public:
 private:
     Type mType;
     u32 mSize;
+    //bool mIsPointer;  // TODO
 };
 
 #endif // #ifndef INCLUDED_ENGINE_METATYPE_H

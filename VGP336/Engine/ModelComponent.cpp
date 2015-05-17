@@ -5,9 +5,8 @@
 
 #include <json/json.h>
 
-ModelComponent::ModelComponent(GameObject* gameObject)
-    : Component(gameObject)
-    , mModel(nullptr)
+ModelComponent::ModelComponent()
+    : mModel(nullptr)
 {
 }
 

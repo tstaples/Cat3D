@@ -30,8 +30,12 @@ GameObject::~GameObject()
 
 void GameObject::AddComponent(Component* component)
 {
+    // Inject ourself into the component as we now own it.
+    component->mpGameObject = this;
     mComponents.push_back(component);
 }
+
+//----------------------------------------------------------------------------------------------------
 
 void GameObject::SerializeOut(u8* buffer, u32 size, u32& offset)
 {
@@ -46,12 +50,11 @@ void GameObject::SerializeOut(u8* buffer, u32 size, u32& offset)
         const MetaClass* compMetaClass = c->GetMetaClass();
         writer.WriteLengthEncodedString(compMetaClass->GetName());
 
-        const MetaField* fields = compMetaClass->GetFields();
         const u32 numFields = compMetaClass->GetNumFields();
         writer.Write(numFields);
         for (u32 i=0; i < numFields; ++i)
         {
-            const MetaField* field = &fields[i];
+            const MetaField* field = compMetaClass->GetFieldAtIndex(i);
             const u32 offset = field->GetOffset();
             const u32 fieldSize = field->GetType()->GetSize();
             char* fieldData = ((char*)c) + offset;
@@ -66,6 +69,8 @@ void GameObject::SerializeOut(u8* buffer, u32 size, u32& offset)
     }
     offset = writer.GetOffset();
 }
+
+//----------------------------------------------------------------------------------------------------
 
 void GameObject::SerializeIn(const u8* buffer, u32 size)
 {

@@ -112,9 +112,6 @@
     <ClCompile Include="TextureManager.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
-    <ClCompile Include="ID.cpp">
-      <Filter>GameObject</Filter>
-    </ClCompile>
     <ClCompile Include="Path.cpp">
       <Filter>FileIO</Filter>
     </ClCompile>
@@ -209,6 +206,15 @@
       <Filter>Input</Filter>
     </ClCompile>
     <ClCompile Include="MetaType.cpp">
+      <Filter>GameObject\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="MetaDB.cpp">
+      <Filter>GameObject\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="MetaClass.cpp">
+      <Filter>GameObject\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="MetaRegistration.cpp">
       <Filter>GameObject\Meta</Filter>
     </ClCompile>
   </ItemGroup>
@@ -306,9 +312,6 @@
     <ClInclude Include="TextureManager.h">
       <Filter>Resource</Filter>
     </ClInclude>
-    <ClInclude Include="ID.h">
-      <Filter>GameObject</Filter>
-    </ClInclude>
     <ClInclude Include="Path.h">
       <Filter>FileIO</Filter>
     </ClInclude>
@@ -326,9 +329,6 @@
     </ClInclude>
     <ClInclude Include="ModelComponent.h">
       <Filter>GameObject\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Service.h">
-      <Filter>GameObject\Services</Filter>
     </ClInclude>
     <ClInclude Include="RenderService.h">
       <Filter>GameObject\Services</Filter>
@@ -405,9 +405,6 @@
     <ClInclude Include="Sphere.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="MetaTypes.h">
-      <Filter>GameObject\Meta</Filter>
-    </ClInclude>
     <ClInclude Include="Particle.h">
       <Filter>Physics</Filter>
     </ClInclude>
@@ -453,6 +450,12 @@
     <ClInclude Include="MetaField.h">
       <Filter>GameObject\Meta</Filter>
     </ClInclude>
+    <ClInclude Include="MetaDB.h">
+      <Filter>GameObject\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaRegistration.h">
+      <Filter>GameObject\Meta</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Vector3.inl">
@@ -473,17 +476,11 @@
     <None Include="Quaternion.inl">
       <Filter>Math</Filter>
     </None>
-    <None Include="Service.inl">
-      <Filter>GameObject\Services</Filter>
-    </None>
     <None Include="SerialWriter.inl">
       <Filter>FileIO</Filter>
     </None>
     <None Include="SerialReader.inl">
       <Filter>FileIO</Filter>
-    </None>
-    <None Include="MetaTypeDefines.tup">
-      <Filter>GameObject\Meta</Filter>
     </None>
     <None Include="MemoryPool.inl">
       <Filter>GameObject\Repository</Filter>

@@ -10,6 +10,10 @@
 //				http://blog.coldflake.com/posts/C++-delegates-on-steroids/
 //====================================================================================================
 
+//#define MAKE_DELEGATE(
+//Delegate<bool, s32> del = Delegate<bool, s32>::Make<TestApp, &TestApp::OnCameraLook>(this);
+//Delegate<bool, s32, s32, bool> del2 = Delegate<bool, s32, s32, bool>::Make<TestApp, &TestApp::OnPanCamera>(this);
+
 //====================================================================================================
 // Class Declarations
 //====================================================================================================
@@ -109,6 +113,54 @@ private:
 	{
 		T* ptr = static_cast<T*>(instance);
 		return (ptr->*MethodType)(p1);
+	}
+};
+
+template <class ReturnType, typename... Params>
+class Delegate
+{
+public:
+	Delegate()
+		: mInstance(nullptr)
+		, mInvoke(nullptr)
+	{}
+
+	ReturnType operator()(Params... p1) const
+	{
+		return (*mInvoke)(mInstance, p1...);
+	}
+
+	bool Empty() const
+	{
+		return mInstance == nullptr || mInvoke == nullptr;
+	}
+
+	void Clear()
+	{
+		mInstance = nullptr;
+		mInvoke = nullptr;
+	}
+	
+	template <class T, ReturnType (T::*MethodType)(Params...)>
+	static Delegate Make(T* instance)
+	{
+		Delegate d;
+		d.mInstance = instance;
+		d.mInvoke = &Invoke<T, MethodType>;
+		return d;
+	}
+
+private:
+	typedef ReturnType (*InvokeType)(void*, Params...);
+
+	void* mInstance;
+	InvokeType mInvoke;
+
+	template <class T, ReturnType (T::*MethodType)(Params...)>
+	static ReturnType Invoke(void* instance, Params... p1)
+	{
+		T* ptr = static_cast<T*>(instance);
+		return (ptr->*MethodType)(p1...);
 	}
 };
 

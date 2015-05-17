@@ -3,8 +3,7 @@
 
 #include <json/json.h>
 
-ColliderComponent::ColliderComponent(GameObject* gameObject)
-    : Component(gameObject)
+ColliderComponent::ColliderComponent()
 {
 }
 

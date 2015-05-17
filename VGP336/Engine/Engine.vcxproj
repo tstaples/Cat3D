@@ -31,7 +31,6 @@
     <ClCompile Include="GraphicsSystem.cpp" />
     <ClCompile Include="Hash.cpp" />
     <ClCompile Include="Heightmap.cpp" />
-    <ClCompile Include="ID.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="EngineMath.cpp" />
@@ -41,6 +40,9 @@
     <ClCompile Include="MeshBuilder.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="MeshUtil.cpp" />
+    <ClCompile Include="MetaClass.cpp" />
+    <ClCompile Include="MetaDB.cpp" />
+    <ClCompile Include="MetaRegistration.cpp" />
     <ClCompile Include="MetaType.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelComponent.cpp" />
@@ -95,7 +97,6 @@
     <ClInclude Include="GraphicsSystem.h" />
     <ClInclude Include="Hash.h" />
     <ClInclude Include="Heightmap.h" />
-    <ClInclude Include="ID.h" />
     <ClInclude Include="InputData.h" />
     <ClInclude Include="InputEvent.h" />
     <ClInclude Include="InputManager.h" />
@@ -113,9 +114,10 @@
     <ClInclude Include="MeshUtil.h" />
     <ClInclude Include="Meta.h" />
     <ClInclude Include="MetaClass.h" />
+    <ClInclude Include="MetaDB.h" />
     <ClInclude Include="MetaField.h" />
+    <ClInclude Include="MetaRegistration.h" />
     <ClInclude Include="MetaType.h" />
-    <ClInclude Include="MetaTypes.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelComponent.h" />
     <ClInclude Include="ModelManager.h" />
@@ -137,7 +139,6 @@
     <ClInclude Include="Sampler.h" />
     <ClInclude Include="SerialReader.h" />
     <ClInclude Include="SerialWriter.h" />
-    <ClInclude Include="Service.h" />
     <ClInclude Include="SimpleDraw.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SpriteRenderer.h" />
@@ -158,13 +159,11 @@
     <None Include="Matrix.inl" />
     <None Include="MemHandle.inl" />
     <None Include="MemoryPool.inl" />
-    <None Include="MetaTypeDefines.tup" />
     <None Include="Octree.inl" />
     <None Include="Quaternion.inl" />
     <None Include="ResourceManager.inl" />
     <None Include="SerialReader.inl" />
     <None Include="SerialWriter.inl" />
-    <None Include="Service.inl" />
     <None Include="Vector3.inl" />
   </ItemGroup>
   <ItemGroup>

@@ -12,7 +12,9 @@
 //====================================================================================================
 
 #include "MetaClass.h"
+#include "MetaDB.h"
 #include "MetaField.h"
+#include "MetaRegistration.h"
 
 //====================================================================================================
 // Forward Declarations
@@ -43,29 +45,29 @@ u32 GetFieldOffset(DataType ClassType::* field)
     // create a nullptr of that class type at address 0
     // get the adress of the field within the null class, giving us a byte offset
     return (u32)(void*)&(((ClassType*)nullptr)->*field);
-    //return (char*)&((ClassType*)nullptr->*field) - (char*)nullptr;
 }
 
 //====================================================================================================
 // Macros
 //====================================================================================================
 
+// Must be used in the class declaration
 #define META_DECLARE_CLASS\
     static const MetaClass* StaticGetMetaClass();\
     virtual const MetaClass* GetMetaClass() const { return StaticGetMetaClass(); }
 
+// Used in the class declaration cpp.
 #define META_CLASS_BEGIN(TYPE)\
+    namespace {\
+        void* Create() { return new TYPE(); }\
+        void Destroy(void* data) { delete static_cast<TYPE*>(data); }\
+    }\
     const MetaClass* TYPE::StaticGetMetaClass()\
     {\
         typedef TYPE LocalType;\
         const char* className = #TYPE;\
         const MetaField* fields = nullptr;\
         u32 numFields = 0;
-
-#define META_CLASS_END\
-        static const MetaClass sMetaClass(className, sizeof(LocalType), fields, numFields);\
-        return &sMetaClass;\
-    }
 
 #define META_FIELD_BEGIN\
     static const MetaField sFields[] = {
@@ -77,5 +79,10 @@ u32 GetFieldOffset(DataType ClassType::* field)
     };\
     fields = sFields;\
     numFields = sizeof(sFields) / sizeof(sFields[0]);
+
+#define META_CLASS_END\
+        static const MetaClass sMetaClass(className, sizeof(LocalType), fields, numFields, Create, Destroy);\
+        return &sMetaClass;\
+    }
 
 #endif // #ifndef INCLUDED_ENGINE_META_H

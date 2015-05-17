@@ -21,7 +21,7 @@
 class ModelComponent : public Component
 {
 public:
-    ModelComponent(GameObject* gameObject);
+    ModelComponent();
     ~ModelComponent();
 
     void SetModel(const Model* model) { mModel = model; }

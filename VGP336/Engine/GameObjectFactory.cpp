@@ -27,9 +27,23 @@ GameObjectHandle GameObjectFactory::Create(const char* templateFile)
     GameObject* gameObject = handle.Get();
 
     // TODO
-    //MetaClass* metaClass = MetaDB::Get("transform");
-    //void* var = metaClass->Create();
-    //MetaType* varType = GameObject::GetMetaClass()->FindVar("transform");
+    // while (going through JSON tree)...
+    const MetaClass* metaClass = MetaDB::GetMetaClass("TransformComponent");
+    void* instance = metaClass->Create();
+
+    /*
+        - Traverse JSON tree
+        - loop through all components
+            - loop through each component field
+                JSON currentElement;
+                MetaField* field = metaClass->FindField("componentName");
+                void* member = (u8*)instance + field->GetOffset();
+                metaField->GetMetaType()->Deserialize(member, currentElement);
+
+                Deserialize will be a template function with specializations for each registered type.
+                - TODO: overload for different serialization methods (json, binary etc.) this way it can be used to communicate with the editor.
+    */
+
     //gameObject->AddComponent(component);
 
     return handle;

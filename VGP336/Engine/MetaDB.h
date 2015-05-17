@@ -1,34 +1,31 @@
-#ifndef INCLUDED_ENGINE_COLLIDERCOMPONENT_H
-#define INCLUDED_ENGINE_COLLIDERCOMPONENT_H
+#ifndef INCLUDED_ENGINE_METADB_H
+#define INCLUDED_ENGINE_METADB_H
 
 //====================================================================================================
-// Filename:	ColliderComponent.h
+// Filename:	MetaDB.h
 // Created by:	Tyler Staples
-// Description: Class representing a Collider Component.
+// Description: Helper class for tracking MetaClasses.
 //====================================================================================================
 
 //====================================================================================================
-// Includes
+// Forward Declarations
 //====================================================================================================
 
-#include "Component.h"
-#include "EngineMath.h"
+class MetaClass;
 
 //====================================================================================================
 // Class Declarations
 //====================================================================================================
 
-class ColliderComponent : public Component
+class MetaDB
 {
 public:
-    ColliderComponent();
-    ~ColliderComponent();
-
-    Math::AABB& GetBoundary()                { return mAABB; }
-    const Math::AABB& GetBoundary() const    { return mAABB; }
+    static void Register(const MetaClass* metaClass);
+    static const MetaClass* GetMetaClass(const char* className);
 
 private:
-    Math::AABB mAABB;
+    // No need to ever create this class
+    MetaDB();
 };
 
-#endif // #ifndef INCLUDED_ENGINE_COLLIDERCOMPONENT_H
+#endif // #ifndef INCLUDED_ENGINE_METADB_H

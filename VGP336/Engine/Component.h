@@ -28,7 +28,7 @@ class Component
 public:
     META_DECLARE_CLASS
 
-    Component(GameObject* gameObject);
+    Component();
     virtual ~Component();
 
     virtual void Initialize() {}
@@ -38,6 +38,8 @@ public:
     const GameObject* GetObj() const    { return mpGameObject; }
 
 private:
+    friend GameObject;
+
     GameObject* mpGameObject;
 };
 

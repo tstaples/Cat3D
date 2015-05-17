@@ -23,8 +23,8 @@ class TransformComponent : public Component
 public:
     META_DECLARE_CLASS
 
-    TransformComponent(GameObject* gameObject);
-    TransformComponent(GameObject* gameObject, const Math::Matrix& transform);
+    TransformComponent();
+    TransformComponent(const Math::Matrix& transform);
     ~TransformComponent();
 
     void Translate(const Math::Vector3& t);

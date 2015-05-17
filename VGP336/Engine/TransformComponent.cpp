@@ -9,17 +9,15 @@ META_FIELD_BEGIN
 META_FIELD_END
 META_CLASS_END
 
-TransformComponent::TransformComponent(GameObject* gameObject)
-    : Component(gameObject)
-    , mScale(1.0f, 1.0f, 1.0f)
+TransformComponent::TransformComponent()
+    : mScale(1.0f, 1.0f, 1.0f)
 {
 }
 
 //----------------------------------------------------------------------------------------------------
 
-TransformComponent::TransformComponent(GameObject* gameObject, const Math::Matrix& transform)
-    : Component(gameObject)
-    , mTransform(transform)
+TransformComponent::TransformComponent(const Math::Matrix& transform)
+    : mTransform(transform)
     , mScale(1.0f, 1.0f, 1.0f)
 {
 }
