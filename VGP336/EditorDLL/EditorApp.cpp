@@ -230,7 +230,6 @@ const u8* EditorApp::GetSelectedObjectData(u32& size)
     //{
     //    const MetaClass* compMetaClass = c->GetMetaClass();
     //    writer.WriteLengthEncodedString(compMetaClass->GetName());
-
     //    const MetaField* fields = compMetaClass->GetFields();
     //    const u32 numFields = compMetaClass->GetNumFields();
     //    writer.Write(numFields);
@@ -240,7 +239,6 @@ const u8* EditorApp::GetSelectedObjectData(u32& size)
     //        const u32 offset = field->GetOffset();
     //        const u32 fieldSize = field->GetType()->GetSize();
     //        char* fieldData = ((char*)c) + offset;
-
     //        writer.WriteLengthEncodedString(field->GetName());
     //        writer.Write(field->GetType()->GetType());
     //        writer.Write(fieldSize);
@@ -272,12 +270,12 @@ void EditorApp::UpdateComponent(const u8* buffer, u32 buffsize)
         {
             char data[2048];
 
-            const MetaField* fields = compMetaClass->GetFields();
             const u32 numFields = compMetaClass->GetNumFields();
             for (u32 i=0; i < numFields; ++i)
             {
-                u32 offset = fields[i].GetOffset();
-                u32 fieldSize = fields[i].GetType()->GetSize();
+                const MetaField* field = compMetaClass->GetFieldAtIndex(i);
+                u32 offset = field->GetOffset();
+                u32 fieldSize = field->GetType()->GetSize();
                 reader.ReadArray(data, fieldSize);
 
                 char* cdata = ((char*)c) + offset;
