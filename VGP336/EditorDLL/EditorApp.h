@@ -20,6 +20,7 @@ public:
     void UpdateComponent(const u8* buffer, u32 buffsize);
     const u8* DiscoverGameObjects(u32& buffsize);
     const u8* GetGameObject(u16 index, u32& buffsize);
+    void SelectGameObject(u16 index);
 
 private:
 	// Application implementation

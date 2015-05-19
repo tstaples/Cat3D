@@ -123,3 +123,10 @@ unsigned int GetGameObject(unsigned short index, unsigned char* buffer)
     memcpy(buffer, buff, size);
     return size;
 }
+
+//----------------------------------------------------------------------------------------------------
+
+void SelectGameObject(unsigned short index)
+{
+    app.SelectGameObject(index);
+}

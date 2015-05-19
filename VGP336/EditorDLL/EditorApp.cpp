@@ -210,21 +210,8 @@ const u8* EditorApp::GetSelectedObjectData(u32& size)
         size = 0;
         return nullptr;
     }
-
-    memset(objBuffer, 0, 2048);
-    SerialWriter writer(objBuffer, 2048);
-
     EditorObject* editorObject = mSelectedObjects[0];
-    GameObject* gameObject = editorObject->GetGameObject();
-
-    writer.Write(editorObject->GetHandle().GetIndex()); // used as object identifier
-    writer.Write(editorObject->GetHandle().GetInstance());
-
-    u32 offset = 0;
-    gameObject->SerializeOut(objBuffer + writer.GetOffset(), 2048 - writer.GetOffset(), offset);
-
-    size = writer.GetOffset() + offset;
-    return objBuffer;
+    return GetGameObject(editorObject->GetHandle().GetIndex(), size);;
 }
 
 void EditorApp::UpdateComponent(const u8* buffer, u32 buffsize)
@@ -286,16 +273,44 @@ const u8* EditorApp::DiscoverGameObjects(u32& buffsize)
 const u8* EditorApp::GetGameObject(u16 index, u32& buffsize)
 {
     memset(objBuffer, 0, 2048);
+    SerialWriter writer(objBuffer, 2048);
+
     for (EditorObject eobj : mObjects)
     {
         GameObjectHandle handle = eobj.GetHandle();
         if (handle.GetIndex() == index)
         {
+            // Write out handle data
+            writer.Write(handle.GetIndex());
+            writer.Write(handle.GetInstance());
+
             GameObject* gameobject = eobj.GetGameObject();
-            gameobject->SerializeOut(objBuffer, 2048, buffsize);
+            u32 offset = writer.GetOffset(); // Account for writing handle
+            gameobject->SerializeOut(objBuffer + offset, 2048, buffsize);
+            buffsize += offset;
             return objBuffer;
         }
     }
     buffsize = 0;
     return nullptr;
+}
+
+void EditorApp::SelectGameObject(u16 index)
+{
+    for (EditorObject& eobj : mObjects)
+    {
+        GameObjectHandle handle = eobj.GetHandle();
+        if (handle.GetIndex() == index)
+        {
+            // Deselect all objects
+            for (auto object : mSelectedObjects)
+            {
+                object->DeSelect();
+            }
+            mSelectedObjects.clear();
+
+            eobj.Select(); // Set flag
+            mSelectedObjects.push_back(&eobj);
+        }
+    }
 }

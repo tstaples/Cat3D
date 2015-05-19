@@ -43,14 +43,15 @@ namespace Editor
             return component;
         }
 
-        public void Deserialize(byte[] data, uint size)
+        public static GameObject Deserialize(byte[] data, uint size)
         {
             SerializeIn sIn = new SerializeIn(data);
 
             // Get GameObject data
-            Index = sIn.ReadUShort();
-            Instance = sIn.ReadUShort();
-            Name = sIn.ReadStringLE();
+            ushort index = sIn.ReadUShort();
+            ushort instance = sIn.ReadUShort();
+            string name = sIn.ReadStringLE();
+            GameObject gameObject = new GameObject(index, instance, name);
             
             uint numComponents = sIn.ReadUInt();
             for (int i = 0; i < numComponents; ++i)
@@ -79,8 +80,9 @@ namespace Editor
                     fields[j] = field;
                 }
                 component.Fields = fields;
-                Components.Add(component);
+                gameObject.Components.Add(component);
             }
+            return gameObject;
         }
 
         public byte[] WriteComponent(Component c)
@@ -104,7 +106,7 @@ namespace Editor
             return buffer;
         }
 
-        private Component CreateComponentFromName(string name)
+        private static Component CreateComponentFromName(string name)
         {
             Component component = null;
             if (name.CompareTo("TransformComponent") != -1)

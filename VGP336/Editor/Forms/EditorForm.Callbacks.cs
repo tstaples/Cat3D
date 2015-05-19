@@ -15,8 +15,7 @@ namespace Editor
             uint size = NativeMethods.GetSelectedObjectData(data);
             Debug.Assert(size < 2048);
 
-            GameObject gameObject = new GameObject();
-            gameObject.Deserialize(data, size);
+            GameObject gameObject = GameObject.Deserialize(data, size);
             InspectorPanel.Display(gameObject);
             return true;
         }

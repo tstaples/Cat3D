@@ -53,8 +53,16 @@ namespace Editor
             ushort index = Convert.ToUInt16(node.Name);
             if (GameObjects.ContainsKey(index))
             {
+                // Get the data for this object
                 byte[] buffer = new byte[2048];
                 uint size = NativeMethods.GetGameObject(index, buffer);
+
+                // Create an object on the editor side holding the info then tell the inspector to display it.
+                GameObject gameObject = GameObject.Deserialize(buffer, size);
+                InspectorPanel.Display(gameObject);
+                
+                // Tell the engine to set the currently selected object to the new one.
+                NativeMethods.SelectGameObject(index);
             }
         }
     }
