@@ -42,7 +42,7 @@ void EditorApp::OnInitialize(u32 width, u32 height)
 	SimpleDraw::Initialize(mGraphicsSystem);
 
 	mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
-	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -10.0f));
+	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -50.0f));
 
     mCallbacks.RegisterCallbacks();
 
@@ -64,8 +64,7 @@ void EditorApp::OnInitialize(u32 width, u32 height)
     t2->Translate(Math::Vector3(-15.0f, 3.0f, 5.0f));
 
     ColliderComponent* col = new ColliderComponent();
-    Math::AABB& aabb = col->GetBoundary();
-    aabb = Math::AABB(t1->GetPosition(), Math::Vector3(5.0f, 5.0f, 5.0f));
+    col->SetBoundary(Math::AABB(t1->GetPosition(), Math::Vector3(5.0f, 5.0f, 5.0f)));
 
     g1->AddComponent(t1);
     g1->AddComponent(col);
