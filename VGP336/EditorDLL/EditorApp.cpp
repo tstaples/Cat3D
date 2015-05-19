@@ -63,7 +63,12 @@ void EditorApp::OnInitialize(u32 width, u32 height)
     t1->Translate(Math::Vector3(15.0f, 3.0f, 5.0f));
     t2->Translate(Math::Vector3(-15.0f, 3.0f, 5.0f));
 
+    ColliderComponent* col = new ColliderComponent();
+    Math::AABB& aabb = col->GetBoundary();
+    aabb = Math::AABB(t1->GetPosition(), Math::Vector3(5.0f, 5.0f, 5.0f));
+
     g1->AddComponent(t1);
+    g1->AddComponent(col);
     g2->AddComponent(t2);
 
     mObjects.push_back(EditorObject(handle1));

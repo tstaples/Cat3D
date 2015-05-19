@@ -69,8 +69,8 @@ namespace Editor
             string compName = e.ChangedItem.Parent.Label;
             string fieldName = e.ChangedItem.Label;
 
-            // Hack: determine parent cells by if they can be expanded or not
-            if (!e.ChangedItem.Expandable)
+            // Hack: NotifyParentPropertyAttribute(true) currently used to identify children
+            if (e.ChangedItem.PropertyDescriptor.Attributes.Contains(new NotifyParentPropertyAttribute(true)))
             {
                 // Change to correct values
                 compName = e.ChangedItem.Parent.Parent.Label;

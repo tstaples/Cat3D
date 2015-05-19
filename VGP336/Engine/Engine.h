@@ -19,6 +19,7 @@
 #include "Random.h"
 
 // Component headers
+#include "ColliderComponent.h"
 #include "ModelComponent.h"
 #include "TransformComponent.h"
 

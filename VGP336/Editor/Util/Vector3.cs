@@ -16,18 +16,21 @@ namespace Editor
         public float x, y, z;
 
         #region accessors
+        [NotifyParentPropertyAttribute(true)]
         [CategoryAttribute("X")]
         public float X
         {
             get { return x; }
             set { x = value; }
         }
+        [NotifyParentPropertyAttribute(true)]
         [CategoryAttribute("Y")]
         public float Y
         {
             get { return y; }
             set { y = value; }
         }
+        [NotifyParentPropertyAttribute(true)]
         [CategoryAttribute("Z")]
         public float Z
         {
@@ -58,6 +61,14 @@ namespace Editor
             return new Vector3(m[0], m[1], m[2]);
         }
 
+        public byte[] ToBytes()
+        {
+            float[] m = new float[3] { x, y, z };
+            byte[] bytes = new byte[12];
+            Buffer.BlockCopy(m, 0, bytes, 0, 12);
+            return bytes;
+        }
+
         public override string ToString()
         {
             return x.ToString() + " " + y.ToString() + " " + z.ToString();
@@ -65,7 +76,7 @@ namespace Editor
     }
 
     #region Vector expandable object converter
-    public class VectorConverter : ExpandableObjectConverter
+    internal class VectorConverter : ExpandableObjectConverter
     {
         #region property sheet conversion methods
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)

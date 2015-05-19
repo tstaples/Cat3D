@@ -9,7 +9,8 @@ using System.Diagnostics;
 namespace Editor
 {
     // https://msdn.microsoft.com/en-us/library/aa302326.aspx
-    [DescriptionAttribute("Object's Transform")]
+    [DescriptionAttribute("Object's Transform"),
+    CategoryAttribute("Components")]
     public class TransformComponent : Component
     {
         #region accessors
@@ -37,7 +38,9 @@ namespace Editor
 
         public TransformComponent()
         {
+            base.DisplayName = "Transform";
             base.Name = "TransformComponent";
+            base.Description = "Transform Component";
         }
     }
 }

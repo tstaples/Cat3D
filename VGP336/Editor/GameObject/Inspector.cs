@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data;
+using System.Diagnostics;
 
 namespace Editor
 {
@@ -28,7 +29,14 @@ namespace Editor
         {
             Clear();
             CurrentGameObject = gameObject;
-            GridView.SelectedObjects = CurrentGameObject.Components.ToArray();
+            GridView.SelectedObject = CurrentGameObject.Components;
+
+            // Expand each component
+            GridItem root = GridView.SelectedGridItem;
+            foreach (GridItem gridItem in GridView.SelectedGridItem.Parent.GridItems)
+            {
+                gridItem.Expanded = true;
+            }
         }
 
         public void OnComponentModified(string name, string propertyName, object newVal)
@@ -36,6 +44,7 @@ namespace Editor
             // Name in property grid omits the "Component" part
             string fullname = name + "Component";
             Component c = CurrentGameObject.GetComponent(fullname);
+            Debug.Assert(c != null);
             c.OnModify(propertyName, newVal);
 
             byte[] buffer = CurrentGameObject.WriteComponent(c);

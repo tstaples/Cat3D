@@ -31,9 +31,9 @@
             this.EditorTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.InspectorBox = new System.Windows.Forms.GroupBox();
             this.InspectorGrid = new System.Windows.Forms.PropertyGrid();
+            this.ViewPanel = new Editor.SelectablePanel();
             this.SceneHierarchyBox = new System.Windows.Forms.GroupBox();
             this.SceneHierarchyTree = new System.Windows.Forms.TreeView();
-            this.ViewPanel = new Editor.SelectablePanel();
             this.EditorTableLayout.SuspendLayout();
             this.InspectorBox.SuspendLayout();
             this.SceneHierarchyBox.SuspendLayout();
@@ -46,7 +46,7 @@
             this.EditorTableLayout.ColumnCount = 3;
             this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 21.67266F));
             this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 78.32734F));
-            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 323F));
+            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 324F));
             this.EditorTableLayout.Controls.Add(this.InspectorBox, 2, 1);
             this.EditorTableLayout.Controls.Add(this.ViewPanel, 1, 1);
             this.EditorTableLayout.Controls.Add(this.SceneHierarchyBox, 0, 1);
@@ -64,9 +64,9 @@
             // 
             this.InspectorBox.Controls.Add(this.InspectorGrid);
             this.InspectorBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.InspectorBox.Location = new System.Drawing.Point(1152, 72);
+            this.InspectorBox.Location = new System.Drawing.Point(1151, 72);
             this.InspectorBox.Name = "InspectorBox";
-            this.InspectorBox.Size = new System.Drawing.Size(318, 562);
+            this.InspectorBox.Size = new System.Drawing.Size(319, 562);
             this.InspectorBox.TabIndex = 1;
             this.InspectorBox.TabStop = false;
             this.InspectorBox.Text = "Inspector";
@@ -77,10 +77,19 @@
             this.InspectorGrid.Location = new System.Drawing.Point(3, 16);
             this.InspectorGrid.Name = "InspectorGrid";
             this.InspectorGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.InspectorGrid.Size = new System.Drawing.Size(312, 543);
+            this.InspectorGrid.Size = new System.Drawing.Size(313, 543);
             this.InspectorGrid.TabIndex = 0;
             this.InspectorGrid.ToolbarVisible = false;
             this.InspectorGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.InspectorGrid_PropertyValueChanged);
+            // 
+            // ViewPanel
+            // 
+            this.ViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ViewPanel.Location = new System.Drawing.Point(252, 72);
+            this.ViewPanel.Name = "ViewPanel";
+            this.ViewPanel.Size = new System.Drawing.Size(893, 562);
+            this.ViewPanel.TabIndex = 2;
+            this.ViewPanel.TabStop = true;
             // 
             // SceneHierarchyBox
             // 
@@ -101,15 +110,6 @@
             this.SceneHierarchyTree.Size = new System.Drawing.Size(237, 543);
             this.SceneHierarchyTree.TabIndex = 0;
             this.SceneHierarchyTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.SceneHierarchyTree_NodeMouseClick);
-            // 
-            // ViewPanel
-            // 
-            this.ViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ViewPanel.Location = new System.Drawing.Point(252, 72);
-            this.ViewPanel.Name = "ViewPanel";
-            this.ViewPanel.Size = new System.Drawing.Size(894, 562);
-            this.ViewPanel.TabIndex = 2;
-            this.ViewPanel.TabStop = true;
             // 
             // EditorForm
             // 

@@ -22,6 +22,7 @@ public:
         String,
         Vector3,
         Matrix,
+        AABB,
         Class,
         Array,
         Pointer

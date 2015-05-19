@@ -6,24 +6,25 @@ using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using System.ComponentModel;
 
 namespace Editor
 {
     public class GameObject
     {
-        public List<Component> Components;
+        public ComponentCollection components;
         private ushort Index;
         private ushort Instance;
         private string Name;
 
         public GameObject()
         {
-            Components = new List<Component>();
+            Components = new ComponentCollection();
         }
 
         public GameObject(ushort index, ushort instance, string name)
         {
-            Components = new List<Component>();
+            Components = new ComponentCollection();
             Index = index;
             Instance = instance;
             Name = name;
@@ -71,11 +72,11 @@ namespace Editor
                     field.type = sIn.ReadInt();
                     field.size = sIn.ReadInt();
                     field.offset = sIn.ReadInt();
-                    field.dataType = Field.GetType(field.type);
+                    field.dataType = NativeTypes.GetType(field.type);
 
                     // Use our hacky conversion method
                     byte[] fdata = sIn.GetBlock(field.size);
-                    field.value = Field.ConvertToType(fdata, field.dataType);
+                    field.value = NativeTypes.ConvertToType(fdata, field.dataType);
 
                     fields[j] = field;
                 }
@@ -100,7 +101,7 @@ namespace Editor
             for (int i = 0; i < numFields; ++i)
             {
                 Field field = c.Fields[i];
-                byte[] fdata = Field.ConvertToBytes(field.value, field.dataType);
+                byte[] fdata = NativeTypes.ConvertToBytes(field.value, field.dataType);
                 sOut.WriteArray(fdata);
             }
             return buffer;
@@ -113,7 +114,19 @@ namespace Editor
             {
                 component = new TransformComponent();
             }
+            else if (name == "ColliderComponent")
+            {
+                component = new ColliderComponent();
+            }
             return component;
+        }
+
+        [TypeConverter(typeof(ComponentCollectionConverter)),
+        CategoryAttribute("Components")]
+        public ComponentCollection Components
+        {
+            get { return components; }
+            set { components = value; }
         }
     }
 }

@@ -21,14 +21,20 @@
 class ColliderComponent : public Component
 {
 public:
+    META_DECLARE_CLASS
+
     ColliderComponent();
     ~ColliderComponent();
 
-    Math::AABB& GetBoundary()                { return mAABB; }
-    const Math::AABB& GetBoundary() const    { return mAABB; }
+    void SetBoundary(const Math::AABB& aabb);
+    Math::AABB GetBoundary() const;
+
+    bool IsTrigger() const  { return mIsTrigger; }    
 
 private:
-    Math::AABB mAABB;
+    Math::Vector3 mCenter;
+    Math::Vector3 mExtend;
+    bool mIsTrigger;
 };
 
 #endif // #ifndef INCLUDED_ENGINE_COLLIDERCOMPONENT_H

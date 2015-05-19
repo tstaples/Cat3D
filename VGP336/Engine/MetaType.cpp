@@ -27,4 +27,5 @@ META_REGISTER_TYPE(MetaType::Bool, bool);
 META_REGISTER_TYPE(MetaType::String, std::string);
 META_REGISTER_TYPE(MetaType::Vector3, Math::Vector3);
 META_REGISTER_TYPE(MetaType::Matrix, Math::Matrix);
+META_REGISTER_TYPE(MetaType::AABB, Math::AABB);
 //META_REGISTER_TYPE(MetaType::Array, std::vector); // Need to know vector type

@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameObject\Components\ColliderComponent.cs" />
     <Compile Include="GameObject\Field.cs" />
     <Compile Include="GameObject\Components\Component.cs" />
     <Compile Include="Forms\EditorForm.Callbacks.cs">
@@ -85,6 +86,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GameObject\Components\TransformComponent.cs" />
+    <Compile Include="Util\AABB.cs" />
+    <Compile Include="Util\NativeTypes.cs" />
     <Compile Include="Util\SerializeIn.cs" />
     <Compile Include="Util\SerializeOut.cs" />
     <Compile Include="Util\Vector3.cs" />

@@ -80,7 +80,7 @@ namespace Editor
         }
 
         // Converts string to multibyte array
-        private byte[] GetBytes(string s)
+        public static byte[] GetBytes(string s)
         {
             byte[] bytes = new byte[s.Length];
             int c = 0;
