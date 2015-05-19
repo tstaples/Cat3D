@@ -58,8 +58,8 @@ void EditorApp::OnInitialize(u32 width, u32 height)
     g2->SetName("Object 2");
 
     // leak
-    TransformComponent* t1 = new TransformComponent(g1);
-    TransformComponent* t2 = new TransformComponent(g2);
+    TransformComponent* t1 = new TransformComponent();
+    TransformComponent* t2 = new TransformComponent();
     t1->Translate(Math::Vector3(15.0f, 3.0f, 5.0f));
     t2->Translate(Math::Vector3(-15.0f, 3.0f, 5.0f));
 
@@ -204,7 +204,8 @@ void EditorApp::OnUpdate()
 
 const u8* EditorApp::GetSelectedObjectData(u32& size)
 {
-    if (mSelectedObjects.empty())
+    // Don't display anything unless there's only a single object selected
+    if (mSelectedObjects.empty() || mSelectedObjects.size() > 1)
     {
         size = 0;
         return nullptr;
@@ -215,37 +216,13 @@ const u8* EditorApp::GetSelectedObjectData(u32& size)
 
     EditorObject* editorObject = mSelectedObjects[0];
     GameObject* gameObject = editorObject->GetGameObject();
-    const MetaClass* metaClass = gameObject->GetMetaClass();
 
-    writer.WriteLengthEncodedString(metaClass->GetName());
     writer.Write(editorObject->GetHandle().GetIndex()); // used as object identifier
     writer.Write(editorObject->GetHandle().GetInstance());
 
     u32 offset = 0;
     gameObject->SerializeOut(objBuffer + writer.GetOffset(), 2048 - writer.GetOffset(), offset);
 
-    //const std::vector<Component*>& components = gameObject->GetComponents();
-    //writer.Write((u32)components.size());
-    //for (Component* c : components)
-    //{
-    //    const MetaClass* compMetaClass = c->GetMetaClass();
-    //    writer.WriteLengthEncodedString(compMetaClass->GetName());
-    //    const MetaField* fields = compMetaClass->GetFields();
-    //    const u32 numFields = compMetaClass->GetNumFields();
-    //    writer.Write(numFields);
-    //    for (u32 i=0; i < numFields; ++i)
-    //    {
-    //        const MetaField* field = &fields[i];
-    //        const u32 offset = field->GetOffset();
-    //        const u32 fieldSize = field->GetType()->GetSize();
-    //        char* fieldData = ((char*)c) + offset;
-    //        writer.WriteLengthEncodedString(field->GetName());
-    //        writer.Write(field->GetType()->GetType());
-    //        writer.Write(fieldSize);
-    //        writer.Write(offset);
-    //        writer.WriteArray(fieldData, fieldSize);
-    //    }
-    //}
     size = writer.GetOffset() + offset;
     return objBuffer;
 }

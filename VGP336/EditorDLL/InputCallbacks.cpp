@@ -17,12 +17,12 @@ void InputCallbacks::RegisterCallbacks()
 {
     // Bind controls
     InputManager& inputManager = mOwner.mInputManager;
-    inputManager.BindAction(Mouse::LBUTTON, Input::MouseDown, MAKE_ACTION_DELEGATE(InputCallbacks, &InputCallbacks::OnSelectObject));
-    inputManager.BindAction(Mouse::SCROLL, Input::MouseScroll, MAKE_ACTION_DELEGATE(InputCallbacks, &InputCallbacks::OnZoom));
-
-    inputManager.BindAxis(Mouse::LBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(InputCallbacks, &InputCallbacks::OnMouseDrag));
-    inputManager.BindAxis(Mouse::RBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(InputCallbacks, &InputCallbacks::OnCameraLook));
-    inputManager.BindAxis(Mouse::MBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(InputCallbacks, &InputCallbacks::OnPanCamera));
+    inputManager.BindAction(Mouse::LBUTTON, Input::MouseDown, DELEGATE(&InputCallbacks::OnSelectObject, this));
+    inputManager.BindAction(Mouse::SCROLL, Input::MouseScroll, DELEGATE(&InputCallbacks::OnZoom, this));
+    
+    inputManager.BindAxis(Mouse::LBUTTON, Input::MouseDown, DELEGATE(&InputCallbacks::OnMouseDrag, this));
+    inputManager.BindAxis(Mouse::RBUTTON, Input::MouseDown, DELEGATE(&InputCallbacks::OnCameraLook, this));
+    inputManager.BindAxis(Mouse::MBUTTON, Input::MouseDown, DELEGATE(&InputCallbacks::OnPanCamera, this));
 }
 
 //----------------------------------------------------------------------------------------------------

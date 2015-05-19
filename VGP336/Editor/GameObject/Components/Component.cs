@@ -6,27 +6,26 @@ using System.Threading.Tasks;
 
 namespace Editor
 {
-
-
     public class Component
     {
         public string Name;
         public Field[] Fields;
-        public ushort HandleIndex;
-        public ushort HandleInstance;
 
-        public virtual void Load(Field[] fields) 
+        public Field GetField(string name)
         {
-            Fields = fields;
+            foreach (Field field in Fields)
+            {
+                if (field.name == name)
+                {
+                    return field;
+                }
+            }
+            return null;
         }
 
         public virtual void OnModify(string propertyName, object newVal)
         {
-        }
-
-        public virtual bool OnChildModified(string propertyName, string childName, object newVal)
-        {
-            return false;
+            GetField(propertyName).value = newVal;
         }
     }
 }

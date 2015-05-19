@@ -12,55 +12,34 @@ namespace Editor
     public class Inspector
     {
         private PropertyGrid GridView;
-        private List<Component> Components;
         private GameObject CurrentGameObject; // Currently displayed in panel
 
         public Inspector(ref PropertyGrid gridView)
         {
-            Components = new List<Component>();
             GridView = gridView;
         }
 
         public void Clear()
         {
-            Components.Clear();
+            CurrentGameObject = null;
         }
 
-        public void AddComponent(Component component)
+        public void Display(GameObject gameObject)
         {
-            GridView.SelectedObject = component;
-            Components.Add(component);
+            Clear();
+            CurrentGameObject = gameObject;
+            GridView.SelectedObjects = CurrentGameObject.Components.ToArray();
         }
 
         public void OnComponentModified(string name, string propertyName, object newVal)
         {
-            foreach (Component c in Components)
-            {
-                // Hack: match based on substr. Won't work (likely) later when there are more properties
-                if (c.Name.Contains(name))
-                {
-                    c.OnModify(propertyName, newVal);
+            // Name in property grid omits the "Component" part
+            string fullname = name + "Component";
+            Component c = CurrentGameObject.GetComponent(fullname);
+            c.OnModify(propertyName, newVal);
 
-                    byte[] buffer = ComponentReader.WriteComponent(c);
-                    NativeMethods.UpdateComponent(buffer, (uint)buffer.Length);
-                    GridView.SelectedObject = c;
-                    break;
-                }
-            }
-        }
-
-        public void OnComponentChildModified(string propertyName, string childName, object newVal)
-        {
-            foreach (Component c in Components)
-            {
-                if (c.OnChildModified(propertyName, childName, newVal))
-                {
-                    byte[] buffer = ComponentReader.WriteComponent(c);
-                    NativeMethods.UpdateComponent(buffer, (uint)buffer.Length);
-                    break;
-                }
-            }
-            // Show and apply changes in parent
+            byte[] buffer = CurrentGameObject.WriteComponent(c);
+            NativeMethods.UpdateComponent(buffer, (uint)buffer.Length);
             GridView.Refresh();
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Editor
 {
@@ -12,14 +13,11 @@ namespace Editor
         {
             byte[] data = new byte[2048];
             uint size = NativeMethods.GetSelectedObjectData(data);
-            Component[] components = ComponentReader.GetComponents(data, size);
+            Debug.Assert(size < 2048);
 
-            // Clear any existing controls
-            InspectorPanel.Clear();
-            foreach (Component c in components)
-            {
-                InspectorPanel.AddComponent(c);
-            }
+            GameObject gameObject = new GameObject();
+            gameObject.Deserialize(data, size);
+            InspectorPanel.Display(gameObject);
             return true;
         }
     }

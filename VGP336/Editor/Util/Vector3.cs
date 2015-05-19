@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace Editor
 {
@@ -15,16 +16,19 @@ namespace Editor
         public float x, y, z;
 
         #region accessors
+        [CategoryAttribute("X")]
         public float X
         {
             get { return x; }
             set { x = value; }
         }
+        [CategoryAttribute("Y")]
         public float Y
         {
             get { return y; }
             set { y = value; }
         }
+        [CategoryAttribute("Z")]
         public float Z
         {
             get { return z; }
@@ -45,12 +49,22 @@ namespace Editor
         }
         #endregion
 
+        public static implicit operator Vector3(byte[] bytes)
+        {
+            Debug.Assert(bytes.Length == 12);
+            float[] m = new float[3];
+            int size = 3 * sizeof(float);
+            Buffer.BlockCopy(bytes, 0, m, 0, size);
+            return new Vector3(m[0], m[1], m[2]);
+        }
+
         public override string ToString()
         {
             return x.ToString() + " " + y.ToString() + " " + z.ToString();
         }
     }
 
+    #region Vector expandable object converter
     public class VectorConverter : ExpandableObjectConverter
     {
         #region property sheet conversion methods
@@ -112,4 +126,5 @@ namespace Editor
         }
         #endregion
     }
+    #endregion Vector expandable object converter
 }

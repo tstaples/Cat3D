@@ -33,6 +33,7 @@ namespace Editor
                 ushort hInstance = sIn.ReadUShort();
                 string name = sIn.ReadStringLE();
 
+                // Map index to object for faster lookup, despite gameobject already holding index.
                 GameObject gameObject = new GameObject(hIndex, hInstance, name);
                 GameObjects.Add(hIndex, gameObject);
 
@@ -45,8 +46,8 @@ namespace Editor
 
         public void OnNodeSelected(TreeNode node)
         {
-            // find node by name (ensure unique names during object creation)
-            // use object handle etc. too look up component data
+            // find node by name (TODO: ensure unique names during object creation)
+            // use object handle etc. to look up component data
             // tell inspector to display it
             string name = node.Text;
             ushort index = Convert.ToUInt16(node.Name);

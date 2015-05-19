@@ -65,18 +65,19 @@ namespace Editor
 
         private void InspectorGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
+            object newVal = e.ChangedItem.Value;
+            string compName = e.ChangedItem.Parent.Label;
+            string fieldName = e.ChangedItem.Label;
+
             // Hack: determine parent cells by if they can be expanded or not
-            if (e.ChangedItem.Expandable)
+            if (!e.ChangedItem.Expandable)
             {
-                string compName = e.ChangedItem.Parent.Label;
-                InspectorPanel.OnComponentModified(compName, e.ChangedItem.Label, e.ChangedItem.Value);
+                // Change to correct values
+                compName = e.ChangedItem.Parent.Parent.Label;
+                fieldName = e.ChangedItem.Parent.Label;
+                newVal = e.ChangedItem.Parent.Value;
             }
-            else
-            {
-                string propertyName = e.ChangedItem.Parent.Label;
-                string childName = e.ChangedItem.Label;
-                InspectorPanel.OnComponentChildModified(propertyName, childName, e.ChangedItem.Value);
-            }
+            InspectorPanel.OnComponentModified(compName, fieldName, newVal);
         }
 
         private void SceneHierarchyTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
