@@ -202,6 +202,7 @@ void TranslateGizmo::Update(const Objects& selectedObjs, const InputData& input,
         if (Math::IsZero(mdx) && Math::IsZero(mdy))
             return;
 
+        // Get the delta of the current and previous mouse positions in world space
         Math::Ray mouseRay = mCamera.GetMouseRay(mx, my, screenW, screenH);
         Math::Ray prevMouseRay = mCamera.GetMouseRay(dx, dy, screenW, screenH);
         Math::Plane transPlane = GetTranslationPlane(mSelectedArm, center, mouseRay);
@@ -227,12 +228,30 @@ void TranslateGizmo::Draw(const Objects& selectedObjs)
     Math::Vector3 center = GetMidPoint(selectedObjs);
     Math::Matrix transform = Math::Matrix::Translation(center);
 
+    // 1. define gizmo arm length in screen space
+    // 2. transform points into world space
+    // 3. 
+    // 2. project the points onto the corresponding planes using the object's pos as center
+
     f32 scale = CalcScaleFactor(center);
     f32 ext = mExtend * scale;
+    const f32 halfExt = ext * 0.5f;
 
     Math::Vector3 xAxis = Math::TransformCoord(Math::Vector3::XAxis() * ext, transform);
     Math::Vector3 yAxis = Math::TransformCoord(Math::Vector3::YAxis() * ext, transform);
     Math::Vector3 zAxis = Math::TransformCoord(Math::Vector3::ZAxis() * ext, transform);
+    //f32 halfW = 1024 * 0.5f;
+    //f32 halfH = 768 * 0.5f;
+    //Math::Vector3 xAxis = mCamera.ScreenToWorld(halfW + mExtend, halfH, 1024, 768);
+    //Math::Vector3 yAxis = mCamera.ScreenToWorld(halfW, halfH + mExtend, 1024, 768);
+    //Math::Vector3 zAxis = mCamera.ScreenToWorld(halfW + halfExt, halfH + halfExt, 1024, 768);
+    //Math::Ray xray(xAxis, mCamera.GetLookAt());
+    //Math::Ray yray(yAxis, mCamera.GetLookAt());
+    //Math::Ray zray(zAxis, mCamera.GetLookAt());
+    //Math::Plane p = GetTranslationPlane(mSelectedArm, center, xray);
+    //xAxis = Math::TransformCoord(xAxis, transform);
+    //yAxis = Math::TransformCoord(yAxis, transform);
+    //zAxis = Math::TransformCoord(zAxis, transform);
 
     // TODO: De-select arms on mouseup
     Color xcol = (mSelectedArm & Axis::X) ? Color::Yellow() : Color::Red();
@@ -242,9 +261,7 @@ void TranslateGizmo::Draw(const Objects& selectedObjs)
     SimpleDraw::AddLine(center, yAxis, ycol);
     SimpleDraw::AddLine(center, zAxis, zcol);
 
-
     // debug
-    const f32 halfExt = ext * 0.5f;
     Math::AABB armX, armY, armZ;
     BuildArms(ext, mArmWidth, armX, armY, armZ);
     armX.center = center; armX.center.x += halfExt;

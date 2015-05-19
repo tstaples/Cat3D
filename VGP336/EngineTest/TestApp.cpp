@@ -52,7 +52,7 @@ namespace
         }
     }
 
-    
+    u8 objBuffer[2048];
 }
 
 
@@ -102,17 +102,12 @@ void TestApp::OnInitialize(u32 width, u32 height)
     mpGizmo = new TranslateGizmo(mCamera, 1.0f, 5.0f);
 
     // Bind controls
-    mInputManager.BindAction(Mouse::LBUTTON, Input::MouseDown, MAKE_ACTION_DELEGATE(TestApp, &TestApp::OnSelectObject));
-    mInputManager.BindAction(Mouse::SCROLL, Input::MouseScroll, MAKE_ACTION_DELEGATE(TestApp, &TestApp::OnZoom));
-
-    mInputManager.BindAxis(Mouse::LBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(TestApp, &TestApp::OnMouseDrag));
-    mInputManager.BindAxis(Mouse::RBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(TestApp, &TestApp::OnCameraLook));
-    mInputManager.BindAxis(Mouse::MBUTTON, Input::MouseDown, MAKE_AXIS_DELEGATE(TestApp, &TestApp::OnPanCamera));
-
-    Delegate<bool, s32> del = Delegate<bool, s32>::Make<TestApp, &TestApp::OnCameraLook>(this);
-    Delegate<bool, s32, s32, bool> del2 = Delegate<bool, s32, s32, bool>::Make<TestApp, &TestApp::OnPanCamera>(this);
-    del(1);
-    del2(1, 2, true);
+    mInputManager.BindAction(Mouse::LBUTTON, Input::MouseDown, DELEGATE(&TestApp::OnSelectObject, this));
+    mInputManager.BindAction(Mouse::SCROLL, Input::MouseScroll, DELEGATE(&TestApp::OnZoom, this));
+    
+    mInputManager.BindAxis(Mouse::LBUTTON, Input::MouseDown, DELEGATE(&TestApp::OnMouseDrag, this));
+    mInputManager.BindAxis(Mouse::RBUTTON, Input::MouseDown, DELEGATE(&TestApp::OnCameraLook, this));
+    mInputManager.BindAxis(Mouse::MBUTTON, Input::MouseDown, DELEGATE(&TestApp::OnPanCamera, this));
 
     // TEMP
     GameObjectHandle handle1 = mGameObjectPool.Allocate();
@@ -144,8 +139,9 @@ void TestApp::OnInitialize(u32 width, u32 height)
     //Math::Plane p(0.f, 1.f, 0.f, -10.f);
     //Math::Vector3 proj = Math::Project(v, p);
 
-    //mSelectedObjects.push_back(&mObjects[1]);
-    //const char* data = GetSelectedObjectData(sz);
+    mSelectedObjects.push_back(&mObjects[1]);
+    u32 sz = 0;
+    const u8* data = GetSelectedObjectData(sz);
     //GameObject* g = new GameObject();
     //TransformComponent* t = new TransformComponent(g);
     //g->AddComponent(t);
@@ -257,7 +253,6 @@ void TestApp::OnUpdate()
     //    if (mObjects[1].GetGameObject()->GetComponent(tcomp))
     //    {
     //        tcomp->Translate(Math::Vector3(20.0f, -10.0f, 1.0f));
-
     //        u8 tempBuff[2048];
     //        SerialWriter w(tempBuff, 2048);
     //        w.Write(mObjects[1].GetHandle().GetIndex());
@@ -283,7 +278,6 @@ void TestApp::OnUpdate()
     //    if (mObjects[0].GetGameObject()->GetComponent(tcomp))
     //    {
     //        tcomp->Translate(Math::Vector3(0.0f, -20.0f, 0.0f));
-
     //        u8 tempBuff[2048];
     //        SerialWriter w(tempBuff, 2048);
     //        w.Write(mObjects[0].GetHandle().GetIndex());
@@ -341,49 +335,29 @@ void TestApp::OnUpdate()
 
 const u8* TestApp::GetSelectedObjectData(u32& size)
 {
-    if (mSelectedObjects.empty())
+    // Don't display anything unless there's only a single object selected
+    if (mSelectedObjects.empty() || mSelectedObjects.size() > 1)
     {
         size = 0;
         return nullptr;
     }
 
-    memset(mObjBuffer, 0, 2048);
-    SerialWriter writer(mObjBuffer, 2048);
+    memset(objBuffer, 0, 2048);
+    SerialWriter writer(objBuffer, 2048);
 
     EditorObject* editorObject = mSelectedObjects[0];
     GameObject* gameObject = editorObject->GetGameObject();
-    const MetaClass* metaClass = gameObject->GetMetaClass();
 
-    writer.WriteLengthEncodedString(metaClass->GetName());
     writer.Write(editorObject->GetHandle().GetIndex()); // used as object identifier
     writer.Write(editorObject->GetHandle().GetInstance());
 
-    const std::vector<Component*>& components = gameObject->GetComponents();
-    writer.Write((u32)components.size());
-    for (Component* c : components)
-    {
-        const MetaClass* compMetaClass = c->GetMetaClass();
-        writer.WriteLengthEncodedString(compMetaClass->GetName());
+    u32 offset = 0;
+    gameObject->SerializeOut(objBuffer + writer.GetOffset(), 2048 - writer.GetOffset(), offset);
 
-        const u32 numFields = compMetaClass->GetNumFields();
-        writer.Write(numFields);
-        for (u32 i=0; i < numFields; ++i)
-        {
-            const MetaField* field = metaClass->GetFieldAtIndex(i);
-            const u32 offset = field->GetOffset();
-            const u32 fieldSize = field->GetType()->GetSize();
-            char* fieldData = ((char*)c) + offset;
-
-            writer.WriteLengthEncodedString(field->GetName());
-            writer.Write(field->GetType()->GetType());
-            writer.Write(fieldSize);
-            writer.Write(offset);
-            writer.WriteArray(fieldData, fieldSize);
-        }
-    }
-    size = writer.GetOffset();
-    return mObjBuffer;
+    size = writer.GetOffset() + offset;
+    return objBuffer;
 }
+
 void TestApp::UpdateComponent(const u8* buffer, u32 buffsize)
 {
     SerialReader reader((u8*)buffer, buffsize);
