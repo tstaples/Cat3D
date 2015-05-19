@@ -78,7 +78,8 @@ void Camera::Strafe(f32 distance)
 
 void Camera::Rise(f32 distance)
 {
-	mPosition = mPosition + (Math::Vector3::YAxis() * distance);
+    Math::Vector3 up = Math::Cross(mLook, mRight);
+	mPosition = mPosition + (up * distance);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -170,7 +171,7 @@ Math::Vector2 Camera::Unproject(const Math::Vector3& pos)
 
 //----------------------------------------------------------------------------------------------------
 
-Math::Vector3 Camera::GetMouseWorld(s32 mx, s32 my, u32 screenW, u32 screenH) const
+Math::Vector3 Camera::ScreenToWorld(s32 mx, s32 my, u32 screenW, u32 screenH) const
 {
     // Transform 2d mouse coords to NDC
     Math::Vector3 mouseNDC;
@@ -191,7 +192,26 @@ Math::Vector3 Camera::GetMouseWorld(s32 mx, s32 my, u32 screenW, u32 screenH) co
 
 Math::Ray Camera::GetMouseRay(s32 mx, s32 my, u32 screenW, u32 screenH) const
 {
-    Math::Vector3 mouseWorld = GetMouseWorld(mx, my, screenW, screenH);
+    Math::Vector3 mouseWorld = ScreenToWorld(mx, my, screenW, screenH);
     Math::Vector3 dir = Math::Normalize(mouseWorld - mPosition);
     return Math::Ray(mPosition, dir);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+Math::Plane Camera::GetAxisViewPlane() const
+{
+    Math::Plane px(Math::Vector3::XAxis(), 0.0f);
+    Math::Plane py(Math::Vector3::YAxis(), 0.0f);
+    Math::Plane pz(Math::Vector3::ZAxis(), 0.0f);
+
+    f32 dotX = fabsf(Math::Dot(mLook, px.n));
+    f32 dotY = fabsf(Math::Dot(mLook, py.n));
+    f32 dotZ = fabsf(Math::Dot(mLook, pz.n));
+
+    if (dotX > dotY && dotX > dotZ)
+        return px;
+    else if (dotY > dotX && dotY > dotZ)
+        return py;
+    return pz;
 }

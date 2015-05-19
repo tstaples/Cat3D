@@ -57,6 +57,10 @@ u32 GetFieldOffset(DataType ClassType::* field)
     virtual const MetaClass* GetMetaClass() const { return StaticGetMetaClass(); }
 
 // Used in the class declaration cpp.
+// Because of the method being used to allow the creation/deletion of instances
+// of an object described by the meta system, they must provide a default constructor.
+// This could be avoided by having Create() take a void* param and casting it to the 
+// object type, but it isn't very typesafe, or necessary for the time being.
 #define META_CLASS_BEGIN(TYPE)\
     namespace {\
         void* Create() { return new TYPE(); }\
@@ -64,6 +68,7 @@ u32 GetFieldOffset(DataType ClassType::* field)
     }\
     const MetaClass* TYPE::StaticGetMetaClass()\
     {\
+        /* typedef to allow usage of the type in below macros. */\
         typedef TYPE LocalType;\
         const char* className = #TYPE;\
         const MetaField* fields = nullptr;\
