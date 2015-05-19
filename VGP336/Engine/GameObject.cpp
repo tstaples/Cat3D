@@ -6,6 +6,9 @@
 #include "SerialReader.h"
 
 META_CLASS_BEGIN(GameObject)
+META_FIELD_BEGIN
+    META_FIELD(mName, "Name")
+META_FIELD_END
 META_CLASS_END
 
 GameObject::GameObject()

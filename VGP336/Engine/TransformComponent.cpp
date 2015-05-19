@@ -3,9 +3,9 @@
 
 META_CLASS_BEGIN(TransformComponent)
 META_FIELD_BEGIN
-    META_FIELD(mPosition, "position")
-    META_FIELD(mRotation, "rotation")
-    META_FIELD(mScale, "scale")
+    META_FIELD(mPosition, "Position")
+    META_FIELD(mRotation, "Rotation")
+    META_FIELD(mScale, "Scale")
 META_FIELD_END
 META_CLASS_END
 
