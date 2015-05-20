@@ -60,7 +60,6 @@ namespace Editor
             Point offset = this.Location;
             Point mpos = new Point(MousePosition.X - offset.X, MousePosition.Y - offset.Y);
             return ViewPanel.Bounds.Contains(mpos);
-            //return ViewPanel.IsFocused;
         }
 
         private void InspectorGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
@@ -82,7 +81,36 @@ namespace Editor
 
         private void SceneHierarchyTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
+            if (e.Button == MouseButtons.Right)
+            {
+                // Display the right-click context menu strip above the selected item
+                SceneHierarchyContextMenu.Show(MousePosition);
+            }
             SceneTree.OnNodeSelected(e.Node);
+        }
+
+        private void newGameObjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            byte[] buffer = new byte[2048];
+            uint size = NativeMethods.CreateAndSelectGameObject(buffer);
+            GameObject gameObject = GameObject.Deserialize(buffer, size);
+            InspectorPanel.Display(gameObject);
+            SceneTree.Popualate();
+        }
+
+        private void renameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SceneHierarchyTree.SelectedNode != null)
+            {
+                SceneHierarchyTree.SelectedNode.BeginEdit();
+            }
+        }
+
+        private void SceneHierarchyTree_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            // TODO: Check label for invalid characters
+            string newLabel = e.Label;
+            SceneTree.RenameSelectedNode(newLabel);
         }
     }
 }

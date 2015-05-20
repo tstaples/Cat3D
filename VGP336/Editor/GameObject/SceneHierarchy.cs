@@ -20,8 +20,17 @@ namespace Editor
             GameObjects = new Dictionary<ushort, GameObject>();
         }
 
+        public void Clear()
+        {
+            Tree.Nodes.Clear();
+            GameObjects.Clear();
+        }
+
         public void Popualate()
         {
+            // Clear any existing items
+            Clear();
+
             byte[] buffer = new byte[2048];
             uint size = NativeMethods.DiscoverGameObjects(buffer);
 
@@ -46,6 +55,9 @@ namespace Editor
 
         public void OnNodeSelected(TreeNode node)
         {
+            // Hilight this node to show it has been selected
+            Tree.SelectedNode = node;
+
             // find node by name (TODO: ensure unique names during object creation)
             // use object handle etc. to look up component data
             // tell inspector to display it
@@ -64,6 +76,24 @@ namespace Editor
                 // Tell the engine to set the currently selected object to the new one.
                 NativeMethods.SelectGameObject(index);
             }
+        }
+
+        public void SelectNode(ushort index)
+        {
+            if (GameObjects.ContainsKey(index))
+            {
+                TreeNode[] nodes = Tree.Nodes.Find(index.ToString(), true);
+                if (nodes.Length == 1)
+                {
+                    Tree.SelectedNode = nodes[0];
+                }
+            }
+        }
+
+        public void RenameSelectedNode(string name)
+        {
+            ushort index = Convert.ToUInt16(Tree.SelectedNode.Name);
+            NativeMethods.RenameGameObject(index, name);
         }
     }
 }

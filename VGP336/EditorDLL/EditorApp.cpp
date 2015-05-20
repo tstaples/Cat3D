@@ -15,6 +15,7 @@ EditorApp::EditorApp()
     , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(50.0f, 50.0f, 50.0f)))
     , mGameObjectPool(10)
     , mCallbacks(*this)
+    , mFactory(mGameObjectPool)
 {
     memset(mInputData.keyStates, 0, sizeof(bool) * 256);
     memset(mInputData.mouseStates, 0, sizeof(bool) * 4);
@@ -315,6 +316,32 @@ void EditorApp::SelectGameObject(u16 index)
 
             eobj.Select(); // Set flag
             mSelectedObjects.push_back(&eobj);
+        }
+    }
+}
+
+void EditorApp::CreateEmptyGameObject(u16& index)
+{
+    // TODO
+    //GameObjectHandle handle = mFactory.Create("emptyGameObject.tmpl");
+
+    GameObjectHandle handle = mGameObjectPool.Allocate();
+    index = handle.GetIndex();
+    GameObject* gameObject = handle.Get();
+    TransformComponent* transform = new TransformComponent();
+    gameObject->AddComponent(transform);
+    EditorObject editorObject(handle);
+    mObjects.push_back(editorObject);
+}
+
+void EditorApp::RenameGameObject(u16 index, const char* name)
+{
+    for (EditorObject eobj : mObjects)
+    {
+        GameObjectHandle handle = eobj.GetHandle();
+        if (handle.GetIndex() == index)
+        {
+            handle.Get()->SetName(name);
         }
     }
 }

@@ -13,9 +13,20 @@ namespace Editor
     public class GameObject
     {
         public ComponentCollection components;
-        private ushort Index;
-        private ushort Instance;
+        private ushort index;
+        private ushort instance;
         private string Name;
+
+        public ushort Index
+        {
+            get { return index; }
+            set { index = value; }
+        }
+        public ushort Instance
+        {
+            get { return instance; }
+            set { instance = value; }
+        }
 
         public GameObject()
         {

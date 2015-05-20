@@ -46,6 +46,13 @@ namespace Editor
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern void SelectGameObject(ushort index);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern uint CreateAndSelectGameObject(byte[] buffer);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern void RenameGameObject(ushort index, string name);
+
     }
 
 

@@ -130,3 +130,21 @@ void SelectGameObject(unsigned short index)
 {
     app.SelectGameObject(index);
 }
+
+//----------------------------------------------------------------------------------------------------
+
+unsigned int CreateAndSelectGameObject(unsigned char* buffer)
+{
+    u16 index = -1; // Init as invalid
+    app.CreateEmptyGameObject(index);
+    app.SelectGameObject(index);
+    u32 buffsize = 0;
+    const char* buff = (const char*)app.GetGameObject(index, buffsize);
+    memcpy(buffer, buff, buffsize);
+    return buffsize;
+}
+
+void RenameGameObject(unsigned short index, const char* name)
+{
+    app.RenameGameObject((u16)index, name);
+}

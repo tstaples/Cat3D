@@ -22,7 +22,10 @@ namespace Editor
 
         public void Clear()
         {
+            // Don't display anything on the grid
             CurrentGameObject = null;
+            GridView.SelectedObject = null;
+            GridView.Refresh();
         }
 
         public void Display(GameObject gameObject)

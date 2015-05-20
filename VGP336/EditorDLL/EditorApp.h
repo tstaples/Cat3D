@@ -21,6 +21,8 @@ public:
     const u8* DiscoverGameObjects(u32& buffsize);
     const u8* GetGameObject(u16 index, u32& buffsize);
     void SelectGameObject(u16 index);
+    void CreateEmptyGameObject(u16& index);
+    void RenameGameObject(u16 index, const char* name);
 
 private:
 	// Application implementation
@@ -35,6 +37,7 @@ private:
 	GraphicsSystem mGraphicsSystem;
 	Camera mCamera;
 
+    GameObjectFactory mFactory;
     GameObjectPool mGameObjectPool;
     Octree<EditorObject> mOctree;
 

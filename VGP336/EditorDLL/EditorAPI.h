@@ -61,6 +61,10 @@ EditorAPI unsigned int GetGameObject(unsigned short index, unsigned char* buffer
 
 EditorAPI void SelectGameObject(unsigned short index);
 
+EditorAPI unsigned int CreateAndSelectGameObject(unsigned char* buffer);
+
+EditorAPI void RenameGameObject(unsigned short index, const char* name);
+
 extern "C" struct Matrix;
 extern "C" struct Vector3;
 
