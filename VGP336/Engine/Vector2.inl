@@ -1,5 +1,5 @@
 //====================================================================================================
-// Filename:	Vector3.inl
+// Filename:	Vector2.inl
 // Created by:	Peter Chan
 //====================================================================================================
 
@@ -14,123 +14,111 @@ namespace Math
 // Function Definitions
 //====================================================================================================
 	
-inline Vector3 Vector3::Zero()
+inline Vector2 Vector2::Zero()
 {
-	return Vector3();
+	return Vector2();
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline Vector3 Vector3::XAxis()
+inline Vector2 Vector2::XAxis()
 {
-	return Vector3(1.0f, 0.0f, 0.0f);
+	return Vector2(1.0f, 0.0f);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline Vector3 Vector3::YAxis()
+inline Vector2 Vector2::YAxis()
 {
-	return Vector3(0.0f, 1.0f, 0.0f);
+	return Vector2(0.0f, 1.0f);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline Vector3 Vector3::ZAxis()
+inline Vector2 Vector2::operator-() const
 {
-	return Vector3(0.0f, 0.0f, 1.0f);
+	return Vector2(-x, -y);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline Vector3 Vector3::operator-() const
+inline Vector2 Vector2::operator+(const Vector2& rhs) const
 {
-	return Vector3(-x, -y, -z);
+	return Vector2(x + rhs.x, y + rhs.y);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline Vector3 Vector3::operator+(const Vector3& rhs) const
+inline Vector2 Vector2::operator-(const Vector2& rhs) const
 {
-	return Vector3(x + rhs.x, y + rhs.y, z + rhs.z);
+	return Vector2(x - rhs.x, y - rhs.y);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline Vector3 Vector3::operator-(const Vector3& rhs) const
+inline Vector2 Vector2::operator*(f32 s) const
 {
-	return Vector3(x - rhs.x, y - rhs.y, z - rhs.z);
+	return Vector2(x * s, y * s);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline Vector3 Vector3::operator*(f32 s) const
-{
-	return Vector3(x * s, y * s, z * s);
-}
-
-//----------------------------------------------------------------------------------------------------
-
-inline Vector3 Vector3::operator/(f32 s) const
+inline Vector2 Vector2::operator/(f32 s) const
 {
 	ASSERT(s != 0.0f, "[Math] Cannot divide by zero!");
 	const f32 inv = 1.0f / s;
-	return Vector3(x * inv, y * inv, z * inv);
+	return Vector2(x * inv, y * inv);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline Vector3& Vector3::operator+=(const Vector3& rhs)
+inline Vector2& Vector2::operator+=(const Vector2& rhs)
 {
 	x += rhs.x;
 	y += rhs.y;
-	z += rhs.z;
 	return *this;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline Vector3& Vector3::operator-=(const Vector3& rhs)
+inline Vector2& Vector2::operator-=(const Vector2& rhs)
 {
 	x -= rhs.x;
 	y -= rhs.y;
-	z -= rhs.z;
 	return *this;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline Vector3& Vector3::operator*=(f32 s)
+inline Vector2& Vector2::operator*=(f32 s)
 {
 	x *= s;
 	y *= s;
-	z *= s;
 	return *this;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline Vector3& Vector3::operator/=(f32 s)
+inline Vector2& Vector2::operator/=(f32 s)
 {
 	ASSERT(s != 0.0f, "[Math] Cannot divide by zero!");
 	const f32 inv = 1.0f / s;
 	x *= inv;
 	y *= inv;
-	z *= inv;
 	return *this;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline bool operator==(const Vector3& lhs, const Vector3& rhs)
+inline bool operator==(const Vector2& lhs, const Vector2& rhs)
 {
     return (lhs.x == rhs.x
-            && lhs.y == rhs.y
-            && lhs.z == rhs.z);
+            && lhs.y == rhs.y);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-inline bool operator!=(const Vector3& lhs, const Vector3& rhs)
+inline bool operator!=(const Vector2& lhs, const Vector2& rhs)
 {
     return !(lhs == rhs);
 }
