@@ -164,6 +164,7 @@
     <None Include="ResourceManager.inl" />
     <None Include="SerialReader.inl" />
     <None Include="SerialWriter.inl" />
+    <None Include="Vector2.inl" />
     <None Include="Vector3.inl" />
   </ItemGroup>
   <ItemGroup>

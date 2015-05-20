@@ -222,52 +222,51 @@ void TranslateGizmo::Update(const Objects& selectedObjs, const InputData& input,
 
 //----------------------------------------------------------------------------------------------------
 
-void TranslateGizmo::Draw(const Objects& selectedObjs)
+void TranslateGizmo::Draw(const Objects& selectedObjs, u32 screenW, u32 screenH)
 {
     // Only global supported currently, so only need translation.
     Math::Vector3 center = GetMidPoint(selectedObjs);
+
+    // Transform the 3 axis vectors to the object
     Math::Matrix transform = Math::Matrix::Translation(center);
+    Math::Vector3 xAxis = Math::TransformCoord(Math::Vector3::XAxis()*mExtend, transform);
+    Math::Vector3 yAxis = Math::TransformCoord(Math::Vector3::YAxis()*mExtend, transform);
+    Math::Vector3 zAxis = Math::TransformCoord(Math::Vector3::ZAxis()*mExtend, transform);
 
-    // 1. define gizmo arm length in screen space
-    // 2. transform points into world space
-    // 3. 
-    // 2. project the points onto the corresponding planes using the object's pos as center
+    // Project the points into screen space
+    Math::Vector2 mid = mCamera.WorldToScreen(center, screenW, screenH);
+    Math::Vector2 x2d = mCamera.WorldToScreen(xAxis, screenW, screenH);
+    Math::Vector2 y2d = mCamera.WorldToScreen(yAxis, screenW, screenH);
+    Math::Vector2 z2d = mCamera.WorldToScreen(zAxis, screenW, screenH);
 
-    f32 scale = CalcScaleFactor(center);
-    f32 ext = mExtend * scale;
-    const f32 halfExt = ext * 0.5f;
+    // Renormalize and add extend
+    Math::Vector2 midPers = mCamera.WorldToScreen(center, screenW, screenH);
 
-    Math::Vector3 xAxis = Math::TransformCoord(Math::Vector3::XAxis() * ext, transform);
-    Math::Vector3 yAxis = Math::TransformCoord(Math::Vector3::YAxis() * ext, transform);
-    Math::Vector3 zAxis = Math::TransformCoord(Math::Vector3::ZAxis() * ext, transform);
-    //f32 halfW = 1024 * 0.5f;
-    //f32 halfH = 768 * 0.5f;
-    //Math::Vector3 xAxis = mCamera.ScreenToWorld(halfW + mExtend, halfH, 1024, 768);
-    //Math::Vector3 yAxis = mCamera.ScreenToWorld(halfW, halfH + mExtend, 1024, 768);
-    //Math::Vector3 zAxis = mCamera.ScreenToWorld(halfW + halfExt, halfH + halfExt, 1024, 768);
-    //Math::Ray xray(xAxis, mCamera.GetLookAt());
-    //Math::Ray yray(yAxis, mCamera.GetLookAt());
-    //Math::Ray zray(zAxis, mCamera.GetLookAt());
-    //Math::Plane p = GetTranslationPlane(mSelectedArm, center, xray);
-    //xAxis = Math::TransformCoord(xAxis, transform);
-    //yAxis = Math::TransformCoord(yAxis, transform);
-    //zAxis = Math::TransformCoord(zAxis, transform);
+    Math::Vector2 Diff = midPers-mid;
 
     // TODO: De-select arms on mouseup
     Color xcol = (mSelectedArm & Axis::X) ? Color::Yellow() : Color::Red();
     Color ycol = (mSelectedArm & Axis::Y) ? Color::Yellow() : Color::Green();
     Color zcol = (mSelectedArm & Axis::Z) ? Color::Yellow() : Color::Blue();
-    SimpleDraw::AddLine(center, xAxis, xcol);
-    SimpleDraw::AddLine(center, yAxis, ycol);
-    SimpleDraw::AddLine(center, zAxis, zcol);
+
+    // Draw the lines on the screen
+    SimpleDraw::AddScreenLine(mid, x2d, xcol);
+    SimpleDraw::AddScreenLine(mid, y2d, ycol);
+    SimpleDraw::AddScreenLine(mid, z2d, zcol);
+
+    //const f32 halfW = mArmWidth * 0.5f;
+    //SimpleDraw::AddScreenRect(Math::Vector2(mid.x, mid.y - halfW), Math::Vector2(x2dv.x, x2dv.y + halfW), Color::Cyan());
+    //SimpleDraw::AddScreenRect(Math::Vector2(mid.x - halfW, mid.y), Math::Vector2(y2dv.x + halfW, y2dv.y), Color::Cyan());
+    //SimpleDraw::AddScreenRect(Math::Vector2(mid.x - halfW, mid.y - halfW), Math::Vector2(z2dv.x + halfW, z2dv.y + halfW), Color::Cyan());
 
     // debug
-    Math::AABB armX, armY, armZ;
-    BuildArms(ext, mArmWidth, armX, armY, armZ);
-    armX.center = center; armX.center.x += halfExt;
-    armY.center = center; armY.center.y += halfExt;
-    armZ.center = center; armZ.center.z += halfExt;
-    SimpleDraw::AddAABB(armX, Color::Cyan());
-    SimpleDraw::AddAABB(armY, Color::Cyan());
-    SimpleDraw::AddAABB(armZ, Color::Cyan());
+    //const f32 halfExt = mExtend * 0.5f;
+    //Math::AABB armX, armY, armZ;
+    //BuildArms(mExtend, mArmWidth, armX, armY, armZ);
+    //armX.center = center; armX.center.x += halfExt;
+    //armY.center = center; armY.center.y += halfExt;
+    //armZ.center = center; armZ.center.z += halfExt;
+    //SimpleDraw::AddAABB(armX, Color::Cyan());
+    //SimpleDraw::AddAABB(armY, Color::Cyan());
+    //SimpleDraw::AddAABB(armZ, Color::Cyan());
 }

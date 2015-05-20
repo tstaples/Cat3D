@@ -99,7 +99,7 @@ void TestApp::OnInitialize(u32 width, u32 height)
 	mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
 	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -100.0f));
 
-    mpGizmo = new TranslateGizmo(mCamera, 1.0f, 5.0f);
+    mpGizmo = new TranslateGizmo(mCamera, 100.0f, 5.0f);
 
     // Bind controls
     mInputManager.BindAction(Mouse::LBUTTON, Input::MouseDown, DELEGATE(&TestApp::OnSelectObject, this));
@@ -322,7 +322,7 @@ void TestApp::OnUpdate()
         SimpleDraw::AddAABB(object.GetCollider(), col);
     }
     // Draw the gizmo on top of everything
-    mpGizmo->Draw(mSelectedObjects);
+    mpGizmo->Draw(mSelectedObjects, mWidth, mHeight);
 
 	SimpleDraw::Render(mCamera);
 	mGraphicsSystem.EndRender();

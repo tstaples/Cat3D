@@ -491,5 +491,8 @@
     <None Include="MemHandle.inl">
       <Filter>GameObject\Repository</Filter>
     </None>
+    <None Include="Vector2.inl">
+      <Filter>Math</Filter>
+    </None>
   </ItemGroup>
 </Project>

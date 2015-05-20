@@ -148,6 +148,35 @@ Math::Matrix Camera::GetProjectionMatrix() const
 
 //----------------------------------------------------------------------------------------------------
 
+Math::Matrix Camera::GetOrthographicProjectionMatrix(f32 scrw, f32 scrh) const
+{
+	const f32 f = mFarPlane;
+	const f32 n = mNearPlane;
+
+    const f32 h = 1 / tan(mFOV * 0.5f);
+	const f32 w = h / mAspectRatio;
+
+    XMMATRIX  d3dMat =   XMMatrixOrthographicLH(scrw, scrh, n, f);
+
+    return /*Math::Transpose*/(Math::Matrix
+	(
+		d3dMat.r[0].m128_f32[0],    d3dMat.r[0].m128_f32[1], d3dMat.r[0].m128_f32[2], d3dMat.r[0].m128_f32[3],
+		d3dMat.r[1].m128_f32[0],    d3dMat.r[1].m128_f32[1], d3dMat.r[1].m128_f32[2], d3dMat.r[1].m128_f32[3],
+		d3dMat.r[2].m128_f32[0],    d3dMat.r[2].m128_f32[1], d3dMat.r[2].m128_f32[2], d3dMat.r[2].m128_f32[3],
+	    d3dMat.r[3].m128_f32[0],    d3dMat.r[3].m128_f32[1], d3dMat.r[3].m128_f32[2], d3dMat.r[3].m128_f32[3]
+	));
+
+    /*return Math::Matrix
+	(
+		2.0f/w,  0.0f,       0.0f,        0.0f,
+		0.0f,       2.0f/h,  0.0f,        0.0f,
+		0.0f,       0.0f,       1/(f-n),     0.0f,
+	    0.0f,       0.0f,       n/(n-f),     1.0f
+	);*/
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void Camera::Renormalize()
 {
 	mLook = Math::Normalize(mLook);
@@ -156,7 +185,7 @@ void Camera::Renormalize()
 
 //----------------------------------------------------------------------------------------------------
 
-Math::Vector2 Camera::Unproject(const Math::Vector3& pos)
+Math::Vector2 Camera::WorldToScreen(const Math::Vector3& pos, u32 screenW, u32 screenH)
 {
     Math::Matrix view = GetViewMatrix();
     Math::Matrix proj = GetProjectionMatrix();
@@ -164,8 +193,28 @@ Math::Vector2 Camera::Unproject(const Math::Vector3& pos)
     Math::Vector3 hcspos = Math::TransformCoord(worldView, proj);
 
     Math::Vector2 screenPos;
-    screenPos.x = 0.5f + (0.5f * hcspos.x);
-    screenPos.y = 0.5f + (0.5f * hcspos.y);
+    const f32 halfW = screenW * 0.5f;
+    const f32 halfH = screenH * 0.5f;
+
+    screenPos.x = halfW * hcspos.x + halfW;
+    screenPos.y = -halfH * hcspos.y + halfH;
+    return screenPos;
+}
+
+//----------------------------------------------------------------------------------------------------
+Math::Vector2 Camera::WorldToScreenOrthographic(const Math::Vector3& pos, u32 screenW, u32 screenH)
+{
+    Math::Matrix view = GetViewMatrix();
+    Math::Matrix proj = GetOrthographicProjectionMatrix(screenW, screenH);
+    Math::Vector3 worldView = Math::TransformCoord(pos, view);
+    Math::Vector3 hcspos = Math::TransformCoord(worldView, proj);
+
+    Math::Vector2 screenPos;
+    const f32 halfW = screenW * 0.5f;
+    const f32 halfH = screenH * 0.5f;
+
+    screenPos.x = halfW * hcspos.x + halfW;
+    screenPos.y = -halfH * hcspos.y + halfH;
     return screenPos;
 }
 

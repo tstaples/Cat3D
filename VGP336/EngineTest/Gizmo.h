@@ -22,7 +22,7 @@ public:
 
     virtual void Update(const Objects& selectedObjs, const InputData& input, u32 screenW, u32 screenH) = 0;
 
-    virtual void Draw(const Objects& selectedObjs) = 0;
+    virtual void Draw(const Objects& selectedObjs, u32 screenW, u32 screenH) = 0;
 
 protected:
     f32 CalcScaleFactor(const Math::Vector3& pos) const;
@@ -42,7 +42,7 @@ public:
 
     virtual bool IsSelected(const Objects& selectedObjs, const Math::Ray& mouseRay);
     virtual void Update(const Objects& selectedObjs, const InputData& input, u32 screenW, u32 screenH);
-    virtual void Draw(const Objects& selectedObjs);
+    virtual void Draw(const Objects& selectedObjs, u32 screenW, u32 screenH);
 };
 
 #endif // #ifndef INCLUDED_GIZMO_H

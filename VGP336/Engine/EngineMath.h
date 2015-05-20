@@ -65,12 +65,16 @@ f32 InvSqrt(f32 value);
 bool Compare(f32 a, f32 b, f32 epsilon = 0.000001f);
 
 bool IsZero(f32 value);
+bool IsZero(const Vector2& v);
 bool IsZero(const Vector3& v);
 bool IsPositive(f32 f);
 
+f32 MagnitudeSqr(const Vector2& v);
 f32 MagnitudeSqr(const Vector3& v);
+f32 Magnitude(const Vector2& v);
 f32 Magnitude(const Vector3& v);
 
+Vector2 Normalize(const Vector2& v);
 Vector3 Normalize(const Vector3& v);
 Quaternion Normalize(const Quaternion& q);
 
