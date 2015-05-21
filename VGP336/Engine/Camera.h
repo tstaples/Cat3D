@@ -43,10 +43,9 @@ public:
     const Math::Vector3& GetPosition() const    { return mPosition; }
     const Math::Vector3& GetLookAt() const      { return mLook; }
 	
-    // TODO: Store these as members
 	Math::Matrix GetViewMatrix() const;
 	Math::Matrix GetProjectionMatrix() const;
-    Math::Matrix GetOrthographicProjectionMatrix(f32 scrw, f32 scrh) const;
+    Math::Matrix GetOrthographicProjectionMatrix(u32 scrw, u32 scrh) const;
 
     // Converts 3D world coords into 2D screen coords
     Math::Vector2 WorldToScreen(const Math::Vector3& pos, u32 screenW, u32 screenH);

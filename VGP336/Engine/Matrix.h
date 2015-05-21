@@ -63,6 +63,7 @@ struct Matrix
 
     friend bool operator==(const Matrix& lhs, const Matrix& rhs);
     friend bool operator!=(const Matrix& lhs, const Matrix& rhs);
+    friend std::ostream& operator<<(std::ostream& os, const Matrix& m);
 };
 
 } // namespace Math

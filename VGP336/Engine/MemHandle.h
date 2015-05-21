@@ -23,6 +23,7 @@ class MemHandle
     friend bool operator>(MemHandle lhs, MemHandle rhs)  { return (lhs.mIndex > rhs.mIndex && lhs.mInstance > rhs.mInstance); }
 
 public:
+    // Default constructor initializes to invalid
     MemHandle();
     MemHandle(u16 instance, u16 index);
 

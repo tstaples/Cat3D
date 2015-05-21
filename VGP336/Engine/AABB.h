@@ -35,6 +35,12 @@ struct AABB
                 v.y < extend.y &&
                 v.z < extend.z);
     }
+
+    friend std::ostream& operator<<(std::ostream& os, const AABB& v)
+    {
+        // TODO
+        return os;
+    }
 };
 
 } // namespace Math

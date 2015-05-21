@@ -23,28 +23,51 @@ GameObjectFactory::~GameObjectFactory()
 
 GameObjectHandle GameObjectFactory::Create(const char* templateFile)
 {
-    GameObjectHandle handle = mGameObjectPool.Allocate();
+    GameObjectHandle handle; // Init to invalid
+
+    // Read the file into a stream
+    std::ifstream data(templateFile);
+    ASSERT(data.good(), "[GameObjectFactory] Error loading template file: %s", templateFile);
+    Json::Value root;
+    Json::Reader reader;
+    if (!reader.parse(data, root))
+    {
+        OutputDebugStringA(reader.getFormattedErrorMessages().c_str());
+        return handle;
+    }
+
+    // We have data, so allocate space for the object
+    handle = mGameObjectPool.Allocate();
     GameObject* gameObject = handle.Get();
 
-    // TODO
-    // while (going through JSON tree)...
-    const MetaClass* metaClass = MetaDB::GetMetaClass("TransformComponent");
-    void* instance = metaClass->Create();
+    Json::Value jcomponents = root["Components"];
+    const u32 numComponents = jcomponents.size();
+    for (u32 i=0; i < numComponents; ++i)
+    {
+        Json::Value& jcomponent = jcomponents[i];
 
-    /*
-        - Traverse JSON tree
-        - loop through all components
-            - loop through each component field
-                JSON currentElement;
-                MetaField* field = metaClass->FindField("componentName");
-                void* member = (u8*)instance + field->GetOffset();
-                metaField->GetMetaType()->Deserialize(member, currentElement);
+        // Get the meta class by name and create an instance of the component
+        std::string componentName = jcomponent.get("Name", "").asString();
+        const MetaClass* metaClass = MetaDB::GetMetaClass(componentName.c_str());
+        ASSERT(metaClass != nullptr, "[GameObjectFactory] Could not get MetaClass for component with name: %s", componentName);
+        void* instance = metaClass->Create();
 
-                Deserialize will be a template function with specializations for each registered type.
-                - TODO: overload for different serialization methods (json, binary etc.) this way it can be used to communicate with the editor.
-    */
+        Json::Value properties = jcomponent.get("Properties", "");
+        for (Json::Value& p : properties)
+        {
+            std::string fieldName = p.get("Name", "").asString();
+            const MetaField* metaField = metaClass->FindField(fieldName.c_str());
+            ASSERT(metaField != nullptr, "[GameObjectFactory] Could not find field with name: %s", fieldName);
 
-    //gameObject->AddComponent(component);
+            // Deserialize the data into the field.
+            // To keep this generic, the data for each field is held in an array
+            void* member = (u8*)instance + metaField->GetOffset();
+            metaField->GetType()->Deserialize(p.get("Data", ""), member);
+        }
+        // Not sure if this will work
+        Component* component = static_cast<Component*>(instance);
+        gameObject->AddComponent(component);
+    }
 
     return handle;
 }

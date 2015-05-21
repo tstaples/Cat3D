@@ -7,8 +7,10 @@
 
 // Components (TODO: put in single "Components" header
 #include "TransformComponent.h"
+#include "ColliderComponent.h"
 
 void Meta::MetaRegistration()
 {
     MetaDB::Register(TransformComponent::StaticGetMetaClass());
+    MetaDB::Register(ColliderComponent::StaticGetMetaClass());
 }

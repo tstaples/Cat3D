@@ -148,7 +148,7 @@ Math::Matrix Camera::GetProjectionMatrix() const
 
 //----------------------------------------------------------------------------------------------------
 
-Math::Matrix Camera::GetOrthographicProjectionMatrix(f32 scrw, f32 scrh) const
+Math::Matrix Camera::GetOrthographicProjectionMatrix(u32 scrw, u32 scrh) const
 {
 	const f32 f = mFarPlane;
 	const f32 n = mNearPlane;
@@ -156,7 +156,7 @@ Math::Matrix Camera::GetOrthographicProjectionMatrix(f32 scrw, f32 scrh) const
     const f32 h = 1 / tan(mFOV * 0.5f);
 	const f32 w = h / mAspectRatio;
 
-    XMMATRIX  d3dMat =   XMMatrixOrthographicLH(scrw, scrh, n, f);
+    XMMATRIX  d3dMat =   XMMatrixOrthographicLH((float)scrw, (float)scrh, n, f);
 
     return /*Math::Transpose*/(Math::Matrix
 	(

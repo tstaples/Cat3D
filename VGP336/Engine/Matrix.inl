@@ -249,4 +249,12 @@ inline bool operator!=(const Matrix& lhs, const Matrix& rhs)
     return !(lhs == rhs);
 }
 
+//----------------------------------------------------------------------------------------------------
+
+inline std::ostream& operator<<(std::ostream& os, const Matrix& m)
+{
+    // TODO
+    return os;
+}
+
 } // namespace Math

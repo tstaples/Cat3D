@@ -43,6 +43,8 @@ struct Vector3
 
     friend bool operator==(const Vector3& lhs, const Vector3& rhs);
     friend bool operator!=(const Vector3& lhs, const Vector3& rhs);
+
+    friend std::ostream& operator<<(std::ostream& os, const Vector3& v);
 };
 
 } // namespace Math

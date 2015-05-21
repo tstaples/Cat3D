@@ -64,6 +64,7 @@ TestApp::TestApp()
     , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(100.0f, 100.0f, 100.0f)))
     , mGameObjectPool(10)
     , mpGizmo(nullptr)
+    , mFactory(mGameObjectPool)
 {
     memset(mInputData.keyStates, 0, sizeof(bool) * 256);
     memset(mInputData.mouseStates, 0, sizeof(bool) * 4);
@@ -129,6 +130,9 @@ void TestApp::OnInitialize(u32 width, u32 height)
 
     const MetaClass* mc = MetaDB::GetMetaClass("TransformComponent");
     const char* name = mc->GetName();
+
+    GameObjectHandle handle = mFactory.Create("../Data/GameObjects/default.json");
+    GameObject* go = handle.Get();
 
     //mRenderer.Initialize(mGraphicsSystem);
     //mRenderer.SetCamera(mCamera);

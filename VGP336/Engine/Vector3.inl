@@ -135,4 +135,12 @@ inline bool operator!=(const Vector3& lhs, const Vector3& rhs)
     return !(lhs == rhs);
 }
 
+//----------------------------------------------------------------------------------------------------
+
+inline std::ostream& operator<<(std::ostream& os, const Vector3& v)
+{
+    os << S(v.x) + " " + S(v.y) + " " + S(v.z);
+    return os;
+}
+
 } // namespace Math

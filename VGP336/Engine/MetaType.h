@@ -8,6 +8,14 @@
 //====================================================================================================
 
 //====================================================================================================
+// Forward Declarations
+//====================================================================================================
+
+namespace Json {
+    class Value;
+}
+
+//====================================================================================================
 // Class Declarations
 //====================================================================================================
 
@@ -25,14 +33,13 @@ public:
         AABB,
         Class,
         Array,
-        Pointer
+        Pointer,
+        NumTypes
     };
 
-    MetaType(Type type, u32 size)
-        : mType(type)
-        , mSize(size)
-    {
-    }
+    MetaType(Type type, u32 size);
+
+    void Deserialize(const Json::Value& jsonValue, void* data) const;
 
     Type GetType() const    { return mType; }
     u32 GetSize() const     { return mSize; }

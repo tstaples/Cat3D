@@ -35,6 +35,7 @@ private:
     u32 mWidth;
     u32 mHeight;
 
+    GameObjectFactory mFactory;
     GameObjectPool mGameObjectPool;
     Octree<EditorObject> mOctree;
     std::vector<EditorObject> mObjects;
