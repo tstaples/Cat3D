@@ -43,4 +43,10 @@ private:
     Math::Matrix mTransform;
 };
 
+//====================================================================================================
+// Typedefs
+//====================================================================================================
+
+//typedef MemHandle<TransformComponent> TransformHandle;
+
 #endif // #ifndef INCLUDED_ENGINE_TRANSFORMCOMPONENT_H

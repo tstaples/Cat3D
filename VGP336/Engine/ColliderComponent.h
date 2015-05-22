@@ -37,4 +37,10 @@ private:
     bool mIsTrigger;
 };
 
+//====================================================================================================
+// Typedefs
+//====================================================================================================
+
+//typedef MemHandle<ColliderComponent> ColliderHandle;
+
 #endif // #ifndef INCLUDED_ENGINE_COLLIDERCOMPONENT_H

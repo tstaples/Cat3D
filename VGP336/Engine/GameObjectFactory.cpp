@@ -4,11 +4,12 @@
 #include "Component.h"
 #include "MemoryPool.h"
 #include "IO.h"
+#include "RenderService.h"
 
 #include <json/json.h>
 #include <fstream>
 
-GameObjectFactory::GameObjectFactory(GameObjectPool& gameObjectPool)
+GameObjectFactory::GameObjectFactory(GameObjectPool& gameObjectPool, u32 componentPoolCapacity)
     : mGameObjectPool(gameObjectPool)
 {
 }
@@ -16,6 +17,19 @@ GameObjectFactory::GameObjectFactory(GameObjectPool& gameObjectPool)
 //----------------------------------------------------------------------------------------------------
 
 GameObjectFactory::~GameObjectFactory()
+{
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void GameObjectFactory::Initialize(Services& services)
+{
+    mServices = &services;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void GameObjectFactory::Terminate()
 {
 }
 
@@ -40,6 +54,7 @@ GameObjectHandle GameObjectFactory::Create(const char* templateFile)
     handle = mGameObjectPool.Allocate();
     GameObject* gameObject = handle.Get();
 
+    // Load components
     Json::Value jcomponents = root["Components"];
     const u32 numComponents = jcomponents.size();
     for (u32 i=0; i < numComponents; ++i)
@@ -69,6 +84,21 @@ GameObjectHandle GameObjectFactory::Create(const char* templateFile)
         gameObject->AddComponent(component);
     }
 
+    // Subscribe to services
+    Json::Value jservices = root["Services"];
+    for (Json::Value& jservice : jservices)
+    {
+        // Look up service by name
+        std::string serviceName = jservice.get("Name", "").asString();
+        for (auto service : *mServices)
+        {
+            if (serviceName.compare(service.first) == 0)
+            {
+                // Subscribe the gameObject to it
+                service.second->Subscribe(handle);
+            }
+        }
+    }
     return handle;
 }
 

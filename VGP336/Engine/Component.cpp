@@ -8,6 +8,7 @@ META_CLASS_END
 
 Component::Component()
     : mpGameObject(nullptr)
+    , mIsDirty(false)
 {
 }
 

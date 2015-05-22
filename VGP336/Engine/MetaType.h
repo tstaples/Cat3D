@@ -25,7 +25,13 @@ public:
     enum Type
     {
         Int,
+        UInt,
+        Short,
+        UShort,
+        Char,
+        UChar,
         Float,
+        Double,
         Bool,
         String,
         Vector3,

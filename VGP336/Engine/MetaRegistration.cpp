@@ -1,16 +1,12 @@
 #include "Precompiled.h"
-
 #include "MetaRegistration.h"
 
 #include "GameObject.h"
-#include "Component.h"
-
-// Components (TODO: put in single "Components" header
-#include "TransformComponent.h"
-#include "ColliderComponent.h"
+#include "Components.h"
 
 void Meta::MetaRegistration()
 {
-    MetaDB::Register(TransformComponent::StaticGetMetaClass());
     MetaDB::Register(ColliderComponent::StaticGetMetaClass());
+    MetaDB::Register(MeshComponent::StaticGetMetaClass());
+    MetaDB::Register(TransformComponent::StaticGetMetaClass());
 }

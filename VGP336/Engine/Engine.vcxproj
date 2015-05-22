@@ -27,7 +27,6 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectFactory.cpp" />
-    <ClCompile Include="GameObjectJSON.cpp" />
     <ClCompile Include="GraphicsSystem.cpp" />
     <ClCompile Include="Hash.cpp" />
     <ClCompile Include="Heightmap.cpp" />
@@ -38,7 +37,9 @@
     <ClCompile Include="Keyframe.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshBuilder.cpp" />
+    <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
+    <ClCompile Include="MeshRendererComponent.cpp" />
     <ClCompile Include="MeshUtil.cpp" />
     <ClCompile Include="MetaClass.cpp" />
     <ClCompile Include="MetaDB.cpp" />
@@ -59,6 +60,7 @@
     <ClCompile Include="MeshBuffer.cpp" />
     <ClCompile Include="RenderService.cpp" />
     <ClCompile Include="Sampler.cpp" />
+    <ClCompile Include="Service.cpp" />
     <ClCompile Include="SimpleDraw.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />
     <ClCompile Include="Terrain.cpp" />
@@ -84,6 +86,7 @@
     <ClInclude Include="Common.h" />
     <ClInclude Include="ComplexNumber.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="Components.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Constraints.h" />
     <ClInclude Include="Delegate.h" />
@@ -93,7 +96,6 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectFactory.h" />
-    <ClInclude Include="GameObjectJSON.h" />
     <ClInclude Include="GraphicsSystem.h" />
     <ClInclude Include="Hash.h" />
     <ClInclude Include="Heightmap.h" />
@@ -110,7 +112,9 @@
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshBuilder.h" />
+    <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="MeshRenderer.h" />
+    <ClInclude Include="MeshRendererComponent.h" />
     <ClInclude Include="MeshUtil.h" />
     <ClInclude Include="Meta.h" />
     <ClInclude Include="MetaClass.h" />
@@ -139,6 +143,7 @@
     <ClInclude Include="Sampler.h" />
     <ClInclude Include="SerialReader.h" />
     <ClInclude Include="SerialWriter.h" />
+    <ClInclude Include="Service.h" />
     <ClInclude Include="SimpleDraw.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SpriteRenderer.h" />

@@ -100,13 +100,16 @@ void MeshBuffer::Terminate()
 
 //----------------------------------------------------------------------------------------------------
 
-void MeshBuffer::UpdateBuffer(GraphicsSystem& gs, const Mesh::Vertex* vertices, u32 vertexCount)
+void MeshBuffer::UpdateBuffer(GraphicsSystem& gs, const Mesh::Vertex* vertices, u32 vertexCount, const u16* indexData, u32 numIndices)
 {
     // Copy the vertex buffer to the vram
     D3D11_MAPPED_SUBRESOURCE resource;
     gs.GetContext()->Map(mpVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource); // Lock
     memcpy(resource.pData, vertices, sizeof(Mesh::Vertex) * vertexCount);
     gs.GetContext()->Unmap(mpVertexBuffer, 0);  // Unlock
+
+    mVertexCount = vertexCount;
+    mIndexCount = numIndices;
 }
 
 //----------------------------------------------------------------------------------------------------

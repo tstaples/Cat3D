@@ -51,9 +51,6 @@ public:
     DataType* Get(MemHandle<DataType> handle);
     const DataType* Get(MemHandle<DataType> handle) const;
 
-    // TODO: store pointer to memory pool so we can have a "Get" method
-    // which returns a pointer to the data in the pool. Requires memhandle to be templatized
-
 private:
     NONCOPYABLE(MemoryPool);
 

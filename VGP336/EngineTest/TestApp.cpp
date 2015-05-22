@@ -64,7 +64,7 @@ TestApp::TestApp()
     , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(100.0f, 100.0f, 100.0f)))
     , mGameObjectPool(10)
     , mpGizmo(nullptr)
-    , mFactory(mGameObjectPool)
+    , mFactory(mGameObjectPool, 100)
 {
     memset(mInputData.keyStates, 0, sizeof(bool) * 256);
     memset(mInputData.mouseStates, 0, sizeof(bool) * 4);
@@ -100,6 +100,14 @@ void TestApp::OnInitialize(u32 width, u32 height)
 	mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
 	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -100.0f));
 
+    mRenderService.Initialize(mGraphicsSystem, mCamera);
+    // TODO: find a nicer way to do this
+    Services services =
+    {
+        { "RenderService", &mRenderService }
+    };
+    mFactory.Initialize(services);
+
     mpGizmo = new TranslateGizmo(mCamera, 100.0f, 5.0f);
 
     // Bind controls
@@ -110,50 +118,38 @@ void TestApp::OnInitialize(u32 width, u32 height)
     mInputManager.BindAxis(Mouse::RBUTTON, Input::MouseDown, DELEGATE(&TestApp::OnCameraLook, this));
     mInputManager.BindAxis(Mouse::MBUTTON, Input::MouseDown, DELEGATE(&TestApp::OnPanCamera, this));
 
+
     // TEMP
-    GameObjectHandle handle1 = mGameObjectPool.Allocate();
-    GameObjectHandle handle2 = mGameObjectPool.Allocate();
+    //GameObjectHandle handle1 = mGameObjectPool.Allocate();
+    //GameObjectHandle handle2 = mGameObjectPool.Allocate();
 
-    GameObject* g1 = handle1.Get();
-    GameObject* g2 = handle2.Get();
+    //GameObject* g1 = handle1.Get();
+    //GameObject* g2 = handle2.Get();
 
-    TransformComponent* t1 = new TransformComponent();
-    TransformComponent* t2 = new TransformComponent();
-    t1->Translate(Math::Vector3(15.0f, 3.0f, 5.0f));
-    t2->Translate(Math::Vector3(-15.0f, 3.0f, 5.0f));
+    //TransformComponent* t1 = new TransformComponent();
+    //TransformComponent* t2 = new TransformComponent();
+    //MeshComponent* meshc = new MeshComponent();
+    //t1->Translate(Math::Vector3(15.0f, 3.0f, 5.0f));
+    //t2->Translate(Math::Vector3(-15.0f, 3.0f, 5.0f));
 
-    g1->AddComponent(t1);
-    g2->AddComponent(t2);
+    //g1->AddComponent(meshc);
+    //g1->AddComponent(t1);
+    //g2->AddComponent(t2);
 
-    mObjects.push_back(EditorObject(handle1));
-    mObjects.push_back(EditorObject(handle2));
+    //mObjects.push_back(EditorObject(handle1));
+    //mObjects.push_back(EditorObject(handle2));
 
-    const MetaClass* mc = MetaDB::GetMetaClass("TransformComponent");
-    const char* name = mc->GetName();
+    //const MetaClass* mc = MetaDB::GetMetaClass("TransformComponent");
+    //const char* name = mc->GetName();
 
-    GameObjectHandle handle = mFactory.Create("../Data/GameObjects/default.json");
+    GameObjectHandle handle = mFactory.Create("../Data/GameObjects/testcube.json");
     GameObject* go = handle.Get();
+    mObjects.push_back(EditorObject(handle));
 
-    //mRenderer.Initialize(mGraphicsSystem);
-    //mRenderer.SetCamera(mCamera);
-    //MeshBuilder::CreateCube(mCube);
-    //mBuffer.Initialize(mGraphicsSystem, mCube.GetVertexFormat(), mCube);
 
-    //Math::Vector3 v(10.f, 20.f, -5.f);
-    //Math::Plane p(0.f, 1.f, 0.f, -10.f);
-    //Math::Vector3 proj = Math::Project(v, p);
-
-    mSelectedObjects.push_back(&mObjects[1]);
-    u32 sz = 0;
-    const u8* data = GetSelectedObjectData(sz);
-    //GameObject* g = new GameObject();
-    //TransformComponent* t = new TransformComponent(g);
-    //g->AddComponent(t);
-    //const MetaClass* gc = g->GetMetaClass();
-    //const MetaClass* tc = t->GetMetaClass();
-    //
-    //TransformComponent* tt = nullptr;
-    //bool result = g->GetComponent(tt);
+    //mSelectedObjects.push_back(&mObjects[1]);
+    //u32 sz = 0;
+    //const u8* data = GetSelectedObjectData(sz);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -164,8 +160,8 @@ void TestApp::OnTerminate()
     mOctree.Destroy();
     mGameObjectPool.Flush();
 
+    mRenderService.Terminate();
 	SimpleDraw::Terminate();
-    //mRenderer.Terminate();
 	mGraphicsSystem.Terminate();
 	mWindow.Terminate();
 }
@@ -249,58 +245,6 @@ void TestApp::OnUpdate()
 	mTimer.Update();
 	const f32 deltaTime = mTimer.GetElapsedTime();
 
-    //if (mInputData.keyStates['W'] && !doneonce)
-    //{
-    //    u32 size = 0;
-    //    const u8* temp = GetSelectedObjectData(size);
-    //    TransformComponent* tcomp = nullptr;
-    //    if (mObjects[1].GetGameObject()->GetComponent(tcomp))
-    //    {
-    //        tcomp->Translate(Math::Vector3(20.0f, -10.0f, 1.0f));
-    //        u8 tempBuff[2048];
-    //        SerialWriter w(tempBuff, 2048);
-    //        w.Write(mObjects[1].GetHandle().GetIndex());
-    //        w.Write(mObjects[1].GetHandle().GetInstance());
-    //        w.WriteLengthEncodedString(tcomp->GetMetaClass()->GetName());
-    //        for (u32 i=0; i < 3; ++i)
-    //        {
-    //            MetaField field = tcomp->GetMetaClass()->GetFields()[i];
-    //            u32 foffset = field.GetOffset();
-    //            u32 fsize = field.GetType()->GetSize();
-    //            char* fieldData = ((char*)tcomp) + foffset;
-    //            w.WriteArray(fieldData, fsize);
-    //        }
-    //        UpdateComponent(tempBuff, w.GetOffset());
-    //    }
-    //    doneonce = true;
-    //}
-    //if (mInputData.keyStates['E'] && !doneonce2)
-    //{
-    //    u32 size = 0;
-    //    const u8* temp = GetSelectedObjectData(size);
-    //    TransformComponent* tcomp = nullptr;
-    //    if (mObjects[0].GetGameObject()->GetComponent(tcomp))
-    //    {
-    //        tcomp->Translate(Math::Vector3(0.0f, -20.0f, 0.0f));
-    //        u8 tempBuff[2048];
-    //        SerialWriter w(tempBuff, 2048);
-    //        w.Write(mObjects[0].GetHandle().GetIndex());
-    //        w.Write(mObjects[0].GetHandle().GetInstance());
-    //        w.WriteLengthEncodedString(tcomp->GetMetaClass()->GetName());
-    //        for (u32 i=0; i < 3; ++i)
-    //        {
-    //            MetaField field = tcomp->GetMetaClass()->GetFields()[i];
-    //            u32 foffset = field.GetOffset();
-    //            u32 fsize = field.GetType()->GetSize();
-    //            char* fieldData = ((char*)tcomp) + foffset;
-    //            w.WriteArray(fieldData, fsize);
-    //        }
-    //        UpdateComponent(tempBuff, w.GetOffset());
-    //    }
-    //    doneonce2 = true;
-    //}
-
-
     // Destroy and re-create the entire tree
     mOctree.Destroy();
     for (u32 i=0; i < mObjects.size(); ++i)
@@ -310,14 +254,26 @@ void TestApp::OnUpdate()
     mOctree.Debug_DrawTree();
 
 
+    if (mInputData.keyStates['W'])
+    {
+        GameObject* go = mObjects[0].GetGameObject();
+        MeshComponent* mc = nullptr;
+        go->GetComponent(mc);
+        mc->mFilter = MeshComponent::Sphere;
+        mc->SetIsDirty(true);
+    }
+
 	// Render
 	mGraphicsSystem.BeginRender(Color::Black());
     
-    //mRenderer.Render(mBuffer, Math::Matrix::Translation(Math::Vector3::Zero()));
     //DrawGroundPlane();
 
     for (auto object : mObjects)
     {
+        // Update the components
+        GameObject* gameObject = object.GetGameObject();
+        gameObject->Update(deltaTime);
+
         Color col = Color::White();
         if (object.IsSelected())
         {
@@ -325,6 +281,9 @@ void TestApp::OnUpdate()
         }
         SimpleDraw::AddAABB(object.GetCollider(), col);
     }
+    // Update services
+    mRenderService.Update();
+
     // Draw the gizmo on top of everything
     mpGizmo->Draw(mSelectedObjects, mWidth, mHeight);
 

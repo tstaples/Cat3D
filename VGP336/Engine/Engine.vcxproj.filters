@@ -142,9 +142,6 @@
     <ClCompile Include="ModelManager.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
-    <ClCompile Include="GameObjectJSON.cpp">
-      <Filter>GameObject</Filter>
-    </ClCompile>
     <ClCompile Include="BoneAnimation.cpp">
       <Filter>Graphics\Animations</Filter>
     </ClCompile>
@@ -216,6 +213,15 @@
     </ClCompile>
     <ClCompile Include="MetaRegistration.cpp">
       <Filter>GameObject\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshComponent.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshRendererComponent.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Service.cpp">
+      <Filter>GameObject\Services</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -342,9 +348,6 @@
     <ClInclude Include="ModelManager.h">
       <Filter>Resource</Filter>
     </ClInclude>
-    <ClInclude Include="GameObjectJSON.h">
-      <Filter>GameObject</Filter>
-    </ClInclude>
     <ClInclude Include="BoneAnimation.h">
       <Filter>Graphics\Animations</Filter>
     </ClInclude>
@@ -455,6 +458,18 @@
     </ClInclude>
     <ClInclude Include="MetaRegistration.h">
       <Filter>GameObject\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshComponent.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshRendererComponent.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Service.h">
+      <Filter>GameObject\Services</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

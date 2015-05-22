@@ -19,9 +19,7 @@
 #include "Random.h"
 
 // Component headers
-#include "ColliderComponent.h"
-#include "ModelComponent.h"
-#include "TransformComponent.h"
+#include "Components.h"
 
 // Service headers
 #include "RenderService.h"
@@ -33,7 +31,7 @@
 #include "MemoryPool.h"
 #include "RepositoryTypes.h"
 
-// Meta
+// Meta headers
 #include "Meta.h"
 
 // Graphics headers

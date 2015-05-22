@@ -37,19 +37,18 @@ private:
 
     GameObjectFactory mFactory;
     GameObjectPool mGameObjectPool;
+
     Octree<EditorObject> mOctree;
     std::vector<EditorObject> mObjects;
     std::vector<EditorObject*> mSelectedObjects;
     
+    RenderService mRenderService;
+
     Gizmo* mpGizmo;
 
     // Input
     InputData mInputData;
     InputManager mInputManager;
-
-    MeshBuffer mBuffer;
-    MeshRenderer mRenderer;
-    Mesh mCube;
 
 private:
     // Input Actions
