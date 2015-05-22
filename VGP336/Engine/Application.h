@@ -51,6 +51,7 @@ private:
 	virtual void OnTerminate() {}
 	virtual bool OnInput(const InputEvent& evt) { return false; }
 	virtual void OnUpdate() {}
+    virtual void OnResizeWindow() {}
 
 	HINSTANCE mInstance;
 	HWND mWindow;

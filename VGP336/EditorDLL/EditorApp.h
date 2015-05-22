@@ -17,7 +17,7 @@ public:
 	virtual ~EditorApp();
 
     const u8* GetSelectedObjectData(u32& size);
-    void UpdateComponent(const u8* buffer, u32 buffsize);
+    s32 UpdateComponent(const u8* buffer, u32 buffsize);
     const u8* DiscoverGameObjects(u32& buffsize);
     const u8* GetGameObject(u16 index, u32& buffsize);
     void SelectGameObject(u16 index);
@@ -26,10 +26,11 @@ public:
 
 private:
 	// Application implementation
-	virtual void OnInitialize(u32 width, u32 height);
-	virtual void OnTerminate();
-	virtual bool OnInput(const InputEvent& evt);
-	virtual void OnUpdate();
+	virtual void OnInitialize(u32 width, u32 height) override;
+	virtual void OnTerminate() override;
+	virtual bool OnInput(const InputEvent& evt) override;
+	virtual void OnUpdate() override;
+    virtual void OnResizeWindow() override;
 
 private:
 	Window mWindow;

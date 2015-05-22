@@ -177,7 +177,7 @@ void EditorApp::OnUpdate()
     {
         mOctree.Insert(mObjects[i], mObjects[i].GetCollider());
     }
-    mOctree.Debug_DrawTree();
+    //mOctree.Debug_DrawTree();
 
 
     // Player movement
@@ -199,6 +199,7 @@ void EditorApp::OnUpdate()
     //    mCamera.Strafe(-kMoveSpeed * deltaTime);
     //}
 
+    bool drawGizmo = false;
     for (auto object : mObjects)
     {
         // Update the components
@@ -208,9 +209,10 @@ void EditorApp::OnUpdate()
         Color col = Color::White();
         if (object.IsSelected())
         {
+            drawGizmo = true;
             col = Color::Red();
         }
-        SimpleDraw::AddAABB(object.GetCollider(), col);
+        //SimpleDraw::AddAABB(object.GetCollider(), col);
     }
 
 	// Render
@@ -218,10 +220,20 @@ void EditorApp::OnUpdate()
 
     mRenderService.Update();
 
-    mpGizmo->Draw(mSelectedObjects);
+    if (drawGizmo)
+    {
+        mpGizmo->Draw(mSelectedObjects);
+    }
 
 	SimpleDraw::Render(mCamera);
 	mGraphicsSystem.EndRender();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void EditorApp::OnResizeWindow()
+{
+    mGraphicsSystem.Resize(mWidth, mHeight);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -238,8 +250,9 @@ const u8* EditorApp::GetSelectedObjectData(u32& size)
     return GetGameObject(editorObject->GetHandle().GetIndex(), size);;
 }
 
-void EditorApp::UpdateComponent(const u8* buffer, u32 buffsize)
+s32 EditorApp::UpdateComponent(const u8* buffer, u32 buffsize)
 {
+    s32 rc = 1;
     SerialReader reader((u8*)buffer, buffsize);
 
     // Get handle data to find corresponding gameobject
@@ -247,6 +260,8 @@ void EditorApp::UpdateComponent(const u8* buffer, u32 buffsize)
     u16 instance = reader.Read<u16>();
     GameObjectHandle handle(instance, index);
     GameObject* gameObject = mGameObjectPool.Get(handle);
+    if (gameObject == nullptr)
+        return rc;
 
     std::string compName = reader.ReadLengthEncodedString();
     const std::vector<Component*>& components = gameObject->GetComponents();
@@ -256,7 +271,7 @@ void EditorApp::UpdateComponent(const u8* buffer, u32 buffsize)
         const MetaClass* compMetaClass = c->GetMetaClass();
         if (compName.compare(compMetaClass->GetName()) == 0)
         {
-            char data[OBJECT_BUFF_SIZE];
+            char data[OBJECT_BUFF_SIZE] = { 0 };
 
             const u32 numFields = compMetaClass->GetNumFields();
             for (u32 i=0; i < numFields; ++i)
@@ -271,9 +286,11 @@ void EditorApp::UpdateComponent(const u8* buffer, u32 buffsize)
             }
             // Set flag to indicate there has been a change
             c->SetIsDirty(true);
+            rc = 0; // success
             break;
         }
     }
+    return rc;
 }
 
 const u8* EditorApp::DiscoverGameObjects(u32& buffsize)

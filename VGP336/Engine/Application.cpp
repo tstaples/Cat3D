@@ -94,6 +94,9 @@ bool Application::ProcessInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
     switch (message)
 	{
+    case WM_SIZE:
+        OnResizeWindow();
+        break;
 	case WM_CHAR:
 		{
 			inputEvent.type = Input::Character;

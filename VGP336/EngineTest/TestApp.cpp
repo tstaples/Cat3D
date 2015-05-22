@@ -300,6 +300,13 @@ void TestApp::OnUpdate()
 
 //----------------------------------------------------------------------------------------------------
 
+void TestApp::OnResizeWindow()
+{
+    mGraphicsSystem.Resize(mWidth, mHeight);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 const u8* TestApp::GetSelectedObjectData(u32& size)
 {
     // Don't display anything unless there's only a single object selected

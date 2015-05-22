@@ -325,6 +325,49 @@ void GraphicsSystem::ResetViewport()
 
 //----------------------------------------------------------------------------------------------------
 
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb205075(v=vs.85).aspx#Handling_Window_Resizing
+void GraphicsSystem::Resize(u32& width, u32& height)
+{
+    ASSERT(mpSwapChain, "[GraphicsSystem] Failed to resize: Swap chain unitialized");
+
+    // Release all outstanding references to the swap chain's buffers
+    SafeRelease(mpDepthStencilBuffer);
+    SafeRelease(mpRenderTargetView);
+
+    UINT createDeviceFlags = 0;
+#ifdef _DEBUG
+	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
+    // Preserve exisiting buffer count and format
+    // Automatically choose the width and height to match the client rect for HWND
+    HRESULT hr = mpSwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, createDeviceFlags);
+    ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to resize buffers");
+
+    ID3D11Texture2D* pBackBuffer = nullptr;
+    hr = mpSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+    ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to get buffer");
+
+    hr = mpD3DDevice->CreateRenderTargetView(pBackBuffer, nullptr, &mpRenderTargetView);
+    ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to create render target view");
+    SafeRelease(pBackBuffer);
+
+    // Set the render target
+    mpImmediateContext->OMSetRenderTargets(1, &mpRenderTargetView, nullptr);
+
+    // Update the swap chain desc so it's aware of the new size
+    mpSwapChain->GetDesc(&mSwapChainDesc);
+    width = GetWidth();
+    height = GetHeight();
+
+    // Update the viewport's dimensions
+    mViewport.Width = (FLOAT)width;
+	mViewport.Height = (FLOAT)height;
+	mpImmediateContext->RSSetViewports(1, &mViewport);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void GraphicsSystem::EnableDepthTesting(bool enable)
 {
 	ASSERT(mpImmediateContext != nullptr, "[GraphicsSystem] Failed to set depth stencil state.");

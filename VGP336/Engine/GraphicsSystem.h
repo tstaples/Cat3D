@@ -30,6 +30,7 @@ public:
 	void ToggleFullscreen();
 	void ResetRenderTarget();
 	void ResetViewport();
+    void Resize(u32& width, u32& height);
 
 	void EnableDepthTesting(bool enable);
 	
