@@ -86,7 +86,7 @@ u32 GetFieldOffset(DataType ClassType::* field)
     numFields = sizeof(sFields) / sizeof(sFields[0]);
 
 #define META_CLASS_END\
-        static const MetaClass sMetaClass(className, sizeof(LocalType), fields, numFields, Create, Destroy);\
+        static const MetaClass sMetaClass(className, sizeof(LocalType), fields, numFields, std::is_pointer<LocalType>::value, Create, Destroy);\
         return &sMetaClass;\
     }
 

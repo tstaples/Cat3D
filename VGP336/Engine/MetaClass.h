@@ -36,7 +36,7 @@ public:
     // @param numFields: number of fields in the array.
     // @param create: function pointer running the logic to create a new instance of the class.
     // @param destroy: unction pointer running the logic to destroy the instance of the class.
-    MetaClass(const char* name, u32 classSize, const MetaField* fields, u32 numFields, CreateFunc create, DestroyFunc destroy);
+    MetaClass(const char* name, u32 classSize, const MetaField* fields, u32 numFields, bool ispointer, CreateFunc create, DestroyFunc destroy);
 
     // Creates an instance of the class.
     // Returns a void pointer to the class.

@@ -34,6 +34,8 @@ public:
         Double,
         Bool,
         String,
+        WString,
+        Path,
         Vector3,
         Matrix,
         AABB,
@@ -43,7 +45,7 @@ public:
         NumTypes
     };
 
-    MetaType(Type type, u32 size);
+    MetaType(Type type, u32 size, bool ispointer, bool mIsArray, u32 arrsize=0);
 
     void Deserialize(const Json::Value& jsonValue, void* data) const;
 
@@ -53,7 +55,9 @@ public:
 private:
     Type mType;
     u32 mSize;
-    //bool mIsPointer;  // TODO
+    bool mIsPointer;  // TODO
+    bool mIsArray;
+    u32 mArrLength;
 };
 
 #endif // #ifndef INCLUDED_ENGINE_METATYPE_H

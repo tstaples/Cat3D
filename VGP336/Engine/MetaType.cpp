@@ -1,8 +1,9 @@
 #include "Precompiled.h"
 #include "MetaType.h"
 
-#include "Meta.h"
 #include "EngineMath.h"
+#include "IO.h"
+#include "Meta.h"
 
 #include <json/json.h>
 
@@ -18,7 +19,10 @@ const MetaType* DeduceDataType()
 #define META_REGISTER_TYPE(ENUM_TYPE, DATA_TYPE)\
     template <> const MetaType* DeduceDataType<DATA_TYPE>()\
     {\
-        static MetaType sMetaType(ENUM_TYPE, sizeof(DATA_TYPE));\
+        bool ispointer = std::is_pointer<DATA_TYPE>::value;\
+        bool isarray = std::is_array<DATA_TYPE>::value;\
+        u32 arrsize = (isarray) ? std::extent<DATA_TYPE>::value : 0;\
+        static MetaType sMetaType(ENUM_TYPE, sizeof(DATA_TYPE), ispointer, isarray, arrsize);\
         return &sMetaType;\
     }
 
@@ -33,6 +37,8 @@ META_REGISTER_TYPE(MetaType::Float, f32);
 META_REGISTER_TYPE(MetaType::Double, f64);
 META_REGISTER_TYPE(MetaType::Bool, bool);
 META_REGISTER_TYPE(MetaType::String, std::string);
+META_REGISTER_TYPE(MetaType::WString, std::wstring);
+META_REGISTER_TYPE(MetaType::Path, wchar_t[MAX_PATH]);
 META_REGISTER_TYPE(MetaType::Vector3, Math::Vector3);
 META_REGISTER_TYPE(MetaType::Matrix, Math::Matrix);
 META_REGISTER_TYPE(MetaType::AABB, Math::AABB);
@@ -72,10 +78,21 @@ template <> void Deserialize<bool>(const Json::Value& jvalue, void* data)
     bool i = (bool)jvalue[0].asBool();
     memcpy(data, &i, sizeof(bool));
 }
+template <> void Deserialize<std::wstring>(const Json::Value& jvalue, void* data)
+{
+    std::wstring s = IO::CharToWChar(jvalue[0].asString());
+    memcpy(data, &s, s.length());
+}
 template <> void Deserialize<std::string>(const Json::Value& jvalue, void* data)
 {
     std::string s = jvalue[0].asString();
-    memcpy(data, s.c_str(), s.length());
+    memcpy((s8*)data, s.c_str(), s.length());
+}
+template <> void Deserialize<wchar_t[MAX_PATH]>(const Json::Value& jvalue, void* data)
+{
+    memset(data, 0, MAX_PATH * sizeof(wchar_t));
+    std::wstring s = IO::CharToWChar(jvalue[0].asString());
+    memcpy(data, s.c_str(), s.length() * sizeof(wchar_t));
 }
 template <> void Deserialize<Math::Vector3>(const Json::Value& jvalue, void* data)
 {
@@ -114,6 +131,8 @@ static std::map<MetaType::Type, DeserializeFunc> sDeserializeMap =
     { MetaType::Double, Deserialize<f64> },
     { MetaType::Bool, Deserialize<bool> },
     { MetaType::String, Deserialize<std::string> },
+    { MetaType::WString, Deserialize<std::wstring> },
+    { MetaType::Path, Deserialize<wchar_t[MAX_PATH]> },
     { MetaType::Vector3, Deserialize<Math::Vector3> },
     { MetaType::Matrix, Deserialize<Math::Matrix> },
     { MetaType::AABB, Deserialize<Math::AABB> }
@@ -121,9 +140,12 @@ static std::map<MetaType::Type, DeserializeFunc> sDeserializeMap =
 
 //----------------------------------------------------------------------------------------------------
 
-MetaType::MetaType(Type type, u32 size)
+MetaType::MetaType(Type type, u32 size, bool ispointer, bool isArray, u32 arrsize)
     : mType(type)
     , mSize(size)
+    , mIsPointer(ispointer)
+    , mIsArray(isArray)
+    , mArrLength(arrsize)
 {
 }
 

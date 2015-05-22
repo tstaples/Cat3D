@@ -3,8 +3,8 @@
 #include "MetaClass.h"
 #include "MetaField.h"
 
-MetaClass::MetaClass(const char* name, u32 classSize, const MetaField* fields, u32 numFields, CreateFunc ctor, DestroyFunc dtor)
-    : MetaType(MetaType::Class, classSize)
+MetaClass::MetaClass(const char* name, u32 classSize, const MetaField* fields, u32 numFields, bool ispointer, CreateFunc ctor, DestroyFunc dtor)
+    : MetaType(MetaType::Class, classSize, ispointer, false)
     , mName(name)
     , mFields(fields)
     , mNumFields(numFields)
