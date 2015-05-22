@@ -29,7 +29,7 @@ namespace Editor
             return null;
         }
 
-        public void OnModify(string propertyName, object newVal)
+        public virtual void OnModify(string propertyName, object newVal)
         {
             GetField(propertyName).value = newVal;
         }

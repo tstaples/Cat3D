@@ -129,6 +129,10 @@ namespace Editor
             {
                 component = new ColliderComponent();
             }
+            else if (name == "MeshComponent")
+            {
+                component = new MeshComponent();
+            }
             return component;
         }
 

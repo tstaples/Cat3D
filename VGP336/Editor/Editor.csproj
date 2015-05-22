@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameObject\Components\ColliderComponent.cs" />
+    <Compile Include="GameObject\Components\MeshComponent.cs" />
     <Compile Include="GameObject\Field.cs" />
     <Compile Include="GameObject\Components\Component.cs" />
     <Compile Include="Forms\EditorForm.Callbacks.cs">

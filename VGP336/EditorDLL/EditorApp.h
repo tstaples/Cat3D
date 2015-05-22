@@ -44,6 +44,8 @@ private:
     std::vector<EditorObject> mObjects;
     std::vector<EditorObject*> mSelectedObjects;
 
+    RenderService mRenderService;
+
     Gizmo* mpGizmo;
 
     // Screen
