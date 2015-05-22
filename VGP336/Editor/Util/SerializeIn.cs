@@ -95,15 +95,21 @@ namespace Editor
             return data;
         }
 
-        private string GetString(byte[] buff, int offset, int length)
+        public static string GetString(byte[] buff, int offset, int length)
         {
             char[] chars = new char[length];
             int c = 0;
             for (int i = offset; i < (offset + length); ++i)
             {
-                chars[c++] = (char)buff[i];
+                char current = (char)buff[i];
+                if (current != '\0')
+                {
+                    chars[c++] = current;
+                }
             }
-            return new string(chars);
+            char[] resizedStr = new char[c];
+            Buffer.BlockCopy(chars, 0, resizedStr, 0, c * sizeof(char));
+            return new string(resizedStr);
         }
     }
 }

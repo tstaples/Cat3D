@@ -45,7 +45,8 @@ namespace Editor
         public void OnComponentModified(string name, string propertyName, object newVal)
         {
             // Name in property grid omits the "Component" part
-            string fullname = name + "Component";
+            
+            string fullname = (name.Replace(" ", "")) + "Component";
             Component c = CurrentGameObject.GetComponent(fullname);
             Debug.Assert(c != null);
             c.OnModify(propertyName, newVal);

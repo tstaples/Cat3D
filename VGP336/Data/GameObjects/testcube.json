@@ -9,6 +9,15 @@
                 }
             ]
         },
+        { 
+            "Name" : "MeshRendererComponent",
+            "Properties" : [
+                {
+                    "Name" : "TexturePath",
+                    "Data" : [ "../Data/Images/grass.jpg" ]
+                }
+            ]
+        },
         {
             "Name" : "TransformComponent",
             "Properties" : [

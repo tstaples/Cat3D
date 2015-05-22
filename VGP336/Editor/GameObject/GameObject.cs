@@ -112,7 +112,7 @@ namespace Editor
             for (int i = 0; i < numFields; ++i)
             {
                 Field field = c.Fields[i];
-                byte[] fdata = NativeTypes.ConvertToBytes(field.value, field.dataType);
+                byte[] fdata = NativeTypes.ConvertToBytes(field.value, field.dataType, field.type);
                 sOut.WriteArray(fdata);
             }
             return buffer;
@@ -132,6 +132,10 @@ namespace Editor
             else if (name == "MeshComponent")
             {
                 component = new MeshComponent();
+            }
+            else if (name == "MeshRendererComponent")
+            {
+                component = new MeshRendererComponent();
             }
             return component;
         }

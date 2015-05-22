@@ -199,9 +199,6 @@ void EditorApp::OnUpdate()
     //    mCamera.Strafe(-kMoveSpeed * deltaTime);
     //}
 
-	// Render
-	mGraphicsSystem.BeginRender(Color::Black());
-    
     for (auto object : mObjects)
     {
         // Update the components
@@ -215,6 +212,9 @@ void EditorApp::OnUpdate()
         }
         SimpleDraw::AddAABB(object.GetCollider(), col);
     }
+
+	// Render
+	mGraphicsSystem.BeginRender(Color::Black());
 
     mRenderService.Update();
 

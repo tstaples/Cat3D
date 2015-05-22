@@ -90,5 +90,20 @@ namespace Editor
             }
             return bytes;
         }
+
+        // Writes a byte array as a wide string
+        public static byte[] GetWBytes(string s)
+        {
+            // Length is doubled since we're inserting a null every other character
+            int length = s.Length * 2;
+            byte[] bytes = new byte[length];
+            int c = 0;
+            for (int i = 0; i < s.Length; ++i)
+            {
+                bytes[c++] = (byte)s[i];
+                bytes[c++] = (byte)'\0';
+            }
+            return bytes;
+        }
     }
 }
