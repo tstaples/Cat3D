@@ -12,56 +12,39 @@
 //====================================================================================================
 
 #include "Service.h"
+
+#include "GameObject.h"
 #include "MeshRenderer.h"
-#include "RepositoryTypes.h"
 
 //====================================================================================================
 // Forward Declarations
 //====================================================================================================
 
-//class GraphicsSystem;
-//
-////====================================================================================================
-//// Struct
-////====================================================================================================
-//
-//// Data needed to render
-//struct RenderInfo
-//{
-//    // Component ID's
-//    ID transformId;
-//    ID modelId;
-//};
-//
-////====================================================================================================
-//// Class Declarations
-////====================================================================================================
-//
-//class RenderService : public Service<RenderInfo>
-//{
-//public:
-//    RenderService();
-//    ~RenderService();
-//    
-//    void Initialize(GraphicsSystem& graphicsSystem, 
-//                    GameObjectRepository& gameObjectRepo, 
-//                    TransformRepository& transformRepo, 
-//                    ModelRepository& modelRepo,
-//                    Camera& camera);
-//    void Terminate();
-//
-//    void Update();
-//
-//private:
-//    virtual void OnSubscribe(ID ObjId, RenderInfo& info);
-//
-//private:
-//    GraphicsSystem* mpGraphicsSystem;
-//    MeshRenderer mRenderer;
-//
-//    GameObjectRepository* mpGameObjectRepo;
-//    TransformRepository* mpTransformRepo;
-//    ModelRepository* mpModelRepo;
-//};
+class Camera;
+class GraphicsSystem;
+
+//====================================================================================================
+// Class Declarations
+//====================================================================================================
+
+class RenderService : public Service
+{
+public:
+    RenderService();
+    ~RenderService();
+    
+    void Initialize(GraphicsSystem& graphicsSystem, Camera& camera);
+    void Terminate();
+
+    // Must be called between BeginRender() and EndRender()
+    void Update();
+
+private:
+    virtual void OnSubscribe(GameObjectHandle handle);
+
+private:
+    GraphicsSystem* mpGraphicsSystem;
+    MeshRenderer mRenderer;
+};
 
 #endif // #ifndef INCLUDED_ENGINE_RENDERSERVICE_H

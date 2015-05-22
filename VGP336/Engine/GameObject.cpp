@@ -31,6 +31,19 @@ GameObject::~GameObject()
 
 //----------------------------------------------------------------------------------------------------
 
+void GameObject::Update(f32 deltaTime)
+{
+    for (Component* c : mComponents)
+    {
+        c->Update(deltaTime);
+        // Reset flag as anything that relies on it will have been dealt with
+        // already.
+        c->SetIsDirty(false);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void GameObject::AddComponent(Component* component)
 {
     // Inject ourself into the component as we now own it.

@@ -36,6 +36,7 @@ public:
     GameObject(const char* name);
     ~GameObject();
 
+    void Update(f32 deltaTime);
     void AddComponent(Component* component);
 
     // Returns bool rather than pointer to force caching local pointer
