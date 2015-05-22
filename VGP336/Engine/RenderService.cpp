@@ -12,6 +12,7 @@
 
 #include "Camera.h"
 #include "GraphicsSystem.h"
+#include "IO.h"
 #include "MemHandle.h"
 #include "MemoryPool.h"
 #include "MeshBuilder.h"
@@ -63,24 +64,38 @@ void RenderService::Update()
         GameObject* gameObject = it->Get();
         TransformComponent* transformComponent = nullptr;
         MeshComponent* meshComponent = nullptr;
+        MeshRendererComponent* meshRendererComponent = nullptr;
 
         gameObject->GetComponent(transformComponent);
         gameObject->GetComponent(meshComponent);
+        if (gameObject->FindComponent(meshRendererComponent))
+        {
+            // Destroy old texture and load new one
+            Texture& texture = meshRendererComponent->GetTexture();
+            //std::wstring texturePath = IO::CharToWChar(meshRendererComponent->GetTexturePath());
+            std::wstring texturePath = meshRendererComponent->GetTexturePath();
+            texture.Terminate();
+            texture.Initialize(*mpGraphicsSystem, texturePath.c_str());
+            mRenderer.SetTexture(texture);
+        }
 
         MeshBuffer& meshBuffer = meshComponent->GetMeshBuffer();
         Math::Matrix transform = transformComponent->GetTransform();
 
         // Check if the component was modified
-        if (meshComponent->mFilterModified)
+        if (meshComponent->IsDirty())
         {
-            // Update the MeshBuffer
             Mesh& mesh = meshComponent->GetMesh();
+
             // Recreate the mesh buffer
             meshBuffer.Terminate();
             meshBuffer.Initialize(*mpGraphicsSystem, mesh.GetVertexFormat(), mesh);
             meshComponent->mFilterModified = false;
         }
         mRenderer.Render(meshBuffer, transform);
+
+        // Temp: uncheck flag here until a more suitable location is found
+        meshComponent->SetIsDirty(false);
     }
 }
 
@@ -91,15 +106,25 @@ void RenderService::OnSubscribe(GameObjectHandle handle)
     GameObject* gameObject = handle.Get();
     TransformComponent* transformComponent = nullptr;
     MeshComponent* meshComponent = nullptr;
-    //MeshRendererComponent* meshRendererComponent = nullptr;
+    MeshRendererComponent* meshRendererComponent = nullptr;
     
     // TODO: throw exception instead of asserting
     gameObject->GetComponent(transformComponent);
     gameObject->GetComponent(meshComponent);
-    //gameObject->GetComponent(meshRendererComponent); // Not needed for now
 
     // Init the mesh buffer
     Mesh& mesh = meshComponent->GetMesh();
     MeshBuffer& meshBuffer = meshComponent->GetMeshBuffer();
     meshBuffer.Initialize(*mpGraphicsSystem, mesh.GetVertexFormat(), mesh);
+
+    // MeshRenderer is not a dependency, so allow it to not exist
+    if (gameObject->FindComponent(meshRendererComponent))
+    {
+        // Init and set the texture
+        Texture& texture = meshRendererComponent->GetTexture();
+        //std::wstring texturePath = IO::CharToWChar(meshRendererComponent->GetTexturePath());
+        std::wstring texturePath = meshRendererComponent->GetTexturePath();
+        texture.Initialize(*mpGraphicsSystem, texturePath.c_str()); 
+        mRenderer.SetTexture(texture);
+    }
 }

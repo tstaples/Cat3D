@@ -36,9 +36,10 @@ void GameObject::Update(f32 deltaTime)
     for (Component* c : mComponents)
     {
         c->Update(deltaTime);
-        // Reset flag as anything that relies on it will have been dealt with
-        // already.
-        c->SetIsDirty(false);
+
+        // Flag unchecked in last service to run for now until I can find a better method.
+        // Reset flag as anything that relies on it will have been dealt with already
+        //c->SetIsDirty(false);
     }
 }
 

@@ -14,7 +14,6 @@ MeshComponent::MeshComponent()
     , mFilterModified(false)
 {
     // Default to cube
-    //MeshBuilder::CreateSphere(mMesh, 20u, 20u);
     MeshBuilder::CreateCube(mMesh);
 }
 
@@ -22,6 +21,7 @@ MeshComponent::MeshComponent()
 
 MeshComponent::~MeshComponent()
 {
+    // TODO: have this managed by some system
     mMesh.Destroy();
     mMeshBuffer.Terminate();
 }
@@ -45,7 +45,7 @@ void MeshComponent::Update(f32 deltaTime)
             MeshBuilder::CreateSphere(mMesh, 20u, 20u);
             break;
         case MeshComponent::Cylinder:
-            MeshBuilder::CreateCylinder(mMesh, 5.0f, 20u, 20u);
+            MeshBuilder::CreateCylinder(mMesh, 1.0f, 20u, 20u);
             break;
         case MeshComponent::Torus:
             MeshBuilder::CreateTorus(mMesh, 5.0f, 3.0f, 20u, 20u);

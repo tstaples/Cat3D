@@ -48,7 +48,8 @@ void Texture::Initialize(GraphicsSystem& gs, const wchar_t* pFilename)
     {
         hr = CreateWICTextureFromFile(gs.GetDevice(), gs.GetContext(), pFilename, nullptr, &mpTexture);
     }
-    ASSERT(hr == 0, "Failed to init texture");
+    // TODO: Output to error log
+    ASSERT(hr == 0, "[Texture] Failed to load texture: %ls", pFilename);
 }
 
 //----------------------------------------------------------------------------------------------------

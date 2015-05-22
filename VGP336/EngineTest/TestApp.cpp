@@ -128,7 +128,10 @@ void TestApp::OnInitialize(u32 width, u32 height)
 
     //TransformComponent* t1 = new TransformComponent();
     //TransformComponent* t2 = new TransformComponent();
-    //MeshComponent* meshc = new MeshComponent();
+    //MeshRendererComponent* meshc = new MeshRendererComponent();
+    //const MetaClass* mc = meshc->GetMetaClass();
+    
+
     //t1->Translate(Math::Vector3(15.0f, 3.0f, 5.0f));
     //t2->Translate(Math::Vector3(-15.0f, 3.0f, 5.0f));
 
@@ -263,12 +266,7 @@ void TestApp::OnUpdate()
         mc->SetIsDirty(true);
     }
 
-	// Render
-	mGraphicsSystem.BeginRender(Color::Black());
-    
-    //DrawGroundPlane();
-
-    for (auto object : mObjects)
+	for (auto object : mObjects)
     {
         // Update the components
         GameObject* gameObject = object.GetGameObject();
@@ -281,6 +279,12 @@ void TestApp::OnUpdate()
         }
         SimpleDraw::AddAABB(object.GetCollider(), col);
     }
+    
+    // Render
+	mGraphicsSystem.BeginRender(Color::Black());
+    
+    //DrawGroundPlane();
+
     // Update services
     mRenderService.Update();
 
