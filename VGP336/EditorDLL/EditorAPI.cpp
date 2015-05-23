@@ -99,9 +99,9 @@ unsigned int GetSelectedObjectData(unsigned char* buffer)
 
 //----------------------------------------------------------------------------------------------------
 
-void UpdateComponent(unsigned char* buffer, unsigned int size)
+int UpdateComponent(unsigned char* buffer, unsigned int size)
 {
-    app.UpdateComponent(buffer, size);
+    return (int)app.UpdateComponent(buffer, size);
 }
 
 //----------------------------------------------------------------------------------------------------

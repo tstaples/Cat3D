@@ -27,7 +27,6 @@ public:
     ~MeshRendererComponent();
 
     const wchar_t* GetTexturePath() const   { return mTexturePath; }
-    //const char* GetTexturePath() const   { return mTexturePath.c_str(); }
     Texture& GetTexture()                   { return mTexture; }
 
 private:
@@ -35,9 +34,7 @@ private:
 
     // Note: Keep this as the last member so if it grows/shrinks it doesn't alter
     // the offset of other members.
-    //wchar_t* mTexturePath;
     wchar_t mTexturePath[MAX_PATH];
-    //std::string mTexturePath;
 };
 
 //====================================================================================================

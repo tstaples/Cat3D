@@ -46,7 +46,8 @@ EditorAPI unsigned int GetSelectedObjectData(unsigned char* buffer);
 // Updates the values of a particular component.
 // @param buffer: buffer containing the serialized component data.
 // @param size: size in bytes of the component data.
-EditorAPI void UpdateComponent(unsigned char* buffer, unsigned int size);
+// Returns 0 if succeeded.
+EditorAPI int UpdateComponent(unsigned char* buffer, unsigned int size);
 
 // Gets basic info about all objects in the world.
 // @param buffer: externally managed buffer to output the serialized data to.

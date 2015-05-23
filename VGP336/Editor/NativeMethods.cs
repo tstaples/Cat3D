@@ -36,7 +36,7 @@ namespace Editor
         public unsafe static extern uint GetSelectedObjectData(byte[] buffer);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl, CharSet=CharSet.Ansi)]
-        public unsafe static extern void UpdateComponent(byte[] buffer, uint size);
+        public unsafe static extern int UpdateComponent(byte[] buffer, uint size);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern uint DiscoverGameObjects(byte[] buffer);

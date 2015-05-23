@@ -42,7 +42,7 @@ namespace Editor
             }
         }
 
-        public void OnComponentModified(string name, string propertyName, object newVal)
+        public bool OnComponentModified(string name, string propertyName, object newVal)
         {
             // Name in property grid omits the "Component" part
             
@@ -52,8 +52,12 @@ namespace Editor
             c.OnModify(propertyName, newVal);
 
             byte[] buffer = CurrentGameObject.WriteComponent(c);
-            NativeMethods.UpdateComponent(buffer, (uint)buffer.Length);
-            GridView.Refresh();
+            if (NativeMethods.UpdateComponent(buffer, (uint)buffer.Length) == 0)
+            {
+                GridView.Refresh();
+                return true;
+            }
+            return false;
         }
     }
 }

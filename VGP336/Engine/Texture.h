@@ -29,7 +29,7 @@ public:
 	Texture();
 	~Texture();
 	
-	void Initialize(GraphicsSystem& gs, const wchar_t* pFilename);
+	bool Initialize(GraphicsSystem& gs, const wchar_t* pFilename);
 	void Terminate();
 	
 	void BindVS(GraphicsSystem& gs, u32 index);
