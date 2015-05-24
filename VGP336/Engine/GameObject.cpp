@@ -54,7 +54,7 @@ void GameObject::AddComponent(Component* component)
 
 //----------------------------------------------------------------------------------------------------
 
-void GameObject::SerializeOut(u8* buffer, u32 size, u32& offset)
+bool GameObject::Serialize(u8* buffer, u32 size, u32& offset)
 {
     SerialWriter writer(buffer, size);
 
@@ -67,59 +67,89 @@ void GameObject::SerializeOut(u8* buffer, u32 size, u32& offset)
         const MetaClass* compMetaClass = c->GetMetaClass();
         writer.WriteLengthEncodedString(compMetaClass->GetName());
 
+        // Write how many members this component has
         const u32 numFields = compMetaClass->GetNumFields();
         writer.Write(numFields);
         for (u32 i=0; i < numFields; ++i)
         {
             const MetaField* field = compMetaClass->GetFieldAtIndex(i);
+            const MetaType* metaType = field->GetType();
             const u32 offset = field->GetOffset();
             const u32 fieldSize = field->GetType()->GetSize();
-            char* fieldData = ((char*)c) + offset;
+            void* fieldData = ((char*)c) + offset;
+
+            // TODO: The metadata is only needed for the editor side, so we shouldn't be
+            // writing it in the game object.
 
             // Write the metadata for each field then the data itself
             writer.WriteLengthEncodedString(field->GetName());
             writer.Write(field->GetType()->GetType());
             writer.Write(fieldSize);
             writer.Write(offset);
-            writer.WriteArray(fieldData, fieldSize);
+            metaType->Serialize(fieldData, writer);
         }
     }
     offset = writer.GetOffset();
+    return true;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-void GameObject::SerializeIn(const u8* buffer, u32 size)
+bool GameObject::Deserialize(const u8* buffer, u32 size)
 {
-    // TODO
+    SerialReader reader(buffer, size);
 
-    //SerialReader reader(buffer, size);
-    //
-    //mName = reader.ReadLengthEncodedString();
-    //const u32 numComponents = reader.Read<u32>();
-    //ASSERT(numComponents == mComponents.size(), "[GameObject] Error serializing into object: number of components does not match");
+    mName = reader.ReadLengthEncodedString();
+    const u32 numComponents = reader.Read<u32>();
+    for (u32 i=0; i < numComponents; ++i)
+    {
+        // Look up component by name
+        Component* component = nullptr;
+        std::string compMetaClassName = reader.ReadLengthEncodedString();
+        if (!GetComponentByName(compMetaClassName.c_str(), component))
+        {
+            return false;
+        }
 
-    //std::string compName = reader.ReadLengthEncodedString();
-    //for (Component* c : mComponents)
-    //{
-    //    // Find the component by name
-    //    const MetaClass* compMetaClass = c->GetMetaClass();
-    //    if (compName.compare(compMetaClass->GetName()) == 0)
-    //    {
-    //        char data[2048];
+        // Read in the component fields
+        const u32 numFields = reader.Read<u32>();
+        for (u32 j=0; j < numFields; ++j)
+        {
+            const MetaField* metaField = component->GetMetaClass()->GetFieldAtIndex(j);
+            const MetaType* metaType = metaField->GetType();
 
-    //        const MetaField* fields = compMetaClass->GetFields();
-    //        const u32 numFields = compMetaClass->GetNumFields();
-    //        for (u32 i=0; i < numFields; ++i)
-    //        {
-    //            u32 offset = fields[i].GetOffset();
-    //            u32 fieldSize = fields[i].GetType()->GetSize();
-    //            reader.ReadArray(data, fieldSize);
+            std::string fieldName = reader.ReadLengthEncodedString();
+            MetaType::Type fieldType = reader.Read<MetaType::Type>();
+            const u32 fieldOffset = reader.Read<u32>();
+            const u32 fieldSize = reader.Read<u32>();
+            
+            // May as well make use of the metadata
+            ASSERT(fieldName == metaField->GetName(), "[GameObject] Deserialization error: field names do not match");
+            ASSERT(fieldType == metaField->GetType()->GetType(), "[GameObject] Deserialization error: field types do not match");
+            ASSERT(fieldOffset == metaField->GetOffset(), "[GameObject] Deserialization error: field offsets do not match");
+            ASSERT(fieldSize == metaField->GetType()->GetSize(), "[GameObject] Deserialization error: field sizes do not match");
 
-    //            char* cdata = ((char*)c) + offset;
-    //            memcpy(cdata, data, fieldSize);
-    //        }
-    //        break;
-    //    }
-    //}
+            // Get a pointer to the field and deserialize the data into it
+            void* fieldData = ((char*)component) + fieldOffset;
+            metaType->Deserialize(reader, fieldData);
+        }
+    }
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool GameObject::GetComponentByName(const char* name, Component* component)
+{
+    for (Component* c : mComponents)
+    {
+        const MetaClass* compMetaClass = c->GetMetaClass();
+        if (strcmp(name, compMetaClass->GetName()) == 0)
+        {
+            component = c;
+            return true;
+        }
+    }
+    component = nullptr;
+    return false;
 }

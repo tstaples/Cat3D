@@ -50,7 +50,7 @@ namespace Editor
             int len = ReadInt();
             string s = GetString(buffer, offset, len);
             offset += len;
-            Debug.Assert(offset < buffer.Length);
+            Debug.Assert(offset <= buffer.Length);
             return s;
         }
 
@@ -59,7 +59,7 @@ namespace Editor
             byte[] block = new byte[size];
             Buffer.BlockCopy(buffer, offset, block, 0, size);
             offset += size;
-            Debug.Assert(offset < buffer.Length);
+            Debug.Assert(offset <= buffer.Length);
             return block;
         }
 
@@ -67,7 +67,7 @@ namespace Editor
         {
             int data = BitConverter.ToInt32(buffer, offset);
             offset += sizeof(int);
-            Debug.Assert(offset < buffer.Length);
+            Debug.Assert(offset <= buffer.Length);
             return data;
         }
 
@@ -75,7 +75,7 @@ namespace Editor
         {
             uint data = BitConverter.ToUInt32(buffer, offset);
             offset += sizeof(uint);
-            Debug.Assert(offset < buffer.Length);
+            Debug.Assert(offset <= buffer.Length);
             return data;
         }
 
@@ -83,7 +83,7 @@ namespace Editor
         {
             short data = BitConverter.ToInt16(buffer, offset);
             offset += sizeof(short);
-            Debug.Assert(offset < buffer.Length);
+            Debug.Assert(offset <= buffer.Length);
             return data;
         }
 
@@ -91,7 +91,7 @@ namespace Editor
         {
             ushort data = BitConverter.ToUInt16(buffer, offset);
             offset += sizeof(ushort);
-            Debug.Assert(offset < buffer.Length);
+            Debug.Assert(offset <= buffer.Length);
             return data;
         }
 

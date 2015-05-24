@@ -4,6 +4,8 @@
 #include "EngineMath.h"
 #include "IO.h"
 #include "Meta.h"
+#include "SerialWriter.h"
+#include "SerialReader.h"
 
 #include <json/json.h>
 
@@ -38,11 +40,57 @@ META_REGISTER_TYPE(MetaType::Double, f64);
 META_REGISTER_TYPE(MetaType::Bool, bool);
 META_REGISTER_TYPE(MetaType::String, std::string);
 META_REGISTER_TYPE(MetaType::WString, std::wstring);
-META_REGISTER_TYPE(MetaType::Path, wchar_t[MAX_PATH]);
 META_REGISTER_TYPE(MetaType::Vector3, Math::Vector3);
 META_REGISTER_TYPE(MetaType::Matrix, Math::Matrix);
 META_REGISTER_TYPE(MetaType::AABB, Math::AABB);
 //META_REGISTER_TYPE(MetaType::Array, std::vector); // Need to know vector type
+
+//----------------------------------------------------------------------------------------------------
+
+namespace
+{
+
+// Serialize specializations
+// TODO: Write tests for these
+template <typename DataType>
+void Serialize(void* data, SerialWriter& writer)
+{
+    DataType d = *static_cast<DataType*>(data);
+    writer.Write(d);
+}
+template <> void Serialize<std::wstring>(void* data, SerialWriter& writer)
+{
+    std::wstring* memberStr = (std::wstring*)data;
+    writer.WriteLengthEncodedString(*memberStr);
+}
+template <> void Serialize<std::string>(void* data, SerialWriter& writer)
+{
+    std::string* memberStr = (std::string*)data;
+    writer.WriteLengthEncodedString(*memberStr);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+// Binary deserialization
+// Note: assumes all strings are length encoded
+template <typename DataType>
+void Deserialize(SerialReader& reader, void* dst)
+{
+    DataType d = reader.Read<DataType>();
+    memcpy(dst, &d, sizeof(DataType));
+}
+template <> void Deserialize<std::wstring>(SerialReader& reader, void* dst)
+{
+    std::wstring* memberStr = (std::wstring*)dst;
+    std::wstring instr = reader.ReadLengthEncodedStringW();
+    memberStr->assign(instr);
+}
+template <> void Deserialize<std::string>(SerialReader& reader, void* dst)
+{
+    std::string* memberStr = (std::string*)dst;
+    std::string instr = reader.ReadLengthEncodedString();
+    memberStr->assign(instr);
+}
 
 //----------------------------------------------------------------------------------------------------
 
@@ -81,18 +129,14 @@ template <> void Deserialize<bool>(const Json::Value& jvalue, void* data)
 template <> void Deserialize<std::wstring>(const Json::Value& jvalue, void* data)
 {
     std::wstring s = IO::CharToWChar(jvalue[0].asString());
-    memcpy(data, &s, s.length());
+    std::wstring* memberStr = (std::wstring*)data;
+    memberStr->assign(s);
 }
 template <> void Deserialize<std::string>(const Json::Value& jvalue, void* data)
 {
     std::string s = jvalue[0].asString();
-    memcpy((s8*)data, s.c_str(), s.length());
-}
-template <> void Deserialize<wchar_t[MAX_PATH]>(const Json::Value& jvalue, void* data)
-{
-    memset(data, 0, MAX_PATH * sizeof(wchar_t));
-    std::wstring s = IO::CharToWChar(jvalue[0].asString());
-    memcpy(data, s.c_str(), s.length() * sizeof(wchar_t));
+    std::string* memberStr = (std::string*)data;
+    memberStr->assign(s);
 }
 template <> void Deserialize<Math::Vector3>(const Json::Value& jvalue, void* data)
 {
@@ -122,21 +166,61 @@ template <> void Deserialize<Math::AABB>(const Json::Value& jvalue, void* data)
 
 //----------------------------------------------------------------------------------------------------
 
-typedef void (*DeserializeFunc)(const Json::Value&, void*);
-static std::map<MetaType::Type, DeserializeFunc> sDeserializeMap = 
+namespace TypeMaps
 {
-    { MetaType::Int, Deserialize<s32> },
-    { MetaType::UInt, Deserialize<u32> },
-    { MetaType::Float, Deserialize<f32> },
-    { MetaType::Double, Deserialize<f64> },
-    { MetaType::Bool, Deserialize<bool> },
-    { MetaType::String, Deserialize<std::string> },
-    { MetaType::WString, Deserialize<std::wstring> },
-    { MetaType::Path, Deserialize<wchar_t[MAX_PATH]> },
-    { MetaType::Vector3, Deserialize<Math::Vector3> },
-    { MetaType::Matrix, Deserialize<Math::Matrix> },
-    { MetaType::AABB, Deserialize<Math::AABB> }
-};
+    typedef void (*SerializeFunc)(void*, SerialWriter&);
+    static std::map<MetaType::Type, SerializeFunc> sSerializeMap = 
+    {
+        { MetaType::Int,        Serialize<s32> },
+        { MetaType::UInt,       Serialize<u32> },
+        { MetaType::Float,      Serialize<f32> },
+        { MetaType::Double,     Serialize<f64> },
+        { MetaType::Bool,       Serialize<bool> },
+        { MetaType::String,     Serialize<std::string> },
+        { MetaType::WString,    Serialize<std::wstring> },
+        { MetaType::Vector3,    Serialize<Math::Vector3> },
+        { MetaType::Matrix,     Serialize<Math::Matrix> },
+        { MetaType::AABB,       Serialize<Math::AABB> }
+    };
+
+    //----------------------------------------------------------------------------------------------------
+
+    typedef void (*DeserializeFunc)(const Json::Value&, void*);
+    static std::map<MetaType::Type, DeserializeFunc> sDeserializeMap = 
+    {
+        { MetaType::Int,        Deserialize<s32> },
+        { MetaType::UInt,       Deserialize<u32> },
+        { MetaType::Float,      Deserialize<f32> },
+        { MetaType::Double,     Deserialize<f64> },
+        { MetaType::Bool,       Deserialize<bool> },
+        { MetaType::String,     Deserialize<std::string> },
+        { MetaType::WString,    Deserialize<std::wstring> },
+        { MetaType::Vector3,    Deserialize<Math::Vector3> },
+        { MetaType::Matrix,     Deserialize<Math::Matrix> },
+        { MetaType::AABB,       Deserialize<Math::AABB> }
+    };
+
+    typedef void (*DeserializeBinaryFunc)(SerialReader& reader, void* dst);
+    static std::map<MetaType::Type, DeserializeBinaryFunc> sDeserializeBinaryMap = 
+    {
+        { MetaType::Int,        Deserialize<s32> },
+        { MetaType::UInt,       Deserialize<u32> },
+        { MetaType::Short,      Deserialize<s16> },
+        { MetaType::UShort,     Deserialize<u16> },
+        { MetaType::Char,       Deserialize<s8> },
+        { MetaType::UChar,      Deserialize<u8> },
+        { MetaType::Float,      Deserialize<f32> },
+        { MetaType::Double,     Deserialize<f64> },
+        { MetaType::Bool,       Deserialize<bool> },
+        { MetaType::String,     Deserialize<std::string> },
+        { MetaType::WString,    Deserialize<std::wstring> },
+        { MetaType::Vector3,    Deserialize<Math::Vector3> },
+        { MetaType::Matrix,     Deserialize<Math::Matrix> },
+        { MetaType::AABB,       Deserialize<Math::AABB> }
+    };
+} // namespace TypeMaps
+
+} // anonymous namespace
 
 //----------------------------------------------------------------------------------------------------
 
@@ -151,7 +235,21 @@ MetaType::MetaType(Type type, u32 size, bool ispointer, bool isArray, u32 arrsiz
 
 //----------------------------------------------------------------------------------------------------
 
+void MetaType::Serialize(void* data, SerialWriter& writer) const
+{
+    TypeMaps::sSerializeMap[mType](data, writer);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void MetaType::Deserialize(const Json::Value& jsonValue, void* data) const
 {
-    sDeserializeMap[mType](jsonValue, data);
+    TypeMaps::sDeserializeMap[mType](jsonValue, data);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void MetaType::Deserialize(SerialReader& reader, void* dst) const
+{
+    TypeMaps::sDeserializeBinaryMap[mType](reader, dst);
 }

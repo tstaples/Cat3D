@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Editor
 {
@@ -23,13 +24,12 @@ namespace Editor
             Bool    = 8,
             String  = 9,
             WString = 10,
-            Path    = 11,
-            Vector3 = 12,
-            Matrix  = 13,
-            AABB    = 14,
-            Class   = 15,
-            Array   = 16,
-            Pointer = 17
+            Vector3 = 11,
+            Matrix  = 12,
+            AABB    = 13,
+            Class   = 14,
+            Array   = 15,
+            Pointer = 16
         };
 
         public static Dictionary<EType, Type> Types = new Dictionary<EType, Type>()
@@ -45,7 +45,6 @@ namespace Editor
             { EType.Bool, typeof(bool) },
             { EType.String, typeof(string) },
             { EType.WString, typeof(string) }, // string in c# is wide char
-            { EType.Path, typeof(string) },     // i think this works
             { EType.Vector3, typeof(Vector3) },
             { EType.Matrix, typeof(Matrix) },
             { EType.AABB, typeof(AABB) },
@@ -59,8 +58,10 @@ namespace Editor
             return Types[(EType)t];
         }
 
-        public static object ConvertToType(byte[] bytes, Type type)
+        public static object ConvertToType(byte[] bytes, Type type, int originalType)
         {
+            EType ot = (EType)originalType;
+            #region BasicTypes
             if (type == typeof(int))
             {
                 return BitConverter.ToInt32(bytes, 0);
@@ -97,9 +98,15 @@ namespace Editor
             {
                 return BitConverter.ToBoolean(bytes, 0);
             }
+            #endregion
             else if (type == typeof(string))
             {
-                //return BitConverter.ToString(bytes, 0);
+                if (ot == EType.String)
+                {
+                    // Assume all string types are length encoded
+                    SerializeIn sIn = new SerializeIn(bytes);
+                    return sIn.ReadStringLE();
+                }
                 return SerializeIn.GetString(bytes, 0, bytes.Length);
             }
             else if (type == typeof(Vector3))
@@ -120,6 +127,7 @@ namespace Editor
         public static byte[] ConvertToBytes(object obj, Type type, int eType)
         {
             EType t = (EType)eType;
+            #region basic types
             if (type == typeof(int))
             {
                 return BitConverter.GetBytes((int)obj);
@@ -156,11 +164,17 @@ namespace Editor
             {
                 return BitConverter.GetBytes((bool)obj);
             }
+            #endregion
             else if (type == typeof(string))
             {
-                if (t == EType.WString || t == EType.Path)
+                if (t == EType.WString || t == EType.String)
                 {
-                    return SerializeOut.GetWBytes(obj.ToString());
+                    // TODO: clean this up
+                    string str = obj.ToString();
+                    byte[] bytes = new byte[str.Length + sizeof(uint)];
+                    SerializeOut sOut = new SerializeOut(bytes);
+                    sOut.WriteStringLE(str);
+                    return bytes;
                 }
                 return SerializeOut.GetBytes(obj.ToString());
             }

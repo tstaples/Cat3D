@@ -9,7 +9,6 @@ META_CLASS_END
 
 MeshRendererComponent::MeshRendererComponent()
 {
-    memset(mTexturePath, 0, MAX_PATH * sizeof(wchar_t));
 }
 
 //----------------------------------------------------------------------------------------------------

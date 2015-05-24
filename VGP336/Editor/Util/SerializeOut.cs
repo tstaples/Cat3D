@@ -28,7 +28,7 @@ namespace Editor
             byte[] bytes = BitConverter.GetBytes(data);
             Buffer.BlockCopy(bytes, 0, buffer, offset, sizeof(int));
             offset += sizeof(int);
-            Debug.Assert(offset < buffer.Length);
+            Debug.Assert(offset <= buffer.Length);
         }
 
         public void Write(short data)
@@ -36,7 +36,7 @@ namespace Editor
             byte[] bytes = BitConverter.GetBytes(data);
             Buffer.BlockCopy(bytes, 0, buffer, offset, sizeof(short));
             offset += sizeof(short);
-            Debug.Assert(offset < buffer.Length);
+            Debug.Assert(offset <= buffer.Length);
         }
 
         public void Write(ushort data)
@@ -44,7 +44,7 @@ namespace Editor
             byte[] bytes = BitConverter.GetBytes(data);
             Buffer.BlockCopy(bytes, 0, buffer, offset, sizeof(ushort));
             offset += sizeof(ushort);
-            Debug.Assert(offset < buffer.Length);
+            Debug.Assert(offset <= buffer.Length);
         }
 
         public void Write(float data)
@@ -52,7 +52,7 @@ namespace Editor
             byte[] bytes = BitConverter.GetBytes(data);
             Buffer.BlockCopy(bytes, 0, buffer, offset, sizeof(float));
             offset += sizeof(float);
-            Debug.Assert(offset < buffer.Length);
+            Debug.Assert(offset <= buffer.Length);
         }
         #endregion
 
@@ -64,14 +64,14 @@ namespace Editor
             // Use our own implementation to convert string to bytes since we want multibyte
             Buffer.BlockCopy(GetBytes(s), 0, buffer, offset, len);
             offset += len;
-            Debug.Assert(offset < buffer.Length);
+            Debug.Assert(offset <= buffer.Length);
         }
 
         public void WriteArray(byte[] arr)
         {
             Buffer.BlockCopy(arr, 0, buffer, offset, arr.Length);
             offset += arr.Length;
-            Debug.Assert(offset < buffer.Length);
+            Debug.Assert(offset <= buffer.Length);
         }
 
         public byte[] GetBuffer()

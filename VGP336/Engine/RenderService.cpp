@@ -72,7 +72,8 @@ void RenderService::Update()
         {
             // Destroy old texture and load new one
             Texture& texture = meshRendererComponent->GetTexture();
-            std::wstring texturePath = meshRendererComponent->GetTexturePath();
+            std::wstring texturePath = IO::CharToWChar(meshRendererComponent->GetTexturePath());
+            //std::wstring texturePath = meshRendererComponent->GetTexturePath();
             texture.Terminate();
             texture.Initialize(*mpGraphicsSystem, texturePath.c_str());
             mRenderer.SetTexture(texture);
@@ -121,7 +122,7 @@ void RenderService::OnSubscribe(GameObjectHandle handle)
     {
         // Init and set the texture
         Texture& texture = meshRendererComponent->GetTexture();
-        std::wstring texturePath = meshRendererComponent->GetTexturePath();
+        std::wstring texturePath = IO::CharToWChar(meshRendererComponent->GetTexturePath());
         texture.Initialize(*mpGraphicsSystem, texturePath.c_str()); 
         mRenderer.SetTexture(texture);
     }

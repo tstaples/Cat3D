@@ -87,7 +87,7 @@ namespace Editor
 
                     // Use our hacky conversion method
                     byte[] fdata = sIn.GetBlock(field.size);
-                    field.value = NativeTypes.ConvertToType(fdata, field.dataType);
+                    field.value = NativeTypes.ConvertToType(fdata, field.dataType, field.type);
 
                     fields[j] = field;
                 }

@@ -32,6 +32,7 @@
             this.EditorTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.InspectorBox = new System.Windows.Forms.GroupBox();
             this.InspectorGrid = new System.Windows.Forms.PropertyGrid();
+            this.ViewPanel = new Editor.SelectablePanel();
             this.SceneHierarchyBox = new System.Windows.Forms.GroupBox();
             this.SceneHierarchyTree = new System.Windows.Forms.TreeView();
             this.ToolMenuStrip = new System.Windows.Forms.MenuStrip();
@@ -40,7 +41,9 @@
             this.componentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SceneHierarchyContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewPanel = new Editor.SelectablePanel();
+            this.boxColliderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.meshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.meshRendererToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EditorTableLayout.SuspendLayout();
             this.InspectorBox.SuspendLayout();
             this.SceneHierarchyBox.SuspendLayout();
@@ -56,7 +59,7 @@
             this.EditorTableLayout.ColumnCount = 3;
             this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 21.67266F));
             this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 78.32734F));
-            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 359F));
+            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 361F));
             this.EditorTableLayout.Controls.Add(this.InspectorBox, 2, 1);
             this.EditorTableLayout.Controls.Add(this.ViewPanel, 1, 1);
             this.EditorTableLayout.Controls.Add(this.SceneHierarchyBox, 0, 1);
@@ -78,10 +81,10 @@
             this.InspectorBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.InspectorBox.Controls.Add(this.InspectorGrid);
             this.InspectorBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.InspectorBox.Location = new System.Drawing.Point(1115, 72);
+            this.InspectorBox.Location = new System.Drawing.Point(1113, 72);
             this.InspectorBox.MinimumSize = new System.Drawing.Size(250, 500);
             this.InspectorBox.Name = "InspectorBox";
-            this.InspectorBox.Size = new System.Drawing.Size(354, 545);
+            this.InspectorBox.Size = new System.Drawing.Size(356, 545);
             this.InspectorBox.TabIndex = 1;
             this.InspectorBox.TabStop = false;
             this.InspectorBox.Text = "Inspector";
@@ -92,10 +95,23 @@
             this.InspectorGrid.Location = new System.Drawing.Point(3, 16);
             this.InspectorGrid.Name = "InspectorGrid";
             this.InspectorGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.InspectorGrid.Size = new System.Drawing.Size(348, 526);
+            this.InspectorGrid.Size = new System.Drawing.Size(350, 526);
             this.InspectorGrid.TabIndex = 0;
             this.InspectorGrid.ToolbarVisible = false;
             this.InspectorGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.InspectorGrid_PropertyValueChanged);
+            // 
+            // ViewPanel
+            // 
+            this.ViewPanel.AutoSize = true;
+            this.ViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ViewPanel.Location = new System.Drawing.Point(245, 72);
+            this.ViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
+            this.ViewPanel.Name = "ViewPanel";
+            this.ViewPanel.Padding = new System.Windows.Forms.Padding(3);
+            this.ViewPanel.Size = new System.Drawing.Size(861, 545);
+            this.ViewPanel.TabIndex = 2;
+            this.ViewPanel.TabStop = true;
             // 
             // SceneHierarchyBox
             // 
@@ -133,7 +149,7 @@
             this.componentToolStripMenuItem});
             this.ToolMenuStrip.Location = new System.Drawing.Point(242, 1);
             this.ToolMenuStrip.Name = "ToolMenuStrip";
-            this.ToolMenuStrip.Size = new System.Drawing.Size(869, 24);
+            this.ToolMenuStrip.Size = new System.Drawing.Size(867, 24);
             this.ToolMenuStrip.TabIndex = 4;
             this.ToolMenuStrip.Text = "menuStrip1";
             // 
@@ -154,6 +170,10 @@
             // 
             // componentToolStripMenuItem
             // 
+            this.componentToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.boxColliderToolStripMenuItem,
+            this.meshToolStripMenuItem,
+            this.meshRendererToolStripMenuItem});
             this.componentToolStripMenuItem.Name = "componentToolStripMenuItem";
             this.componentToolStripMenuItem.Size = new System.Drawing.Size(83, 20);
             this.componentToolStripMenuItem.Text = "Component";
@@ -173,18 +193,24 @@
             this.renameToolStripMenuItem.Text = "Rename";
             this.renameToolStripMenuItem.Click += new System.EventHandler(this.renameToolStripMenuItem_Click);
             // 
-            // ViewPanel
+            // boxColliderToolStripMenuItem
             // 
-            this.ViewPanel.AutoSize = true;
-            this.ViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ViewPanel.Location = new System.Drawing.Point(245, 72);
-            this.ViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
-            this.ViewPanel.Name = "ViewPanel";
-            this.ViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.ViewPanel.Size = new System.Drawing.Size(863, 545);
-            this.ViewPanel.TabIndex = 2;
-            this.ViewPanel.TabStop = true;
+            this.boxColliderToolStripMenuItem.Name = "boxColliderToolStripMenuItem";
+            this.boxColliderToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.boxColliderToolStripMenuItem.Text = "Box Collider";
+            // 
+            // meshToolStripMenuItem
+            // 
+            this.meshToolStripMenuItem.Name = "meshToolStripMenuItem";
+            this.meshToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.meshToolStripMenuItem.Text = "Mesh";
+            this.meshToolStripMenuItem.Click += new System.EventHandler(this.meshToolStripMenuItem_Click);
+            // 
+            // meshRendererToolStripMenuItem
+            // 
+            this.meshRendererToolStripMenuItem.Name = "meshRendererToolStripMenuItem";
+            this.meshRendererToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.meshRendererToolStripMenuItem.Text = "Mesh Renderer";
             // 
             // EditorForm
             // 
@@ -226,6 +252,9 @@
         private System.Windows.Forms.ToolStripMenuItem componentToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip SceneHierarchyContextMenu;
         private System.Windows.Forms.ToolStripMenuItem renameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem boxColliderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem meshToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem meshRendererToolStripMenuItem;
     }
 }
 

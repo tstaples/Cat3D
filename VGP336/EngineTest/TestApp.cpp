@@ -326,7 +326,7 @@ const u8* TestApp::GetSelectedObjectData(u32& size)
     writer.Write(editorObject->GetHandle().GetInstance());
 
     u32 offset = 0;
-    gameObject->SerializeOut(objBuffer + writer.GetOffset(), 2048 - writer.GetOffset(), offset);
+    gameObject->Serialize(objBuffer + writer.GetOffset(), 2048 - writer.GetOffset(), offset);
 
     size = writer.GetOffset() + offset;
     return objBuffer;

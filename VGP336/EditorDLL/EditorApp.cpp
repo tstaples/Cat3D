@@ -271,18 +271,17 @@ s32 EditorApp::UpdateComponent(const u8* buffer, u32 buffsize)
         const MetaClass* compMetaClass = c->GetMetaClass();
         if (compName.compare(compMetaClass->GetName()) == 0)
         {
-            char data[OBJECT_BUFF_SIZE] = { 0 };
-
             const u32 numFields = compMetaClass->GetNumFields();
             for (u32 i=0; i < numFields; ++i)
             {
                 const MetaField* field = compMetaClass->GetFieldAtIndex(i);
+                const MetaType* metaType = field->GetType();
                 u32 offset = field->GetOffset();
                 u32 fieldSize = field->GetType()->GetSize();
-                reader.ReadArray(data, fieldSize);
-
-                char* cdata = ((char*)c) + offset;
-                memcpy(cdata, data, fieldSize);
+                
+                // Get the offset to the member and write the data
+                void* cdata = ((char*)c) + offset;
+                metaType->Deserialize(reader, cdata);
             }
             // Set flag to indicate there has been a change
             c->SetIsDirty(true);
@@ -329,7 +328,7 @@ const u8* EditorApp::GetGameObject(u16 index, u32& buffsize)
 
             GameObject* gameobject = eobj.GetGameObject();
             u32 offset = writer.GetOffset(); // Account for writing handle
-            gameobject->SerializeOut(objBuffer + offset, OBJECT_BUFF_SIZE, buffsize);
+            gameobject->Serialize(objBuffer + offset, OBJECT_BUFF_SIZE, buffsize);
             buffsize += offset;
             return objBuffer;
         }

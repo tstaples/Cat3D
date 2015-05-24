@@ -60,6 +60,7 @@ public:
     *   Assumes next byte in the buffer is the length of the string.
     */
     inline std::string ReadLengthEncodedString();
+    inline std::wstring ReadLengthEncodedStringW();
 
     /*  Seeks to a certain position in the buffer.
     *   @param offset: number of bytes to move the buffer handle from the origin.

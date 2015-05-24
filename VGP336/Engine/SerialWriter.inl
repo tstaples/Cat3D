@@ -33,3 +33,12 @@ inline void SerialWriter::WriteLengthEncodedString(const std::string& str)
     Write(len);
     WriteArray(str.c_str(), len);
 }
+
+//----------------------------------------------------------------------------------------------------
+
+inline void SerialWriter::WriteLengthEncodedString(const std::wstring& str)
+{
+    u32 len = str.length();
+    Write(len);
+    WriteArray(str.c_str(), len);
+}

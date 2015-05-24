@@ -50,12 +50,14 @@ public:
     template<typename T>
     bool FindComponent(const T*& component) const;
 
+    bool GetComponentByName(const char* name, Component* component);
+
     void SetName(const char* name)              { mName = name; }
     const char* GetName() const                 { return mName.c_str(); }
     const Components& GetComponents() const     { return mComponents; }
 
-    void SerializeOut(u8* buffer, u32 size, u32& offset);
-    void SerializeIn(const u8* buffer, u32 size);
+    bool Serialize(u8* buffer, u32 size, u32& offset);
+    bool Deserialize(const u8* buffer, u32 size);
 
 private:
     //NONCOPYABLE(GameObject)

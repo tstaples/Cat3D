@@ -20,6 +20,11 @@ namespace Editor
             GridView = gridView;
         }
 
+        public bool IsAnObjectSelected()
+        {
+            return (CurrentGameObject != null);
+        }
+
         public void Clear()
         {
             // Don't display anything on the grid
@@ -30,6 +35,8 @@ namespace Editor
 
         public void Display(GameObject gameObject)
         {
+            //bool sameObject = (GameObject == GridView.SelectedObject);
+
             Clear();
             CurrentGameObject = gameObject;
             GridView.SelectedObject = CurrentGameObject.Components;

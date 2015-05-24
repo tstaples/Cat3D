@@ -78,6 +78,21 @@ inline std::string SerialReader::ReadLengthEncodedString()
 
 //----------------------------------------------------------------------------------------------------
 
+inline std::wstring SerialReader::ReadLengthEncodedStringW()
+{
+    const u32 len = Read<u32>();
+    wchar_t buffer[2048];
+    ReadArray(buffer, len);
+    if (len < 2048)
+    {
+        buffer[len] = '\0';
+    }
+    return std::wstring(buffer);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+
 inline void SerialReader::Seek(s32 offset, Origin origin)
 {
     switch (origin)

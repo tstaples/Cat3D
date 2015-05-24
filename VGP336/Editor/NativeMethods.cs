@@ -53,6 +53,9 @@ namespace Editor
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern void RenameGameObject(ushort index, string name);
 
+        //[DllImport(kDLLName, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        //[return: MarshalAs(UnmanagedType.LPStr)]
+        //public static extern string MyFunction([InAttribute()] [MarshalAsAttribute(UnmanagedType.LPStr)] string MyParameter);
     }
 
 

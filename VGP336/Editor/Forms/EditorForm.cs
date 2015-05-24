@@ -57,9 +57,10 @@ namespace Editor
         public bool IsViewPortFocused()
         {
             // Offset cursor by window position to get relative position
-            Point offset = this.Location;
-            Point mpos = new Point(MousePosition.X - offset.X, MousePosition.Y - offset.Y);
-            return ViewPanel.Bounds.Contains(mpos);
+            // TODO: either do this properly or account for window resizing by updating bounds
+            //Point offset = this.Location;
+            //Point mpos = new Point(MousePosition.X - offset.X, MousePosition.Y - offset.Y);
+            return ViewPanel.Bounds.Contains(MousePosition);
         }
 
         private void InspectorGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
@@ -111,6 +112,12 @@ namespace Editor
             // TODO: Check label for invalid characters
             string newLabel = e.Label;
             SceneTree.RenameSelectedNode(newLabel);
+        }
+
+        private void meshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+            int i = 0;
         }
     }
 }
