@@ -35,8 +35,5 @@
                 }
             ]
         }
-    ],
-    "Services" : [
-        { "Name" : "RenderService" }
     ]
 }

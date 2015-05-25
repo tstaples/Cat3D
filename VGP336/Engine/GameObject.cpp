@@ -109,6 +109,9 @@ bool GameObject::Deserialize(const u8* buffer, u32 size)
         if (!GetComponentByName(compMetaClassName.c_str(), component))
         {
             return false;
+            // If it doesn't exist, create it
+            //const MetaClass* compMetaClass = MetaDB::GetMetaClass(compMetaClassName.c_str());
+            //component = static_cast<Component*>(compMetaClass->Create());
         }
 
         // Read in the component fields

@@ -121,6 +121,7 @@
     <ClInclude Include="Meta.h" />
     <ClInclude Include="MetaClass.h" />
     <ClInclude Include="MetaDB.h" />
+    <ClInclude Include="MetaDependency.h" />
     <ClInclude Include="MetaField.h" />
     <ClInclude Include="MetaRegistration.h" />
     <ClInclude Include="MetaType.h" />

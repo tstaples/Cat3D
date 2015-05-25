@@ -9,6 +9,42 @@
 #include <json/json.h>
 #include <fstream>
 
+namespace
+{
+    Service* LookUpService(const Services& services, const char* name)
+    {
+        for (Service* service : services)
+        {
+            if (strcmp(service->GetName(), name) == 0)
+            {
+                return service;
+            }
+        }
+        return nullptr;
+    }
+
+    void LinkDependencies(GameObjectHandle& handle, const Services& services)
+    {
+        GameObject* gameObject = handle.Get();
+        for (Component* c : gameObject->GetComponents())
+        {
+            const MetaClass* metaClass = c->GetMetaClass();
+            const u32 numDependencies = metaClass->GetNumDependencies();
+            const MetaDependency* dependencies = metaClass->GetDependencyList();
+            for (u32 j=0; j < numDependencies; ++j)
+            {
+                // Compare the dependency name with the service name
+                const char* depName = dependencies[j].GetName();
+                Service* service = LookUpService(services, depName);
+                if (service != nullptr)
+                {
+                    service->Subscribe(handle);
+                }
+            }
+        }
+    }
+}
+
 GameObjectFactory::GameObjectFactory(GameObjectPool& gameObjectPool)
     : mGameObjectPool(gameObjectPool)
 {
@@ -79,123 +115,42 @@ GameObjectHandle GameObjectFactory::Create(const char* templateFile)
             void* member = (u8*)instance + metaField->GetOffset();
             metaField->GetType()->Deserialize(p.get("Data", ""), member);
         }
-        // Not sure if this will work
+        // Add the component to the gameObject
         Component* component = static_cast<Component*>(instance);
         gameObject->AddComponent(component);
     }
 
     // Subscribe to services
-    Json::Value jservices = root["Services"];
-    for (Json::Value& jservice : jservices)
-    {
-        // Look up service by name
-        std::string serviceName = jservice.get("Name", "").asString();
-        for (auto service : *mServices)
-        {
-            if (serviceName.compare(service->GetName()) == 0)
-            {
-                // Subscribe the gameObject to it
-                service->Subscribe(handle);
-            }
-        }
-    }
+    // This must be done in a second loop because some services may require a component that hasn't been loaded yet.
+    LinkDependencies(handle, *mServices);
+
+    //Json::Value jservices = root["Services"];
+    //for (Json::Value& jservice : jservices)
+    //{
+    //    // Look up service by name
+    //    std::string serviceName = jservice.get("Name", "").asString();
+    //    for (auto service : *mServices)
+    //    {
+    //        if (serviceName.compare(service->GetName()) == 0)
+    //        {
+    //            // Subscribe the gameObject to it
+    //            service->Subscribe(handle);
+    //        }
+    //    }
+    //}
     return handle;
 }
 
-// TODO: Package all object data as binary during build.
-//ID GameObjectFactory::Create(const char* templateName, const Math::Vector3& startPosition)
-//{
-//    ID gameObjectID;
-//
-//    std::ifstream data(templateName);
-//    ASSERT(data.good(), "Error loading template file: %s", templateName);
-//
-//    Json::Value root;
-//    Json::Reader reader;
-//    if (reader.parse(data, root))
-//    {
-//        // Create a gameobject
-//        gameObjectID = mpGameObjectRepository.Allocate();
-//        GameObject& gameObject = mpGameObjectRepository.GetItem(gameObjectID);
-//
-//        // Go through all the components and add them to the game object
-//        Json::Value components = root["Components"];
-//        for (u32 i=0; i < components.size(); ++i)
-//        {
-//            std::string componentTypeStr = components[i].get("Type", "").asString();
-//            Meta::Type componentType = Meta::GetEnumValue(componentTypeStr);
-//            
-//            ID componentID;
-//            if (componentType == Meta::ModelComponentType)
-//            {
-//                componentID = mpModelRepository.Allocate();
-//                ModelComponent& modelComponent = mpModelRepository.GetItem(componentID);
-//
-//                // Get the path for the model to load
-//                Json::Value properties = components[i].get("Properties", "");
-//                std::string filenameStr = properties.get("Filename", "").asString();
-//                std::wstring filename = IO::CharToWChar(filenameStr);
-//
-//                Model* model = mpModelManager.GetResource(filename.c_str());
-//                modelComponent.SetModel(model);
-//            }
-//            else if (componentType == Meta::TransformComponentType)
-//            {
-//                componentID = mpTransformRepository.Allocate();
-//                //TransformComponent& TransformComponent = mpTransformRepository.GetItem(componentID);
-//            }
-//            else if (componentType == Meta::ColliderComponentType)
-//            {
-//            }
-//
-//            // Add the component
-//            if (componentID.IsValid())
-//            {
-//                //gameObject.AddComponent(componentID);
-//            }
-//        }
-//        
-//        Json::Value services = root["Services"];
-//        for (u32 i=0; i < services.size(); ++i)
-//        {
-//            std::string serviceTypeStr = services[i].get("Type", "").asString();
-//            Meta::Type serviceType = Meta::GetEnumValue(serviceTypeStr);
-//
-//            switch (serviceType)
-//            {
-//            case Meta::RenderServiceType:
-//                mpRenderService.Subscribe(gameObjectID);
-//                break;
-//            }
-//        }
-//    }
-//    else
-//    {
-//        OutputDebugStringA(reader.getFormattedErrorMessages().c_str());
-//    }
-//
-//    // get all components
-//    //  - compare value from type key to get enum value
-//    //  - switch on enum and create component of that type
-//    //  - GameObjectJSON::Load(Component* component)
-//    //      - component->Load(mReader
-//    //
-//    //gameObjectID = mpGameObjectRepository.Allocate();
-//    //ID transformId = mpTransformRepository.Allocate();
-//    //ID modelID = mpModelRepository.Allocate();
-//    //
-//    //GameObject& gameObject = mpGameObjectRepository.GetItem(gameObjectID);
-//    //TransformComponent& transformComponent = mpTransformRepository.GetItem(transformId);
-//    //ModelComponent& modelComponent = mpModelRepository.GetItem(modelID);
-//    //
-//    //Model* model = mpModelManager.GetResource(L"../Data/Stuff/soldierv2.catm");
-//    //modelComponent.SetModel(model);
-//    //
-//    //gameObject.mID = gameObjectID;
-//    //gameObject.AddComponent(transformId);
-//    //gameObject.AddComponent(modelID);
-//
-//    //mpRenderService.Subscribe(gameObjectID);
-//
-//    return gameObjectID;
-//}
+//----------------------------------------------------------------------------------------------------
+
+GameObjectHandle GameObjectFactory::Create(const u8* buffer, u32 size)
+{
+    GameObjectHandle handle = mGameObjectPool.Allocate();
+    GameObject* gameObject = handle.Get();
+    if (gameObject->Deserialize(buffer, size))
+    {
+        LinkDependencies(handle, *mServices);
+        return handle;
+    }
+    return GameObjectHandle(); // invalid
+}

@@ -61,6 +61,7 @@ public:
 
 private:
     //NONCOPYABLE(GameObject)
+    friend class GameObjectFactory;
 
     std::string mName; // See TODO in TString
     Components mComponents;
