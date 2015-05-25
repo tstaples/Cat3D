@@ -36,6 +36,8 @@ public:
     void SetTransform(const Math::Matrix& transform) { mTransform = transform; }
 
 private:
+    //http://www.gamasutra.com/view/feature/131686/rotating_objects_using_quaternions.php
+    //Math::Quaternion mRotation; // TODO
     Math::Vector3 mPosition;
     Math::Vector3 mRotation;
     Math::Vector3 mScale;
