@@ -9,7 +9,7 @@
 #include <json/json.h>
 #include <fstream>
 
-GameObjectFactory::GameObjectFactory(GameObjectPool& gameObjectPool, u32 componentPoolCapacity)
+GameObjectFactory::GameObjectFactory(GameObjectPool& gameObjectPool)
     : mGameObjectPool(gameObjectPool)
 {
 }
@@ -92,10 +92,10 @@ GameObjectHandle GameObjectFactory::Create(const char* templateFile)
         std::string serviceName = jservice.get("Name", "").asString();
         for (auto service : *mServices)
         {
-            if (serviceName.compare(service.first) == 0)
+            if (serviceName.compare(service->GetName()) == 0)
             {
                 // Subscribe the gameObject to it
-                service.second->Subscribe(handle);
+                service->Subscribe(handle);
             }
         }
     }

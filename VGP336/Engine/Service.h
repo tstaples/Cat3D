@@ -21,8 +21,10 @@
 class Service
 {
 public:
-    Service();
+    Service(const char* name);
     virtual ~Service();
+
+    const char* GetName() const { return mName; }
 
     // Subscribes the gameobject to this service
     void Subscribe(GameObjectHandle handle);
@@ -34,6 +36,8 @@ private:
 
     // Populates the info for the particular ObjId
     virtual void OnSubscribe(GameObjectHandle handle) = 0;
+
+    const char* mName;
 
 protected:
     typedef std::vector<GameObjectHandle> Subscribers;

@@ -25,7 +25,8 @@
 //====================================================================================================
 
 RenderService::RenderService()
-    : mpGraphicsSystem(nullptr)
+    : Service("RenderService")
+    , mpGraphicsSystem(nullptr)
 {
 }
 

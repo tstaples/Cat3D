@@ -10,7 +10,8 @@
 // Class Definitions
 //====================================================================================================
 
-Service::Service()
+Service::Service(const char* name)
+    : mName(name)
 {
 }
 

@@ -24,7 +24,7 @@
 typedef MemoryPool<TransformComponent> TransformPool;
 typedef MemoryPool<ColliderComponent> ColliderPool;
 typedef MemoryPool<MeshComponent> MeshPool;
-typedef std::map<const char*, Service*> Services;
+typedef std::vector<Service*> Services;
 
 //====================================================================================================
 // Class Declarations
@@ -33,7 +33,7 @@ typedef std::map<const char*, Service*> Services;
 class GameObjectFactory
 {
 public:
-    GameObjectFactory(GameObjectPool& gameObjectPool, u32 componentPoolCapacity);
+    GameObjectFactory(GameObjectPool& gameObjectPool);
     ~GameObjectFactory();
 
     void Initialize(Services& services);
