@@ -13,6 +13,7 @@
 
 #include "MetaClass.h"
 #include "MetaDB.h"
+#include "MetaDependency.h"
 #include "MetaField.h"
 #include "MetaRegistration.h"
 
@@ -72,21 +73,35 @@ u32 GetFieldOffset(DataType ClassType::* field)
         typedef TYPE LocalType;\
         const char* className = #TYPE;\
         const MetaField* fields = nullptr;\
-        u32 numFields = 0;
+        u32 numFields = 0;\
+        const MetaDependency* dependencies = nullptr;\
+        u32 numDependencies = 0;
 
 #define META_FIELD_BEGIN\
-    static const MetaField sFields[] = {
+        static const MetaField sFields[] = {
 
 #define META_FIELD(FIELD, NAME)\
-    MetaField(NAME, DeduceMemberDataType(&LocalType::FIELD), GetFieldOffset(&LocalType::FIELD)),
+        MetaField(NAME, DeduceMemberDataType(&LocalType::FIELD), GetFieldOffset(&LocalType::FIELD)),
 
 #define META_FIELD_END\
-    };\
-    fields = sFields;\
-    numFields = sizeof(sFields) / sizeof(sFields[0]);
+        };\
+        fields = sFields;\
+        numFields = STATIC_ARRAY_SIZE(sFields);
+
+#define META_DEPENDENCIES_BEGIN\
+        static const MetaDependency sDependencies[] = {
+
+#define META_DEPENDENCY(CLASS_NAME)\
+        MetaDependency(CLASS_NAME),
+
+#define META_DEPENDENCIES_END\
+        };\
+        dependencies = sDependencies;\
+        numDependencies = STATIC_ARRAY_SIZE(sDependencies);
 
 #define META_CLASS_END\
-        static const MetaClass sMetaClass(className, sizeof(LocalType), fields, numFields, std::is_pointer<LocalType>::value, Create, Destroy);\
+        bool ispointer = std::is_pointer<LocalType>::value;\
+        static const MetaClass sMetaClass(className, sizeof(LocalType), fields, numFields, dependencies, numDependencies, ispointer, Create, Destroy);\
         return &sMetaClass;\
     }
 

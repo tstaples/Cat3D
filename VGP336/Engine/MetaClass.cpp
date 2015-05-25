@@ -2,12 +2,15 @@
 
 #include "MetaClass.h"
 #include "MetaField.h"
+#include "MetaDependency.h"
 
-MetaClass::MetaClass(const char* name, u32 classSize, const MetaField* fields, u32 numFields, bool ispointer, CreateFunc ctor, DestroyFunc dtor)
+MetaClass::MetaClass(const char* name, u32 classSize, const MetaField* fields, u32 numFields, const MetaDependency* dependencies, u32 numDependencies, bool ispointer, CreateFunc ctor, DestroyFunc dtor)
     : MetaType(MetaType::Class, classSize, ispointer, false)
     , mName(name)
     , mFields(fields)
     , mNumFields(numFields)
+    , mDependencies(dependencies)
+    , mNumDependencies(numDependencies)
     , mConstruct(ctor)
     , mDestruct(dtor)
 {

@@ -18,6 +18,7 @@
 //====================================================================================================
 
 class MetaField;
+class MetaDependency;
 
 //====================================================================================================
 // Class Declarations
@@ -36,7 +37,15 @@ public:
     // @param numFields: number of fields in the array.
     // @param create: function pointer running the logic to create a new instance of the class.
     // @param destroy: unction pointer running the logic to destroy the instance of the class.
-    MetaClass(const char* name, u32 classSize, const MetaField* fields, u32 numFields, bool ispointer, CreateFunc create, DestroyFunc destroy);
+    MetaClass(const char* name, 
+              u32 classSize, 
+              const MetaField* fields, 
+              u32 numFields,
+              const MetaDependency* dependencies,
+              u32 numDependencies,
+              bool ispointer, 
+              CreateFunc create, 
+              DestroyFunc destroy);
 
     // Creates an instance of the class.
     // Returns a void pointer to the class.
@@ -56,6 +65,9 @@ public:
     // Returns a pointer to the MetaField.
     const MetaField* GetFieldAtIndex(u32 index) const;
 
+    const MetaDependency* GetDependencyList() const { return mDependencies; }
+    u32 GetNumDependencies() const                  { return mNumDependencies; }
+
     const char* GetName() const { return mName; }
     u32 GetNumFields() const    { return mNumFields; }
 
@@ -65,6 +77,9 @@ private:
 
     const MetaField* mFields;
     const u32 mNumFields;
+
+    const MetaDependency* mDependencies;
+    const u32 mNumDependencies;
 
     CreateFunc mConstruct;
     DestroyFunc mDestruct;
