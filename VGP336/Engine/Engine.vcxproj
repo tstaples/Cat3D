@@ -36,6 +36,7 @@
     <ClCompile Include="EngineMath.cpp" />
     <ClCompile Include="IO.cpp" />
     <ClCompile Include="Keyframe.cpp" />
+    <ClCompile Include="LevelLoader.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshBuilder.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
@@ -97,6 +98,7 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectFactory.h" />
+    <ClInclude Include="GameSettings.h" />
     <ClInclude Include="GameWorld.h" />
     <ClInclude Include="GraphicsSystem.h" />
     <ClInclude Include="Hash.h" />
@@ -109,6 +111,7 @@
     <ClInclude Include="EngineMath.h" />
     <ClInclude Include="IO.h" />
     <ClInclude Include="Keyframe.h" />
+    <ClInclude Include="LevelLoader.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="MemHandle.h" />
     <ClInclude Include="MemoryPool.h" />

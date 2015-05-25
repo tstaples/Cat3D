@@ -229,6 +229,9 @@
     <ClCompile Include="GameWorld.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
+    <ClCompile Include="LevelLoader.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InputEvent.h">
@@ -482,6 +485,12 @@
     </ClInclude>
     <ClInclude Include="MetaDependency.h">
       <Filter>GameObject\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelLoader.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSettings.h">
+      <Filter>Gameplay</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

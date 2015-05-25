@@ -1,6 +1,9 @@
 #ifndef INCLUDED_ENGINE_PATH_H
 #define INCLUDED_ENGINE_PATH_H
 
+namespace IO
+{
+
 class Path
 {
 public:
@@ -29,5 +32,7 @@ private:
     std::wstring mPath;
     SlashFormat mFormat;
 };
+
+} // namespace IO
 
 #endif // #ifndef INCLUDED_ENGINE_PATH_H

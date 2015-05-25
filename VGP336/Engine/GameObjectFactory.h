@@ -40,7 +40,7 @@ public:
     void Terminate();
 
     GameObjectHandle Create(const char* templateFileName);
-    GameObjectHandle Create(const u8* buffer, u32 size);
+    GameObjectHandle Create(SerialReader& reader);
 
 private:
     GameObjectPool& mGameObjectPool;

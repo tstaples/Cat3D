@@ -2,6 +2,8 @@
 #include "FileBuffer.h"
 #include "IO.h"
 
+namespace IO
+{
 
 FileBuffer::FileBuffer(const size_t size)
     : mBuffer(nullptr)
@@ -76,3 +78,5 @@ bool FileBuffer::Initialized()
 {
     return (mBuffer && mBufferSize);
 }
+
+} // namespace IO

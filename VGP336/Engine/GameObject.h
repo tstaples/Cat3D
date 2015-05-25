@@ -56,8 +56,8 @@ public:
     const char* GetName() const                 { return mName.c_str(); }
     const Components& GetComponents() const     { return mComponents; }
 
-    bool Serialize(u8* buffer, u32 size, u32& offset);
-    bool Deserialize(const u8* buffer, u32 size);
+    bool Serialize(SerialWriter& writer);
+    bool Deserialize(SerialReader& reader);
 
 private:
     //NONCOPYABLE(GameObject)

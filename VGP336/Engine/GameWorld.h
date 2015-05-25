@@ -15,7 +15,8 @@
 #include "Components.h"
 #include "GameObject.h"
 #include "GameObjectFactory.h"
-#include "Octree.h"
+#include "GameSettings.h"
+#include "LevelLoader.h"
 #include "Service.h"
 
 //====================================================================================================
@@ -23,15 +24,7 @@
 //====================================================================================================
 
 class GraphicsSystem;
-
-//====================================================================================================
-// Struct Declarations
-//====================================================================================================
-
-struct GameSettings
-{
-    // TODO
-};
+class Level;
 
 //====================================================================================================
 // Class Declarations
@@ -39,7 +32,7 @@ struct GameSettings
 
 class GameWorld
 {
-    typedef std::vector<GameObjectHandle> ObjectHandles;
+    typedef std::vector<GameObjectHandle> GameObjectHandles;
 
 public:
     GameWorld(u16 maxObjects);
@@ -58,6 +51,9 @@ public:
     // @param rot: rotation of the object in world space.
     void CreateGameObject(const char* templateFile, Math::Vector3 pos, Math::Quaternion rot);
 
+    bool LoadLevel(const char* levelName);
+    //bool SaveCurrentLevel(const char* path)
+
 private:
     NONCOPYABLE(GameWorld);
 
@@ -69,8 +65,9 @@ private:
     GameObjectFactory mFactory;
     GameObjectPool mGameObjectPool;
 
-    ObjectHandles mGameObjectHandles;   // Used for quicker iteration of all objects
-    Octree<GameObjectHandle> mOctree;   // Spatial partition
+    GameObjectHandles mGameObjectHandles;
+
+    LevelLoader mLevelLoader;
 
 private:
     // Only the editor will need to directly access the GameWorld's members

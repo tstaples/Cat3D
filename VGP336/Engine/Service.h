@@ -31,6 +31,9 @@ public:
     // UnSubscribes the gameobject to this service
     void UnSubscribe(GameObjectHandle handle);
 
+    // Clears subscriber list
+    void UnSubscribeAll();
+
 private:
     NONCOPYABLE(Service);
 

@@ -86,7 +86,7 @@ bool AssetLoader::LoadCatmFile(const wchar_t* pFilename, Model& model)
 {
     // Read the data into the buffer
     std::string filename = IO::WCharToChar(pFilename);
-    FileBuffer buffer(filename.c_str());
+    IO::FileBuffer buffer(filename.c_str());
     if (buffer.Initialized())
     {
         // Init the reader with the model data

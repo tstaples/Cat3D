@@ -10,6 +10,8 @@
 #include "Precompiled.h"
 #include "GameWorld.h"
 
+#include "SerialReader.h"
+
 //====================================================================================================
 // local Definitions
 //====================================================================================================
@@ -17,7 +19,6 @@
 GameWorld::GameWorld(u16 maxObjects)
     : mGameObjectPool(maxObjects)
     , mFactory(mGameObjectPool)
-    , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(100.0f, 100.0f, 100.0f))) // TODO: size dynamically or something
 {
 }
 
@@ -50,7 +51,6 @@ bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, C
 bool GameWorld::OnShutdown()
 {
     mFactory.Terminate();
-    mOctree.Destroy();
     mGameObjectHandles.clear();
     mGameObjectPool.Flush();
     return true;
@@ -68,23 +68,6 @@ bool GameWorld::OnInput()
 
 void GameWorld::OnUpdate(f32 deltaTime)
 {
-    // Reconstruct the Octree
-    mOctree.Destroy();
-    for (GameObjectHandle& handle : mGameObjectHandles)
-    {
-        GameObject* gameObject = handle.Get();
-
-        // TODO: If we decide not to have every gameobject have a transform, check for one here too.
-
-        ColliderComponent* colliderComponent = nullptr;
-        if (gameObject->FindComponent(colliderComponent))
-        {
-            // Only add objects to the tree that contain colliders
-            Math::AABB region = colliderComponent->GetBoundary();
-            mOctree.Insert(handle, region); 
-        }
-    }
-
     // Update all the game objects
     for (GameObjectHandle& handle : mGameObjectHandles)
     {
@@ -122,3 +105,55 @@ void GameWorld::CreateGameObject(const char* templateFile, Math::Vector3 pos, Ma
     // Add the object to the world
     mGameObjectHandles.push_back(handle);
 }
+
+//----------------------------------------------------------------------------------------------------
+
+bool GameWorld::LoadLevel(const char* levelName)
+{
+    // Clear current level data
+    mGameObjectHandles.clear();
+    mGameObjectPool.Flush();
+    mRenderService.UnSubscribeAll();
+
+    // 1 level = 1 file for now
+    // level loader will give us a vector of Level objects containing the buffers for each gameobject and the game settings
+    // we then loop through each and call mFactory.Create(buffer) to make the object
+    // then we delete the level buffers. TODO: have levelloader hold a managed pool that levels are loaded into.
+    // If the level fails to load, crash?
+
+    Level level;
+    if (mLevelLoader.Load(levelName, level))
+    {
+        mSettings = level.settings;
+        for (u32 i=0; i < level.numGameObjects; ++i)
+        {
+            SerialReader reader(level.buffer, level.bufferSize);
+            GameObjectHandle handle = mFactory.Create(reader);
+            mGameObjectHandles.push_back(handle);
+        }
+        return true;
+    }
+    return false;
+}
+
+/*
+    Editor::OnPlay()
+    - save current scene and store away
+    - set isPlaying true
+        GameWorld::OnPlay()
+        - load startup scene (from settings)
+        - add physics and scripting services to update list
+
+    Editor::Update()
+        GameWorld::Update()
+        - update scene
+            - update gameobjects
+        - update services in service list
+    - if (IsPlaying)
+
+
+    GameWorld::OnPauseBegin()
+    - remove physics and script services from update list
+
+
+*/

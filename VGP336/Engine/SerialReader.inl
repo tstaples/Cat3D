@@ -3,6 +3,7 @@ inline SerialReader::SerialReader(const u8* buffer, u32 size)
     , mBufferSize(size)
     , mWriteOffset(0)
 {
+    ASSERT(buffer != nullptr, "[SerialReader] Error: buffer is uninitialized");
 }
 
 //----------------------------------------------------------------------------------------------------

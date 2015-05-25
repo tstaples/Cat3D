@@ -82,17 +82,25 @@ bool SyncWriteFile(const char* path, const u8* buffer, size_t buffsize, size_t& 
 
 //----------------------------------------------------------------------------------------------------
 
-size_t GetFileSize(const char* path)
+u32 GetFileSize(const char* path)
 {
-    size_t size = 0;
+    u32 size = 0;
     FILE* handle = fopen(path, Mode::Read);
     if (handle)
     {
-        fseek(handle, 0, SEEK_END);
-        size = ftell(handle);
-        fseek(handle, 0, SEEK_SET);
+        size = GetFileSize(handle);
         fclose(handle);
     }
+    return size;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+u32 GetFileSize(FILE* handle)
+{
+    fseek(handle, 0, SEEK_END);
+    u32 size = (u32)ftell(handle);
+    fseek(handle, 0, SEEK_SET);
     return size;
 }
 

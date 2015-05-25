@@ -3,6 +3,9 @@
 
 #include "IO.h"
 
+namespace IO
+{
+
 Path::Path()
 {
 }
@@ -119,3 +122,5 @@ void Path::ConvertForwardslashToBackslash()
     }
     mFormat = Back;
 }
+
+} // namespace IO

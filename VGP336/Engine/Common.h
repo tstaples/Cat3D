@@ -95,8 +95,18 @@ typedef double				f64;
 			DebugBreak();\
 		}\
 	}
+
+    #define VERIFY(condition, format, ...)\
+	{\
+		if (!(condition))\
+		{\
+			LOG(format, __VA_ARGS__)\
+			DebugBreak();\
+		}\
+	}
 #else
 	#define ASSERT(condition, format, ...)
+	#define VERIFY(condition, format, ...) condition
 #endif
 
 //----------------------------------------------------------------------------------------------------

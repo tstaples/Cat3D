@@ -3,6 +3,7 @@ inline SerialWriter::SerialWriter(u8* buffer, u32 size)
     , mBufferSize(size)
     , mWriteOffset(0)
 {
+    ASSERT(buffer != nullptr, "[SerialWriter] Error: buffer is uninitialized");
 }
 
 //----------------------------------------------------------------------------------------------------

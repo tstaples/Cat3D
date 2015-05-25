@@ -143,11 +143,11 @@ GameObjectHandle GameObjectFactory::Create(const char* templateFile)
 
 //----------------------------------------------------------------------------------------------------
 
-GameObjectHandle GameObjectFactory::Create(const u8* buffer, u32 size)
+GameObjectHandle GameObjectFactory::Create(SerialReader& reader)
 {
     GameObjectHandle handle = mGameObjectPool.Allocate();
     GameObject* gameObject = handle.Get();
-    if (gameObject->Deserialize(buffer, size))
+    if (gameObject->Deserialize(reader))
     {
         LinkDependencies(handle, *mServices);
         return handle;

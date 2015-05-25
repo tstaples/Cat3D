@@ -54,10 +54,8 @@ void GameObject::AddComponent(Component* component)
 
 //----------------------------------------------------------------------------------------------------
 
-bool GameObject::Serialize(u8* buffer, u32 size, u32& offset)
+bool GameObject::Serialize(SerialWriter& writer)
 {
-    SerialWriter writer(buffer, size);
-
     // Write the gameobject's name and number of componenets
     writer.WriteLengthEncodedString(mName.c_str());
     writer.Write((u32)mComponents.size());
@@ -89,16 +87,13 @@ bool GameObject::Serialize(u8* buffer, u32 size, u32& offset)
             metaType->Serialize(fieldData, writer);
         }
     }
-    offset = writer.GetOffset();
     return true;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-bool GameObject::Deserialize(const u8* buffer, u32 size)
+bool GameObject::Deserialize(SerialReader& reader)
 {
-    SerialReader reader(buffer, size);
-
     mName = reader.ReadLengthEncodedString();
     const u32 numComponents = reader.Read<u32>();
     for (u32 i=0; i < numComponents; ++i)
@@ -142,6 +137,7 @@ bool GameObject::Deserialize(const u8* buffer, u32 size)
 
 //----------------------------------------------------------------------------------------------------
 
+// TODO: Move to anon namespace
 bool GameObject::GetComponentByName(const char* name, Component* component)
 {
     for (Component* c : mComponents)
