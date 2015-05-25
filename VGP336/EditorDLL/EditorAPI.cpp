@@ -1,6 +1,7 @@
 #include "EditorAPI.h"
 
 #include "EditorApp.h"
+#include "EditorCommands.h"
 
 //====================================================================================================
 // Macros
@@ -23,6 +24,7 @@
 namespace
 {
     EditorApp app;
+    EditorCommands cmd(app);
 }
 
 //====================================================================================================
@@ -92,7 +94,7 @@ int IsGameRunning()
 unsigned int GetSelectedObjectData(unsigned char* buffer)
 {
     unsigned int size = 0;
-    unsigned char* buff = (unsigned char*)app.GetSelectedObjectData(size);
+    unsigned char* buff = (unsigned char*)cmd.GetSelectedObjectData(size);
     memcpy(buffer, buff, size);
     return size;
 }
@@ -101,7 +103,7 @@ unsigned int GetSelectedObjectData(unsigned char* buffer)
 
 int UpdateComponent(unsigned char* buffer, unsigned int size)
 {
-    return (int)app.UpdateComponent(buffer, size);
+    return (int)cmd.UpdateComponent(buffer, size);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -109,7 +111,7 @@ int UpdateComponent(unsigned char* buffer, unsigned int size)
 unsigned int DiscoverGameObjects(unsigned char* buffer)
 {
     unsigned int size = 0;
-    unsigned char* buff = (unsigned char*)app.DiscoverGameObjects(size);
+    unsigned char* buff = (unsigned char*)cmd.DiscoverGameObjects(size);
     memcpy(buffer, buff, size);
     return size;
 }
@@ -119,7 +121,7 @@ unsigned int DiscoverGameObjects(unsigned char* buffer)
 unsigned int GetGameObject(unsigned short index, unsigned char* buffer)
 {
     unsigned int size = 0;
-    unsigned char* buff = (unsigned char*)app.GetGameObject(index, size);
+    unsigned char* buff = (unsigned char*)cmd.GetGameObject(index, size);
     memcpy(buffer, buff, size);
     return size;
 }
@@ -128,7 +130,7 @@ unsigned int GetGameObject(unsigned short index, unsigned char* buffer)
 
 void SelectGameObject(unsigned short index)
 {
-    app.SelectGameObject(index);
+    cmd.SelectGameObject(index);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -136,15 +138,15 @@ void SelectGameObject(unsigned short index)
 unsigned int CreateAndSelectGameObject(unsigned char* buffer)
 {
     u16 index = -1; // Init as invalid
-    app.CreateEmptyGameObject(index);
-    app.SelectGameObject(index);
+    cmd.CreateEmptyGameObject(index);
+    cmd.SelectGameObject(index);
     u32 buffsize = 0;
-    const char* buff = (const char*)app.GetGameObject(index, buffsize);
+    const char* buff = (const char*)cmd.GetGameObject(index, buffsize);
     memcpy(buffer, buff, buffsize);
     return buffsize;
 }
 
 void RenameGameObject(unsigned short index, const char* name)
 {
-    app.RenameGameObject((u16)index, name);
+    cmd.RenameGameObject((u16)index, name);
 }

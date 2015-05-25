@@ -4,24 +4,16 @@
 #include "Gizmo.h"
 #include "InputCallbacks.h"
 
-#define OBJECT_BUFF_SIZE 2048
-
-namespace
-{
-    u8 objBuffer[OBJECT_BUFF_SIZE];
-}
-
 EditorApp::EditorApp()
     : mWidth(0)
     , mHeight(0)
     , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(50.0f, 50.0f, 50.0f)))
     , mGameObjectPool(100)
     , mCallbacks(*this)
-    , mFactory(mGameObjectPool, 100)
+    , mFactory(mGameObjectPool)
 {
     memset(mInputData.keyStates, 0, sizeof(bool) * 256);
     memset(mInputData.mouseStates, 0, sizeof(bool) * 4);
-    memset(objBuffer, 0, OBJECT_BUFF_SIZE);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -53,7 +45,7 @@ void EditorApp::OnInitialize(u32 width, u32 height)
     // TODO: find a nicer way to do this
     Services services =
     {
-        { "RenderService", &mRenderService }
+        &mRenderService
     };
     mFactory.Initialize(services);
 
@@ -234,144 +226,4 @@ void EditorApp::OnUpdate()
 void EditorApp::OnResizeWindow()
 {
     mGraphicsSystem.Resize(mWidth, mHeight);
-}
-
-//----------------------------------------------------------------------------------------------------
-
-const u8* EditorApp::GetSelectedObjectData(u32& size)
-{
-    // Don't display anything unless there's only a single object selected
-    if (mSelectedObjects.empty() || mSelectedObjects.size() > 1)
-    {
-        size = 0;
-        return nullptr;
-    }
-    EditorObject* editorObject = mSelectedObjects[0];
-    return GetGameObject(editorObject->GetHandle().GetIndex(), size);;
-}
-
-s32 EditorApp::UpdateComponent(const u8* buffer, u32 buffsize)
-{
-    s32 rc = 1;
-    SerialReader reader((u8*)buffer, buffsize);
-
-    // Get handle data to find corresponding gameobject
-    u16 index = reader.Read<u16>();
-    u16 instance = reader.Read<u16>();
-    GameObjectHandle handle(instance, index);
-    GameObject* gameObject = mGameObjectPool.Get(handle);
-    if (gameObject == nullptr)
-        return rc;
-
-    std::string compName = reader.ReadLengthEncodedString();
-    const std::vector<Component*>& components = gameObject->GetComponents();
-    for (Component* c : components)
-    {
-        // Find the component by name
-        const MetaClass* compMetaClass = c->GetMetaClass();
-        if (compName.compare(compMetaClass->GetName()) == 0)
-        {
-            const u32 numFields = compMetaClass->GetNumFields();
-            for (u32 i=0; i < numFields; ++i)
-            {
-                const MetaField* field = compMetaClass->GetFieldAtIndex(i);
-                const MetaType* metaType = field->GetType();
-                u32 offset = field->GetOffset();
-                u32 fieldSize = field->GetType()->GetSize();
-                
-                // Get the offset to the member and write the data
-                void* cdata = ((char*)c) + offset;
-                metaType->Deserialize(reader, cdata);
-            }
-            // Set flag to indicate there has been a change
-            c->SetIsDirty(true);
-            rc = 0; // success
-            break;
-        }
-    }
-    return rc;
-}
-
-const u8* EditorApp::DiscoverGameObjects(u32& buffsize)
-{
-    memset(objBuffer, 0, OBJECT_BUFF_SIZE);
-    SerialWriter writer(objBuffer, OBJECT_BUFF_SIZE);
-
-    const u32 numObjects = mObjects.size();
-    writer.Write(numObjects);
-    for (EditorObject editorObj : mObjects)
-    {
-        GameObject* gameObject = editorObj.GetGameObject();
-        GameObjectHandle handle = editorObj.GetHandle();
-
-        writer.Write(handle.GetIndex());
-        writer.Write(handle.GetInstance());
-        writer.WriteLengthEncodedString(gameObject->GetName());
-    }
-    buffsize = writer.GetOffset();
-    return objBuffer;
-}
-
-const u8* EditorApp::GetGameObject(u16 index, u32& buffsize)
-{
-    memset(objBuffer, 0, OBJECT_BUFF_SIZE);
-    SerialWriter writer(objBuffer, OBJECT_BUFF_SIZE);
-
-    for (EditorObject eobj : mObjects)
-    {
-        GameObjectHandle handle = eobj.GetHandle();
-        if (handle.GetIndex() == index)
-        {
-            // Write out handle data
-            writer.Write(handle.GetIndex());
-            writer.Write(handle.GetInstance());
-
-            GameObject* gameobject = eobj.GetGameObject();
-            u32 offset = writer.GetOffset(); // Account for writing handle
-            gameobject->Serialize(objBuffer + offset, OBJECT_BUFF_SIZE, buffsize);
-            buffsize += offset;
-            return objBuffer;
-        }
-    }
-    buffsize = 0;
-    return nullptr;
-}
-
-void EditorApp::SelectGameObject(u16 index)
-{
-    for (EditorObject& eobj : mObjects)
-    {
-        GameObjectHandle handle = eobj.GetHandle();
-        if (handle.GetIndex() == index)
-        {
-            // Deselect all objects
-            for (auto object : mSelectedObjects)
-            {
-                object->DeSelect();
-            }
-            mSelectedObjects.clear();
-
-            eobj.Select(); // Set flag
-            mSelectedObjects.push_back(&eobj);
-        }
-    }
-}
-
-void EditorApp::CreateEmptyGameObject(u16& index)
-{
-    GameObjectHandle handle = mFactory.Create("../Data/GameObjects/default.json");
-    index = handle.GetIndex();
-    mObjects.push_back(EditorObject(handle));
-}
-
-void EditorApp::RenameGameObject(u16 index, const char* name)
-{
-    for (EditorObject eobj : mObjects)
-    {
-        GameObjectHandle handle = eobj.GetHandle();
-        if (handle.GetIndex() == index)
-        {
-            handle.Get()->SetName(name);
-        }
-    }
 }

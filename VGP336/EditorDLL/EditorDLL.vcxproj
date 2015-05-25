@@ -80,6 +80,7 @@
   <ItemGroup>
     <ClCompile Include="EditorAPI.cpp" />
     <ClCompile Include="EditorApp.cpp" />
+    <ClCompile Include="EditorCommands.cpp" />
     <ClCompile Include="EditorObject.cpp" />
     <ClCompile Include="Gizmo.cpp" />
     <ClCompile Include="InputCallbacks.cpp" />
@@ -87,6 +88,7 @@
   <ItemGroup>
     <ClInclude Include="EditorAPI.h" />
     <ClInclude Include="EditorApp.h" />
+    <ClInclude Include="EditorCommands.h" />
     <ClInclude Include="EditorObject.h" />
     <ClInclude Include="Gizmo.h" />
     <ClInclude Include="InputCallbacks.h" />

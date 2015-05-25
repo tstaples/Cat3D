@@ -6,6 +6,7 @@
     <ClCompile Include="EditorObject.cpp" />
     <ClCompile Include="Gizmo.cpp" />
     <ClCompile Include="InputCallbacks.cpp" />
+    <ClCompile Include="EditorCommands.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EditorApp.h" />
@@ -13,5 +14,6 @@
     <ClInclude Include="EditorObject.h" />
     <ClInclude Include="Gizmo.h" />
     <ClInclude Include="InputCallbacks.h" />
+    <ClInclude Include="EditorCommands.h" />
   </ItemGroup>
 </Project>

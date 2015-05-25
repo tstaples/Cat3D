@@ -16,14 +16,6 @@ public:
 	EditorApp();
 	virtual ~EditorApp();
 
-    const u8* GetSelectedObjectData(u32& size);
-    s32 UpdateComponent(const u8* buffer, u32 buffsize);
-    const u8* DiscoverGameObjects(u32& buffsize);
-    const u8* GetGameObject(u16 index, u32& buffsize);
-    void SelectGameObject(u16 index);
-    void CreateEmptyGameObject(u16& index);
-    void RenameGameObject(u16 index, const char* name);
-
 private:
 	// Application implementation
 	virtual void OnInitialize(u32 width, u32 height) override;
@@ -38,17 +30,6 @@ private:
 	GraphicsSystem mGraphicsSystem;
 	Camera mCamera;
 
-    GameObjectFactory mFactory;
-    GameObjectPool mGameObjectPool;
-    Octree<EditorObject> mOctree;
-
-    std::vector<EditorObject> mObjects;
-    std::vector<EditorObject*> mSelectedObjects;
-
-    RenderService mRenderService;
-
-    Gizmo* mpGizmo;
-
     // Screen
     u32 mWidth;
     u32 mHeight;
@@ -58,8 +39,19 @@ private:
     InputManager mInputManager;
     InputCallbacks mCallbacks;
 
+    Gizmo* mpGizmo;
+
+    GameObjectFactory mFactory;
+    GameObjectPool mGameObjectPool;
+    Octree<EditorObject> mOctree;
+    std::vector<EditorObject> mObjects;
+    std::vector<EditorObject*> mSelectedObjects;
+
+    RenderService mRenderService;
+
 private:
     friend class InputCallbacks;
+    friend class EditorCommands;
 };
 
 #endif //#ifndef INCLUDED_EDITORAPP_H
