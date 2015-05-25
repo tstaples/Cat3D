@@ -52,6 +52,9 @@
     <Filter Include="Physics">
       <UniqueIdentifier>{47afdb53-4215-439f-a7d6-a48b03467eb4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Gameplay">
+      <UniqueIdentifier>{5e389a95-2060-4053-b85a-7a7ed543066a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputSystem.cpp">
@@ -222,6 +225,9 @@
     </ClCompile>
     <ClCompile Include="Service.cpp">
       <Filter>GameObject\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="GameWorld.cpp">
+      <Filter>Gameplay</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -470,6 +476,9 @@
     </ClInclude>
     <ClInclude Include="Service.h">
       <Filter>GameObject\Services</Filter>
+    </ClInclude>
+    <ClInclude Include="GameWorld.h">
+      <Filter>Gameplay</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
