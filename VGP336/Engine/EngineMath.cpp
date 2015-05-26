@@ -193,6 +193,14 @@ bool Intersect(const Ray& ray, const AABB& aabb, f32& distEntry, f32& distExit)
 
 //----------------------------------------------------------------------------------------------------
 
+bool Intersect(const Ray& ray, const AABB& aabb)
+{
+    f32 dEntry, dExit; // Do nothing with these
+    return Intersect(ray, aabb, dEntry, dExit);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 bool Intersect(const Ray& ray, const Plane& plane, f32& distance)
 {
     // Can't assume plane's normal is passed in normalized
@@ -214,6 +222,21 @@ bool Intersect(const Ray& ray, const Plane& plane, f32& distance)
     distance = (plane.d - orgDotN) / dirDotN;
     return true;
 }
+
+//----------------------------------------------------------------------------------------------------
+
+bool GetIntersectPoint(const Ray& ray, const Plane& plane, Vector3& point)
+{
+    f32 dist = 0;
+    if (Intersect(ray, plane, dist))
+    {
+        point = ray.org + (ray.dir * dist);
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
 
 // first pass check to see if point is intersecting
 // second pass - ray box intersection test (ray in particle's direction)

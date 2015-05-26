@@ -60,12 +60,16 @@ public:
     *   Assumes next byte in the buffer is the length of the string.
     */
     inline std::string ReadLengthEncodedString();
+    inline std::wstring ReadLengthEncodedStringW();
 
     /*  Seeks to a certain position in the buffer.
     *   @param offset: number of bytes to move the buffer handle from the origin.
     *   @param origin: position where the offset is applied from.
     */
     inline void Seek(s32 offset, Origin origin);
+
+    u32 GetSize() const     { return mBufferSize; }
+    u32 GetOffset() const   { return mWriteOffset; }
 
 private:
 	const u8* mBufferHandle;    // Buffer we are reading/writing to

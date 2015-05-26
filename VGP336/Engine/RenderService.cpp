@@ -10,17 +10,23 @@
 #include "Precompiled.h"
 #include "RenderService.h"
 
+#include "Camera.h"
 #include "GraphicsSystem.h"
+#include "IO.h"
+#include "MemHandle.h"
+#include "MemoryPool.h"
+#include "MeshBuilder.h"
+#include "MeshComponent.h"
+#include "MeshRendererComponent.h"
+#include "TransformComponent.h"
 
 //====================================================================================================
 // Class Definitions
 //====================================================================================================
 
 RenderService::RenderService()
-    : mpGraphicsSystem(nullptr)
-    , mpGameObjectRepo(nullptr)
-    , mpTransformRepo(nullptr)
-    , mpModelRepo(nullptr)
+    : Service("RenderService")
+    , mpGraphicsSystem(nullptr)
 {
 }
 
@@ -32,16 +38,9 @@ RenderService::~RenderService()
 
 //----------------------------------------------------------------------------------------------------
 
-void RenderService::Initialize(GraphicsSystem& graphicsSystem, 
-                    GameObjectRepository& gameObjectRepo, 
-                    TransformRepository& transformRepo, 
-                    ModelRepository& modelRepo,
-                    Camera& camera)
+void RenderService::Initialize(GraphicsSystem& graphicsSystem, Camera& camera)
 {
-    mpGraphicsSystem    = &graphicsSystem;
-    mpGameObjectRepo    = &gameObjectRepo;
-    mpTransformRepo     = &transformRepo;
-    mpModelRepo         = &modelRepo;
+    mpGraphicsSystem = &graphicsSystem;
 
     mRenderer.Initialize(*mpGraphicsSystem);
     mRenderer.SetCamera(camera);
@@ -51,11 +50,7 @@ void RenderService::Initialize(GraphicsSystem& graphicsSystem,
 
 void RenderService::Terminate()
 {
-    mpGraphicsSystem    = nullptr;
-    mpGameObjectRepo    = nullptr;
-    mpTransformRepo     = nullptr;
-    mpModelRepo         = nullptr;
-
+    mpGraphicsSystem = nullptr;
     mRenderer.Terminate();
 }
 
@@ -64,30 +59,72 @@ void RenderService::Terminate()
 void RenderService::Update()
 {
     // Iterate through all the subscribers and render them
-    for (auto subscriberInfo : mSubscribers)
+    Subscribers::iterator it = mSubscribers.begin();
+    for (it; it != mSubscribers.end(); ++it)
     {
-        RenderInfo& renderInfo = subscriberInfo.second;
+        GameObject* gameObject = it->Get();
+        TransformComponent* transformComponent = nullptr;
+        MeshComponent* meshComponent = nullptr;
+        MeshRendererComponent* meshRendererComponent = nullptr;
 
-        // Get the transform and model components
-        TransformComponent& transformComponent   = mpTransformRepo->GetItem(renderInfo.transformId);
-        ModelComponent& modelComponent           = mpModelRepo->GetItem(renderInfo.modelId);
+        gameObject->GetComponent(transformComponent);
+        gameObject->GetComponent(meshComponent);
+        if (gameObject->FindComponent(meshRendererComponent))
+        {
+            // Destroy old texture and load new one
+            Texture& texture = meshRendererComponent->GetTexture();
+            std::wstring texturePath = IO::CharToWChar(meshRendererComponent->GetTexturePath());
+            //std::wstring texturePath = meshRendererComponent->GetTexturePath();
+            texture.Terminate();
+            texture.Initialize(*mpGraphicsSystem, texturePath.c_str());
+            mRenderer.SetTexture(texture);
+        }
 
-        // Cache the model and the transform
-        const Math::Matrix& transform   = transformComponent.GetTransform();
-        const Model& model              = *modelComponent.GetModel();
+        MeshBuffer& meshBuffer = meshComponent->GetMeshBuffer();
+        Math::Matrix transform = transformComponent->GetTransform();
 
-        // Render the model at the specified transform
-        model.Render(mRenderer, transform);
+        // Check if the component was modified
+        if (meshComponent->IsDirty())
+        {
+            Mesh& mesh = meshComponent->GetMesh();
+
+            // Recreate the mesh buffer
+            meshBuffer.Terminate();
+            meshBuffer.Initialize(*mpGraphicsSystem, mesh.GetVertexFormat(), mesh);
+            meshComponent->mFilterModified = false;
+        }
+        mRenderer.Render(meshBuffer, transform);
+
+        // Temp: uncheck flag here until a more suitable location is found
+        meshComponent->SetIsDirty(false);
     }
 }
 
 //----------------------------------------------------------------------------------------------------
 
-void RenderService::OnSubscribe(ID ObjId, RenderInfo& info)
+void RenderService::OnSubscribe(GameObjectHandle handle)
 {
-    // Get the object associated with the ID from the GameObject repository
-    // and populate info with its ID and model ID.
-    GameObject& object  = mpGameObjectRepo->GetItem(ObjId);
-    info.transformId    = object.GetComponentID(Meta::TransformComponentType);
-    info.modelId        = object.GetComponentID(Meta::ModelComponentType);
+    GameObject* gameObject = handle.Get();
+    TransformComponent* transformComponent = nullptr;
+    MeshComponent* meshComponent = nullptr;
+    MeshRendererComponent* meshRendererComponent = nullptr;
+    
+    // TODO: throw exception instead of asserting
+    gameObject->GetComponent(transformComponent);
+    gameObject->GetComponent(meshComponent);
+
+    // Init the mesh buffer
+    Mesh& mesh = meshComponent->GetMesh();
+    MeshBuffer& meshBuffer = meshComponent->GetMeshBuffer();
+    meshBuffer.Initialize(*mpGraphicsSystem, mesh.GetVertexFormat(), mesh);
+
+    // MeshRenderer is not a dependency, so allow it to not exist
+    if (gameObject->FindComponent(meshRendererComponent))
+    {
+        // Init and set the texture
+        Texture& texture = meshRendererComponent->GetTexture();
+        std::wstring texturePath = IO::CharToWChar(meshRendererComponent->GetTexturePath());
+        texture.Initialize(*mpGraphicsSystem, texturePath.c_str()); 
+        mRenderer.SetTexture(texture);
+    }
 }

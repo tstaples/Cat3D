@@ -1,6 +1,9 @@
 #ifndef INCLUDED_ENGINE_FILEBUFFER_H
 #define INCLUDED_ENGINE_FILEBUFFER_H
 
+namespace IO
+{
+
 class FileBuffer
 {
 public:
@@ -95,5 +98,7 @@ void FileBuffer::ReadArray(T* data, u32 bytes)
     memcpy(data, mBuffer + mWriteOffset, bytes);
     mWriteOffset += bytes;
 }
+
+} // namespace IO
 
 #endif // #ifndef INCLUDED_ENGINE_FILEBUFFER_H

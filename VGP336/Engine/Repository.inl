@@ -27,7 +27,7 @@ Repository<T>::~Repository()
 template<typename T>
 ID Repository<T>::Allocate()
 {
-    ASSERT(!mFreeSlots.size() || mSize < mCapacity, "[Repository(type=%u)] Failed to allocate.", mType);
+    ASSERT(!mFreeSlots.size() || mSize < mCapacity, "[Repository(type=%u)] Failed to allocate.", GetType());
 
     // Additional check to prevent crashing during release
     if (mFreeSlots.size() && mSize >= mCapacity)
@@ -52,7 +52,7 @@ ID Repository<T>::Allocate()
 
     // Note: placement new skips allocation if it's already allocated
     // and just does the construction part.
-    new (&mData[index]) T();
+    //new (&mData[index]) T();
 
     return ID(GetType(), mInstanceCount[index], index);
 }
@@ -96,7 +96,7 @@ void Repository<T>::Flush()
 template<typename T>
 T& Repository<T>::GetItem(ID id)
 {
-    ASSERT(IsValid(id), "[Repository(type = %u)] Failed to get item with id(%u/%u/%u).", mType, mType, id.GetInstance(), id.GetIndex());
+    ASSERT(IsValid(id), "[Repository(type = %u)] Failed to get item with id(%u/%u/%u).", GetType(), GetType(), id.GetInstance(), id.GetIndex());
     return mData[id.GetIndex()];
 }
 //----------------------------------------------------------------------------------------------------
@@ -104,7 +104,7 @@ T& Repository<T>::GetItem(ID id)
 template<typename T>
 const T& Repository<T>::GetItem(ID id) const
 {
-    ASSERT(IsValid(id), "[Repository(type = %u)] Failed to get item with id(%u/%u/%u).", mType, mType, id.GetInstance(), id.GetIndex());
+    ASSERT(IsValid(id), "[Repository(type = %u)] Failed to get item with id(%u/%u/%u).", GetType(), GetType(), id.GetInstance(), id.GetIndex());
     return mData[id.GetIndex()];
 }
 //----------------------------------------------------------------------------------------------------

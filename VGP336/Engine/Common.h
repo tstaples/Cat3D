@@ -72,11 +72,8 @@ typedef double				f64;
 	#define LOG(format, ...)\
 	{\
 		{\
-			va_list va;\
 			char buffer[1024];\
-			va_start(va, (#format));\
-			vsprintf_s(buffer, 1024, (#format), va);\
-			va_end(va);\
+            sprintf_s(buffer, 1024, (#format), __VA_ARGS__);\
 			std::string message;\
 			message += (buffer);\
 			message += "\n";\
@@ -94,12 +91,22 @@ typedef double				f64;
 	{\
 		if (!(condition))\
 		{\
-			LOG(format, ...)\
+			LOG(format, __VA_ARGS__)\
+			DebugBreak();\
+		}\
+	}
+
+    #define VERIFY(condition, format, ...)\
+	{\
+		if (!(condition))\
+		{\
+			LOG(format, __VA_ARGS__)\
 			DebugBreak();\
 		}\
 	}
 #else
 	#define ASSERT(condition, format, ...)
+	#define VERIFY(condition, format, ...) condition
 #endif
 
 //----------------------------------------------------------------------------------------------------
@@ -107,6 +114,11 @@ typedef double				f64;
 #define NONCOPYABLE(type)\
 	type(const type&) = delete;\
 	type& operator=(const type&) = delete;
+
+//----------------------------------------------------------------------------------------------------
+
+#define STATIC_ARRAY_SIZE(ARR)\
+    sizeof(ARR) / sizeof(ARR[0])
 
 //====================================================================================================
 // Helper Functions

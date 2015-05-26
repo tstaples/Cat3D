@@ -84,6 +84,13 @@ inline bool IsZero(f32 value)
 
 //----------------------------------------------------------------------------------------------------
 
+inline bool IsZero(const Vector2& v)
+{
+	return IsZero(v.x) && IsZero(v.y);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 inline bool IsZero(const Vector3& v)
 {
 	return IsZero(v.x) && IsZero(v.y) && IsZero(v.z);
@@ -111,7 +118,21 @@ inline f32 MagnitudeSqr(const Vector3& v)
 
 //----------------------------------------------------------------------------------------------------
 
+inline f32 MagnitudeSqr(const Vector2& v)
+{
+	return (v.x * v.x) + (v.y * v.y);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 inline f32 Magnitude(const Vector3& v)
+{
+	return Sqrt(MagnitudeSqr(v));
+}
+
+//----------------------------------------------------------------------------------------------------
+
+inline f32 Magnitude(const Vector2& v)
 {
 	return Sqrt(MagnitudeSqr(v));
 }
@@ -121,6 +142,15 @@ inline f32 Magnitude(const Vector3& v)
 inline Vector3 Normalize(const Vector3& v)
 {
 	ASSERT(!IsZero(v), "[Math] Cannot normalize zero length vector!");
+	const f32 inv = 1.0f / Magnitude(v);
+	return v * inv;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+inline Vector2 Normalize(const Vector2& v)
+{
+    ASSERT(!IsZero(v), "[Math] Cannot normalize zero length vector!");
 	const f32 inv = 1.0f / Magnitude(v);
 	return v * inv;
 }
@@ -183,6 +213,14 @@ inline Vector3 Cross(const Vector3& a, const Vector3& b)
 inline Vector3 Project(const Vector3& v, const Vector3& n)
 {
 	return n * (Dot(v, n) / Dot(n, n));
+}
+
+//----------------------------------------------------------------------------------------------------
+
+inline Vector3 Project(const Vector3& v, const Plane& p)
+{
+    f32 dist = Dot(v, p.n);
+    return (v - (p.n * dist));
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -374,6 +412,33 @@ inline Vector3 RotateVector(const Vector3& v, const Quaternion& q)
     Vector3 rot = qv * 2.0f * Dot(qv, v)
                 + v * (Sqr(q.w) - Dot(qv, qv)) 
                 + Cross(v, qv) * (q.w * 2.0f);
+    return rot;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+// http://gamedev.stackexchange.com/a/50968/51098
+inline Vector3 GetRotation(const Matrix& m)
+{
+    Vector3 rot;
+    if (m._11 == 1.0f)
+    {
+        rot.x = atan2f(m._13, m._34);
+        rot.y = 0.0f;
+        rot.z = 0.0f;
+    }
+    else if (m._11 == -1.0f)
+    {
+        rot.x = atan2f(-m._31, m._11);
+        rot.y = 0.0f;
+        rot.z = 0.0f;
+    }
+    else
+    {
+        rot.x = atan2f(-m._31, m._11) * kRadToDeg;
+        rot.y = asinf(m._21) * kRadToDeg;
+        rot.z = atan2f(-m._23, m._22) * kRadToDeg;
+    }
     return rot;
 }
 

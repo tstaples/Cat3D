@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.ComponentModel;
 
 namespace Editor
 {
@@ -30,5 +31,41 @@ namespace Editor
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern int IsGameRunning();
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern uint GetSelectedObjectData(byte[] buffer);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl, CharSet=CharSet.Ansi)]
+        public unsafe static extern int UpdateComponent(byte[] buffer, uint size);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern uint DiscoverGameObjects(byte[] buffer);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern uint GetGameObject(ushort index, byte[] buffer);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern void SelectGameObject(ushort index);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern uint CreateAndSelectGameObject(byte[] buffer);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern void RenameGameObject(ushort index, string name);
+
+        //[DllImport(kDLLName, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        //[return: MarshalAs(UnmanagedType.LPStr)]
+        //public static extern string MyFunction([InAttribute()] [MarshalAsAttribute(UnmanagedType.LPStr)] string MyParameter);
     }
+
+
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Matrix
+    {
+        float _11, _12, _13, _14;
+        float _21, _22, _23, _24;
+        float _31, _32, _33, _34;
+        float _41, _42, _43, _44;
+    };
 }

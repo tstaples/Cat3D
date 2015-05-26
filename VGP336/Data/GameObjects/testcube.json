@@ -1,0 +1,39 @@
+{
+    "Components" : [
+        { 
+            "Name" : "MeshComponent",
+            "Properties" : [
+                {
+                    "Name" : "Filter",
+                    "Data" : [ 0 ]
+                }
+            ]
+        },
+        { 
+            "Name" : "MeshRendererComponent",
+            "Properties" : [
+                {
+                    "Name" : "TexturePath",
+                    "Data" : [ "../Data/Images/grass.jpg" ]
+                }
+            ]
+        },
+        {
+            "Name" : "TransformComponent",
+            "Properties" : [
+                {
+                    "Name" : "Position",
+                    "Data" : [ 0.0, 0.0, 0.0 ]
+                },
+                {
+                    "Name" : "Rotation",
+                    "Data" : [ 0.0, 0.0, 0.0 ]
+                },
+                {
+                    "Name" : "Scale",
+                    "Data" : [ 4.0, 4.0, 4.0 ]
+                }
+            ]
+        }
+    ]
+}

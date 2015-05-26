@@ -21,21 +21,34 @@
 class TransformComponent : public Component
 {
 public:
+    META_DECLARE_CLASS
+
     TransformComponent();
     TransformComponent(const Math::Matrix& transform);
     ~TransformComponent();
 
-    void SetTransform(const Math::Matrix& transform) { mTransform = transform; }
-
-    Math::Matrix& GetTransform()                { return mTransform; }
-    const Math::Matrix& GetTransform() const    { return mTransform; }
+    void Translate(const Math::Vector3& t);
 
     Math::Vector3 GetPosition() const;
 
-    virtual void Load(Json::Value& properties);
+    Math::Matrix GetTransform() const;
+
+    void SetTransform(const Math::Matrix& transform) { mTransform = transform; }
 
 private:
+    //http://www.gamasutra.com/view/feature/131686/rotating_objects_using_quaternions.php
+    //Math::Quaternion mRotation; // TODO
+    Math::Vector3 mPosition;
+    Math::Vector3 mRotation;
+    Math::Vector3 mScale;
+
     Math::Matrix mTransform;
 };
+
+//====================================================================================================
+// Typedefs
+//====================================================================================================
+
+//typedef MemHandle<TransformComponent> TransformHandle;
 
 #endif // #ifndef INCLUDED_ENGINE_TRANSFORMCOMPONENT_H

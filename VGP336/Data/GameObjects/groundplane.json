@@ -1,19 +1,33 @@
 {
 	"Components" : [
 		{ 
-			"Type" : "ModelComponent",
-			"Properties" : {
-				"Filename" : "../Data/Models/plane.catm"
-			}
+			"Name" : "ModelComponent",
+			"Properties" : [
+				{
+					"Name" : "Filename",
+					"Data" : [ "../Data/Models/plane.catm" ]
+				}
+			]
 		},
 		{
-			"Type" : "TransformComponent",
+			"Name" : "TransformComponent",
 			"Properties" : [
-				{ "Position" : { "x" : "0.0", "y" : "0.0", "z" : "0.0" } }
+				{
+					"Name" : "Position",
+					"Data" : [ 0.0, 0.0, 0.0 ]
+				},
+				{
+					"Name" : "Rotation",
+					"Data" : [ 0.0, 0.0, 0.0 ]
+				},
+				{
+					"Name" : "Scale",
+					"Data" : [ 1.0, 1.0, 1.0 ]
+				}
 			]
 		}
 	],
 	"Services" : [
-		{ "Type" : "RenderService" }
+		{ "Name" : "RenderService" }
 	]
 }

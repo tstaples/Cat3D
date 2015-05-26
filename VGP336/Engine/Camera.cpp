@@ -78,7 +78,8 @@ void Camera::Strafe(f32 distance)
 
 void Camera::Rise(f32 distance)
 {
-	mPosition = mPosition + (Math::Vector3::YAxis() * distance);
+    Math::Vector3 up = Math::Cross(mLook, mRight);
+	mPosition = mPosition + (up * distance);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -147,8 +148,119 @@ Math::Matrix Camera::GetProjectionMatrix() const
 
 //----------------------------------------------------------------------------------------------------
 
+Math::Matrix Camera::GetOrthographicProjectionMatrix(u32 scrw, u32 scrh) const
+{
+	const f32 f = mFarPlane;
+	const f32 n = mNearPlane;
+
+    const f32 h = 1 / tan(mFOV * 0.5f);
+	const f32 w = h / mAspectRatio;
+
+    XMMATRIX  d3dMat =   XMMatrixOrthographicLH((float)scrw, (float)scrh, n, f);
+
+    return /*Math::Transpose*/(Math::Matrix
+	(
+		d3dMat.r[0].m128_f32[0],    d3dMat.r[0].m128_f32[1], d3dMat.r[0].m128_f32[2], d3dMat.r[0].m128_f32[3],
+		d3dMat.r[1].m128_f32[0],    d3dMat.r[1].m128_f32[1], d3dMat.r[1].m128_f32[2], d3dMat.r[1].m128_f32[3],
+		d3dMat.r[2].m128_f32[0],    d3dMat.r[2].m128_f32[1], d3dMat.r[2].m128_f32[2], d3dMat.r[2].m128_f32[3],
+	    d3dMat.r[3].m128_f32[0],    d3dMat.r[3].m128_f32[1], d3dMat.r[3].m128_f32[2], d3dMat.r[3].m128_f32[3]
+	));
+
+    /*return Math::Matrix
+	(
+		2.0f/w,  0.0f,       0.0f,        0.0f,
+		0.0f,       2.0f/h,  0.0f,        0.0f,
+		0.0f,       0.0f,       1/(f-n),     0.0f,
+	    0.0f,       0.0f,       n/(n-f),     1.0f
+	);*/
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void Camera::Renormalize()
 {
 	mLook = Math::Normalize(mLook);
 	mRight = Math::Normalize(Math::Cross(Math::Vector3::YAxis(), mLook));
+}
+
+//----------------------------------------------------------------------------------------------------
+
+Math::Vector2 Camera::WorldToScreen(const Math::Vector3& pos, u32 screenW, u32 screenH)
+{
+    Math::Matrix view = GetViewMatrix();
+    Math::Matrix proj = GetProjectionMatrix();
+    Math::Vector3 worldView = Math::TransformCoord(pos, view);
+    Math::Vector3 hcspos = Math::TransformCoord(worldView, proj);
+
+    Math::Vector2 screenPos;
+    const f32 halfW = screenW * 0.5f;
+    const f32 halfH = screenH * 0.5f;
+
+    screenPos.x = halfW * hcspos.x + halfW;
+    screenPos.y = -halfH * hcspos.y + halfH;
+    return screenPos;
+}
+
+//----------------------------------------------------------------------------------------------------
+Math::Vector2 Camera::WorldToScreenOrthographic(const Math::Vector3& pos, u32 screenW, u32 screenH)
+{
+    Math::Matrix view = GetViewMatrix();
+    Math::Matrix proj = GetOrthographicProjectionMatrix(screenW, screenH);
+    Math::Vector3 worldView = Math::TransformCoord(pos, view);
+    Math::Vector3 hcspos = Math::TransformCoord(worldView, proj);
+
+    Math::Vector2 screenPos;
+    const f32 halfW = screenW * 0.5f;
+    const f32 halfH = screenH * 0.5f;
+
+    screenPos.x = halfW * hcspos.x + halfW;
+    screenPos.y = -halfH * hcspos.y + halfH;
+    return screenPos;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+Math::Vector3 Camera::ScreenToWorld(s32 mx, s32 my, u32 screenW, u32 screenH) const
+{
+    // Transform 2d mouse coords to NDC
+    Math::Vector3 mouseNDC;
+    mouseNDC.x = (2.0f * (f32)mx) / (f32)screenW - 1.0f;
+    mouseNDC.y = 1.0f - (2.0f * (f32)my) / (f32)screenH;
+    mouseNDC.z = 0.0f;
+
+    // Transform the mouse NDC coords into world space
+    Math::Matrix projection     = GetProjectionMatrix();
+    Math::Matrix invProjection  = Math::Inverse(projection);
+    Math::Matrix cameraView     = Math::Inverse(GetViewMatrix());
+    Math::Matrix transform      = invProjection * cameraView;
+    Math::Vector3 mouseWorld    = Math::TransformCoord(mouseNDC, transform);
+    return mouseWorld;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+Math::Ray Camera::GetMouseRay(s32 mx, s32 my, u32 screenW, u32 screenH) const
+{
+    Math::Vector3 mouseWorld = ScreenToWorld(mx, my, screenW, screenH);
+    Math::Vector3 dir = Math::Normalize(mouseWorld - mPosition);
+    return Math::Ray(mPosition, dir);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+Math::Plane Camera::GetAxisViewPlane() const
+{
+    Math::Plane px(Math::Vector3::XAxis(), 0.0f);
+    Math::Plane py(Math::Vector3::YAxis(), 0.0f);
+    Math::Plane pz(Math::Vector3::ZAxis(), 0.0f);
+
+    f32 dotX = fabsf(Math::Dot(mLook, px.n));
+    f32 dotY = fabsf(Math::Dot(mLook, py.n));
+    f32 dotZ = fabsf(Math::Dot(mLook, pz.n));
+
+    if (dotX > dotY && dotX > dotZ)
+        return px;
+    else if (dotY > dotX && dotY > dotZ)
+        return py;
+    return pz;
 }

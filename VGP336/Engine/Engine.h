@@ -16,10 +16,10 @@
 // Core headers
 #include "Application.h"
 #include "Delegate.h"
+#include "Random.h"
 
 // Component headers
-#include "ModelComponent.h"
-#include "TransformComponent.h"
+#include "Components.h"
 
 // Service headers
 #include "RenderService.h"
@@ -27,9 +27,12 @@
 // GameObject headers
 #include "GameObject.h"
 #include "GameObjectFactory.h"
-#include "ID.h"
-#include "MetaTypes.h"
+#include "MemHandle.h"
+#include "MemoryPool.h"
 #include "RepositoryTypes.h"
+
+// Meta headers
+#include "Meta.h"
 
 // Graphics headers
 #include "AnimationClip.h"
@@ -63,6 +66,7 @@
 
 // Math headers
 #include "EngineMath.h"
+#include "Octree.h"
 
 // Physics Headers
 #include "Constraints.h"

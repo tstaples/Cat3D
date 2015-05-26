@@ -37,6 +37,10 @@ public:
     *   @param str: string to write.
     */
     void WriteLengthEncodedString(const std::string& str);
+    void WriteLengthEncodedString(const std::wstring& str);
+
+    u32 GetSize() const     { return mBufferSize; }
+    u32 GetOffset() const   { return mWriteOffset; }
 
 private:
 	u8* mBufferHandle;	// Buffer we are reading/writing to

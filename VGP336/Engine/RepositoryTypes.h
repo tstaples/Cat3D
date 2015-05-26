@@ -20,8 +20,8 @@
 // Typedefs
 //====================================================================================================
 
-typedef Repository<GameObject>          GameObjectRepository;
-typedef Repository<TransformComponent>  TransformRepository;
-typedef Repository<ModelComponent>      ModelRepository;
+//typedef Repository<GameObject>          GameObjectRepository;
+//typedef Repository<TransformComponent>  TransformRepository;
+//typedef Repository<ModelComponent>      ModelRepository;
 
 #endif // #ifndef INCLUDED_ENGINE_REPOSITORYTYPES_H

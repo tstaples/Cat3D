@@ -1,6 +1,10 @@
 #ifndef INCLUDED_ENGINE_IO_H
 #define INCLUDED_ENGINE_IO_H
 
+#include "File.h"
+#include "FileBuffer.h"
+#include "Path.h"
+
 namespace IO
 {
 
@@ -23,7 +27,8 @@ bool SyncWriteFile(const char* path, const u8* buffer, size_t buffsize, const ch
 bool SyncWriteFile(const char* path, const u8* buffer, size_t buffsize, size_t& bytesWritten, const char* mode=Mode::WriteBinary);
     
 // Returns the size of a file in bytes
-size_t GetFileSize(const char* path);
+u32 GetFileSize(const char* path);
+u32 GetFileSize(FILE* handle);
 
 // Returns the extension of a filename
 std::string GetExtension(const std::string& file);

@@ -68,8 +68,8 @@ public:
 	void Terminate();
 
 	// Functions to add 3D lines
-	void AddLine(f32 x0, f32 y0, f32 z0, f32 x1, f32 y1, f32 z1, const Color& color);
-	void AddAABB(f32 minX, f32 minY, f32 minZ, f32 maxX, f32 maxY, f32 maxZ, const Color& color);
+	void AddLine(f32 x0, f32 y0, f32 z0, f32 x1, f32 y1, f32 z1, const Color& color, bool isOrtho=false);
+	void AddAABB(f32 minX, f32 minY, f32 minZ, f32 maxX, f32 maxY, f32 maxZ, const Color& color, bool isOrtho=false);
 	void AddSphere(f32 x, f32 y, f32 z, f32 radius, const Color& color, u32 slices, u32 rings);
 
 	// Functions to add screen lines
@@ -88,13 +88,16 @@ private:
 
 	TypedConstantBuffer<CBSimpleDraw> mConstantBuffer;
 
+    ID3D11Buffer* mpVertexBufferOrtho;
 	ID3D11Buffer* mpVertexBuffer;
 	ID3D11Buffer* mpVertexBuffer2D;
 
+    SimpleVertex* mpVertices3DOrtho;
 	SimpleVertex* mpVertices3D;
 	SimpleVertex* mpVertices2D;
 
 	u32 mMaxVertices;
+    u32 mNumVerticies3DOrtho;
 	u32 mNumVertices3D;
 	u32 mNumVertices2D;
 
@@ -107,11 +110,14 @@ private:
 
 SimpleDrawImpl::SimpleDrawImpl(GraphicsSystem& gs)
 	: mGS(gs)
+    , mpVertexBufferOrtho(nullptr)
 	, mpVertexBuffer(nullptr)
 	, mpVertexBuffer2D(nullptr)
+    , mpVertices3DOrtho(nullptr)
 	, mpVertices3D(nullptr)
 	, mpVertices2D(nullptr)
 	, mMaxVertices(0)
+    , mNumVerticies3DOrtho(0)
 	, mNumVertices2D(0)
 	, mNumVertices3D(0)
 	, mInitialized(false)
@@ -146,14 +152,17 @@ void SimpleDrawImpl::Initialize(u32 maxVertices)
 	bd.MiscFlags = 0;
 
 	// Create vertex buffers for 3D/2D lines
+	mGS.GetDevice()->CreateBuffer(&bd, nullptr, &mpVertexBufferOrtho);
 	mGS.GetDevice()->CreateBuffer(&bd, nullptr, &mpVertexBuffer);
 	mGS.GetDevice()->CreateBuffer(&bd, nullptr, &mpVertexBuffer2D);
 
 	// Create line buffers
+    mpVertices3DOrtho = new SimpleVertex[maxVertices];
 	mpVertices3D = new SimpleVertex[maxVertices];
 	mpVertices2D = new SimpleVertex[maxVertices];
 
 	mMaxVertices = maxVertices;
+    mNumVerticies3DOrtho = 0;
 	mNumVertices3D = 0;
 	mNumVertices2D = 0;
 
@@ -178,7 +187,9 @@ void SimpleDrawImpl::Terminate()
 		delete[] mpVertices3D;
 		mpVertices3D = nullptr;
 	}
+    SafeDeleteArray(mpVertices3DOrtho);
 
+    SafeRelease(mpVertexBufferOrtho);
 	SafeRelease(mpVertexBuffer2D);
 	SafeRelease(mpVertexBuffer);
 
@@ -192,69 +203,85 @@ void SimpleDrawImpl::Terminate()
 
 //----------------------------------------------------------------------------------------------------
 
-void SimpleDrawImpl::AddLine(f32 x0, f32 y0, f32 z0, f32 x1, f32 y1, f32 z1, const Color& color)
+void SimpleDrawImpl::AddLine(f32 x0, f32 y0, f32 z0, f32 x1, f32 y1, f32 z1, const Color& color, bool isOrtho)
 {
 	ASSERT(mInitialized, "[SimpleDraw] Not initialized.");
 
+    SimpleVertex* verticies = mpVertices3D;
+    u32& numVerticies = mNumVertices3D;
+    if (isOrtho)
+    {
+        verticies = mpVertices3DOrtho;
+        numVerticies = mNumVerticies3DOrtho;
+    }
+
 	// Check if we have enough space
-	if (mNumVertices3D + 2 <= mMaxVertices)
+	if (numVerticies + 2 <= mMaxVertices)
 	{
 		// Add line
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(x0, y0, z0, color);
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(x1, y1, z1, color);
+		verticies[numVerticies++] = SimpleVertex(x0, y0, z0, color);
+		verticies[numVerticies++] = SimpleVertex(x1, y1, z1, color);
 	}
 
-	ASSERT(mNumVertices3D < mMaxVertices, "[SimpleDraw] Too many vertices!");
+	ASSERT(numVerticies < mMaxVertices, "[SimpleDraw] Too many vertices!");
 }
 
 //----------------------------------------------------------------------------------------------------
 
-void SimpleDrawImpl::AddAABB(f32 minX, f32 minY, f32 minZ, f32 maxX, f32 maxY, f32 maxZ, const Color& color)
+void SimpleDrawImpl::AddAABB(f32 minX, f32 minY, f32 minZ, f32 maxX, f32 maxY, f32 maxZ, const Color& color, bool isOrtho)
 {
 	ASSERT(mInitialized, "[SimpleDraw] Not initialized.");
 
+    SimpleVertex* verticies = mpVertices3D;
+    u32& numVerticies = mNumVertices3D;
+    if (isOrtho)
+    {
+        verticies = mpVertices3DOrtho;
+        numVerticies = mNumVerticies3DOrtho;
+    }
+
 	// Check if we have enough space
-	if (mNumVertices3D + 24 <= mMaxVertices)
+	if (numVerticies + 24 <= mMaxVertices)
 	{
 		// Add lines
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(minX, minY, minZ, color);
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(minX, minY, maxZ, color);
+		verticies[numVerticies++] = SimpleVertex(minX, minY, minZ, color);
+		verticies[numVerticies++] = SimpleVertex(minX, minY, maxZ, color);
 
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(minX, minY, maxZ, color);
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(maxX, minY, maxZ, color);
+		verticies[numVerticies++] = SimpleVertex(minX, minY, maxZ, color);
+		verticies[numVerticies++] = SimpleVertex(maxX, minY, maxZ, color);
 
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(maxX, minY, maxZ, color);
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(maxX, minY, minZ, color);
+		verticies[numVerticies++] = SimpleVertex(maxX, minY, maxZ, color);
+		verticies[numVerticies++] = SimpleVertex(maxX, minY, minZ, color);
 
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(maxX, minY, minZ, color);
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(minX, minY, minZ, color);
+		verticies[numVerticies++] = SimpleVertex(maxX, minY, minZ, color);
+		verticies[numVerticies++] = SimpleVertex(minX, minY, minZ, color);
 
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(minX, minY, minZ, color);
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(minX, maxY, minZ, color);
+		verticies[numVerticies++] = SimpleVertex(minX, minY, minZ, color);
+		verticies[numVerticies++] = SimpleVertex(minX, maxY, minZ, color);
 
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(minX, minY, maxZ, color);
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(minX, maxY, maxZ, color);
+		verticies[numVerticies++] = SimpleVertex(minX, minY, maxZ, color);
+		verticies[numVerticies++] = SimpleVertex(minX, maxY, maxZ, color);
 
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(maxX, minY, maxZ, color);
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(maxX, maxY, maxZ, color);
+		verticies[numVerticies++] = SimpleVertex(maxX, minY, maxZ, color);
+		verticies[numVerticies++] = SimpleVertex(maxX, maxY, maxZ, color);
 
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(maxX, minY, minZ, color);
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(maxX, maxY, minZ, color);
+		verticies[numVerticies++] = SimpleVertex(maxX, minY, minZ, color);
+		verticies[numVerticies++] = SimpleVertex(maxX, maxY, minZ, color);
 
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(minX, maxY, minZ, color);
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(minX, maxY, maxZ, color);
+		verticies[numVerticies++] = SimpleVertex(minX, maxY, minZ, color);
+		verticies[numVerticies++] = SimpleVertex(minX, maxY, maxZ, color);
 
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(minX, maxY, maxZ, color);
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(maxX, maxY, maxZ, color);
+		verticies[numVerticies++] = SimpleVertex(minX, maxY, maxZ, color);
+		verticies[numVerticies++] = SimpleVertex(maxX, maxY, maxZ, color);
 
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(maxX, maxY, maxZ, color);
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(maxX, maxY, minZ, color);
-
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(maxX, maxY, minZ, color);
-		mpVertices3D[mNumVertices3D++] = SimpleVertex(minX, maxY, minZ, color);
+		verticies[numVerticies++] = SimpleVertex(maxX, maxY, maxZ, color);
+		verticies[numVerticies++] = SimpleVertex(maxX, maxY, minZ, color);
+		
+        verticies[numVerticies++] = SimpleVertex(maxX, maxY, minZ, color);
+		verticies[numVerticies++] = SimpleVertex(minX, maxY, minZ, color);
 	}
 	
-	ASSERT(mNumVertices3D < mMaxVertices, "[SimpleDraw] Too many vertices!");
+	ASSERT(numVerticies < mMaxVertices, "[SimpleDraw] Too many vertices!");
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -391,6 +418,9 @@ void SimpleDrawImpl::Render(const Camera& camera)
 {
 	ASSERT(mInitialized, "[SimpleDraw] Not initialized.");
 
+    const u32 w = mGS.GetWidth();
+	const u32 h = mGS.GetHeight();
+
 	Math::Matrix matView = camera.GetViewMatrix();
 	Math::Matrix matProj = camera.GetProjectionMatrix();
 
@@ -414,9 +444,7 @@ void SimpleDrawImpl::Render(const Camera& camera)
 	mGS.GetContext()->IASetVertexBuffers(0, 1, &mpVertexBuffer, &stride, &offset);
 	mGS.GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 	mGS.GetContext()->Draw(mNumVertices3D, 0);
-	
-	const u32 w = mGS.GetWidth();
-	const u32 h = mGS.GetHeight();
+
 	Math::Matrix matInvScreen
 	(
 		2.0f/w,  0.0f,   0.0f, 0.0f,
@@ -487,6 +515,17 @@ void AddLine(f32 x0, f32 y0, f32 z0, f32 x1, f32 y1, f32 z1, const Color& color)
 {
 	ASSERT(sSimpleDrawImpl != nullptr, "[SimpleDraw] Not initialized.");
 	sSimpleDrawImpl->AddLine(x0, y0, z0, x1, y1, z1, color);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void AddAABB(const Math::AABB& aabb, const Color& color)
+{
+    ASSERT(sSimpleDrawImpl != nullptr, "[SimpleDraw] Not initialized.");
+	sSimpleDrawImpl->AddAABB(aabb.center.x - aabb.extend.x, aabb.center.y - aabb.extend.y, 
+                             aabb.center.z - aabb.extend.z, aabb.center.x + aabb.extend.x, 
+                             aabb.center.y + aabb.extend.y, aabb.center.z + aabb.extend.z, 
+                             color);
 }
 
 //----------------------------------------------------------------------------------------------------

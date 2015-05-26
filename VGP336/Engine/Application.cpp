@@ -22,6 +22,7 @@ Application::Application()
 	: mInstance(nullptr)
 	, mWindow(nullptr)
 	, mRunning(true)
+    , mOwner(true)
 {
 }
 
@@ -50,12 +51,13 @@ void Application::Terminate()
 
 //----------------------------------------------------------------------------------------------------
 
-void Application::HookWindow(HWND hWnd)
+void Application::HookWindow(HWND hWnd, bool owner)
 {
 	SetWindowLongPtrA(hWnd, GWL_USERDATA, (LONG)this);
 	SetWindowLong(hWnd, GWL_WNDPROC, (LONG)WndProc);
 
 	mWindow = hWnd;
+    mOwner = owner;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -75,58 +77,47 @@ void Application::Update()
 	OnUpdate();
 }
 
-//====================================================================================================
-// Window Message Procedure
-//====================================================================================================
+//----------------------------------------------------------------------------------------------------
 
-void MakeInputEvent(InputEvent& inputEvent, InputEvent::Type type, u32 value, LPARAM lParam)
+void Application::ForwardInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    inputEvent.type = type;
-    inputEvent.value = value;
-	inputEvent.x = GET_X_LPARAM(lParam);
-	inputEvent.y = GET_Y_LPARAM(lParam);
+    InputEvent inputEvent;
+    ProcessInput(hWnd, message, wParam, lParam, inputEvent);
+    OnInput(inputEvent);
 }
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	PAINTSTRUCT ps;
-	HDC hdc;
-	InputEvent inputEvent;
+//----------------------------------------------------------------------------------------------------
 
-	switch (message)
+bool Application::ProcessInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, InputEvent& inputEvent)
+{
+    bool handled = true;
+
+    switch (message)
 	{
-	case WM_PAINT:
-		{
-			hdc = BeginPaint(hWnd, &ps);
-			EndPaint(hWnd, &ps);
-		}
-		break;
-	case WM_DESTROY:
-		{
-			PostQuitMessage(0);
-		}
-		break;
+    case WM_SIZE:
+        OnResizeWindow();
+        break;
 	case WM_CHAR:
 		{
-			inputEvent.type = InputEvent::Character;
+			inputEvent.type = Input::Character;
 			inputEvent.value = wParam;
 		}
 		break;
 	case WM_KEYDOWN:
 		{
-			inputEvent.type = InputEvent::KeyDown;
+			inputEvent.type = Input::KeyDown;
 			inputEvent.value = wParam;
 		}
 		break;
 	case WM_KEYUP:
 		{
-			inputEvent.type = InputEvent::KeyUp;
+			inputEvent.type = Input::KeyUp;
 			inputEvent.value = wParam;
 		}
 		break;
 	case WM_MOUSEMOVE:
 		{
-			inputEvent.type = InputEvent::MouseMove;
+			inputEvent.type = Input::MouseMove;
 			inputEvent.x = GET_X_LPARAM(lParam);
 			inputEvent.y = GET_Y_LPARAM(lParam);
 		}
@@ -134,7 +125,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         // TODO: rest of mouse button cases
     case WM_LBUTTONDOWN:
 		{
-			inputEvent.type = InputEvent::MouseDown;
+			inputEvent.type = Input::MouseDown;
             inputEvent.value = Mouse::LBUTTON;
 			inputEvent.x = GET_X_LPARAM(lParam);
 			inputEvent.y = GET_Y_LPARAM(lParam);
@@ -142,7 +133,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
     case WM_RBUTTONDOWN:
         {
-			inputEvent.type = InputEvent::MouseDown;
+			inputEvent.type = Input::MouseDown;
             inputEvent.value = Mouse::RBUTTON;
 			inputEvent.x = GET_X_LPARAM(lParam);
 			inputEvent.y = GET_Y_LPARAM(lParam);
@@ -150,7 +141,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_MBUTTONDOWN:
         {
-			inputEvent.type = InputEvent::MouseDown;
+			inputEvent.type = Input::MouseDown;
             inputEvent.value = Mouse::MBUTTON;
 			inputEvent.x = GET_X_LPARAM(lParam);
 			inputEvent.y = GET_Y_LPARAM(lParam);
@@ -158,7 +149,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_LBUTTONUP:
 		{
-			inputEvent.type = InputEvent::MouseUp;
+			inputEvent.type = Input::MouseUp;
             inputEvent.value = Mouse::LBUTTON;
 			inputEvent.x = GET_X_LPARAM(lParam);
 			inputEvent.y = GET_Y_LPARAM(lParam);
@@ -166,7 +157,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
     case WM_RBUTTONUP:
         {
-			inputEvent.type = InputEvent::MouseUp;
+			inputEvent.type = Input::MouseUp;
             inputEvent.value = Mouse::RBUTTON;
 			inputEvent.x = GET_X_LPARAM(lParam);
 			inputEvent.y = GET_Y_LPARAM(lParam);
@@ -174,7 +165,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_MBUTTONUP:
         {
-			inputEvent.type = InputEvent::MouseUp;
+			inputEvent.type = Input::MouseUp;
             inputEvent.value = Mouse::MBUTTON;
 			inputEvent.x = GET_X_LPARAM(lParam);
 			inputEvent.y = GET_Y_LPARAM(lParam);
@@ -182,24 +173,56 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_MOUSEWHEEL:
         {
-            inputEvent.type = InputEvent::MouseScroll;
+            inputEvent.type = Input::MouseScroll;
             inputEvent.value = Mouse::SCROLL;
-            // Hack: storing wheel delta in y
-            inputEvent.x = 0;
-            inputEvent.y = GET_WHEEL_DELTA_WPARAM(wParam);
+            inputEvent.wheeldelta = (GET_WHEEL_DELTA_WPARAM(wParam) > 0) ? 1 : -1;
+            inputEvent.x = GET_X_LPARAM(lParam);
+			inputEvent.y = GET_Y_LPARAM(lParam);
         }
         break;
-	default:
-		return DefWindowProcA(hWnd, message, wParam, lParam);
+    default:
+        handled = false;
+        break;
 	}
+    return handled;
+}
+
+//====================================================================================================
+// Window Message Procedure
+//====================================================================================================
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    PAINTSTRUCT ps;
+	HDC hdc;
+
+    switch (message)
+    {
+    case WM_PAINT:
+		{
+			hdc = BeginPaint(hWnd, &ps);
+			EndPaint(hWnd, &ps);
+		}
+		break;
+    }
 
     Application* myApp = (Application*)GetWindowLongPtrA(hWnd, GWL_USERDATA);
 	if (myApp != nullptr)
 	{
-        if (!myApp->OnInput(inputEvent))
-		{
-			return DefWindowProcA(hWnd, message, wParam, lParam);
-		}
+        // Only quit if we own the window instance
+        if (message == WM_DESTROY && myApp->IsOwner())
+        {
+			PostQuitMessage(0);
+        }
+
+        InputEvent evt;
+        if (myApp->ProcessInput(hWnd, message, wParam, lParam, evt))
+        {
+            if (myApp->OnInput(evt))
+		    {
+            	return 0;
+		    }
+        }
     }
-	return 0;
+	return DefWindowProcA(hWnd, message, wParam, lParam);
 }

@@ -29,8 +29,6 @@ public:
     //Model* GetModel() { return mModel; }
     const Model* GetModel() const { return mModel; }
 
-    virtual void Load(Json::Value& properties);
-
 private:
     // TODO: hold ref to model which is managed elsewhere
     const Model* mModel;

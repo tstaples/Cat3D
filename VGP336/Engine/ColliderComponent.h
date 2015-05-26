@@ -21,16 +21,26 @@
 class ColliderComponent : public Component
 {
 public:
+    META_DECLARE_CLASS
+
     ColliderComponent();
     ~ColliderComponent();
 
-    virtual void Load(Json::Value& properties);
+    void SetBoundary(const Math::AABB& aabb);
+    Math::AABB GetBoundary() const;
 
-    Math::AABB& GetBoundary()                { return mAABB; }
-    const Math::AABB& GetBoundary() const    { return mAABB; }
+    bool IsTrigger() const  { return mIsTrigger; }    
 
 private:
-    Math::AABB mAABB;
+    Math::Vector3 mCenter;
+    Math::Vector3 mExtend;
+    bool mIsTrigger;
 };
+
+//====================================================================================================
+// Typedefs
+//====================================================================================================
+
+//typedef MemHandle<ColliderComponent> ColliderHandle;
 
 #endif // #ifndef INCLUDED_ENGINE_COLLIDERCOMPONENT_H

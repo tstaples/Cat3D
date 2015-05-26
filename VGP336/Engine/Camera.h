@@ -35,21 +35,33 @@ public:
 	void Yaw(f32 degree);
 	void Pitch(f32 degree);
 
-	const Math::Vector3& GetPosition() const	{ return mPosition; }
-
 	f32 GetFOV() const							{ return mFOV; }
 	f32 GetAspectRatio() const					{ return mAspectRatio; }
 	f32 GetNearPlane() const					{ return mNearPlane; }
 	f32 GetFarPlane() const						{ return mFarPlane; }
 
+    const Math::Vector3& GetPosition() const    { return mPosition; }
     const Math::Vector3& GetLookAt() const      { return mLook; }
 	
-    // TODO: Store these as members
 	Math::Matrix GetViewMatrix() const;
 	Math::Matrix GetProjectionMatrix() const;
+    Math::Matrix GetOrthographicProjectionMatrix(u32 scrw, u32 scrh) const;
+
+    // Converts 3D world coords into 2D screen coords
+    Math::Vector2 WorldToScreen(const Math::Vector3& pos, u32 screenW, u32 screenH);
+    Math::Vector2 WorldToScreenOrthographic(const Math::Vector3& pos, u32 screenW, u32 screenH);
+
+    Math::Vector3 ScreenToWorld(s32 mx, s32 my, u32 screenW, u32 screenH) const;
+    Math::Ray GetMouseRay(s32 mx, s32 my, u32 screenW, u32 screenH) const;
+
+    Math::Plane GetAxisViewPlane() const;
 
 private:
 	void Renormalize();
+
+private:
+    Math::Matrix mView;
+    Math::Matrix mProjection;
 
 	Math::Vector3 mPosition;
 	Math::Vector3 mLook;

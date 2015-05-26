@@ -3,6 +3,13 @@
 
 #include <Engine.h>
 
+#include "InputManager.h"
+#include "InputData.h"
+#include "EditorObject.h"
+#include "InputCallbacks.h"
+
+class Gizmo;
+
 class EditorApp : public Application
 {
 public:
@@ -11,17 +18,15 @@ public:
 
 private:
 	// Application implementation
-	virtual void OnInitialize(u32 width, u32 height);
-	virtual void OnTerminate();
-	virtual bool OnInput(const InputEvent& evt);
-	virtual void OnUpdate();
-
-    Math::Vector3 MouseToWorld();
-    bool SelectedObjectInWorld(const Math::AABB& aabb);
+	virtual void OnInitialize(u32 width, u32 height) override;
+	virtual void OnTerminate() override;
+	virtual bool OnInput(const InputEvent& evt) override;
+	virtual void OnUpdate() override;
+    virtual void OnResizeWindow() override;
 
 private:
+	Window mWindow;
 	Timer mTimer;
-	InputSystem mInputSystem;
 	GraphicsSystem mGraphicsSystem;
 	Camera mCamera;
 
@@ -30,13 +35,23 @@ private:
     u32 mHeight;
 
     // Input
-    bool mKeyStates[256];
-    bool mMouseStates[4];
-    s32 mMouseX;
-    s32 mMouseY;
-    f32 mMouseMoveX;
-    f32 mMouseMoveY;
-    f32 mMouseScrollDelta;
+    InputData mInputData;
+    InputManager mInputManager;
+    InputCallbacks mCallbacks;
+
+    Gizmo* mpGizmo;
+
+    GameObjectFactory mFactory;
+    GameObjectPool mGameObjectPool;
+    Octree<EditorObject> mOctree;
+    std::vector<EditorObject> mObjects;
+    std::vector<EditorObject*> mSelectedObjects;
+
+    RenderService mRenderService;
+
+private:
+    friend class InputCallbacks;
+    friend class EditorCommands;
 };
 
 #endif //#ifndef INCLUDED_EDITORAPP_H

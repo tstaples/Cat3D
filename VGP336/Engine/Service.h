@@ -4,7 +4,7 @@
 //====================================================================================================
 // Filename:	Service.h
 // Created by:	Tyler Staples
-// Description: Templatized Base class for a game logic service. The service maintains a collection
+// Description: Base class for a game logic service. The service maintains a collection
 //              of subscribers for processing.
 //====================================================================================================
 
@@ -12,42 +12,39 @@
 // Includes
 //====================================================================================================
 
-#include "ID.h"
+#include "GameObject.h"
 
 //====================================================================================================
 // Class Declarations
 //====================================================================================================
 
-template<typename T>
 class Service
 {
 public:
-    Service();
+    Service(const char* name);
     virtual ~Service();
 
+    const char* GetName() const { return mName; }
+
     // Subscribes the gameobject to this service
-    void Subscribe(ID ObjId);
+    void Subscribe(GameObjectHandle handle);
     // UnSubscribes the gameobject to this service
-    void UnSubscribe(ID ObjId);
+    void UnSubscribe(GameObjectHandle handle);
+
+    // Clears subscriber list
+    void UnSubscribeAll();
 
 private:
-    // Populates the info for the particular ObjId
-    virtual void OnSubscribe(ID ObjId, T& info) = 0;
-
-protected:
-    // GameObject ID, 
-    typedef std::map<ID, T> Subscribers;
-
     NONCOPYABLE(Service);
 
+    // Populates the info for the particular ObjId
+    virtual void OnSubscribe(GameObjectHandle handle) = 0;
+
+    const char* mName;
+
 protected:
+    typedef std::vector<GameObjectHandle> Subscribers;
     Subscribers mSubscribers;
 };
-
-//====================================================================================================
-// Inline Declarations
-//====================================================================================================
-
-#include "Service.inl"
 
 #endif // #ifndef INCLUDED_ENGINE_SERVICE_H

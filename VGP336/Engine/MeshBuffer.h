@@ -34,7 +34,7 @@ public:
 	void Initialize(GraphicsSystem& gs, u32 vertexFormat, const Mesh& mesh, bool dynamic=false);
 	void Terminate();
 
-    void UpdateBuffer(GraphicsSystem& gs, const Mesh::Vertex* vertices, u32 vertexCount);
+    void UpdateBuffer(GraphicsSystem& gs, const Mesh::Vertex* vertices, u32 vertexCount, const u16* indexData, u32 numIndices);
 	void Render(GraphicsSystem& gs);
 
 	u32 GetVertexFormat() const			{ return mVertexFormat; }

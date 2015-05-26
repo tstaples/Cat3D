@@ -1,19 +1,19 @@
 {
 	"Components" : [
 		{ 
-			"Type" : "ModelComponent",
-			"Properties" : {
-				"Filename" : "../Data/Stuff/soldierv2.catm"
-			}
+			"Name" : "ModelComponent",
+			"Properties" : [
+				{ "Filename" : "../Data/Stuff/soldierv2.catm" }
+			]
 		},
 		{
-			"Type" : "TransformComponent",
+			"Name" : "TransformComponent",
 			"Properties" : [
-				{ "Position" : { "x" : "0.0", "y" : "0.0", "z" : "0.0" } }
+				{ 
+					"Name" : "Position",
+					"Data" : [ "0.0", "0.0", "0.0" ]
+				}
 			]
 		}
-	],
-	"Services" : [
-		{ "Type" : "RenderService" }
 	]
 }

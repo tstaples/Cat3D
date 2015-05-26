@@ -11,7 +11,12 @@
 // Includes
 //====================================================================================================
 
-#include "ID.h"
+#include "MemHandle.h"
+#include "Meta.h"
+
+//====================================================================================================
+// Forward Declarations
+//====================================================================================================
 
 class Component;
 
@@ -19,38 +24,110 @@ class Component;
 // Class Declarations
 //====================================================================================================
 
-
 class GameObject
 {
 public:
-    typedef std::map<Meta::Type, ID> ComponentMap;
-    typedef std::vector<Meta::Type> ServiceList;
+    typedef std::vector<Component*> Components;
 
 public:
+    META_DECLARE_CLASS
+
     GameObject();
+    GameObject(const char* name);
     ~GameObject();
 
-    void AddComponent(ID id);
-    void AddService(Meta::Type type);
+    void Update(f32 deltaTime);
+    void AddComponent(Component* component);
 
-    ID GetComponentID(Meta::Type type);   // Garuntees ID
-    ID FindComponentID(Meta::Type type);  // Returns invalid ID if component doesn't exist
+    // Returns bool rather than pointer to force caching local pointer
+    template<typename T>
+    bool GetComponent(T*& component);
+    template<typename T>
+    bool GetComponent(const T*& component) const;
 
+    template<typename T>
+    bool FindComponent(T*& component);
+    template<typename T>
+    bool FindComponent(const T*& component) const;
+
+    bool GetComponentByName(const char* name, Component* component);
+
+    void SetName(const char* name)              { mName = name; }
     const char* GetName() const                 { return mName.c_str(); }
-    ID GetID() const                            { return mID; }
-    const ComponentMap& GetComponents() const   { return mComponents; }
-    const ServiceList& GetServices() const      { return mServices; }
+    const Components& GetComponents() const     { return mComponents; }
 
-    // Hack: expose members since there isn't a factory to assign them values yet
+    bool Serialize(SerialWriter& writer);
+    bool Deserialize(SerialReader& reader);
 
-//private:
+private:
     //NONCOPYABLE(GameObject)
+    friend class GameObjectFactory;
 
     std::string mName; // See TODO in TString
-    ID mID;
-
-    ComponentMap mComponents;
-    ServiceList mServices;
+    Components mComponents;
 };
+
+//====================================================================================================
+// Typedefs
+//====================================================================================================
+
+typedef MemHandle<GameObject> GameObjectHandle;
+typedef MemoryPool<GameObject> GameObjectPool;
+
+//====================================================================================================
+// Inline Definitions
+//====================================================================================================
+
+template<typename T>
+bool GameObject::GetComponent(T*& component)
+{
+    bool result = FindComponent(component);
+    ASSERT(result, "[GameObject] could not find component");
+    return result;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+template<typename T>
+bool GameObject::GetComponent(const T*& component) const
+{
+    bool result = FindComponent(component);
+    ASSERT(result, "[GameObject] could not find component");
+    return result;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+template<typename T>
+bool GameObject::FindComponent(T*& component)
+{
+    component = nullptr;
+    for (Component* c : mComponents)
+    {
+        if (c->GetMetaClass() == T::StaticGetMetaClass())
+        {
+            component = static_cast<T*>(c);
+            break;
+        }
+    }
+    return (component != nullptr);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+template<typename T>
+bool GameObject::FindComponent(const T*& component) const
+{
+    component = nullptr;
+    for (Component* c : mComponents)
+    {
+        if (c->GetMetaClass() == T::StaticGetMetaClass())
+        {
+            component = static_cast<const T*>(c);
+            break;
+        }
+    }
+    return (component != nullptr);
+}
 
 #endif // #ifndef INCLUDED_ENGINE_GAMEOBJECT_H

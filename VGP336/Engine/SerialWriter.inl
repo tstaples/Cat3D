@@ -3,6 +3,7 @@ inline SerialWriter::SerialWriter(u8* buffer, u32 size)
     , mBufferSize(size)
     , mWriteOffset(0)
 {
+    ASSERT(buffer != nullptr, "[SerialWriter] Error: buffer is uninitialized");
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -28,6 +29,15 @@ inline void SerialWriter::WriteArray(const T* data, size_t size)
 //----------------------------------------------------------------------------------------------------
 
 inline void SerialWriter::WriteLengthEncodedString(const std::string& str)
+{
+    u32 len = str.length();
+    Write(len);
+    WriteArray(str.c_str(), len);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+inline void SerialWriter::WriteLengthEncodedString(const std::wstring& str)
 {
     u32 len = str.length();
     Write(len);

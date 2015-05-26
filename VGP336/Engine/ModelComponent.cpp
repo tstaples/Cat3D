@@ -16,11 +16,3 @@ ModelComponent::~ModelComponent()
 {
     SafeRelease(mModel);
 }
-
-//----------------------------------------------------------------------------------------------------
-
-void ModelComponent::Load(Json::Value& properties)
-{
-    Json::Value filename = properties.get("Filename", "");
-
-}

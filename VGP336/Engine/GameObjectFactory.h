@@ -11,14 +11,20 @@
 // Includes
 //====================================================================================================
 
-#include "RepositoryTypes.h"
+#include "Components.h"
+#include "GameObject.h"
+#include "MemHandle.h"
+#include "MemoryPool.h"
+#include "Service.h"
 
 //====================================================================================================
-// Forward Declarations
+// Typedefs
 //====================================================================================================
 
-class RenderService;
-class ModelManager;
+typedef MemoryPool<TransformComponent> TransformPool;
+typedef MemoryPool<ColliderComponent> ColliderPool;
+typedef MemoryPool<MeshComponent> MeshPool;
+typedef std::vector<Service*> Services;
 
 //====================================================================================================
 // Class Declarations
@@ -26,39 +32,25 @@ class ModelManager;
 
 class GameObjectFactory
 {
-    typedef std::map<Meta::Type, RepositoryBase*> RepositoryMap;
 public:
-    /* By taking references to these different systems and services, it enforces
-       the proper creation order. 
-       Ideally this would be simplified by a better meta-type system.
-    */
-    GameObjectFactory(GameObjectRepository& gameObjectRepository,
-                      TransformRepository& transformRepository,
-                      ModelRepository& modelRepository,
-                      RenderService& renderService,
-                      ModelManager& modelManager);
+    GameObjectFactory(GameObjectPool& gameObjectPool);
     ~GameObjectFactory();
 
-    /*  Creates an object based on the details laid out in the template file.
-    *   @param templateName: template file path.
-    *   @oaram startPosition: position in the world the object will be placed. 
-    *   returns: ID of created object. 
-    */
-    ID Create(const char* templateName, const Math::Vector3& startPosition);
+    void Initialize(Services& services);
+    void Terminate();
+
+    GameObjectHandle Create(const char* templateFileName);
+    GameObjectHandle Create(SerialReader& reader);
 
 private:
-    GameObjectRepository& mpGameObjectRepository;
+    GameObjectPool& mGameObjectPool;
+    Services* mServices;
 
-    // Component repositories
-    TransformRepository& mpTransformRepository;
-    ModelRepository& mpModelRepository;
-
-    // Services
-    RenderService& mpRenderService;
-
-    ModelManager& mpModelManager;
-
-    RepositoryMap mRepositoryMap;
+    // TODO
+    // Component memory pools
+    //TransformPool mTransformPool;
+    //ColliderPool mColliderPool;
+    //MeshPool mMeshPool;
 };
 
 #endif // #ifndef INCLUDED_ENGINE_GAMEOBJECTFACTORY_H

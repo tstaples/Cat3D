@@ -52,6 +52,9 @@
     <Filter Include="Physics">
       <UniqueIdentifier>{47afdb53-4215-439f-a7d6-a48b03467eb4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Gameplay">
+      <UniqueIdentifier>{5e389a95-2060-4053-b85a-7a7ed543066a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputSystem.cpp">
@@ -112,9 +115,6 @@
     <ClCompile Include="TextureManager.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
-    <ClCompile Include="ID.cpp">
-      <Filter>GameObject</Filter>
-    </ClCompile>
     <ClCompile Include="Path.cpp">
       <Filter>FileIO</Filter>
     </ClCompile>
@@ -144,9 +144,6 @@
     </ClCompile>
     <ClCompile Include="ModelManager.cpp">
       <Filter>Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObjectJSON.cpp">
-      <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="BoneAnimation.cpp">
       <Filter>Graphics\Animations</Filter>
@@ -205,8 +202,35 @@
     <ClCompile Include="Constraints.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Octree.cpp">
-      <Filter>Utility</Filter>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="MetaType.cpp">
+      <Filter>GameObject\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="MetaDB.cpp">
+      <Filter>GameObject\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="MetaClass.cpp">
+      <Filter>GameObject\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="MetaRegistration.cpp">
+      <Filter>GameObject\Meta</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshComponent.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshRendererComponent.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Service.cpp">
+      <Filter>GameObject\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="GameWorld.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelLoader.cpp">
+      <Filter>Gameplay</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -303,9 +327,6 @@
     <ClInclude Include="TextureManager.h">
       <Filter>Resource</Filter>
     </ClInclude>
-    <ClInclude Include="ID.h">
-      <Filter>GameObject</Filter>
-    </ClInclude>
     <ClInclude Include="Path.h">
       <Filter>FileIO</Filter>
     </ClInclude>
@@ -324,9 +345,6 @@
     <ClInclude Include="ModelComponent.h">
       <Filter>GameObject\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Service.h">
-      <Filter>GameObject\Services</Filter>
-    </ClInclude>
     <ClInclude Include="RenderService.h">
       <Filter>GameObject\Services</Filter>
     </ClInclude>
@@ -338,9 +356,6 @@
     </ClInclude>
     <ClInclude Include="ModelManager.h">
       <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObjectJSON.h">
-      <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="BoneAnimation.h">
       <Filter>Graphics\Animations</Filter>
@@ -402,15 +417,6 @@
     <ClInclude Include="Sphere.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="Repository.h">
-      <Filter>GameObject\Repository</Filter>
-    </ClInclude>
-    <ClInclude Include="RepositoryTypes.h">
-      <Filter>GameObject\Repository</Filter>
-    </ClInclude>
-    <ClInclude Include="MetaTypes.h">
-      <Filter>GameObject\Meta</Filter>
-    </ClInclude>
     <ClInclude Include="Particle.h">
       <Filter>Physics</Filter>
     </ClInclude>
@@ -432,6 +438,60 @@
     <ClInclude Include="Octree.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="MemHandle.h">
+      <Filter>GameObject\Repository</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryPool.h">
+      <Filter>GameObject\Repository</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="InputData.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaClass.h">
+      <Filter>GameObject\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="Meta.h">
+      <Filter>GameObject\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaType.h">
+      <Filter>GameObject\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaField.h">
+      <Filter>GameObject\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaDB.h">
+      <Filter>GameObject\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaRegistration.h">
+      <Filter>GameObject\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshComponent.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshRendererComponent.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Service.h">
+      <Filter>GameObject\Services</Filter>
+    </ClInclude>
+    <ClInclude Include="GameWorld.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaDependency.h">
+      <Filter>GameObject\Meta</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelLoader.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSettings.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Vector3.inl">
@@ -452,20 +512,23 @@
     <None Include="Quaternion.inl">
       <Filter>Math</Filter>
     </None>
-    <None Include="Service.inl">
-      <Filter>GameObject\Services</Filter>
-    </None>
     <None Include="SerialWriter.inl">
       <Filter>FileIO</Filter>
     </None>
     <None Include="SerialReader.inl">
       <Filter>FileIO</Filter>
     </None>
-    <None Include="Repository.inl">
+    <None Include="MemoryPool.inl">
       <Filter>GameObject\Repository</Filter>
     </None>
-    <None Include="MetaTypeDefines.tup">
-      <Filter>GameObject\Meta</Filter>
+    <None Include="Octree.inl">
+      <Filter>Utility</Filter>
+    </None>
+    <None Include="MemHandle.inl">
+      <Filter>GameObject\Repository</Filter>
+    </None>
+    <None Include="Vector2.inl">
+      <Filter>Math</Filter>
     </None>
   </ItemGroup>
 </Project>
