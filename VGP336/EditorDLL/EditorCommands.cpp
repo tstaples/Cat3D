@@ -44,7 +44,7 @@ s32 EditorCommands::UpdateComponent(const u8* buffer, u32 buffsize)
     u16 index = reader.Read<u16>();
     u16 instance = reader.Read<u16>();
     GameObjectHandle handle(instance, index);
-    GameObject* gameObject = mApp.mGameObjectPool.Get(handle);
+    GameObject* gameObject = mApp.mGameWorld.mGameObjectPool.Get(handle);
     if (gameObject == nullptr)
         return rc;
 
@@ -117,9 +117,8 @@ const u8* EditorCommands::GetGameObject(u16 index, u32& buffsize)
             writer.Write(handle.GetInstance());
 
             GameObject* gameobject = eobj.GetGameObject();
-            u32 offset = writer.GetOffset(); // Account for writing handle
-            gameobject->Serialize(objBuffer + offset, OBJECT_BUFF_SIZE, buffsize);
-            buffsize += offset;
+            gameobject->Serialize(writer);
+            buffsize += writer.GetOffset();
             return objBuffer;
         }
     }
@@ -154,7 +153,7 @@ void EditorCommands::SelectGameObject(u16 index)
 
 void EditorCommands::CreateEmptyGameObject(u16& index)
 {
-    GameObjectHandle handle = mApp.mFactory.Create("../Data/GameObjects/default.json");
+    GameObjectHandle handle = mApp.mGameWorld.CreateGameObject("../Data/GameObjects/default.json", Math::Vector3::Zero(), Math::Quaternion::Identity());
     index = handle.GetIndex();
     mApp.mObjects.push_back(EditorObject(handle));
 }

@@ -8,9 +8,9 @@ EditorApp::EditorApp()
     : mWidth(0)
     , mHeight(0)
     , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(50.0f, 50.0f, 50.0f)))
-    , mGameObjectPool(100)
     , mCallbacks(*this)
-    , mFactory(mGameObjectPool)
+    , mGameWorld(100)
+    , mIsGameRunning(false)
 {
     memset(mInputData.keyStates, 0, sizeof(bool) * 256);
     memset(mInputData.mouseStates, 0, sizeof(bool) * 4);
@@ -41,54 +41,28 @@ void EditorApp::OnInitialize(u32 width, u32 height)
 	mCamera.Setup(Math::kPiByTwo, (f32)width / (f32)height, 0.01f, 10000.0f);
 	mCamera.SetPosition(Math::Vector3(0.0f, 0.0f, -50.0f));
 
-    mRenderService.Initialize(mGraphicsSystem, mCamera);
-    // TODO: find a nicer way to do this
-    Services services =
-    {
-        &mRenderService
-    };
-    mFactory.Initialize(services);
-
     // Register input callbacks
     mCallbacks.RegisterCallbacks();
 
     mpGizmo = new TranslateGizmo(mCamera, 1.0f, 5.0f);
 
-    GameObjectHandle handle = mFactory.Create("../Data/GameObjects/testcube.json");
-    GameObject* go = handle.Get();
-    mObjects.push_back(EditorObject(handle));
+    GameSettings settings;
+    mGameWorld.OnInitialize(settings, mGraphicsSystem, mCamera);
 
-    // TEMP
-    //GameObjectHandle handle1 = mGameObjectPool.Allocate();
-    //GameObjectHandle handle2 = mGameObjectPool.Allocate();
-    //GameObject* g1 = handle1.Get();
-    //GameObject* g2 = handle2.Get();
-    //g1->SetName("Object 1");
-    //g2->SetName("Object 2");
-    //// leak
-    //TransformComponent* t1 = new TransformComponent();
-    //TransformComponent* t2 = new TransformComponent();
-    //t1->Translate(Math::Vector3(15.0f, 3.0f, 5.0f));
-    //t2->Translate(Math::Vector3(-15.0f, 3.0f, 5.0f));
-    //ColliderComponent* col = new ColliderComponent();
-    //col->SetBoundary(Math::AABB(t1->GetPosition(), Math::Vector3(5.0f, 5.0f, 5.0f)));
-    //g1->AddComponent(t1);
-    //g1->AddComponent(col);
-    //g2->AddComponent(t2);
-    //mObjects.push_back(EditorObject(handle1));
-    //mObjects.push_back(EditorObject(handle2));
+    //GameObjectHandle handle = mFactory.Create("../Data/GameObjects/testcube.json");
+    //GameObject* go = handle.Get();
+    //mObjects.push_back(EditorObject(handle));
 }
 
 //----------------------------------------------------------------------------------------------------
 
 void EditorApp::OnTerminate()
 {
+    VERIFY(mGameWorld.OnShutdown(), "[EditorApp] GameWorld failed to shutdown");
+
     SafeDelete(mpGizmo);
     mOctree.Destroy();
     mObjects.clear();
-    mGameObjectPool.Flush();
-
-    mRenderService.Terminate();
 	SimpleDraw::Terminate();
 	mGraphicsSystem.Terminate();
 }
@@ -158,10 +132,12 @@ bool EditorApp::OnInput(const InputEvent& evt)
 
 void EditorApp::OnUpdate()
 {
-	mTimer.Update();
-	const f32 deltaTime = mTimer.GetElapsedTime();
-
     mInputManager.Update(mInputData);
+	
+    // Set time to 0 when not running
+    mTimer.Update();
+	const f32 deltaTime = (mIsGameRunning) ? mTimer.GetElapsedTime() : 0.0f;
+    mGameWorld.OnUpdate(deltaTime);
 
     // Destroy and re-create the entire tree
     mOctree.Destroy();
@@ -171,33 +147,10 @@ void EditorApp::OnUpdate()
     }
     //mOctree.Debug_DrawTree();
 
-
-    // Player movement
-    //const f32 kMoveSpeed = 20.0f;
-    //if(mInputData.keyStates['W'])
-    //{
-    //    mCamera.Walk(kMoveSpeed * deltaTime);
-    //}
-    //else if(mInputData.keyStates['S'])
-    //{
-    //    mCamera.Walk(-kMoveSpeed * deltaTime);
-    //}
-    //else if(mInputData.keyStates['D'])
-    //{
-    //    mCamera.Strafe(kMoveSpeed * deltaTime);
-    //}
-    //else if(mInputData.keyStates['A'])
-    //{
-    //    mCamera.Strafe(-kMoveSpeed * deltaTime);
-    //}
-
+    // Update the editor objects
     bool drawGizmo = false;
     for (auto object : mObjects)
     {
-        // Update the components
-        GameObject* gameObject = object.GetGameObject();
-        gameObject->Update(deltaTime);
-
         Color col = Color::White();
         if (object.IsSelected())
         {
@@ -210,7 +163,7 @@ void EditorApp::OnUpdate()
 	// Render
 	mGraphicsSystem.BeginRender(Color::Black());
 
-    mRenderService.Update();
+    mGameWorld.OnRender();
 
     if (drawGizmo)
     {

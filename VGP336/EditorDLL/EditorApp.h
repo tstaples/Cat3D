@@ -25,6 +25,7 @@ private:
     virtual void OnResizeWindow() override;
 
 private:
+    // Application
 	Window mWindow;
 	Timer mTimer;
 	GraphicsSystem mGraphicsSystem;
@@ -41,13 +42,13 @@ private:
 
     Gizmo* mpGizmo;
 
-    GameObjectFactory mFactory;
-    GameObjectPool mGameObjectPool;
+    // Game
+    GameWorld mGameWorld;
+    bool mIsGameRunning;
+
     Octree<EditorObject> mOctree;
     std::vector<EditorObject> mObjects;
     std::vector<EditorObject*> mSelectedObjects;
-
-    RenderService mRenderService;
 
 private:
     friend class InputCallbacks;

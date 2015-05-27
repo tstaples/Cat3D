@@ -11,6 +11,7 @@ namespace Editor
     {
         private EditorForm Owner;
         private InputHandler Handler;
+        private SelectablePanel Viewport;
 
         const int WM_KEYUP = 0x101;
         const int WM_KEYDOWN = 0x0100;
@@ -20,15 +21,22 @@ namespace Editor
         public InputMessageFilter(EditorForm fOwner)
         {
             Owner = fOwner;
-            
+            Viewport = Owner.Viewport;
+
             Handler = new InputHandler();
             Handler.Register(WM_LBUTTONUP, Owner.OnLeftClick);
         }
 
         public bool PreFilterMessage(ref Message m)
         {
+            if (m.Msg == WM_LBUTTONUP)
+            {
+                // Update the viewport's focus flag since it can't seem to do it itself
+                Viewport.IsFocused = Viewport.Bounds.Contains(Owner.GetRelativeMousePos());
+            }
+
             bool ret = false;
-            if (Owner.IsViewPortFocused())
+            if (Viewport.IsFocused)
             {
                 if (m.Msg == WM_KEYUP || m.Msg == WM_KEYDOWN || m.Msg == WM_SCROLL)
                 {

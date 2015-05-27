@@ -150,6 +150,7 @@ void TestApp::OnInitialize(u32 width, u32 height)
     mObjects.push_back(EditorObject(handle));
 
 
+
     //mSelectedObjects.push_back(&mObjects[1]);
     //u32 sz = 0;
     //const u8* data = GetSelectedObjectData(sz);
@@ -326,7 +327,7 @@ const u8* TestApp::GetSelectedObjectData(u32& size)
     writer.Write(editorObject->GetHandle().GetInstance());
 
     u32 offset = 0;
-    gameObject->Serialize(objBuffer + writer.GetOffset(), 2048 - writer.GetOffset(), offset);
+    gameObject->Serialize(writer);
 
     size = writer.GetOffset() + offset;
     return objBuffer;

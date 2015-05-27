@@ -27,7 +27,12 @@ Math::Vector3 EditorObject::GetPosition() const
 
 Math::AABB EditorObject::GetCollider() const
 {
-    // TODO: Check if gameobject has a collider component and return that instead
+    const GameObject* gameObject = mGameObjectHandle.Get();
+    const ColliderComponent* collider = nullptr;
+    if (gameObject->FindComponent(collider))
+    {
+        return collider->GetBoundary();
+    }
     return Math::AABB(GetPosition(), Math::Vector3(5.0f, 5.0f, 5.0f));
 }
 

@@ -5,12 +5,14 @@ using System.Windows.Forms;
 namespace Editor
 {
     // From: http://stackoverflow.com/a/3562449/3421589
-    class SelectablePanel : Panel
+    public class SelectablePanel : Panel
     {
-        public bool IsFocused { get; private set; }
+        public bool IsFocused;
 
         public SelectablePanel()
         {
+            IsFocused = false;
+
             this.SetStyle(ControlStyles.Selectable, true);
             this.TabStop = true;
         }

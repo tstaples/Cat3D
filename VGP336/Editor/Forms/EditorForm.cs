@@ -13,6 +13,12 @@ namespace Editor
 {
     public partial class EditorForm : Form
     {
+        public SelectablePanel Viewport 
+        { 
+            get { return ViewPanel; } 
+            private set {} 
+        }
+
         private Inspector InspectorPanel;
         private SceneHierarchy SceneTree;
 
@@ -26,8 +32,6 @@ namespace Editor
 
             // Initialize the engine within the view panel
             NativeMethods.Initialize(hInstance, IntPtr.Zero, hWnd, 1, this.ViewPanel.Width, this.ViewPanel.Height);
-
-            ViewPanel.Focus();
 
             InspectorPanel = new Inspector(ref InspectorGrid);
             SceneTree = new SceneHierarchy(ref SceneHierarchyTree, ref InspectorPanel);
@@ -49,18 +53,9 @@ namespace Editor
             NativeMethods.Terminate();
         }
 
-        public void OnResize(object sender, EventArgs e)
+        public Point GetRelativeMousePos()
         {
-            // TODO
-        }
-
-        public bool IsViewPortFocused()
-        {
-            // Offset cursor by window position to get relative position
-            // TODO: either do this properly or account for window resizing by updating bounds
-            //Point offset = this.Location;
-            //Point mpos = new Point(MousePosition.X - offset.X, MousePosition.Y - offset.Y);
-            return ViewPanel.Bounds.Contains(MousePosition);
+            return this.PointToClient(MousePosition);
         }
 
         private void InspectorGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
@@ -116,7 +111,6 @@ namespace Editor
 
         private void meshToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
             int i = 0;
         }
     }
