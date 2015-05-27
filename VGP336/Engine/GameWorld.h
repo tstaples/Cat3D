@@ -24,16 +24,16 @@
 //====================================================================================================
 
 class GraphicsSystem;
-class Level;
+struct Level;
 
 //====================================================================================================
 // Class Declarations
 //====================================================================================================
 
+typedef std::vector<GameObjectHandle> GameObjectHandles;
+
 class GameWorld
 {
-    typedef std::vector<GameObjectHandle> GameObjectHandles;
-
 public:
     GameWorld(u16 maxObjects);
     ~GameWorld();
@@ -45,14 +45,16 @@ public:
     void OnUpdate(f32 deltaTime);
     void OnRender();
 
-    // Creates and adds a new GameObject to the world.
-    // @param templateFile: template to create the object from. Pass in nullptr to create and empty object.
-    // @param pos: position in world space the game object will be placed.
-    // @param rot: rotation of the object in world space.
-    void CreateGameObject(const char* templateFile, Math::Vector3 pos, Math::Quaternion rot);
+    /* Creates and adds a new GameObject to the world.
+     * @param templateFile: template to create the object from. Pass in nullptr to create and empty object.
+     * @param pos: position in world space the game object will be placed.
+     * @param rot: rotation of the object in world space.
+     * Returns the handle to the newly created GameObject.
+     */
+    GameObjectHandle CreateGameObject(const char* templateFile, Math::Vector3 pos, Math::Quaternion rot);
 
     bool LoadLevel(const char* levelName);
-    //bool SaveCurrentLevel(const char* path)
+    bool SaveLevel(const char* levelName);
 
 private:
     NONCOPYABLE(GameWorld);
@@ -72,6 +74,7 @@ private:
 private:
     // Only the editor will need to directly access the GameWorld's members
     friend class EditorApp;
+    friend class EditorCommands;
     friend class TestApp; // temp
 };
 

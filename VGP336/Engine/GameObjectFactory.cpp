@@ -60,7 +60,7 @@ GameObjectFactory::~GameObjectFactory()
 
 void GameObjectFactory::Initialize(Services& services)
 {
-    mServices = &services;
+    mServices = std::move(services);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -122,22 +122,8 @@ GameObjectHandle GameObjectFactory::Create(const char* templateFile)
 
     // Subscribe to services
     // This must be done in a second loop because some services may require a component that hasn't been loaded yet.
-    LinkDependencies(handle, *mServices);
+    LinkDependencies(handle, mServices);
 
-    //Json::Value jservices = root["Services"];
-    //for (Json::Value& jservice : jservices)
-    //{
-    //    // Look up service by name
-    //    std::string serviceName = jservice.get("Name", "").asString();
-    //    for (auto service : *mServices)
-    //    {
-    //        if (serviceName.compare(service->GetName()) == 0)
-    //        {
-    //            // Subscribe the gameObject to it
-    //            service->Subscribe(handle);
-    //        }
-    //    }
-    //}
     return handle;
 }
 
@@ -149,7 +135,7 @@ GameObjectHandle GameObjectFactory::Create(SerialReader& reader)
     GameObject* gameObject = handle.Get();
     if (gameObject->Deserialize(reader))
     {
-        LinkDependencies(handle, *mServices);
+        LinkDependencies(handle, mServices);
         return handle;
     }
     return GameObjectHandle(); // invalid

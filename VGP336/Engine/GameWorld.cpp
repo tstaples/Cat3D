@@ -50,6 +50,7 @@ bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, C
 
 bool GameWorld::OnShutdown()
 {
+    mRenderService.Terminate();
     mFactory.Terminate();
     mGameObjectHandles.clear();
     mGameObjectPool.Flush();
@@ -87,7 +88,7 @@ void GameWorld::OnRender()
 
 //----------------------------------------------------------------------------------------------------
 
-void GameWorld::CreateGameObject(const char* templateFile, Math::Vector3 pos, Math::Quaternion rot)
+GameObjectHandle GameWorld::CreateGameObject(const char* templateFile, Math::Vector3 pos, Math::Quaternion rot)
 {
     // Use the templateFile if it's not null, otherwise use the default object template.
     // Note: For now we're assuming all GameObjects have a transform component
@@ -104,6 +105,7 @@ void GameWorld::CreateGameObject(const char* templateFile, Math::Vector3 pos, Ma
 
     // Add the object to the world
     mGameObjectHandles.push_back(handle);
+    return handle;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -134,6 +136,13 @@ bool GameWorld::LoadLevel(const char* levelName)
         return true;
     }
     return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool GameWorld::SaveLevel(const char* levelName)
+{
+    return mLevelLoader.SaveToFile(levelName, mGameObjectHandles, mSettings);
 }
 
 /*

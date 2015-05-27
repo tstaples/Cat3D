@@ -44,7 +44,7 @@ public:
 
 private:
     GameObjectPool& mGameObjectPool;
-    Services* mServices;
+    Services mServices;
 
     // TODO
     // Component memory pools

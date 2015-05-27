@@ -31,6 +31,10 @@
 #include "MemoryPool.h"
 #include "RepositoryTypes.h"
 
+// Gameplay headers
+#include "GameWorld.h"
+#include "GameSettings.h"
+
 // Meta headers
 #include "Meta.h"
 

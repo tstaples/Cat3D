@@ -51,6 +51,7 @@ public:
     };
 
     LevelLoader();
+    ~LevelLoader();
     
     /* Loads the data for a level.
      * @param filename: path to the level file.
@@ -83,7 +84,7 @@ public:
 private:
     NONCOPYABLE(LevelLoader);
 
-    u8 mBuffer[LEVEL_BUFFER_SIZE];
+    u8* mBuffer;
     u32 mOffset;
     bool mBufferHasData;
 };
