@@ -1,44 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 
 namespace Editor
 {
     public class GameObject
     {
-        public ComponentCollection components;
-        private ushort index;
-        private ushort instance;
-        private string Name;
+        public class Handle
+        {
+            // Init to invalid
+            public ushort instance;
+            public ushort index;
 
-        public ushort Index
-        {
-            get { return index; }
-            set { index = value; }
+            public Handle()
+            {
+                instance = ushort.MaxValue;
+                index = ushort.MaxValue;
+            }
+            public Handle(NativeTypes.Handle nativeHandle)
+            {
+                instance = nativeHandle.instance;
+                index = nativeHandle.index;
+            }
+
+            public NativeTypes.Handle ToNativeHandle()
+            {
+                NativeTypes.Handle handle = new NativeTypes.Handle();
+                handle.instance = instance;
+                handle.index = index;
+                return handle;
+            }
+            public bool IsValid()
+            {
+                return (instance != ushort.MaxValue && index != ushort.MaxValue);
+            }
+            public static bool operator==(Handle lhs, Handle rhs)
+            {
+                return (lhs.instance == rhs.instance && lhs.index == rhs.index);
+            }
+            public static bool operator!=(Handle lhs, Handle rhs)
+            {
+                return !(lhs == rhs);
+            }
+            public override bool Equals(object obj)
+            {
+                return base.Equals(obj);
+            }
+            public override int GetHashCode()
+            {
+                return base.GetHashCode();
+            }
+            public override string ToString()
+            {
+                return instance.ToString() + " " + index.ToString();
+            }
         }
-        public ushort Instance
-        {
-            get { return instance; }
-            set { instance = value; }
-        }
+
+        public ComponentCollection components;
+        public Handle handle;
+        private string name;
 
         public GameObject()
         {
             Components = new ComponentCollection();
         }
-
-        public GameObject(ushort index, ushort instance, string name)
+        public GameObject(Handle handle, string name)
         {
             Components = new ComponentCollection();
-            Index = index;
-            Instance = instance;
-            Name = name;
+            this.handle = handle;
+            this.name = name;
         }
 
         public Component GetComponent(string name)
@@ -54,16 +88,16 @@ namespace Editor
             }
             return component;
         }
-
         public static GameObject Deserialize(byte[] data, uint size)
         {
             SerializeIn sIn = new SerializeIn(data);
 
             // Get GameObject data
-            ushort index = sIn.ReadUShort();
-            ushort instance = sIn.ReadUShort();
+            Handle handle = new Handle();
+            handle.instance = sIn.ReadUShort();
+            handle.index = sIn.ReadUShort();
             string name = sIn.ReadStringLE();
-            GameObject gameObject = new GameObject(index, instance, name);
+            GameObject gameObject = new GameObject(handle, name);
             
             uint numComponents = sIn.ReadUInt();
             for (int i = 0; i < numComponents; ++i)
@@ -96,7 +130,6 @@ namespace Editor
             }
             return gameObject;
         }
-
         public byte[] WriteComponent(Component c)
         {
             byte[] buffer = new byte[2048];
@@ -104,8 +137,8 @@ namespace Editor
 
             // Write handle info so the engine can find which gameobject this
             // component belongs to.
-            sOut.Write(Index);
-            sOut.Write(Instance);
+            sOut.Write(handle.instance);
+            sOut.Write(handle.index);
             sOut.WriteStringLE(c.Name);
 
             int numFields = c.Fields.Length;
@@ -117,7 +150,6 @@ namespace Editor
             }
             return buffer;
         }
-
         private static Component CreateComponentFromName(string name)
         {
             Component component = null;

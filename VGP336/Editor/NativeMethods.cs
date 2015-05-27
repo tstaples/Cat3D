@@ -42,30 +42,15 @@ namespace Editor
         public unsafe static extern uint DiscoverGameObjects(byte[] buffer);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern uint GetGameObject(ushort index, byte[] buffer);
+        public unsafe static extern uint GetGameObject(NativeTypes.Handle handle, byte[] buffer);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern void SelectGameObject(ushort index);
+        public unsafe static extern void SelectGameObject(NativeTypes.Handle handle);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern uint CreateAndSelectGameObject(byte[] buffer);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern void RenameGameObject(ushort index, string name);
-
-        //[DllImport(kDLLName, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        //[return: MarshalAs(UnmanagedType.LPStr)]
-        //public static extern string MyFunction([InAttribute()] [MarshalAsAttribute(UnmanagedType.LPStr)] string MyParameter);
+        public unsafe static extern void RenameGameObject(NativeTypes.Handle handle, string name);
     }
-
-
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct Matrix
-    {
-        float _11, _12, _13, _14;
-        float _21, _22, _23, _24;
-        float _31, _32, _33, _34;
-        float _41, _42, _43, _44;
-    };
 }
