@@ -17,6 +17,12 @@ namespace Editor
             this.TabStop = true;
         }
 
+        public bool Contains(Point point)
+        {
+            Point rel = this.PointToClient(point);
+            return this.Bounds.Contains(point);
+        }
+
         protected override void OnMouseDown(MouseEventArgs e)
         {
             this.Focus();

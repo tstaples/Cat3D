@@ -32,8 +32,15 @@
             this.EditorTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.InspectorBox = new System.Windows.Forms.GroupBox();
             this.InspectorGrid = new System.Windows.Forms.PropertyGrid();
+            this.ViewPanel = new Editor.SelectablePanel();
             this.SceneHierarchyBox = new System.Windows.Forms.GroupBox();
             this.SceneHierarchyTree = new System.Windows.Forms.TreeView();
+            this.MainMenuStrip = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveLevelAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolMenuStrip = new System.Windows.Forms.MenuStrip();
             this.createToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newGameObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,13 +48,23 @@
             this.boxColliderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.meshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.meshRendererToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ConsoleTabControl = new System.Windows.Forms.TabControl();
+            this.ConsoleTab = new System.Windows.Forms.TabPage();
+            this.ConsoleList = new System.Windows.Forms.ListView();
+            this.SourceCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.LevelCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.MessageCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.CountCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SceneHierarchyContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewPanel = new Editor.SelectablePanel();
+            this.DirectoryBrowserDialogue = new System.Windows.Forms.FolderBrowserDialog();
             this.EditorTableLayout.SuspendLayout();
             this.InspectorBox.SuspendLayout();
             this.SceneHierarchyBox.SuspendLayout();
+            this.MainMenuStrip.SuspendLayout();
             this.ToolMenuStrip.SuspendLayout();
+            this.ConsoleTabControl.SuspendLayout();
+            this.ConsoleTab.SuspendLayout();
             this.SceneHierarchyContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -59,11 +76,13 @@
             this.EditorTableLayout.ColumnCount = 3;
             this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 21.67266F));
             this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 78.32734F));
-            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 367F));
+            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 381F));
             this.EditorTableLayout.Controls.Add(this.InspectorBox, 2, 1);
             this.EditorTableLayout.Controls.Add(this.ViewPanel, 1, 1);
             this.EditorTableLayout.Controls.Add(this.SceneHierarchyBox, 0, 1);
+            this.EditorTableLayout.Controls.Add(this.MainMenuStrip, 0, 0);
             this.EditorTableLayout.Controls.Add(this.ToolMenuStrip, 1, 0);
+            this.EditorTableLayout.Controls.Add(this.ConsoleTabControl, 1, 2);
             this.EditorTableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.EditorTableLayout.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.AddColumns;
             this.EditorTableLayout.Location = new System.Drawing.Point(0, 0);
@@ -81,10 +100,10 @@
             this.InspectorBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.InspectorBox.Controls.Add(this.InspectorGrid);
             this.InspectorBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.InspectorBox.Location = new System.Drawing.Point(1107, 72);
+            this.InspectorBox.Location = new System.Drawing.Point(1093, 72);
             this.InspectorBox.MinimumSize = new System.Drawing.Size(250, 500);
             this.InspectorBox.Name = "InspectorBox";
-            this.InspectorBox.Size = new System.Drawing.Size(362, 545);
+            this.InspectorBox.Size = new System.Drawing.Size(376, 545);
             this.InspectorBox.TabIndex = 1;
             this.InspectorBox.TabStop = false;
             this.InspectorBox.Text = "Inspector";
@@ -95,10 +114,23 @@
             this.InspectorGrid.Location = new System.Drawing.Point(3, 16);
             this.InspectorGrid.Name = "InspectorGrid";
             this.InspectorGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.InspectorGrid.Size = new System.Drawing.Size(356, 526);
+            this.InspectorGrid.Size = new System.Drawing.Size(370, 526);
             this.InspectorGrid.TabIndex = 0;
             this.InspectorGrid.ToolbarVisible = false;
             this.InspectorGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.InspectorGrid_PropertyValueChanged);
+            // 
+            // ViewPanel
+            // 
+            this.ViewPanel.AutoSize = true;
+            this.ViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ViewPanel.Location = new System.Drawing.Point(240, 72);
+            this.ViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
+            this.ViewPanel.Name = "ViewPanel";
+            this.ViewPanel.Padding = new System.Windows.Forms.Padding(3);
+            this.ViewPanel.Size = new System.Drawing.Size(846, 545);
+            this.ViewPanel.TabIndex = 2;
+            this.ViewPanel.TabStop = true;
             // 
             // SceneHierarchyBox
             // 
@@ -111,7 +143,7 @@
             this.SceneHierarchyBox.Location = new System.Drawing.Point(4, 72);
             this.SceneHierarchyBox.MinimumSize = new System.Drawing.Size(200, 500);
             this.SceneHierarchyBox.Name = "SceneHierarchyBox";
-            this.SceneHierarchyBox.Size = new System.Drawing.Size(232, 545);
+            this.SceneHierarchyBox.Size = new System.Drawing.Size(229, 545);
             this.SceneHierarchyBox.TabIndex = 3;
             this.SceneHierarchyBox.TabStop = false;
             this.SceneHierarchyBox.Text = "Scene Hierarchy";
@@ -124,19 +156,64 @@
             this.SceneHierarchyTree.LabelEdit = true;
             this.SceneHierarchyTree.Location = new System.Drawing.Point(8, 13);
             this.SceneHierarchyTree.Name = "SceneHierarchyTree";
-            this.SceneHierarchyTree.Size = new System.Drawing.Size(217, 529);
+            this.SceneHierarchyTree.Size = new System.Drawing.Size(214, 529);
             this.SceneHierarchyTree.TabIndex = 0;
             this.SceneHierarchyTree.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.SceneHierarchyTree_AfterLabelEdit);
             this.SceneHierarchyTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.SceneHierarchyTree_NodeMouseClick);
+            // 
+            // MainMenuStrip
+            // 
+            this.MainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem});
+            this.MainMenuStrip.Location = new System.Drawing.Point(1, 1);
+            this.MainMenuStrip.Name = "MainMenuStrip";
+            this.MainMenuStrip.Size = new System.Drawing.Size(235, 24);
+            this.MainMenuStrip.TabIndex = 5;
+            this.MainMenuStrip.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newLevelToolStripMenuItem,
+            this.openLevelToolStripMenuItem,
+            this.saveLevelToolStripMenuItem,
+            this.saveLevelAsToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // newLevelToolStripMenuItem
+            // 
+            this.newLevelToolStripMenuItem.Name = "newLevelToolStripMenuItem";
+            this.newLevelToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.newLevelToolStripMenuItem.Text = "New Level";
+            // 
+            // openLevelToolStripMenuItem
+            // 
+            this.openLevelToolStripMenuItem.Name = "openLevelToolStripMenuItem";
+            this.openLevelToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.openLevelToolStripMenuItem.Text = "Open Level";
+            // 
+            // saveLevelToolStripMenuItem
+            // 
+            this.saveLevelToolStripMenuItem.Name = "saveLevelToolStripMenuItem";
+            this.saveLevelToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.saveLevelToolStripMenuItem.Text = "Save Level";
+            // 
+            // saveLevelAsToolStripMenuItem
+            // 
+            this.saveLevelAsToolStripMenuItem.Name = "saveLevelAsToolStripMenuItem";
+            this.saveLevelAsToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.saveLevelAsToolStripMenuItem.Text = "Save Level As";
             // 
             // ToolMenuStrip
             // 
             this.ToolMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.createToolStripMenuItem,
             this.componentToolStripMenuItem});
-            this.ToolMenuStrip.Location = new System.Drawing.Point(240, 1);
+            this.ToolMenuStrip.Location = new System.Drawing.Point(237, 1);
             this.ToolMenuStrip.Name = "ToolMenuStrip";
-            this.ToolMenuStrip.Size = new System.Drawing.Size(863, 24);
+            this.ToolMenuStrip.Size = new System.Drawing.Size(852, 24);
             this.ToolMenuStrip.TabIndex = 4;
             this.ToolMenuStrip.Text = "menuStrip1";
             // 
@@ -170,19 +247,76 @@
             this.boxColliderToolStripMenuItem.Name = "boxColliderToolStripMenuItem";
             this.boxColliderToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.boxColliderToolStripMenuItem.Text = "Box Collider";
+            this.boxColliderToolStripMenuItem.Click += new System.EventHandler(this.OnComponentMenuItem_Click);
             // 
             // meshToolStripMenuItem
             // 
             this.meshToolStripMenuItem.Name = "meshToolStripMenuItem";
             this.meshToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.meshToolStripMenuItem.Text = "Mesh";
-            this.meshToolStripMenuItem.Click += new System.EventHandler(this.meshToolStripMenuItem_Click);
+            this.meshToolStripMenuItem.Click += new System.EventHandler(this.OnComponentMenuItem_Click);
             // 
             // meshRendererToolStripMenuItem
             // 
             this.meshRendererToolStripMenuItem.Name = "meshRendererToolStripMenuItem";
             this.meshRendererToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.meshRendererToolStripMenuItem.Text = "Mesh Renderer";
+            this.meshRendererToolStripMenuItem.Click += new System.EventHandler(this.OnComponentMenuItem_Click);
+            // 
+            // ConsoleTabControl
+            // 
+            this.ConsoleTabControl.Controls.Add(this.ConsoleTab);
+            this.ConsoleTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ConsoleTabControl.Location = new System.Drawing.Point(240, 624);
+            this.ConsoleTabControl.Name = "ConsoleTabControl";
+            this.ConsoleTabControl.SelectedIndex = 0;
+            this.ConsoleTabControl.Size = new System.Drawing.Size(846, 179);
+            this.ConsoleTabControl.TabIndex = 6;
+            // 
+            // ConsoleTab
+            // 
+            this.ConsoleTab.Controls.Add(this.ConsoleList);
+            this.ConsoleTab.Location = new System.Drawing.Point(4, 22);
+            this.ConsoleTab.Name = "ConsoleTab";
+            this.ConsoleTab.Padding = new System.Windows.Forms.Padding(3);
+            this.ConsoleTab.Size = new System.Drawing.Size(838, 153);
+            this.ConsoleTab.TabIndex = 0;
+            this.ConsoleTab.Text = "Console";
+            this.ConsoleTab.UseVisualStyleBackColor = true;
+            // 
+            // ConsoleList
+            // 
+            this.ConsoleList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.SourceCol,
+            this.LevelCol,
+            this.MessageCol,
+            this.CountCol});
+            this.ConsoleList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ConsoleList.Location = new System.Drawing.Point(3, 3);
+            this.ConsoleList.Name = "ConsoleList";
+            this.ConsoleList.Size = new System.Drawing.Size(832, 147);
+            this.ConsoleList.TabIndex = 0;
+            this.ConsoleList.UseCompatibleStateImageBehavior = false;
+            this.ConsoleList.View = System.Windows.Forms.View.Details;
+            // 
+            // SourceCol
+            // 
+            this.SourceCol.Text = "Source";
+            this.SourceCol.Width = 152;
+            // 
+            // LevelCol
+            // 
+            this.LevelCol.Text = "Level";
+            this.LevelCol.Width = 100;
+            // 
+            // MessageCol
+            // 
+            this.MessageCol.Text = "Message";
+            this.MessageCol.Width = 491;
+            // 
+            // CountCol
+            // 
+            this.CountCol.Text = "Count";
             // 
             // SceneHierarchyContextMenu
             // 
@@ -199,19 +333,6 @@
             this.renameToolStripMenuItem.Text = "Rename";
             this.renameToolStripMenuItem.Click += new System.EventHandler(this.renameToolStripMenuItem_Click);
             // 
-            // ViewPanel
-            // 
-            this.ViewPanel.AutoSize = true;
-            this.ViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ViewPanel.Location = new System.Drawing.Point(243, 72);
-            this.ViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
-            this.ViewPanel.Name = "ViewPanel";
-            this.ViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.ViewPanel.Size = new System.Drawing.Size(857, 545);
-            this.ViewPanel.TabIndex = 2;
-            this.ViewPanel.TabStop = true;
-            // 
             // EditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -220,7 +341,6 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(1473, 807);
             this.Controls.Add(this.EditorTableLayout);
-            this.MainMenuStrip = this.ToolMenuStrip;
             this.Name = "EditorForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Editor";
@@ -229,8 +349,12 @@
             this.EditorTableLayout.PerformLayout();
             this.InspectorBox.ResumeLayout(false);
             this.SceneHierarchyBox.ResumeLayout(false);
+            this.MainMenuStrip.ResumeLayout(false);
+            this.MainMenuStrip.PerformLayout();
             this.ToolMenuStrip.ResumeLayout(false);
             this.ToolMenuStrip.PerformLayout();
+            this.ConsoleTabControl.ResumeLayout(false);
+            this.ConsoleTab.ResumeLayout(false);
             this.SceneHierarchyContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -254,6 +378,20 @@
         private System.Windows.Forms.ToolStripMenuItem boxColliderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem meshToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem meshRendererToolStripMenuItem;
+        private System.Windows.Forms.MenuStrip MainMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newLevelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openLevelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveLevelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveLevelAsToolStripMenuItem;
+        private System.Windows.Forms.FolderBrowserDialog DirectoryBrowserDialogue;
+        private System.Windows.Forms.TabControl ConsoleTabControl;
+        private System.Windows.Forms.TabPage ConsoleTab;
+        private System.Windows.Forms.ListView ConsoleList;
+        private System.Windows.Forms.ColumnHeader SourceCol;
+        private System.Windows.Forms.ColumnHeader LevelCol;
+        private System.Windows.Forms.ColumnHeader MessageCol;
+        private System.Windows.Forms.ColumnHeader CountCol;
     }
 }
 

@@ -13,15 +13,18 @@ namespace Editor
 {
     public partial class EditorForm : Form
     {
+        #region Accessors/members
         public SelectablePanel Viewport 
         { 
             get { return ViewPanel; } 
             private set {} 
         }
 
-        private Inspector InspectorPanel;
-        private SceneHierarchy SceneTree;
+        private Inspector inspector;
+        private SceneHierarchy sceneHierarchy;
+        #endregion Accessors/members
 
+        #region API calls/constructor
         public EditorForm()
         {
             InitializeComponent();
@@ -33,9 +36,10 @@ namespace Editor
             // Initialize the engine within the view panel
             NativeMethods.Initialize(hInstance, IntPtr.Zero, hWnd, 1, this.ViewPanel.Width, this.ViewPanel.Height);
 
-            InspectorPanel = new Inspector(ref InspectorGrid);
-            SceneTree = new SceneHierarchy(ref SceneHierarchyTree, ref InspectorPanel);
-            SceneTree.Popualate();
+            Console.Initialize(ref ConsoleList);
+            inspector = new Inspector(ref InspectorGrid);
+            sceneHierarchy = new SceneHierarchy(ref SceneHierarchyTree, ref inspector);
+            sceneHierarchy.Popualate();
         }
 
         private void Terminate()
@@ -52,17 +56,29 @@ namespace Editor
         {
             NativeMethods.Terminate();
         }
+        #endregion
 
+        #region Util
         public Point GetRelativeMousePos()
         {
             return this.PointToClient(MousePosition);
         }
+        #endregion Util
 
+        #region Inspector
         private void InspectorGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             object newVal = e.ChangedItem.Value;
             string compName = e.ChangedItem.Parent.Label;
             string fieldName = e.ChangedItem.Label;
+
+            // No change
+            if (newVal == e.OldValue)
+            {
+                return;
+            }
+
+            //Console.LogDebug("Editor", "")
 
             // Hack: NotifyParentPropertyAttribute(true) currently used to identify children
             if (e.ChangedItem.PropertyDescriptor.Attributes.Contains(new NotifyParentPropertyAttribute(true)))
@@ -72,9 +88,11 @@ namespace Editor
                 fieldName = e.ChangedItem.Parent.Label;
                 newVal = e.ChangedItem.Parent.Value;
             }
-            InspectorPanel.OnComponentModified(compName, fieldName, newVal);
+            inspector.OnComponentModified(compName, fieldName, newVal);
         }
+        #endregion Inspector
 
+        #region Scene Hierarchy
         private void SceneHierarchyTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -82,16 +100,18 @@ namespace Editor
                 // Display the right-click context menu strip above the selected item
                 SceneHierarchyContextMenu.Show(MousePosition);
             }
-            SceneTree.OnNodeSelected(e.Node);
+            sceneHierarchy.OnNodeSelected(e.Node);
         }
 
-        private void newGameObjectToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SceneHierarchyTree_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
-            byte[] buffer = new byte[2048];
-            uint size = NativeMethods.CreateAndSelectGameObject(buffer);
-            GameObject gameObject = GameObject.Deserialize(buffer, size);
-            InspectorPanel.Display(gameObject);
-            SceneTree.Popualate();
+            // TODO: Check label for invalid characters
+            string newLabel = e.Label;
+            // Label will be null if the user cancels the edit
+            if (newLabel != null)
+            {
+                sceneHierarchy.RenameSelectedNode(newLabel);
+            }
         }
 
         private void renameToolStripMenuItem_Click(object sender, EventArgs e)
@@ -101,17 +121,22 @@ namespace Editor
                 SceneHierarchyTree.SelectedNode.BeginEdit();
             }
         }
+        #endregion Scene Hierarchy
 
-        private void SceneHierarchyTree_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        #region Tool Menu Strip
+        private void newGameObjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // TODO: Check label for invalid characters
-            string newLabel = e.Label;
-            SceneTree.RenameSelectedNode(newLabel);
+            byte[] buffer = new byte[2048];
+            uint size = NativeMethods.CreateAndSelectGameObject(buffer);
+            GameObject gameObject = GameObject.Deserialize(buffer, size);
+            inspector.Display(gameObject);
+            sceneHierarchy.Popualate();
         }
 
-        private void meshToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnComponentMenuItem_Click(object sender, EventArgs e)
         {
-            int i = 0;
+            string componentName = sender.ToString();
         }
+        #endregion Tool Menu Strip
     }
 }

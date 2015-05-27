@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace Editor
 {
@@ -16,6 +17,7 @@ namespace Editor
         const int WM_KEYUP = 0x101;
         const int WM_KEYDOWN = 0x0100;
         const int WM_SCROLL = 0x020A;
+        const int WM_MOUSEMOVE = 0x0200;
         const int WM_LBUTTONUP = 0x0202;
 
         public InputMessageFilter(EditorForm fOwner)
@@ -32,7 +34,15 @@ namespace Editor
             if (m.Msg == WM_LBUTTONUP)
             {
                 // Update the viewport's focus flag since it can't seem to do it itself
-                Viewport.IsFocused = Viewport.Bounds.Contains(Owner.GetRelativeMousePos());
+                Point mpos = Owner.GetRelativeMousePos();
+                Viewport.IsFocused = Viewport.Contains(mpos);
+                Console.LogDebug("Editor", "Viewport focused: {0}", Viewport.IsFocused);
+            }
+            else if (m.Msg == WM_MOUSEMOVE)
+            {
+                // Temp
+                Point mpos = Owner.GetRelativeMousePos();
+                Console.LogDebug("Editor", "Mouse Position: {0} ", mpos.ToString());
             }
 
             bool ret = false;
