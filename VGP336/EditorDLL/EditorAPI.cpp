@@ -46,6 +46,20 @@ struct Matrix
 	float _41, _42, _43, _44;
 };
 
+//----------------------------------------------------------------------------------------------------
+
+struct Handle
+{
+    u16 instance;
+    u16 index;
+
+    Handle()
+    {
+        instance = U16_MAX;
+        index = U16_MAX;
+    }
+};
+
 //====================================================================================================
 // Functions
 //====================================================================================================
@@ -118,35 +132,35 @@ unsigned int DiscoverGameObjects(unsigned char* buffer)
 
 //----------------------------------------------------------------------------------------------------
 
-unsigned int GetGameObject(unsigned short index, unsigned char* buffer)
+unsigned int GetGameObject(Handle handle, unsigned char* buffer)
 {
     unsigned int size = 0;
-    unsigned char* buff = (unsigned char*)cmd.GetGameObject(index, size);
+    unsigned char* buff = (unsigned char*)cmd.GetGameObject(handle, size);
     memcpy(buffer, buff, size);
     return size;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-void SelectGameObject(unsigned short index)
+void SelectGameObject(Handle handle)
 {
-    cmd.SelectGameObject(index);
+    cmd.SelectGameObject(handle);
 }
 
 //----------------------------------------------------------------------------------------------------
 
 unsigned int CreateAndSelectGameObject(unsigned char* buffer)
 {
-    u16 index = -1; // Init as invalid
-    cmd.CreateEmptyGameObject(index);
-    cmd.SelectGameObject(index);
+    Handle handle;
+    cmd.CreateEmptyGameObject(handle);
+    cmd.SelectGameObject(handle);
     u32 buffsize = 0;
-    const char* buff = (const char*)cmd.GetGameObject(index, buffsize);
+    const char* buff = (const char*)cmd.GetGameObject(handle, buffsize);
     memcpy(buffer, buff, buffsize);
     return buffsize;
 }
 
-void RenameGameObject(unsigned short index, const char* name)
+void RenameGameObject(Handle handle, const char* name)
 {
-    cmd.RenameGameObject((u16)index, name);
+    cmd.RenameGameObject(handle, name);
 }

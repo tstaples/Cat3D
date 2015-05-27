@@ -18,7 +18,9 @@
 // API Function Prototypes
 //====================================================================================================
 
-// TODO: document
+extern "C" struct Matrix;
+extern "C" struct Vector3;
+extern "C" struct Handle;
 
 EditorAPI void Initialize(
     int* instancePtrAddress,
@@ -58,15 +60,13 @@ EditorAPI unsigned int DiscoverGameObjects(unsigned char* buffer);
 // @param index: handle index of the desired GameObject.
 // @param buffer: output buffer to write the serialized data to.
 // Returns the number of bytes copied to the buffer.
-EditorAPI unsigned int GetGameObject(unsigned short index, unsigned char* buffer);
+EditorAPI unsigned int GetGameObject(Handle handle, unsigned char* buffer);
 
-EditorAPI void SelectGameObject(unsigned short index);
+EditorAPI void SelectGameObject(Handle handle);
 
 EditorAPI unsigned int CreateAndSelectGameObject(unsigned char* buffer);
 
-EditorAPI void RenameGameObject(unsigned short index, const char* name);
+EditorAPI void RenameGameObject(Handle handle, const char* name);
 
-extern "C" struct Matrix;
-extern "C" struct Vector3;
 
 #endif //#ifndef INCLUDED_EDITORAPI_H

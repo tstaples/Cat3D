@@ -11,6 +11,42 @@ namespace
     u8 objBuffer[OBJECT_BUFF_SIZE];
 }
 
+struct Handle
+{
+    u16 instance;
+    u16 index;
+
+    Handle(){}
+
+    Handle(const GameObjectHandle& goH)
+    {
+        instance = goH.GetInstance();
+        index = goH.GetIndex();
+    }
+
+    Handle& operator=(const GameObjectHandle& rhs)
+    {
+        instance = rhs.GetInstance();
+        index = rhs.GetIndex();
+        return *this;
+    }
+
+    operator GameObjectHandle()
+    {
+        return GameObjectHandle(instance, index);
+    }
+
+    bool operator==(const GameObjectHandle& rhs)
+    {
+        return (index == rhs.GetIndex() && instance == rhs.GetInstance());
+    }
+    bool operator!=(const GameObjectHandle& rhs) 
+    { 
+        return !(*this == rhs); 
+    }
+};
+
+
 EditorCommands::EditorCommands(EditorApp& app)
     : mApp(app)
 {
@@ -30,7 +66,8 @@ const u8* EditorCommands::GetSelectedObjectData(u32& size)
         return nullptr;
     }
     EditorObject* editorObject = selectedObjects[0];
-    return GetGameObject(editorObject->GetHandle().GetIndex(), size);;
+    Handle handle(editorObject->GetHandle());
+    return GetGameObject(handle, size);;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -41,8 +78,8 @@ s32 EditorCommands::UpdateComponent(const u8* buffer, u32 buffsize)
     SerialReader reader((u8*)buffer, buffsize);
 
     // Get handle data to find corresponding gameobject
-    u16 index = reader.Read<u16>();
     u16 instance = reader.Read<u16>();
+    u16 index = reader.Read<u16>();
     GameObjectHandle handle(instance, index);
     GameObject* gameObject = mApp.mGameWorld.mGameObjectPool.Get(handle);
     if (gameObject == nullptr)
@@ -92,8 +129,8 @@ const u8* EditorCommands::DiscoverGameObjects(u32& buffsize)
         GameObject* gameObject = editorObj.GetGameObject();
         GameObjectHandle handle = editorObj.GetHandle();
 
-        writer.Write(handle.GetIndex());
         writer.Write(handle.GetInstance());
+        writer.Write(handle.GetIndex());
         writer.WriteLengthEncodedString(gameObject->GetName());
     }
     buffsize = writer.GetOffset();
@@ -102,19 +139,19 @@ const u8* EditorCommands::DiscoverGameObjects(u32& buffsize)
 
 //----------------------------------------------------------------------------------------------------
 
-const u8* EditorCommands::GetGameObject(u16 index, u32& buffsize)
+const u8* EditorCommands::GetGameObject(Handle handle, u32& buffsize)
 {
     memset(objBuffer, 0, OBJECT_BUFF_SIZE);
     SerialWriter writer(objBuffer, OBJECT_BUFF_SIZE);
 
     for (EditorObject eobj : mApp.mObjects)
     {
-        GameObjectHandle handle = eobj.GetHandle();
-        if (handle.GetIndex() == index)
+        GameObjectHandle gohandle = eobj.GetHandle();
+        if (handle == gohandle)
         {
             // Write out handle data
-            writer.Write(handle.GetIndex());
-            writer.Write(handle.GetInstance());
+            writer.Write(gohandle.GetInstance());
+            writer.Write(gohandle.GetIndex());
 
             GameObject* gameobject = eobj.GetGameObject();
             gameobject->Serialize(writer);
@@ -128,13 +165,13 @@ const u8* EditorCommands::GetGameObject(u16 index, u32& buffsize)
 
 //----------------------------------------------------------------------------------------------------
 
-void EditorCommands::SelectGameObject(u16 index)
+void EditorCommands::SelectGameObject(Handle handle)
 {
     std::vector<EditorObject*>& selectedObjects = mApp.mSelectedObjects;
-    for (EditorObject& eobj :mApp. mObjects)
+    for (EditorObject& eobj : mApp.mObjects)
     {
-        GameObjectHandle handle = eobj.GetHandle();
-        if (handle.GetIndex() == index)
+        GameObjectHandle gohandle = eobj.GetHandle();
+        if (handle == gohandle)
         {
             // Deselect all objects
             for (auto object : selectedObjects)
@@ -151,23 +188,24 @@ void EditorCommands::SelectGameObject(u16 index)
 
 //----------------------------------------------------------------------------------------------------
 
-void EditorCommands::CreateEmptyGameObject(u16& index)
+void EditorCommands::CreateEmptyGameObject(Handle& handle)
 {
-    GameObjectHandle handle = mApp.mGameWorld.CreateGameObject("../Data/GameObjects/default.json", Math::Vector3::Zero(), Math::Quaternion::Identity());
-    index = handle.GetIndex();
-    mApp.mObjects.push_back(EditorObject(handle));
+    GameObjectHandle gohandle = mApp.mGameWorld.CreateGameObject("../Data/GameObjects/default.json", Math::Vector3::Zero(), Math::Quaternion::Identity());
+    handle = gohandle;
+    mApp.mObjects.push_back(EditorObject(gohandle));
 }
 
 //----------------------------------------------------------------------------------------------------
 
-void EditorCommands::RenameGameObject(u16 index, const char* name)
+void EditorCommands::RenameGameObject(Handle handle, const char* name)
 {
     for (EditorObject eobj : mApp.mObjects)
     {
-        GameObjectHandle handle = eobj.GetHandle();
-        if (handle.GetIndex() == index)
+        GameObjectHandle gohandle = eobj.GetHandle();
+        if (handle == gohandle)
         {
-            handle.Get()->SetName(name);
+            // Update the GameObject's name
+            gohandle.Get()->SetName(name);
         }
     }
 }
