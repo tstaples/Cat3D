@@ -30,7 +30,7 @@ namespace Editor
             // Check to make sure the object that was selected wasn't aready selected (ie. moving gizmo)
             GameObject gameObject = GameObject.Deserialize(data, size);
             GameObject currentSelectedGameObject = inspector.CurrentGameObject;
-            if (currentSelectedGameObject != null && 
+            if (currentSelectedGameObject == null || 
                 gameObject.handle != currentSelectedGameObject.handle)
             {
                 inspector.Display(gameObject);
