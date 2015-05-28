@@ -21,6 +21,9 @@ namespace Editor
             int screenHeight);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern bool GetLastEditorError(NativeTypes.Error error);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern void WndProc(IntPtr hWndPtrAddress, int msg, int wParam, int lParam);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
@@ -33,24 +36,24 @@ namespace Editor
         public unsafe static extern int IsGameRunning();
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern uint GetSelectedObjectData(byte[] buffer);
+        public unsafe static extern uint GetSelectedObjectData(byte[] buffer, uint size);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl, CharSet=CharSet.Ansi)]
         public unsafe static extern int UpdateComponent(byte[] buffer, uint size);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern uint DiscoverGameObjects(byte[] buffer);
+        public unsafe static extern uint DiscoverGameObjects(byte[] buffer, uint size);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern uint GetGameObject(NativeTypes.Handle handle, byte[] buffer);
+        public unsafe static extern uint GetGameObject(NativeTypes.Handle handle, byte[] buffer, uint size);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern void SelectGameObject(NativeTypes.Handle handle);
+        public unsafe static extern int SelectGameObject(NativeTypes.Handle handle);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern uint CreateAndSelectGameObject(byte[] buffer);
+        public unsafe static extern uint CreateNewGameObject(byte[] buffer, uint size);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern void RenameGameObject(NativeTypes.Handle handle, string name);
+        public unsafe static extern int RenameGameObject(NativeTypes.Handle handle, string name);
     }
 }

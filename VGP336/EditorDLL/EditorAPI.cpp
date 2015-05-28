@@ -60,9 +60,30 @@ struct Handle
     }
 };
 
+struct Error
+{
+    char message[2048];
+};
+
+
 //====================================================================================================
 // Functions
 //====================================================================================================
+
+bool GetLastEditorError(Error& error)
+{
+    memset(error.message, 0, sizeof(error.message));
+    const char* msg = cmd.GetLastError();
+    if (msg)
+    {
+        strcpy_s(error.message, msg);
+        return true;
+    }
+    strcpy_s(error.message, "None");
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
 
 void Initialize(int* instancePtrAddress, int* hPrevInstancePtrAddress, int* hWndPtrAddress, int nCmdShow, int screenWidth, int screenHeight)
 {
@@ -105,62 +126,62 @@ int IsGameRunning()
 
 //----------------------------------------------------------------------------------------------------
 
-unsigned int GetSelectedObjectData(unsigned char* buffer)
+unsigned int GetSelectedObjectData(unsigned char* dst, unsigned int size)
 {
-    unsigned int size = 0;
-    unsigned char* buff = (unsigned char*)cmd.GetSelectedObjectData(size);
-    memcpy(buffer, buff, size);
-    return size;
+    unsigned int written = 0;
+    cmd.GetSelectedObjectData(dst, size, written);
+    return written;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-int UpdateComponent(unsigned char* buffer, unsigned int size)
+int UpdateComponent(const unsigned char* buffer, unsigned int size)
 {
     return (int)cmd.UpdateComponent(buffer, size);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-unsigned int DiscoverGameObjects(unsigned char* buffer)
+unsigned int DiscoverGameObjects(unsigned char* dst, unsigned int size)
 {
-    unsigned int size = 0;
-    unsigned char* buff = (unsigned char*)cmd.DiscoverGameObjects(size);
-    memcpy(buffer, buff, size);
-    return size;
+    unsigned int written = 0;
+    cmd.DiscoverGameObjects(dst, size, written);
+    return written;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-unsigned int GetGameObject(Handle handle, unsigned char* buffer)
+unsigned int GetGameObject(Handle handle, unsigned char* dst, unsigned int size)
 {
-    unsigned int size = 0;
-    unsigned char* buff = (unsigned char*)cmd.GetGameObject(handle, size);
-    memcpy(buffer, buff, size);
-    return size;
+    unsigned int written = 0;
+    cmd.GetGameObject(handle, dst, size, written);
+    return written;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-void SelectGameObject(Handle handle)
+int SelectGameObject(Handle handle)
 {
-    cmd.SelectGameObject(handle);
+    return (int)cmd.SelectGameObject(handle);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-unsigned int CreateAndSelectGameObject(unsigned char* buffer)
+unsigned int CreateNewGameObject(unsigned char* dst, unsigned int size)
 {
+    unsigned int written = 0;
+
     Handle handle;
-    cmd.CreateEmptyGameObject(handle);
-    cmd.SelectGameObject(handle);
-    u32 buffsize = 0;
-    const char* buff = (const char*)cmd.GetGameObject(handle, buffsize);
-    memcpy(buffer, buff, buffsize);
-    return buffsize;
+    if (cmd.CreateEmptyGameObject(handle))
+    {
+        cmd.GetGameObject(handle, dst, size, written);
+    }
+    return written;
 }
 
-void RenameGameObject(Handle handle, const char* name)
+//----------------------------------------------------------------------------------------------------
+
+int RenameGameObject(Handle handle, const char* name)
 {
-    cmd.RenameGameObject(handle, name);
+    return (int)cmd.RenameGameObject(handle, name);
 }

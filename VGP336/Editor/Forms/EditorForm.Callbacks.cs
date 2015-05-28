@@ -11,15 +11,13 @@ namespace Editor
     {
         public bool OnLeftClick()
         {
-            // TODO: ask the engine if anything was selected because when you
-            // click the gizmo it will re-display that object's data.
             if (!Viewport.IsFocused)
             {
                 return false;
             }
 
             byte[] data = new byte[2048];
-            uint size = NativeMethods.GetSelectedObjectData(data);
+            uint size = NativeMethods.GetSelectedObjectData(data, (uint)data.Length);
             Debug.Assert(size < 2048);
             if (size == 0 || size > 2048)
             {

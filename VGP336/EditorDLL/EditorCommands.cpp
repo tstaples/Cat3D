@@ -8,7 +8,20 @@
 
 namespace
 {
-    u8 objBuffer[OBJECT_BUFF_SIZE];
+    static std::string lastErrorMsg;
+    void SetError(const char* format, ...)
+    {
+        char buff[8196];
+	    va_list va;
+	    va_start(va, format);
+	    s32 written = (s32)vsnprintf(buff, sizeof(buff), format, va);
+	    va_end(va);
+
+        buff[written] = '\0';
+	    ::OutputDebugStringA(buff);
+	    ::OutputDebugStringA("\n");
+        lastErrorMsg = buff;
+    }
 }
 
 struct Handle
@@ -46,35 +59,42 @@ struct Handle
     }
 };
 
+//----------------------------------------------------------------------------------------------------
 
 EditorCommands::EditorCommands(EditorApp& app)
     : mApp(app)
 {
-    memset(objBuffer, 0, OBJECT_BUFF_SIZE);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-const u8* EditorCommands::GetSelectedObjectData(u32& size)
+const char* EditorCommands::GetLastError()
+{
+    return lastErrorMsg.c_str();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool EditorCommands::GetSelectedObjectData(u8* dst, u32 size, u32& bytesWritten)
 {
     std::vector<EditorObject*>& selectedObjects = mApp.mSelectedObjects;
 
     // Don't display anything unless there's only a single object selected
-    if (selectedObjects.empty() || selectedObjects.size() > 1)
+    if (selectedObjects.size() == 1)
     {
-        size = 0;
-        return nullptr;
+        EditorObject* editorObject = selectedObjects.front();
+        Handle handle(editorObject->GetHandle());
+        return GetGameObject(handle, dst, size, bytesWritten);
     }
-    EditorObject* editorObject = selectedObjects[0];
-    Handle handle(editorObject->GetHandle());
-    return GetGameObject(handle, size);;
+    SetError("[EditorCommands] Single object not selected");
+    bytesWritten = 0;
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-s32 EditorCommands::UpdateComponent(const u8* buffer, u32 buffsize)
+bool EditorCommands::UpdateComponent(const u8* buffer, u32 buffsize)
 {
-    s32 rc = 1;
     SerialReader reader((u8*)buffer, buffsize);
 
     // Get handle data to find corresponding gameobject
@@ -83,7 +103,10 @@ s32 EditorCommands::UpdateComponent(const u8* buffer, u32 buffsize)
     GameObjectHandle handle(instance, index);
     GameObject* gameObject = mApp.mGameWorld.mGameObjectPool.Get(handle);
     if (gameObject == nullptr)
-        return rc;
+    {
+        SetError("[EditorCommands] Could not get gameObject with instance: %u index: %u", instance, index);
+        return false;
+    }
 
     std::string compName = reader.ReadLengthEncodedString();
     const std::vector<Component*>& components = gameObject->GetComponents();
@@ -103,24 +126,24 @@ s32 EditorCommands::UpdateComponent(const u8* buffer, u32 buffsize)
                 u32 fieldSize = field->GetType()->GetSize();
                 reader.ReadArray(data, fieldSize);
 
-                char* cdata = ((char*)c) + offset;
+                u8* cdata = ((u8*)c) + offset;
                 memcpy(cdata, data, fieldSize);
             }
             // Set flag to indicate there has been a change
             c->SetIsDirty(true);
-            rc = 0; // success
-            break;
+            return true;
         }
     }
-    return rc;
+    SetError("[EditorCommands] Failed to find component with name %s", compName.c_str());
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-const u8* EditorCommands::DiscoverGameObjects(u32& buffsize)
+// TODO: store data in struct instead?
+bool EditorCommands::DiscoverGameObjects(u8* dst, u32 size, u32& bytesWritten)
 {
-    memset(objBuffer, 0, OBJECT_BUFF_SIZE);
-    SerialWriter writer(objBuffer, OBJECT_BUFF_SIZE);
+    SerialWriter writer(dst, size);
 
     const u32 numObjects = mApp.mObjects.size();
     writer.Write(numObjects);
@@ -133,16 +156,15 @@ const u8* EditorCommands::DiscoverGameObjects(u32& buffsize)
         writer.Write(handle.GetIndex());
         writer.WriteLengthEncodedString(gameObject->GetName());
     }
-    buffsize = writer.GetOffset();
-    return objBuffer;
+    bytesWritten = writer.GetOffset();
+    return true;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-const u8* EditorCommands::GetGameObject(Handle handle, u32& buffsize)
+bool EditorCommands::GetGameObject(Handle handle, u8* dst, u32 size, u32& bytesWritten)
 {
-    memset(objBuffer, 0, OBJECT_BUFF_SIZE);
-    SerialWriter writer(objBuffer, OBJECT_BUFF_SIZE);
+    SerialWriter writer(dst, size);
 
     for (EditorObject eobj : mApp.mObjects)
     {
@@ -155,17 +177,19 @@ const u8* EditorCommands::GetGameObject(Handle handle, u32& buffsize)
 
             GameObject* gameobject = eobj.GetGameObject();
             gameobject->Serialize(writer);
-            buffsize += writer.GetOffset();
-            return objBuffer;
+            bytesWritten += writer.GetOffset();
+            return true;
         }
     }
-    buffsize = 0;
-    return nullptr;
+    SetError("[EditorCommands] Could not get gameObject with instance: %u index: %u", 
+        handle.instance, handle.index);
+    bytesWritten = 0;
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-void EditorCommands::SelectGameObject(Handle handle)
+bool EditorCommands::SelectGameObject(Handle handle)
 {
     std::vector<EditorObject*>& selectedObjects = mApp.mSelectedObjects;
     for (EditorObject& eobj : mApp.mObjects)
@@ -182,23 +206,35 @@ void EditorCommands::SelectGameObject(Handle handle)
 
             eobj.Select(); // Set flag
             selectedObjects.push_back(&eobj);
+            return true;
         }
     }
+    SetError("[EditorCommands] Could not find gameObject with instance: %u index: %u", 
+        handle.instance, handle.index);
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-void EditorCommands::CreateEmptyGameObject(Handle& handle)
+bool EditorCommands::CreateEmptyGameObject(Handle& handle)
 {
-    GameObjectHandle gohandle = mApp.mGameWorld.CreateGameObject("../Data/GameObjects/default.json", Math::Vector3::Zero(), Math::Quaternion::Identity());
-    handle = gohandle;
-    mApp.mObjects.push_back(EditorObject(gohandle));
+    GameObjectHandle gohandle = mApp.mGameWorld.CreateGameObject("../Data/GameObjects/default.json", 
+        Math::Vector3::Zero(), Math::Quaternion::Identity());
+    if (gohandle.IsValid())
+    {
+        handle = gohandle;
+        mApp.mObjects.push_back(EditorObject(gohandle));
+        return true;
+    }
+    SetError("[EditorCommands] Failed to create empty GameObject");
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-void EditorCommands::RenameGameObject(Handle handle, const char* name)
+bool EditorCommands::RenameGameObject(Handle handle, const char* name)
 {
+    ASSERT(name != nullptr, "[EditorCommands] Renaming error: name is uninitialized");
     for (EditorObject eobj : mApp.mObjects)
     {
         GameObjectHandle gohandle = eobj.GetHandle();
@@ -206,6 +242,10 @@ void EditorCommands::RenameGameObject(Handle handle, const char* name)
         {
             // Update the GameObject's name
             gohandle.Get()->SetName(name);
+            return true;
         }
     }
+    SetError("[EditorCommands] Could not find gameObject with instance: %u index: %u", 
+        handle.instance, handle.index);
+    return false;
 }

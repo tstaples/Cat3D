@@ -134,11 +134,21 @@ namespace Editor
             Console.LogDebug("Editor", "Creating new GameObject");
 
             byte[] buffer = new byte[2048];
-            uint size = NativeMethods.CreateAndSelectGameObject(buffer);
-            Console.LogConditon(size > 0, "Editor", "Failed to create new GameObject");
-            GameObject gameObject = GameObject.Deserialize(buffer, size);
-            inspector.Display(gameObject);
-            sceneHierarchy.Popualate();
+            uint size = NativeMethods.CreateNewGameObject(buffer, (uint)buffer.Length);
+            if (size > 0)
+            {
+                // Select the newly created gameObject
+                GameObject gameObject = GameObject.Deserialize(buffer, size);
+                NativeMethods.SelectGameObject(gameObject.handle.ToNativeHandle());
+
+                // Show the object's components in the inspector and update the scene hierarchy
+                inspector.Display(gameObject);
+                sceneHierarchy.Popualate();
+            }
+            else
+            {
+                Console.LogError("Editor", "Failed to create new GameObject");
+            }
         }
 
         private void OnComponentMenuItem_Click(object sender, EventArgs e)

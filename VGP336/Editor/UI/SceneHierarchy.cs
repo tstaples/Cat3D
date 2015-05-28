@@ -33,7 +33,7 @@ namespace Editor
             Clear();
 
             byte[] buffer = new byte[2048];
-            uint size = NativeMethods.DiscoverGameObjects(buffer);
+            uint size = NativeMethods.DiscoverGameObjects(buffer, (uint)buffer.Length);
             SerializeIn sIn = new SerializeIn(buffer);
 
             uint numObjects = sIn.ReadUInt();
@@ -69,7 +69,7 @@ namespace Editor
             {
                 // Get the data for this object
                 byte[] buffer = new byte[2048];
-                uint size = NativeMethods.GetGameObject(handle.ToNativeHandle(), buffer);
+                uint size = NativeMethods.GetGameObject(handle.ToNativeHandle(), buffer, 2048u);
 
                 // Create an object on the editor side holding the info then tell the inspector to display it.
                 GameObject gameObject = GameObject.Deserialize(buffer, size);

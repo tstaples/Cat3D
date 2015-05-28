@@ -11,13 +11,14 @@ class EditorCommands
 public:
     EditorCommands(EditorApp& app);
 
-    const u8* GetSelectedObjectData(u32& size);
-    s32 UpdateComponent(const u8* buffer, u32 buffsize);
-    const u8* DiscoverGameObjects(u32& buffsize);
-    const u8* GetGameObject(Handle handle, u32& buffsize);
-    void SelectGameObject(Handle handle);
-    void CreateEmptyGameObject(Handle& handle);
-    void RenameGameObject(Handle handle, const char* name);
+    const char* GetLastError();
+    bool GetSelectedObjectData(u8* dst, u32 size, u32& bytesWritten);
+    bool UpdateComponent(const u8* buffer, u32 buffsize);
+    bool DiscoverGameObjects(u8* dst, u32 size, u32& bytesWritten);
+    bool GetGameObject(Handle handle, u8* dst, u32 size, u32& bytesWritten);
+    bool SelectGameObject(Handle handle);
+    bool CreateEmptyGameObject(Handle& handle);
+    bool RenameGameObject(Handle handle, const char* name);
 
 private:
     EditorApp& mApp;
