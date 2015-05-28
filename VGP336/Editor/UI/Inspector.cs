@@ -13,7 +13,12 @@ namespace Editor
     public class Inspector
     {
         private PropertyGrid GridView;
-        private GameObject CurrentGameObject; // Currently displayed in panel
+        private GameObject currentGameObject; // Currently displayed in panel
+
+        public GameObject CurrentGameObject
+        {
+            get { return currentGameObject; }
+        }
 
         public Inspector(ref PropertyGrid gridView)
         {
@@ -22,13 +27,13 @@ namespace Editor
 
         public bool IsAnObjectSelected()
         {
-            return (CurrentGameObject != null);
+            return (currentGameObject != null);
         }
 
         public void Clear()
         {
             // Don't display anything on the grid
-            CurrentGameObject = null;
+            currentGameObject = null;
             GridView.SelectedObject = null;
             GridView.Refresh();
         }
@@ -38,8 +43,8 @@ namespace Editor
             //bool sameObject = (GameObject == GridView.SelectedObject);
 
             Clear();
-            CurrentGameObject = gameObject;
-            GridView.SelectedObject = CurrentGameObject.Components;
+            currentGameObject = gameObject;
+            GridView.SelectedObject = currentGameObject.Components;
 
             // Expand each component
             GridItem root = GridView.SelectedGridItem;
@@ -54,15 +59,37 @@ namespace Editor
             // Name in property grid omits the "Component" part
             
             string fullname = (name.Replace(" ", "")) + "Component";
-            Component c = CurrentGameObject.GetComponent(fullname);
+            Component c = currentGameObject.GetComponent(fullname);
             Debug.Assert(c != null);
             c.OnModify(propertyName, newVal);
 
-            byte[] buffer = CurrentGameObject.WriteComponent(c);
+            byte[] buffer = currentGameObject.WriteComponent(c);
             if (NativeMethods.UpdateComponent(buffer, (uint)buffer.Length) == 0)
             {
                 GridView.Refresh();
                 return true;
+            }
+            return false;
+        }
+
+        public bool AddComponentToCurrentObject(string componentName)
+        {
+            // Make valid name
+            string name = componentName.Replace(" ", "") + "Component";
+            
+            // See if there is anything selected to add a component to
+            if (IsAnObjectSelected())
+            {
+                NativeTypes.Handle handle = currentGameObject.handle.ToNativeHandle();
+                if (NativeMethods.AddComponent(handle, name) != 0)
+                {
+                    // Update to show the new component
+                    byte[] buffer = new byte[2048];
+                    uint size = NativeMethods.GetSelectedObjectData(buffer, (uint)buffer.Length);
+                    GameObject gameObject = GameObject.Deserialize(buffer, size);
+                    Display(gameObject);
+                    return true;
+                }
             }
             return false;
         }

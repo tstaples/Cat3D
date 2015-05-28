@@ -6,24 +6,6 @@
 
 #define OBJECT_BUFF_SIZE 2048
 
-namespace
-{
-    static std::string lastErrorMsg;
-    void SetError(const char* format, ...)
-    {
-        char buff[8196];
-	    va_list va;
-	    va_start(va, format);
-	    s32 written = (s32)vsnprintf(buff, sizeof(buff), format, va);
-	    va_end(va);
-
-        buff[written] = '\0';
-	    ::OutputDebugStringA(buff);
-	    ::OutputDebugStringA("\n");
-        lastErrorMsg = buff;
-    }
-}
-
 struct Handle
 {
     u16 instance;
@@ -58,6 +40,38 @@ struct Handle
         return !(*this == rhs); 
     }
 };
+
+namespace
+{
+    static std::string lastErrorMsg;
+    void SetError(const char* format, ...)
+    {
+        char buff[8196];
+	    va_list va;
+	    va_start(va, format);
+	    s32 written = (s32)vsnprintf(buff, sizeof(buff), format, va);
+	    va_end(va);
+
+        buff[written] = '\0';
+	    ::OutputDebugStringA(buff);
+	    ::OutputDebugStringA("\n");
+        lastErrorMsg = buff;
+    }
+
+    GameObjectHandle GetHandleFromNative(Handle handle, EditorObjects& objects)
+    {
+        for (EditorObject eobj : objects)
+        {
+            GameObjectHandle gohandle = eobj.GetHandle();
+            if (handle == gohandle)
+            {
+                return gohandle;
+            }
+        }
+        return GameObjectHandle();
+    }
+}
+
 
 //----------------------------------------------------------------------------------------------------
 
@@ -235,17 +249,33 @@ bool EditorCommands::CreateEmptyGameObject(Handle& handle)
 bool EditorCommands::RenameGameObject(Handle handle, const char* name)
 {
     ASSERT(name != nullptr, "[EditorCommands] Renaming error: name is uninitialized");
-    for (EditorObject eobj : mApp.mObjects)
+
+    GameObjectHandle gohandle = GetHandleFromNative(handle, mApp.mObjects);
+    if (gohandle.IsValid())
     {
-        GameObjectHandle gohandle = eobj.GetHandle();
-        if (handle == gohandle)
-        {
-            // Update the GameObject's name
-            gohandle.Get()->SetName(name);
-            return true;
-        }
+        // Update the GameObject's name
+        gohandle.Get()->SetName(name);
+        return true;
     }
     SetError("[EditorCommands] Could not find gameObject with instance: %u index: %u", 
         handle.instance, handle.index);
     return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool EditorCommands::AddComponent(Handle handle, const char* componentName)
+{
+    bool success = false;
+    GameObjectHandle gohandle = GetHandleFromNative(handle, mApp.mObjects);
+    if (gohandle.IsValid())
+    { 
+        // only care about component dependencies
+        // if we're adding a component that requires a service, but the GO doesn't have everything
+        // the service needs, then don't subscribe.
+        // if we add a 
+
+        success = mApp.mGameWorld.mFactory.AddComponent(handle, componentName);
+    }
+    return success;
 }

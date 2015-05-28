@@ -3,6 +3,7 @@
 
 #include "GameObject.h"
 #include "Components.h"
+#include "RenderService.h"
 
 void Meta::MetaRegistration()
 {
@@ -10,4 +11,5 @@ void Meta::MetaRegistration()
     MetaDB::Register(MeshComponent::StaticGetMetaClass());
     MetaDB::Register(MeshRendererComponent::StaticGetMetaClass());
     MetaDB::Register(TransformComponent::StaticGetMetaClass());
+    MetaDB::Register(RenderService::StaticGetMetaClass());
 }

@@ -136,7 +136,7 @@ TranslateGizmo::~TranslateGizmo()
 
 //----------------------------------------------------------------------------------------------------
 
-bool TranslateGizmo::IsSelected(const Objects& selectedObjs, const Math::Ray& mouseRay)
+bool TranslateGizmo::CheckSelection(const Objects& selectedObjs, const Math::Ray& mouseRay)
 {
     // Note: using global space. TODO: local space as well
 

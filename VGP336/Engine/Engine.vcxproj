@@ -150,6 +150,7 @@
     <ClInclude Include="SerialReader.h" />
     <ClInclude Include="SerialWriter.h" />
     <ClInclude Include="Service.h" />
+    <ClInclude Include="Services.h" />
     <ClInclude Include="SimpleDraw.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SpriteRenderer.h" />

@@ -43,33 +43,56 @@ EditorAPI void UpdateFrame();
 EditorAPI void Terminate();
 EditorAPI int IsGameRunning();
 
-// Serializes the currently selected GameObjects.
-// @param buffer: externally managed buffer to hold the serialized data.
-// Returns the number of bytes copied to the buffer.
+/* Serializes the currently selected GameObjects.
+ * @param buffer: externally managed buffer to hold the serialized data.
+ * @param size: size of the external buffer.
+ * Returns the number of bytes copied to the buffer.
+ */
 EditorAPI unsigned int GetSelectedObjectData(unsigned char* dst, unsigned int size);
 
-// Updates the values of a particular component.
-// @param buffer: buffer containing the serialized component data.
-// @param size: size in bytes of the component data.
-// Returns 0 if succeeded.
+/* Updates the values of a particular component.
+ * @param buffer: buffer containing the serialized component data.
+ * @param size: size in bytes of the buffer.
+ * Returns 1 if succeeded.
+ */
 EditorAPI int UpdateComponent(const unsigned char* buffer, unsigned int size);
 
-// Gets basic info about all objects in the world.
-// @param buffer: externally managed buffer to output the serialized data to.
-// Returns the number of bytes copied to the buffer.
+/* Gets basic info about all objects in the world.
+ * @param buffer: externally managed buffer to output the serialized data to.
+ * @param size: size of the external buffer.
+ * Returns the number of bytes copied to the buffer.
+ */
 EditorAPI unsigned int DiscoverGameObjects(unsigned char* dst, unsigned int size);
 
-// Gets the serialized data for a GameObject.
-// @param index: handle index of the desired GameObject.
-// @param buffer: output buffer to write the serialized data to.
-// Returns the number of bytes copied to the buffer.
+/* Gets the serialized data for a GameObject.
+ * @param handle: handle of the desired GameObject.
+ * @param buffer: output buffer to write the serialized data to.
+ * @param size: size of the external buffer.
+ * Returns the number of bytes copied to the buffer.
+ */
 EditorAPI unsigned int GetGameObject(Handle handle, unsigned char* dst, unsigned int size);
 
+/* Selects a GameObject.
+ * @param handle: handle of the GameObject to select.
+ * Returns 1 if the GameObject was successfully selected.
+ */
 EditorAPI int SelectGameObject(Handle handle);
 
+/* Creates a new GameObject and adds it to the world.
+ * @param dst: externally managed buffer to write the new object's data to.
+ * @param size: size of the external buffer.
+ * Returns the number of bytes written to the dst. Returns 0 if fails.
+ */
 EditorAPI unsigned int CreateNewGameObject(unsigned char* dst, unsigned int size);
 
+/* Renames a GameObject.
+ * @param handle: handle of the desired GameObject.
+ * @param name: new name for the GameObject.
+ * Returns 1 if the GameObject was renamed successfully.
+ */
 EditorAPI int RenameGameObject(Handle handle, const char* name);
+
+EditorAPI int AddComponent(Handle handle, const char* componentName);
 
 
 #endif //#ifndef INCLUDED_EDITORAPI_H

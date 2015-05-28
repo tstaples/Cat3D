@@ -97,7 +97,7 @@ bool InputCallbacks::OnSelectObject()
     std::vector<EditorObject*>& selectedObjs = mOwner.mSelectedObjects;
 
     Math::Ray ray = mOwner.mCamera.GetMouseRay(input.mouseX, input.mouseY, mOwner.mWidth, mOwner.mHeight);
-    if (!mOwner.mpGizmo->IsSelected(selectedObjs, ray))
+    if (!mOwner.mpGizmo->CheckSelection(selectedObjs, ray))
     {
         // De-select the objects and remove any existing objects
         // TODO: check if shift or w/e is pressed for multiple selection

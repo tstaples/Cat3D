@@ -21,30 +21,33 @@
 class Service
 {
 public:
-    Service(const char* name);
+    Service(const char* name, u16 id);
     virtual ~Service();
 
     const char* GetName() const { return mName; }
 
     // Subscribes the gameobject to this service
-    void Subscribe(GameObjectHandle handle);
+    bool Subscribe(GameObjectHandle handle);
     // UnSubscribes the gameobject to this service
     void UnSubscribe(GameObjectHandle handle);
 
     // Clears subscriber list
     void UnSubscribeAll();
 
+    u16 GetID() const { return mID; }
+
 private:
     NONCOPYABLE(Service);
 
     // Populates the info for the particular ObjId
-    virtual void OnSubscribe(GameObjectHandle handle) = 0;
+    virtual bool OnSubscribe(GameObjectHandle handle) = 0;
 
     const char* mName;
 
 protected:
     typedef std::vector<GameObjectHandle> Subscribers;
     Subscribers mSubscribers;
+    u16 mID;
 };
 
 #endif // #ifndef INCLUDED_ENGINE_SERVICE_H

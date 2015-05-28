@@ -55,5 +55,8 @@ namespace Editor
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern int RenameGameObject(NativeTypes.Handle handle, string name);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int AddComponent(NativeTypes.Handle handle, string componentName);
     }
 }

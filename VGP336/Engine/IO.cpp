@@ -161,9 +161,12 @@ std::string GetLocation(const std::string& path)
 void CharToWChar(const std::string& buff, wchar_t* out, size_t outSize)
 {
     const size_t size = buff.size();
-    size_t numConverted = 0;
-    errno_t err = mbstowcs_s(&numConverted, out, size * 2, buff.c_str(), size);
-    ASSERT(err == 0, "Error converting char* to wchar_t*");
+    if (size > 0)
+    {
+        size_t numConverted = 0;
+        errno_t err = mbstowcs_s(&numConverted, out, size * 2, buff.c_str(), size);
+        ASSERT(err == 0, "Error converting char* to wchar_t*");
+    }
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -173,7 +176,7 @@ std::wstring CharToWChar(const std::string& buff)
     const size_t size = buff.size();
 
     ASSERT(size < 2048, "Buffer overflow");
-    wchar_t wbuffer[2048];  // hack: use temp buffer of some fixed size. hopefully it's big enough.
+    wchar_t wbuffer[2048] = { 0 };  // hack: use temp buffer of some fixed size. hopefully it's big enough.
 
     CharToWChar(buff, wbuffer, 2048);
     return std::wstring(wbuffer);
@@ -184,9 +187,12 @@ std::wstring CharToWChar(const std::string& buff)
 void WCharToChar(const std::wstring& wbuff, char* out, size_t outSize)
 {
     const size_t size = wbuff.size();
-    size_t numConverted = 0;
-    errno_t err = wcstombs_s(&numConverted, out, outSize, wbuff.c_str(), size);
-    ASSERT(err == 0, "Error converting wchar_t* to char*");
+    if (size > 0)
+    {
+        size_t numConverted = 0;
+        errno_t err = wcstombs_s(&numConverted, out, outSize, wbuff.c_str(), size);
+        ASSERT(err == 0, "Error converting wchar_t* to char*");
+    }
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -196,7 +202,7 @@ std::string WCharToChar(const std::wstring& wbuff)
     const size_t size = wbuff.size();
 
     ASSERT(size < 2048, "Buffer overflow");
-    char buffer[2048];  // hack: use temp buffer of some fixed size. hopefully it's big enough.
+    char buffer[2048] = { 0 };  // hack: use temp buffer of some fixed size. hopefully it's big enough.
 
     WCharToChar(wbuff, buffer, 2048);
     return std::string(buffer);

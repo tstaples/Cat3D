@@ -18,11 +18,13 @@ public:
     // @param transform: transform of the object this gizmo is attached to.
     // @param mouseRay: mouse's ray in world space.
     // Returns true if selected, false if not.
-    virtual bool IsSelected(const Objects& selectedObjs, const Math::Ray& mouseRay) = 0;
+    virtual bool CheckSelection(const Objects& selectedObjs, const Math::Ray& mouseRay) = 0;
 
     virtual void Update(const Objects& selectedObjs, const InputData& input, u32 screenW, u32 screenH) = 0;
 
     virtual void Draw(const Objects& selectedObjs) = 0;
+
+    bool IsSelected() const { return mSelectedArm != 0; }
 
 protected:
     f32 CalcScaleFactor(const Math::Vector3& pos) const;
@@ -40,7 +42,7 @@ public:
     TranslateGizmo(Camera& camera, f32 extend, f32 armWidth);
     ~TranslateGizmo();
 
-    virtual bool IsSelected(const Objects& selectedObjs, const Math::Ray& mouseRay);
+    virtual bool CheckSelection(const Objects& selectedObjs, const Math::Ray& mouseRay);
     virtual void Update(const Objects& selectedObjs, const InputData& input, u32 screenW, u32 screenH);
     virtual void Draw(const Objects& selectedObjs);
 };

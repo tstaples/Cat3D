@@ -492,6 +492,9 @@
     <ClInclude Include="GameSettings.h">
       <Filter>Gameplay</Filter>
     </ClInclude>
+    <ClInclude Include="Services.h">
+      <Filter>GameObject\Services</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Vector3.inl">

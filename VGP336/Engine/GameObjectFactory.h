@@ -42,6 +42,14 @@ public:
     GameObjectHandle Create(const char* templateFileName);
     GameObjectHandle Create(SerialReader& reader);
 
+    bool AddComponent(GameObjectHandle handle, const char* componentMetaName);
+
+    /*enum ErrorCode
+    {
+        ServiceDoesNotExist,
+        ServiceDependenciesNotMet,
+    };*/
+
 private:
     GameObjectPool& mGameObjectPool;
     Services mServices;
@@ -52,5 +60,20 @@ private:
     //ColliderPool mColliderPool;
     //MeshPool mMeshPool;
 };
+
+namespace Exceptions
+{
+    class MissingDependencyException : public std::exception
+    {
+    public:
+        MissingDependencyException(GameObjectHandle handle, const char* missingDepName)
+            : gameObjecthandle(handle)
+            , missingDependencyName(missingDepName)
+        {
+        }
+        GameObjectHandle gameObjecthandle;
+        const char* missingDependencyName;
+    };
+}
 
 #endif // #ifndef INCLUDED_ENGINE_GAMEOBJECTFACTORY_H

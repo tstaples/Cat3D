@@ -153,7 +153,16 @@ namespace Editor
 
         private void OnComponentMenuItem_Click(object sender, EventArgs e)
         {
+            // Hack: assuming the component name on the dropdown + "Component" is the meta name
             string componentName = sender.ToString();
+            if (inspector.AddComponentToCurrentObject(componentName))
+            {
+                Console.LogInfo("Editor", "Added {0} Component to selected GameObject", componentName);
+            }
+            else
+            {
+                Console.LogError("Editor", "Failed to add {0} Component to selected GameObject", componentName);
+            }
         }
         #endregion Tool Menu Strip
 

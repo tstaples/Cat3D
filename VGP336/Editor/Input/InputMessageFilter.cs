@@ -19,6 +19,10 @@ namespace Editor
         const int WM_SCROLL = 0x020A;
         const int WM_MOUSEMOVE = 0x0200;
         const int WM_LBUTTONUP = 0x0202;
+        const int WM_RBUTTONDOWN = 0x0204;
+        const int WM_RBUTTONUP = 0x0205;
+        const int WM_RBUTTONDBLCLICK = 0x0206;
+        const int WM_MBUTTONUP = 0x0208;
 
         public InputMessageFilter(EditorForm fOwner)
         {
@@ -31,7 +35,8 @@ namespace Editor
 
         public bool PreFilterMessage(ref Message m)
         {
-            if (m.Msg == WM_LBUTTONUP)
+            // Check for any of the mouse button clicks
+            if (m.Msg == WM_LBUTTONUP || m.Msg == WM_RBUTTONUP || m.Msg == WM_MBUTTONUP)
             {
                 // Update the viewport's focus flag since it can't seem to do it itself
                 Point mpos = Owner.GetRelativeMousePos();

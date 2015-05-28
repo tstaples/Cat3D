@@ -30,6 +30,10 @@ class GraphicsSystem;
 class RenderService : public Service
 {
 public:
+    META_DECLARE_CLASS
+
+    static const u16 kID = 0;
+
     RenderService();
     ~RenderService();
     
@@ -40,7 +44,7 @@ public:
     void Update();
 
 private:
-    virtual void OnSubscribe(GameObjectHandle handle);
+    virtual bool OnSubscribe(GameObjectHandle handle);
 
 private:
     GraphicsSystem* mpGraphicsSystem;

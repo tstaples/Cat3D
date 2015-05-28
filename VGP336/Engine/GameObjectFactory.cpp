@@ -8,6 +8,8 @@
 
 #include <json/json.h>
 #include <fstream>
+#include <exception>
+
 
 namespace
 {
@@ -23,25 +25,64 @@ namespace
         return nullptr;
     }
 
-    void LinkDependencies(GameObjectHandle& handle, const Services& services)
+    bool CheckServiceDependencies(GameObjectHandle& handle, const char* newComponent, const Service* service)
+    {
+        const GameObject* gameObject = handle.Get();
+
+        // Get the service's dependencies from it's metaclass
+        const char* serviceName = service->GetName();
+        const MetaClass* metaClass = MetaDB::GetMetaClass(serviceName);
+        const u32 numDependencies = metaClass->GetNumDependencies();
+        const MetaDependency* dependencies = metaClass->GetDependencyList();
+        for (u32 j=0; j < numDependencies; ++j)
+        {
+            // Check if the gameObject already has the dependency, or if it's the item being added
+            const char* depName = dependencies[j].GetName();
+            if (!gameObject->HasComponent(depName) && strcmp(newComponent, depName) != 0)
+            {
+                throw new Exceptions::MissingDependencyException(handle, depName);
+            }
+        }
+        return true;
+    }
+
+    bool LinkDependency(GameObjectHandle& handle, const Services& services, Component* c)
+    {
+        const GameObject* gameObject = handle.Get();
+        const MetaClass* metaClass = c->GetMetaClass();
+        const u32 numDependencies = metaClass->GetNumDependencies();
+        if (numDependencies == 0)
+        {
+            // Nothing to do
+            return true;
+        }
+
+        const MetaDependency* dependencies = metaClass->GetDependencyList();
+        for (u32 j=0; j < numDependencies; ++j)
+        {
+            // Check if any of the component's dependencies match the services
+            const char* depName = dependencies[j].GetName();
+            Service* service = LookUpService(services, depName);
+            if (service != nullptr)
+            {
+                // Subscribe the GameObject to that service
+                return service->Subscribe(handle);
+            }
+        }
+        return false;
+    }
+
+    bool LinkDependencies(GameObjectHandle& handle, const Services& services)
     {
         GameObject* gameObject = handle.Get();
         for (Component* c : gameObject->GetComponents())
         {
-            const MetaClass* metaClass = c->GetMetaClass();
-            const u32 numDependencies = metaClass->GetNumDependencies();
-            const MetaDependency* dependencies = metaClass->GetDependencyList();
-            for (u32 j=0; j < numDependencies; ++j)
+            if (!LinkDependency(handle, services, c))
             {
-                // Compare the dependency name with the service name
-                const char* depName = dependencies[j].GetName();
-                Service* service = LookUpService(services, depName);
-                if (service != nullptr)
-                {
-                    service->Subscribe(handle);
-                }
+                return false;
             }
         }
+        return true;
     }
 }
 
@@ -122,7 +163,7 @@ GameObjectHandle GameObjectFactory::Create(const char* templateFile)
 
     // Subscribe to services
     // This must be done in a second loop because some services may require a component that hasn't been loaded yet.
-    LinkDependencies(handle, mServices);
+    VERIFY(LinkDependencies(handle, mServices), "[GameObjectFactory] Error: Could not create GameObject from file: %s due to missing dependencies", templateFile);
 
     return handle;
 }
@@ -139,4 +180,30 @@ GameObjectHandle GameObjectFactory::Create(SerialReader& reader)
         return handle;
     }
     return GameObjectHandle(); // invalid
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool GameObjectFactory::AddComponent(GameObjectHandle handle, const char* componentMetaName)
+{
+    const MetaClass* metaClass = MetaDB::GetMetaClass(componentMetaName);
+    if (metaClass != nullptr)
+    {
+        // TODO: specify in metadata whether multiple of a component can exist
+        Component* component = static_cast<Component*>(metaClass->Create());
+        if (component == nullptr)
+        {
+            return false;
+        }
+        
+        // Add the component to the gameObject
+        GameObject* gameObject = handle.Get();
+        gameObject->AddComponent(component);
+
+        // For now it doesn't matter if the service dependencies aren't met as we can just not subscribe.
+        // In the future this may need to change.
+        LinkDependency(handle, mServices, component);
+        return true;
+    }
+    return false;
 }

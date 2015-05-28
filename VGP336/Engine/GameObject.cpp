@@ -11,9 +11,28 @@ META_FIELD_BEGIN
 META_FIELD_END
 META_CLASS_END
 
+namespace
+{
+    bool GetComponentByName(const GameObject::Components& components, const char* name, Component* component)
+    {
+        for (Component* c : components)
+        {
+            const MetaClass* compMetaClass = c->GetMetaClass();
+            if (strcmp(name, compMetaClass->GetName()) == 0)
+            {
+                component = c;
+                return true;
+            }
+        }
+        component = nullptr;
+        return false;
+    }
+}
+
 GameObject::GameObject()
     : mName("Unknown")
 {
+    memset(mServiceSubscriptions, 0, kNumServices);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -41,6 +60,32 @@ void GameObject::Update(f32 deltaTime)
         // Reset flag as anything that relies on it will have been dealt with already
         //c->SetIsDirty(false);
     }
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void GameObject::AddService(u16 id)
+{
+    ASSERT(id < kNumServices, "[GameObject] serivce ID out of bounds");
+    ASSERT(!mServiceSubscriptions[id], "[GameObject] already subscribed to service id: %u", id);
+    mServiceSubscriptions[id] = true;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void GameObject::RemoveService(u16 id)
+{
+    ASSERT(id < kNumServices, "[GameObject] serivce ID out of bounds");
+    ASSERT(mServiceSubscriptions[id], "[GameObject] not subscribed to service id: %u", id);
+    mServiceSubscriptions[id] = false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool GameObject::HasService(u16 id) const
+{
+    ASSERT(id < kNumServices, "[GameObject] serivce ID out of bounds");
+    return mServiceSubscriptions[id];
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -101,7 +146,7 @@ bool GameObject::Deserialize(SerialReader& reader)
         // Look up component by name
         Component* component = nullptr;
         std::string compMetaClassName = reader.ReadLengthEncodedString();
-        if (!GetComponentByName(compMetaClassName.c_str(), component))
+        if (!GetComponentByName(mComponents, compMetaClassName.c_str(), component))
         {
             return false;
             // If it doesn't exist, create it
@@ -137,18 +182,15 @@ bool GameObject::Deserialize(SerialReader& reader)
 
 //----------------------------------------------------------------------------------------------------
 
-// TODO: Move to anon namespace
-bool GameObject::GetComponentByName(const char* name, Component* component)
+bool GameObject::HasComponent(const char* componentName) const
 {
     for (Component* c : mComponents)
     {
         const MetaClass* compMetaClass = c->GetMetaClass();
-        if (strcmp(name, compMetaClass->GetName()) == 0)
+        if (strcmp(componentName, compMetaClass->GetName()) == 0)
         {
-            component = c;
             return true;
         }
     }
-    component = nullptr;
     return false;
 }

@@ -4,14 +4,17 @@
 //====================================================================================================
 
 #include "Precompiled.h"
+#include "MemoryPool.h"
 #include "Service.h"
 
 //====================================================================================================
 // Class Definitions
 //====================================================================================================
 
-Service::Service(const char* name)
+
+Service::Service(const char* name, u16 id)
     : mName(name)
+    , mID(id)
 {
 }
 
@@ -23,11 +26,21 @@ Service::~Service()
 
 // ---------------------------------------------------------------------------------------------------
 
-void Service::Subscribe(GameObjectHandle handle)
+bool Service::Subscribe(GameObjectHandle handle)
 {
-    // Invoke derived implementation
-    OnSubscribe(handle);
-    mSubscribers.push_back(handle);
+    // Check the GameObject isn't already subscribed to this service
+    GameObject* gameObject = handle.Get();
+    if (!gameObject->HasService(mID))
+    {
+        // Invoke derived implementation
+        if (OnSubscribe(handle))
+        {
+            gameObject->AddService(mID);
+            mSubscribers.push_back(handle);
+            return true;
+        }
+    }
+    return false;
 }
 
 // ---------------------------------------------------------------------------------------------------
@@ -40,6 +53,8 @@ void Service::UnSubscribe(GameObjectHandle handle)
     {
         if (*it == handle)
         {
+            GameObject* gameObject = handle.Get();
+            gameObject->RemoveService(mID);
             mSubscribers.erase(it);
             found = true;
             break;

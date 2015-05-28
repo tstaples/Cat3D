@@ -10,6 +10,8 @@
 
 class Gizmo;
 
+typedef std::vector<EditorObject> EditorObjects;
+
 class EditorApp : public Application
 {
 public:
@@ -47,7 +49,7 @@ private:
     bool mIsGameRunning;
 
     Octree<EditorObject> mOctree;
-    std::vector<EditorObject> mObjects;
+    EditorObjects mObjects;
     std::vector<EditorObject*> mSelectedObjects;
 
 private:

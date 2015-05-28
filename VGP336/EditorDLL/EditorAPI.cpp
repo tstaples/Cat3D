@@ -185,3 +185,10 @@ int RenameGameObject(Handle handle, const char* name)
 {
     return (int)cmd.RenameGameObject(handle, name);
 }
+
+//----------------------------------------------------------------------------------------------------
+
+int AddComponent(Handle handle, const char* componentName)
+{
+    return (int)cmd.AddComponent(handle, componentName);
+}

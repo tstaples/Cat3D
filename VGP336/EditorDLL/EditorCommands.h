@@ -19,6 +19,7 @@ public:
     bool SelectGameObject(Handle handle);
     bool CreateEmptyGameObject(Handle& handle);
     bool RenameGameObject(Handle handle, const char* name);
+    bool AddComponent(Handle handle, const char* componentName);
 
 private:
     EditorApp& mApp;
