@@ -4,6 +4,26 @@
 #include "Gizmo.h"
 #include "InputCallbacks.h"
 
+namespace
+{
+    void DrawGroundPlane(s32 groundSize, s32 gap)
+    {
+        Color lineColour(0.75f, 0.75f, 0.75f, 1.0f);
+        for (s32 x = -groundSize; x <= groundSize; x += gap)
+        {
+            Math::Vector3   a((f32)x, 0.0f, (f32)-groundSize),
+                            b((f32)x, 0.0f, (f32)groundSize);
+            SimpleDraw::AddLine(a, b, lineColour);
+        }
+        for (s32 z = -groundSize; z <= groundSize; z += gap)
+        {
+            Math::Vector3   a((f32)-groundSize, 0.0f, (f32)z),
+                            b((f32)groundSize, 0.0f, (f32)z);
+            SimpleDraw::AddLine(a, b, lineColour);
+        }
+    }
+}
+
 EditorApp::EditorApp()
     : mWidth(0)
     , mHeight(0)
@@ -49,9 +69,14 @@ void EditorApp::OnInitialize(u32 width, u32 height)
     GameSettings settings;
     mGameWorld.OnInitialize(settings, mGraphicsSystem, mCamera);
 
-    //GameObjectHandle handle = mFactory.Create("../Data/GameObjects/testcube.json");
-    //GameObject* go = handle.Get();
-    //mObjects.push_back(EditorObject(handle));
+    // Temp
+    //mGameWorld.CreateGameObject("../Data/GameObjects/testcube.json", Math::Vector3::Zero(), Math::Quaternion::Identity());
+
+    // Discover any objects the gameworld has on startup
+    for (GameObjectHandle handle : mGameWorld.mGameObjectHandles)
+    {
+        mObjects.push_back(EditorObject(handle));
+    }
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -162,6 +187,8 @@ void EditorApp::OnUpdate()
 
 	// Render
 	mGraphicsSystem.BeginRender(Color::Black());
+
+    DrawGroundPlane(100, 5);
 
     mGameWorld.OnRender();
 

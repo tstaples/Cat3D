@@ -64,7 +64,7 @@ namespace Editor
             c.OnModify(propertyName, newVal);
 
             byte[] buffer = currentGameObject.WriteComponent(c);
-            if (NativeMethods.UpdateComponent(buffer, (uint)buffer.Length) == 0)
+            if (NativeMethods.UpdateComponent(buffer, (uint)buffer.Length) != 0)
             {
                 GridView.Refresh();
                 return true;

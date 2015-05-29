@@ -9,8 +9,12 @@ namespace Editor
 {
     class NativeMethods
     {
+        public static int True = 1;
+        public static int False = 0;
+
         const string kDLLName = "EditorDLL.dll";
 
+        #region Application functions
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern void Initialize(
             IntPtr instancePtrAddress, 
@@ -34,7 +38,9 @@ namespace Editor
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern int IsGameRunning();
+        #endregion
 
+        #region GameObject functions
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern uint GetSelectedObjectData(byte[] buffer, uint size);
 
@@ -58,5 +64,15 @@ namespace Editor
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern int AddComponent(NativeTypes.Handle handle, string componentName);
+        #endregion
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int NewLevel(string filename);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int LoadLevel(string filename);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int SaveLevel(string filename);
     }
 }

@@ -24,7 +24,6 @@
 //====================================================================================================
 
 class GraphicsSystem;
-struct Level;
 
 //====================================================================================================
 // Class Declarations
@@ -53,6 +52,7 @@ public:
      */
     GameObjectHandle CreateGameObject(const char* templateFile, Math::Vector3 pos, Math::Quaternion rot);
 
+    bool NewLevel(const char* levelName);
     bool LoadLevel(const char* levelName);
     bool SaveLevel(const char* levelName);
 
@@ -70,6 +70,7 @@ private:
     GameObjectHandles mGameObjectHandles;
 
     LevelLoader mLevelLoader;
+    Level mCurrentLevel;
 
 private:
     // Only the editor will need to directly access the GameWorld's members

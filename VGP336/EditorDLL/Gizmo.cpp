@@ -245,14 +245,14 @@ void TranslateGizmo::Draw(const Objects& selectedObjs)
 
 
     // debug
-    f32 width = mArmWidth;// * scale;
-    const f32 halfExt = ext * 0.5f;
-    Math::AABB armX, armY, armZ;
-    BuildArms(ext, width, armX, armY, armZ);
-    armX.center = center; armX.center.x += halfExt;
-    armY.center = center; armY.center.y += halfExt;
-    armZ.center = center; armZ.center.z += halfExt;
-    SimpleDraw::AddAABB(armX, Color::Cyan());
-    SimpleDraw::AddAABB(armY, Color::Cyan());
-    SimpleDraw::AddAABB(armZ, Color::Cyan());
+    //f32 width = mArmWidth;// * scale;
+    //const f32 halfExt = ext * 0.5f;
+    //Math::AABB armX, armY, armZ;
+    //BuildArms(ext, width, armX, armY, armZ);
+    //armX.center = center; armX.center.x += halfExt;
+    //armY.center = center; armY.center.y += halfExt;
+    //armZ.center = center; armZ.center.z += halfExt;
+    //SimpleDraw::AddAABB(armX, Color::Cyan());
+    //SimpleDraw::AddAABB(armY, Color::Cyan());
+    //SimpleDraw::AddAABB(armZ, Color::Cyan());
 }

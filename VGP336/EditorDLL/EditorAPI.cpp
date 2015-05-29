@@ -192,3 +192,24 @@ int AddComponent(Handle handle, const char* componentName)
 {
     return (int)cmd.AddComponent(handle, componentName);
 }
+
+//----------------------------------------------------------------------------------------------------
+
+int NewLevel(const char* filename)
+{
+    return (int)cmd.NewLevel(filename);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+int LoadLevel(const char* filename)
+{
+    return (int)cmd.LoadLevel(filename);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+int SaveLevel(const char* filename)
+{
+    return (int)cmd.SaveLevel(filename);
+}

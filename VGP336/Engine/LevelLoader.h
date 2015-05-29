@@ -29,8 +29,9 @@ struct GameSettings;
 
 struct Level
 {
+    IO::Path path;
     GameSettings settings;
-    const u8* buffer;
+    const u8* buffer;   // refers to LevelLoader's buffer
     u32 bufferSize;
     u32 numGameObjects;
 };

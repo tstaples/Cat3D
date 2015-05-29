@@ -12,6 +12,8 @@ public:
     EditorCommands(EditorApp& app);
 
     const char* GetLastError();
+
+    // GameObject commands
     bool GetSelectedObjectData(u8* dst, u32 size, u32& bytesWritten);
     bool UpdateComponent(const u8* buffer, u32 buffsize);
     bool DiscoverGameObjects(u8* dst, u32 size, u32& bytesWritten);
@@ -20,6 +22,10 @@ public:
     bool CreateEmptyGameObject(Handle& handle);
     bool RenameGameObject(Handle handle, const char* name);
     bool AddComponent(Handle handle, const char* componentName);
+
+    bool NewLevel(const char* filename);
+    bool SaveLevel(const char* filename);
+    bool LoadLevel(const char* filename);
 
 private:
     EditorApp& mApp;

@@ -110,12 +110,29 @@ GameObjectHandle GameWorld::CreateGameObject(const char* templateFile, Math::Vec
 
 //----------------------------------------------------------------------------------------------------
 
+bool GameWorld::NewLevel(const char* levelName)
+{
+    // Clear current level data
+    mRenderService.UnSubscribeAll();
+    mGameObjectHandles.clear();
+    mGameObjectPool.Flush();
+
+    // Reset the current level data
+    mCurrentLevel.path = levelName;
+    mCurrentLevel.settings = mSettings;
+    mCurrentLevel.buffer = nullptr;
+    mCurrentLevel.bufferSize = 0;
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------
+
 bool GameWorld::LoadLevel(const char* levelName)
 {
     // Clear current level data
+    mRenderService.UnSubscribeAll();
     mGameObjectHandles.clear();
     mGameObjectPool.Flush();
-    mRenderService.UnSubscribeAll();
 
     // 1 level = 1 file for now
     // level loader will give us a vector of Level objects containing the buffers for each gameobject and the game settings
@@ -131,8 +148,14 @@ bool GameWorld::LoadLevel(const char* levelName)
         {
             SerialReader reader(level.buffer, level.bufferSize);
             GameObjectHandle handle = mFactory.Create(reader);
+            if (!handle.IsValid())
+            {
+                return false;
+            }
             mGameObjectHandles.push_back(handle);
         }
+        // Set the current level now that everything has loaded successfully
+        mCurrentLevel = level;
         return true;
     }
     return false;

@@ -78,6 +78,7 @@
       <DependentUpon>EditorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GameObject\GameObject.cs" />
+    <Compile Include="LevelManager.cs" />
     <Compile Include="Util\Console.cs" />
     <Compile Include="UI\SceneHierarchy.cs" />
     <Compile Include="Input\InputHandler.cs" />

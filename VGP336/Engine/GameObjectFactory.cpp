@@ -65,8 +65,11 @@ namespace
             Service* service = LookUpService(services, depName);
             if (service != nullptr)
             {
-                // Subscribe the GameObject to that service
-                return service->Subscribe(handle);
+                // Subscribe the GameObject to that service.
+                // Note: not using Subscribe's return value since multiple component may need to be subcribed
+                // to the same service, resulting in false positives.
+                service->Subscribe(handle);
+                return true;
             }
         }
         return false;
@@ -174,6 +177,7 @@ GameObjectHandle GameObjectFactory::Create(SerialReader& reader)
 {
     GameObjectHandle handle = mGameObjectPool.Allocate();
     GameObject* gameObject = handle.Get();
+    // TODO: 
     if (gameObject->Deserialize(reader))
     {
         LinkDependencies(handle, mServices);

@@ -130,18 +130,16 @@ bool EditorCommands::UpdateComponent(const u8* buffer, u32 buffsize)
         const MetaClass* compMetaClass = c->GetMetaClass();
         if (compName.compare(compMetaClass->GetName()) == 0)
         {
-            char data[OBJECT_BUFF_SIZE] = { 0 };
-
             const u32 numFields = compMetaClass->GetNumFields();
             for (u32 i=0; i < numFields; ++i)
             {
                 const MetaField* field = compMetaClass->GetFieldAtIndex(i);
-                u32 offset = field->GetOffset();
-                u32 fieldSize = field->GetType()->GetSize();
-                reader.ReadArray(data, fieldSize);
+                const MetaType* metaType = field->GetType();
 
+                // Deserialize the data into the member
+                u32 offset = field->GetOffset();
                 u8* cdata = ((u8*)c) + offset;
-                memcpy(cdata, data, fieldSize);
+                metaType->Deserialize(reader, cdata);
             }
             // Set flag to indicate there has been a change
             c->SetIsDirty(true);
@@ -278,4 +276,40 @@ bool EditorCommands::AddComponent(Handle handle, const char* componentName)
         success = mApp.mGameWorld.mFactory.AddComponent(handle, componentName);
     }
     return success;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool EditorCommands::NewLevel(const char* filename)
+{
+    if (mApp.mGameWorld.NewLevel(filename))
+    {
+        mApp.mObjects.clear();
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool EditorCommands::SaveLevel(const char* filename)
+{
+    return mApp.mGameWorld.SaveLevel(filename);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool EditorCommands::LoadLevel(const char* filename)
+{
+    if (mApp.mGameWorld.LoadLevel(filename))
+    {
+        // Clear any existing items and discover the new ones
+        mApp.mObjects.clear();
+        for (GameObjectHandle handle : mApp.mGameWorld.mGameObjectHandles)
+        {
+            mApp.mObjects.push_back(EditorObject(handle));
+        }
+        return true;
+    }
+    return false;
 }

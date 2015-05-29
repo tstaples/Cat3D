@@ -51,6 +51,7 @@ bool LevelLoader::Load(const char* filename, Level& level, Mode mode)
     level.numGameObjects = reader.Read<u32>();
     level.buffer = mBuffer + reader.GetOffset();
     level.bufferSize = fileSize - reader.GetOffset();
+    level.path = filename;
     
     // Track the offset and set that we have data in the temp buffer
     mOffset = fileSize;

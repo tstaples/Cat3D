@@ -14,14 +14,24 @@ namespace Editor
     public partial class EditorForm : Form
     {
         #region Accessors/members
-        public SelectablePanel Viewport 
-        { 
-            get { return ViewPanel; } 
-            private set {} 
-        }
 
         private Inspector inspector;
         private SceneHierarchy sceneHierarchy;
+        private LevelManager levelManager;
+
+        public SelectablePanel Viewport
+        {
+            get { return ViewPanel; }
+            private set { }
+        }
+        public Inspector Inspector
+        {
+            get { return inspector; }
+        }
+        public SceneHierarchy SceneHierarchy
+        {
+            get { return sceneHierarchy; }
+        }
         #endregion Accessors/members
 
         #region API calls/constructor
@@ -41,6 +51,9 @@ namespace Editor
             sceneHierarchy = new SceneHierarchy(ref SceneHierarchyTree, ref inspector);
             sceneHierarchy.Popualate();
             Console.LogInfo("Editor", "Successfully initialized");
+
+            levelManager = new LevelManager(this, ref SaveFileBox, ref OpenFileBox);
+            levelManager.IsLevelDirty = false;
         }
 
         private void Terminate()
@@ -61,14 +74,22 @@ namespace Editor
         }
         #endregion
 
-        #region Util
         public Point GetRelativeMousePos()
         {
             return this.PointToClient(MousePosition);
         }
-        #endregion Util
+        public void UpdateTitleLevelStatus()
+        {
+            // levelname will be appended with a '*' if there are changes to the current level
+            // that haven't been saved.
+            string levelName = levelManager.CurrentLevel;
+            if (levelManager.IsLevelDirty)
+            {
+                levelName += "*";
+            }
+            this.Text = "Editor - " + levelName;
+        }
 
-        #region Inspector
         private void InspectorGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             object newVal = e.ChangedItem.Value;
@@ -90,9 +111,9 @@ namespace Editor
                 newVal = e.ChangedItem.Parent.Value;
             }
             inspector.OnComponentModified(compName, fieldName, newVal);
+            levelManager.IsLevelDirty = true;
             Console.LogDebug("Editor", "{0}'s property: {1} changed from: {2} to {3}", compName, fieldName, e.OldValue, newVal);
         }
-        #endregion Inspector
 
         #region Scene Hierarchy
         private void SceneHierarchyTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -116,6 +137,7 @@ namespace Editor
             {
                 sceneHierarchy.RenameSelectedNode(newLabel);
             }
+            levelManager.IsLevelDirty = true;
         }
 
         private void renameToolStripMenuItem_Click(object sender, EventArgs e)
@@ -145,6 +167,7 @@ namespace Editor
                 inspector.Display(gameObject);
                 sceneHierarchy.Popualate();
                 sceneHierarchy.SelectNode(gameObject.handle);
+                levelManager.IsLevelDirty = true;
             }
             else
             {
@@ -158,6 +181,7 @@ namespace Editor
             string componentName = sender.ToString();
             if (inspector.AddComponentToCurrentObject(componentName))
             {
+                levelManager.IsLevelDirty = true;
                 Console.LogInfo("Editor", "Added {0} Component to selected GameObject", componentName);
             }
             else
@@ -171,6 +195,26 @@ namespace Editor
         {
             ListViewItem item = ConsoleList.SelectedItems[0];
             ConsoleMessageDetailsLabel.Text = Console.GetMessageDetails(item);
+        }
+
+        public void OnNewLevel(object sender, EventArgs e)
+        {
+            levelManager.OnNewLevel();
+        }
+
+        public void OnSaveLevelAs(object sender, EventArgs e)
+        {
+            levelManager.OnSaveLevelAs();
+        }
+
+        public void OnSaveLevel(object sender, EventArgs e)
+        {
+            levelManager.OnSaveLevel();
+        }
+
+        public void OnOpenLevel(object sender, EventArgs e)
+        {
+            levelManager.OnOpenLevel();
         }
     }
 }

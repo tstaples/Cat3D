@@ -94,5 +94,8 @@ EditorAPI int RenameGameObject(Handle handle, const char* name);
 
 EditorAPI int AddComponent(Handle handle, const char* componentName);
 
+EditorAPI int NewLevel(const char* filename);
+EditorAPI int LoadLevel(const char* filename);
+EditorAPI int SaveLevel(const char* filename);
 
 #endif //#ifndef INCLUDED_EDITORAPI_H
