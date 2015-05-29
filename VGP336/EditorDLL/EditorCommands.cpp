@@ -278,6 +278,25 @@ bool EditorCommands::AddComponent(Handle handle, const char* componentName)
 
 //----------------------------------------------------------------------------------------------------
 
+bool EditorCommands::RemoveComponent(Handle handle, const char* componentName)
+{
+    GameObjectHandle gohandle = GetHandleFromNative(handle, mApp.mObjects);
+    if (gohandle.IsValid())
+    {
+        return mApp.mGameWorld.mFactory.RemoveComponent(gohandle, componentName);
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool EditorCommands::GetMetaData(u8* dst, u32 size, u32& bytesWritten)
+{
+    return MetaDB::ExportMetaData(dst, size, bytesWritten);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 bool EditorCommands::NewLevel(const char* filename)
 {
     if (mApp.mGameWorld.NewLevel(filename))

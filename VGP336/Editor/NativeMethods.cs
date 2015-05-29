@@ -64,7 +64,13 @@ namespace Editor
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern int AddComponent(NativeTypes.Handle handle, string componentName);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int RemoveComponent(NativeTypes.Handle handle, string componentName);
         #endregion
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern uint GetMetaData(byte[] buffer, uint size);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern int NewLevel(string filename);

@@ -4,11 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Windows.Forms;
+using System.Drawing;
+using System.ComponentModel;
 
 namespace Editor
 {
     partial class EditorForm
     {
+        public bool OnViewportFocus()
+        {
+            // Update the viewport's focus flag since it can't seem to do it itself
+            Point mpos = GetRelativeMousePos();
+            Viewport.IsFocused = Viewport.Contains(mpos);
+            Console.LogDebug("Editor", "Viewport focused: {0}", Viewport.IsFocused);
+            return false; // Don't want to consume the input
+        }
+
         public bool OnLeftClick()
         {
             // We only care the the user clicked inside the viewport
@@ -37,6 +49,55 @@ namespace Editor
                 inspector.Display(gameObject);
                 sceneHierarchy.SelectNode(gameObject.handle);
                 return true;
+            }
+            return false;
+        }
+
+        public bool OnRightClickInspector()
+        {
+            // No component selected
+            Inspector.SelectedComponentName = null;
+            
+            if (!Viewport.IsFocused)
+            {
+                // Clear any existing items so duplicated aren't added
+                InspectorContextMenu.Items.Clear();
+
+                // Check if the click was within the property grid
+                Point p = InspectorGrid.PointToClient(MousePosition);
+                if (!InspectorGrid.ClientRectangle.Contains(p))
+                {
+                    return false;
+                }
+
+                // Check if a valid control was selected
+                Control control = InspectorGrid.GetChildAtPoint(p);
+                if (control != null && Inspector.IsAnObjectSelected())
+                {
+                    // Get the component that was selected
+                    PropertyDescriptor pd = InspectorGrid.SelectedGridItem.PropertyDescriptor;
+                    if (pd != null) // Still need to check in case we click and invalid spot
+                    {
+                        string name = pd.PropertyType.Name;
+                        Inspector.SelectedComponentName = name;
+                        // Check an actual component was selected
+                        if (Inspector.CurrentGameObject.GetComponent(name) == null)
+                        {
+                            return false;
+                        }
+
+                        ToolStripMenuItem item = new ToolStripMenuItem("Remove Component", null, OnRemoveComponent);
+                        // TransformComponent is not removeable for now
+                        if (name == "TransformComponent")
+                        {
+                            item.Enabled = false;
+                        }
+                        // Show the context menu
+                        InspectorContextMenu.Items.Add(item);
+                        InspectorContextMenu.Show(MousePosition);
+                        return false; // Don't consume or the menu option won't select properly
+                    }
+                }
             }
             return false;
         }

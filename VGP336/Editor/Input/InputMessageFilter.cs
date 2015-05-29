@@ -29,25 +29,25 @@ namespace Editor
             Owner = fOwner;
             Viewport = Owner.Viewport;
 
+            // Note: register in order of priority
             Handler = new InputHandler();
+            Handler.Register(WM_LBUTTONUP, Owner.OnViewportFocus);
+            Handler.Register(WM_RBUTTONUP, Owner.OnViewportFocus);
+            Handler.Register(WM_MBUTTONUP, Owner.OnViewportFocus);
             Handler.Register(WM_LBUTTONUP, Owner.OnLeftClick);
+            Handler.Register(WM_RBUTTONUP, Owner.OnRightClickInspector);
         }
 
+        // https://msdn.microsoft.com/en-us/library/system.windows.forms.imessagefilter.prefiltermessage(v=vs.110).aspx
         public bool PreFilterMessage(ref Message m)
         {
             // Check for any of the mouse button clicks
-            if (m.Msg == WM_LBUTTONUP || m.Msg == WM_RBUTTONUP || m.Msg == WM_MBUTTONUP)
-            {
-                // Update the viewport's focus flag since it can't seem to do it itself
-                Point mpos = Owner.GetRelativeMousePos();
-                Viewport.IsFocused = Viewport.Contains(mpos);
-                Console.LogDebug("Editor", "Viewport focused: {0}", Viewport.IsFocused);
-            }
-            //else if (m.Msg == WM_MOUSEMOVE)
+            //if (m.Msg == WM_LBUTTONUP || m.Msg == WM_RBUTTONUP || m.Msg == WM_MBUTTONUP)
             //{
-            //    // Temp
+            //    // Update the viewport's focus flag since it can't seem to do it itself
             //    Point mpos = Owner.GetRelativeMousePos();
-            //    Console.LogDebug("Editor", "Mouse Position: {0} ", mpos.ToString());
+            //    Viewport.IsFocused = Viewport.Contains(mpos);
+            //    Console.LogDebug("Editor", "Viewport focused: {0}", Viewport.IsFocused);
             //}
 
             bool ret = false;
@@ -57,13 +57,11 @@ namespace Editor
                 {
                     // Send the input to the engine for further processing
                     NativeMethods.WndProc(Owner.Handle, m.Msg, (int)m.WParam, (int)m.LParam);
-                }
-                else
-                {
-                    Handler.OnInput(m.Msg);
+                    ret = true; // Consume input
                 }
             }
-            return ret;
+            return Handler.OnInput(m.Msg);
+            //return ret;
         }
     }
 }

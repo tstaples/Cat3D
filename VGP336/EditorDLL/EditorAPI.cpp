@@ -195,6 +195,22 @@ int AddComponent(Handle handle, const char* componentName)
 
 //----------------------------------------------------------------------------------------------------
 
+int RemoveComponent(Handle handle, const char* componentName)
+{
+    return (int)cmd.RemoveComponent(handle, componentName);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+unsigned int GetMetaData(unsigned char* dst, unsigned int size)
+{
+    unsigned int written = 0;
+    VERIFY(cmd.GetMetaData(dst, size, written), "[EditorAPI] Failed to get meta data");
+    return written;
+}
+
+//----------------------------------------------------------------------------------------------------
+
 int NewLevel(const char* filename)
 {
     return (int)cmd.NewLevel(filename);

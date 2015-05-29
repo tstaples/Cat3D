@@ -81,6 +81,7 @@
     </Compile>
     <Compile Include="GameObject\GameObject.cs" />
     <Compile Include="EventHandlers\LevelManager.cs" />
+    <Compile Include="GameObject\Meta.cs" />
     <Compile Include="Util\Console.cs" />
     <Compile Include="UI\SceneHierarchy.cs" />
     <Compile Include="Input\InputHandler.cs" />

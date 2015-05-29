@@ -14,11 +14,18 @@ namespace Editor
     {
         private PropertyGrid GridView;
         private GameObject currentGameObject; // Currently displayed in panel
+        private string selectedComponentName; // Set when a component is right clicked in the inspector
 
         public GameObject CurrentGameObject
         {
             get { return currentGameObject; }
         }
+        public string SelectedComponentName
+        {
+            get { return selectedComponentName; }
+            set { selectedComponentName = value; }
+        }
+
 
         public Inspector(ref PropertyGrid gridView)
         {
@@ -92,6 +99,40 @@ namespace Editor
                 }
             }
             return false;
+        }
+
+        public bool RemoveComponentFromCurrentObject(string componentName)
+        {
+            // Get the component's meta class and check if any other components depend on it
+            Meta.MetaClass metaClass = Meta.GetMetaClass(componentName);
+            Debug.Assert(metaClass != null);
+            foreach (Meta.MetaDependency dep in metaClass.dependencies)
+            {
+                if (dep.name == componentName)
+                {
+                    MessageBox.Show("Cannot remove " + componentName + " because " + dep.name + " depends on it");
+                    return false;
+                }
+            }
+            NativeTypes.Handle handle = CurrentGameObject.handle.ToNativeHandle();
+            NativeMethods.RemoveComponent(handle, componentName);
+            UpdateCurrentObject();
+            return true;
+        }
+
+        private void UpdateCurrentObject()
+        {
+            if (CurrentGameObject != null)
+            {
+                NativeTypes.Handle handle = CurrentGameObject.handle.ToNativeHandle();
+                byte[] buffer = new byte[2048];
+                uint size = NativeMethods.GetGameObject(handle, buffer, (uint)buffer.Length);
+                if (size > 0)
+                {
+                    currentGameObject = GameObject.Deserialize(buffer, (uint)buffer.Length);
+                    Display(currentGameObject);
+                }
+            }
         }
     }
 }

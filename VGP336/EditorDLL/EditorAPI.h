@@ -94,6 +94,9 @@ EditorAPI unsigned int CreateGameObjectFromTemplate(const char* templateFile, un
 EditorAPI int RenameGameObject(Handle handle, const char* name);
 
 EditorAPI int AddComponent(Handle handle, const char* componentName);
+EditorAPI int RemoveComponent(Handle handle, const char* componentName);
+
+EditorAPI unsigned int GetMetaData(unsigned char* dst, unsigned int size);
 
 EditorAPI int NewLevel(const char* filename);
 EditorAPI int LoadLevel(const char* filename);

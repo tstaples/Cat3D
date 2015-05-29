@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace Editor
 {
@@ -20,6 +21,10 @@ namespace Editor
         private LevelManager levelManager;
         private ToolMenuHandler toolMenuHandler;
 
+        public PropertyGrid InspectorGrid
+        {
+            get { return inspectorGrid; }
+        }
         public SelectablePanel Viewport
         {
             get { return ViewPanel; }
@@ -51,8 +56,11 @@ namespace Editor
             // Initialize the engine within the view panel
             NativeMethods.Initialize(hInstance, IntPtr.Zero, hWnd, 1, this.ViewPanel.Width, this.ViewPanel.Height);
 
+            // Load in metadata from the engine
+            Meta.Initialize();
+
             Console.Initialize(ref ConsoleList);
-            inspector = new Inspector(ref InspectorGrid);
+            inspector = new Inspector(ref inspectorGrid);
             sceneHierarchy = new SceneHierarchy(ref SceneHierarchyTree, ref inspector);
             sceneHierarchy.Popualate();
             Console.LogInfo("Editor", "Successfully initialized");
@@ -86,9 +94,14 @@ namespace Editor
         }
         #endregion API calls/constructor
 
+        #region Util
         public Point GetRelativeMousePos()
         {
             return this.PointToClient(MousePosition);
+        }
+        public Point GetMousePos()
+        {
+            return MousePosition;
         }
         public void UpdateTitleLevelStatus()
         {
@@ -101,6 +114,7 @@ namespace Editor
             }
             this.Text = "Editor - " + levelName;
         }
+        #endregion Util
 
         private void ConsoleList_Click(object sender, EventArgs e)
         {
@@ -108,6 +122,7 @@ namespace Editor
             ConsoleMessageDetailsLabel.Text = Console.GetMessageDetails(item);
         }
 
+        #region Inspector
         private void InspectorGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             object newVal = e.ChangedItem.Value;
@@ -132,6 +147,22 @@ namespace Editor
             levelManager.IsLevelDirty = true;
             Console.LogDebug("Editor", "{0}'s property: {1} changed from: {2} to {3}", compName, fieldName, e.OldValue, newVal);
         }
+        private void OnRemoveComponent(object sender, EventArgs e)
+        {
+            string componentName = Inspector.SelectedComponentName;
+            if (componentName != null)
+            {
+                if (Inspector.RemoveComponentFromCurrentObject(componentName))
+                {
+                    Console.LogDebug("Editor", "Successfully removed {0}", componentName);
+                }
+                else
+                {
+                    Console.LogError("Editor", "Failed to removed {0}", componentName);
+                }
+            }
+        }
+        #endregion Inspector
 
         #region Scene Hierarchy
         private void SceneHierarchyTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
