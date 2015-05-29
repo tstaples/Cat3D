@@ -26,6 +26,8 @@ typedef MemoryPool<ColliderComponent> ColliderPool;
 typedef MemoryPool<MeshComponent> MeshPool;
 typedef std::vector<Service*> Services;
 
+class GameWorld;
+
 //====================================================================================================
 // Class Declarations
 //====================================================================================================
@@ -36,7 +38,7 @@ public:
     GameObjectFactory(GameObjectPool& gameObjectPool);
     ~GameObjectFactory();
 
-    void Initialize(Services& services);
+    void Initialize(Services& services, GameWorld& world);
     void Terminate();
 
     GameObjectHandle Create(const char* templateFileName);
@@ -54,6 +56,7 @@ private:
     GameObjectPool& mGameObjectPool;
     Services mServices;
 
+    GameWorld* mpWorld;
     // TODO
     // Component memory pools
     //TransformPool mTransformPool;

@@ -11,9 +11,13 @@ EditorObject::EditorObject(GameObjectHandle gameObjectHandle)
     f32 extend = 10.0f;
 }
 
+//----------------------------------------------------------------------------------------------------
+
 EditorObject::~EditorObject()
 {
 }
+
+//----------------------------------------------------------------------------------------------------
 
 Math::Vector3 EditorObject::GetPosition() const
 {
@@ -25,6 +29,8 @@ Math::Vector3 EditorObject::GetPosition() const
     return transformComponent->GetPosition();
 }
 
+//----------------------------------------------------------------------------------------------------
+
 Math::AABB EditorObject::GetCollider() const
 {
     const GameObject* gameObject = mGameObjectHandle.Get();
@@ -35,6 +41,8 @@ Math::AABB EditorObject::GetCollider() const
     }
     return Math::AABB(GetPosition(), Math::Vector3(5.0f, 5.0f, 5.0f));
 }
+
+//----------------------------------------------------------------------------------------------------
 
 void EditorObject::Translate(const Math::Vector3& t)
 {

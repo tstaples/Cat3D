@@ -33,10 +33,6 @@ private:
 	GraphicsSystem mGraphicsSystem;
 	Camera mCamera;
 
-    // Screen
-    u32 mWidth;
-    u32 mHeight;
-
     // Input
     InputData mInputData;
     InputManager mInputManager;

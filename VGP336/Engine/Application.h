@@ -34,6 +34,9 @@ public:
 	bool IsRunning() const			{ return mRunning; }
     bool IsOwner() const            { return mOwner; }
 
+    u32 GetScreenWidth() const      { return mWidth; }
+    u32 GetScreenHeight() const     { return mHeight; }
+
     void ForwardInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 protected:
@@ -42,6 +45,9 @@ protected:
 	const char* GetAppName() const	{ return mAppName.c_str(); }
 	
 	bool mRunning;
+
+    u32 mWidth;
+    u32 mHeight;
 
 private:
 	friend LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

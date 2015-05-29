@@ -167,12 +167,12 @@ int SelectGameObject(Handle handle)
 
 //----------------------------------------------------------------------------------------------------
 
-unsigned int CreateNewGameObject(unsigned char* dst, unsigned int size)
+unsigned int CreateGameObjectFromTemplate(const char* templateFile, unsigned char* dst, unsigned int size)
 {
     unsigned int written = 0;
 
     Handle handle;
-    if (cmd.CreateEmptyGameObject(handle))
+    if (cmd.CreateGameObjectFromTemplate(templateFile, handle))
     {
         cmd.GetGameObject(handle, dst, size, written);
     }

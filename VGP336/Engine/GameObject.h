@@ -19,6 +19,7 @@
 //====================================================================================================
 
 class Component;
+class GameWorld;
 
 //====================================================================================================
 // Class Declarations
@@ -60,6 +61,8 @@ public:
     const char* GetName() const                 { return mName.c_str(); }
     const Components& GetComponents() const     { return mComponents; }
 
+    GameWorld* GetWorld() const;
+
     bool Serialize(SerialWriter& writer);
     bool Deserialize(SerialReader& reader);
 
@@ -72,6 +75,8 @@ private:
 
     static const u16 kNumServices = 1; // TODO: find better way to do this
     bool mServiceSubscriptions[kNumServices];
+
+    static class GameWorld* spWorld;
 };
 
 //====================================================================================================

@@ -18,6 +18,7 @@ namespace Editor
         private Inspector inspector;
         private SceneHierarchy sceneHierarchy;
         private LevelManager levelManager;
+        private ToolMenuHandler toolMenuHandler;
 
         public SelectablePanel Viewport
         {
@@ -31,6 +32,10 @@ namespace Editor
         public SceneHierarchy SceneHierarchy
         {
             get { return sceneHierarchy; }
+        }
+        public LevelManager LevelManager
+        {
+            get { return levelManager; }
         }
         #endregion Accessors/members
 
@@ -54,19 +59,18 @@ namespace Editor
 
             levelManager = new LevelManager(this, ref SaveFileBox, ref OpenFileBox);
             levelManager.IsLevelDirty = false;
-        }
 
+            toolMenuHandler = new ToolMenuHandler(this);
+        }
         private void Terminate()
         {
             Console.LogInfo("Editor", "Shutting down");
             NativeMethods.Terminate();
         }
-
         public void OnIdle(object sender, EventArgs e)
         {
             NativeMethods.UpdateFrame();
         }
-
         private void EditorForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!levelManager.SaveIfLevelDirty())
@@ -75,13 +79,12 @@ namespace Editor
                 e.Cancel = true;
             }
         }
-
         private void EditorForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             Console.LogInfo("Editor", "Shutting down: {0}", e.CloseReason);
             NativeMethods.Terminate();
         }
-        #endregion
+        #endregion API calls/constructor
 
         public Point GetRelativeMousePos()
         {
@@ -97,6 +100,12 @@ namespace Editor
                 levelName += "*";
             }
             this.Text = "Editor - " + levelName;
+        }
+
+        private void ConsoleList_Click(object sender, EventArgs e)
+        {
+            ListViewItem item = ConsoleList.SelectedItems[0];
+            ConsoleMessageDetailsLabel.Text = Console.GetMessageDetails(item);
         }
 
         private void InspectorGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
@@ -136,7 +145,6 @@ namespace Editor
             Console.LogDebug("Editor", "Node {0} with handle {1} selected", e.Node.Text, e.Node.Tag);
             sceneHierarchy.OnNodeSelected(e.Node);
         }
-
         private void SceneHierarchyTree_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
             // TODO: Check label for invalid characters
@@ -148,7 +156,6 @@ namespace Editor
             }
             levelManager.IsLevelDirty = true;
         }
-
         private void renameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (SceneHierarchyTree.SelectedNode != null)
@@ -160,30 +167,16 @@ namespace Editor
         #endregion Scene Hierarchy
 
         #region Tool Menu Strip
-        private void newGameObjectToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnCreateNewGameObject(object sender, EventArgs e)
         {
-            Console.LogDebug("Editor", "Creating new GameObject");
-
-            byte[] buffer = new byte[2048];
-            uint size = NativeMethods.CreateNewGameObject(buffer, (uint)buffer.Length);
-            if (size > 0)
-            {
-                // Select the newly created gameObject
-                GameObject gameObject = GameObject.Deserialize(buffer, size);
-                NativeMethods.SelectGameObject(gameObject.handle.ToNativeHandle());
-
-                // Show the object's components in the inspector and update the scene hierarchy
-                inspector.Display(gameObject);
-                sceneHierarchy.Popualate();
-                sceneHierarchy.SelectNode(gameObject.handle);
-                levelManager.IsLevelDirty = true;
-            }
-            else
-            {
-                Console.LogError("Editor", "Failed to create new GameObject");
-            }
+            string templateFile = "../Data/GameObjects/default.json";
+            toolMenuHandler.OnCreateObject(templateFile);
         }
-
+        private void OnCreateCamera(object sender, EventArgs e)
+        {
+            string templateFile = "../Data/GameObjects/camera.json";
+            toolMenuHandler.OnCreateObject(templateFile);
+        }
         private void OnComponentMenuItem_Click(object sender, EventArgs e)
         {
             // Hack: assuming the component name on the dropdown + "Component" is the meta name
@@ -200,30 +193,23 @@ namespace Editor
         }
         #endregion Tool Menu Strip
 
-        private void ConsoleList_Click(object sender, EventArgs e)
-        {
-            ListViewItem item = ConsoleList.SelectedItems[0];
-            ConsoleMessageDetailsLabel.Text = Console.GetMessageDetails(item);
-        }
-
+        #region Level events
         public void OnNewLevel(object sender, EventArgs e)
         {
             levelManager.OnNewLevel();
         }
-
         public void OnSaveLevelAs(object sender, EventArgs e)
         {
             levelManager.OnSaveLevelAs();
         }
-
         public void OnSaveLevel(object sender, EventArgs e)
         {
             levelManager.OnSaveLevel();
         }
-
         public void OnOpenLevel(object sender, EventArgs e)
         {
             levelManager.OnOpenLevel();
         }
+        #endregion Level events
     }
 }

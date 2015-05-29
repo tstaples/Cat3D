@@ -5,6 +5,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace Editor
 {
@@ -106,6 +107,7 @@ namespace Editor
                 // Ideally we wouldn't even need a TransformComponent class.
                 string compName = sIn.ReadStringLE();
                 Component component = CreateComponentFromName(compName);
+                Debug.Assert(component != null, "[GameObject] could not create component from name: "+compName+". Ensure it was added to the function");
 
                 // Load the component's fields
                 uint numFields = sIn.ReadUInt();
@@ -116,6 +118,19 @@ namespace Editor
                 }
                 component.Fields = fields;
                 gameObject.Components.Add(component);
+            }
+            return gameObject;
+        }
+        public static GameObject CreateFromTemplate(string templateFile)
+        {
+            GameObject gameObject = null;
+
+            byte[] buffer = new byte[2048];
+            uint size = NativeMethods.CreateGameObjectFromTemplate(templateFile, buffer, (uint)buffer.Length);
+            if (size > 0)
+            {
+                // Select the newly created gameObject
+                gameObject = GameObject.Deserialize(buffer, size);
             }
             return gameObject;
         }
@@ -157,6 +172,10 @@ namespace Editor
             else if (name == "MeshRendererComponent")
             {
                 component = new MeshRendererComponent();
+            }
+            else if (name == "CameraComponent")
+            {
+                component = new CameraComponent();
             }
             return component;
         }

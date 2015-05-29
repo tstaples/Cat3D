@@ -25,11 +25,9 @@ namespace
 }
 
 EditorApp::EditorApp()
-    : mWidth(0)
-    , mHeight(0)
-    , mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(50.0f, 50.0f, 50.0f)))
+    : mOctree(Math::AABB(Math::Vector3::Zero(), Math::Vector3(50.0f, 50.0f, 50.0f)))
     , mCallbacks(*this)
-    , mGameWorld(100)
+    , mGameWorld(this, 100)
     , mIsGameRunning(false)
 {
     memset(mInputData.keyStates, 0, sizeof(bool) * 256);
@@ -48,11 +46,6 @@ void EditorApp::OnInitialize(u32 width, u32 height)
 {
     Meta::MetaRegistration();
     
-    // Store width and height for later use
-    // TODO: update when resize event occurs
-    mWidth = width;
-    mHeight = height;
-
 	mTimer.Initialize();
 
 	mGraphicsSystem.Initialize(GetWindow(), false);
@@ -68,9 +61,6 @@ void EditorApp::OnInitialize(u32 width, u32 height)
 
     GameSettings settings;
     mGameWorld.OnInitialize(settings, mGraphicsSystem, mCamera);
-
-    // Temp
-    //mGameWorld.CreateGameObject("../Data/GameObjects/testcube.json", Math::Vector3::Zero(), Math::Quaternion::Identity());
 
     // Discover any objects the gameworld has on startup
     for (GameObjectHandle handle : mGameWorld.mGameObjectHandles)
@@ -176,6 +166,47 @@ void EditorApp::OnUpdate()
     bool drawGizmo = false;
     for (auto object : mObjects)
     {
+        GameObject* gameObject = object.GetGameObject();
+        CameraComponent* cameraComponent = nullptr;
+        if (gameObject->FindComponent(cameraComponent))
+        {
+            TransformComponent* transformComponent = nullptr;
+            gameObject->GetComponent(transformComponent);
+            Math::Vector3 pos = transformComponent->GetPosition();
+
+            const Camera& camera = cameraComponent->GetCamera();
+            Math::Matrix proj = camera.GetProjectionMatrix();
+            Math::Matrix view = camera.GetViewMatrix();
+            Math::Matrix transform =  view;
+
+            //Math::Vector3 tl = Math::TransformCoord(Math::Vector3(-1.0f, -1.0f, 0.0f), transform);
+            //Math::Vector3 tr = Math::TransformCoord(Math::Vector3(1.0f, -1.0f, 0.0f), transform);
+            //Math::Vector3 br = Math::TransformCoord(Math::Vector3(1.0f, 1.0f, 0.0f), transform);
+            //Math::Vector3 bl = Math::TransformCoord(Math::Vector3(-1.0f, 1.0f, 0.0f), transform);
+            f32 hw = (f32)mWidth / 2;
+            f32 hh = (f32)mHeight / 2;
+
+            Math::Vector3 tl(-hw, -hh, 0.0f);
+            Math::Vector3 tr(hw, -hh, 0.0f);
+            Math::Vector3 br(hw, hh, 0.0f);
+            Math::Vector3 bl(-hw, hh, 0.0f);
+
+            tl = Math::TransformCoord(tl, transform);
+            tr = Math::TransformCoord(tr, transform);
+            br = Math::TransformCoord(br, transform);
+            bl = Math::TransformCoord(bl, transform);
+
+            SimpleDraw::AddLine(tl, tr, Color::Green());
+            SimpleDraw::AddLine(tr, br, Color::Green());
+            SimpleDraw::AddLine(bl, br, Color::Green());
+            SimpleDraw::AddLine(bl, tl, Color::Green());
+            
+            SimpleDraw::AddLine(pos, tl, Color::Green());
+            SimpleDraw::AddLine(pos, tr, Color::Green());
+            SimpleDraw::AddLine(pos, bl, Color::Green());
+            SimpleDraw::AddLine(pos, br, Color::Green());
+
+        }
         Color col = Color::White();
         if (object.IsSelected())
         {
@@ -206,4 +237,5 @@ void EditorApp::OnUpdate()
 void EditorApp::OnResizeWindow()
 {
     mGraphicsSystem.Resize(mWidth, mHeight);
+	mCamera.Setup(Math::kPiByTwo, (f32)mWidth / (f32)mHeight, 0.01f, 10000.0f);
 }

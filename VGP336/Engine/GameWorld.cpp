@@ -10,14 +10,16 @@
 #include "Precompiled.h"
 #include "GameWorld.h"
 
+#include "Application.h"
 #include "SerialReader.h"
 
 //====================================================================================================
 // local Definitions
 //====================================================================================================
 
-GameWorld::GameWorld(u16 maxObjects)
-    : mGameObjectPool(maxObjects)
+GameWorld::GameWorld(Application* app, u16 maxObjects)
+    : mpApplication(app)
+    , mGameObjectPool(maxObjects)
     , mFactory(mGameObjectPool)
 {
 }
@@ -42,7 +44,7 @@ bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, C
     {
         &mRenderService
     };
-    mFactory.Initialize(services);
+    mFactory.Initialize(services, *this);
     return true;
 }
 
@@ -166,6 +168,20 @@ bool GameWorld::LoadLevel(const char* levelName)
 bool GameWorld::SaveLevel(const char* levelName)
 {
     return mLevelLoader.SaveToFile(levelName, mGameObjectHandles, mSettings);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+s32 GameWorld::GetScreenWidth() const
+{
+    return mpApplication->GetScreenWidth();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+s32 GameWorld::GetScreenHeight() const
+{
+    return mpApplication->GetScreenHeight();
 }
 
 /*

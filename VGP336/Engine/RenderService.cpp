@@ -138,3 +138,10 @@ bool RenderService::OnSubscribe(GameObjectHandle handle)
     }
     return true;
 }
+
+//----------------------------------------------------------------------------------------------------
+
+void RenderService::SetCamera(Camera& camera)
+{
+    mRenderer.SetCamera(camera);
+}

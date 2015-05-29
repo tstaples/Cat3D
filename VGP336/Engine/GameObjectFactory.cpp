@@ -2,6 +2,7 @@
 #include "GameObjectFactory.h"
 
 #include "Component.h"
+#include "GameWorld.h"
 #include "MemoryPool.h"
 #include "IO.h"
 #include "RenderService.h"
@@ -62,14 +63,24 @@ namespace
         {
             // Check if any of the component's dependencies match the services
             const char* depName = dependencies[j].GetName();
-            Service* service = LookUpService(services, depName);
-            if (service != nullptr)
+            
+            // Hack: rely on dependency name to see if it's a service or component
+            if (strstr(depName, "Service") != nullptr)
             {
-                // Subscribe the GameObject to that service.
-                // Note: not using Subscribe's return value since multiple component may need to be subcribed
-                // to the same service, resulting in false positives.
-                service->Subscribe(handle);
-                return true;
+                Service* service = LookUpService(services, depName);
+                if (service != nullptr)
+                {
+                    // Subscribe the GameObject to that service.
+                    // Note: not using Subscribe's return value since multiple component may need to be subcribed
+                    // to the same service, resulting in false positives.
+                    service->Subscribe(handle);
+                    return true;
+                }
+            }
+            else if (strstr(depName, "Component") != nullptr)
+            {
+                // Dependency is a component, so check if the GameObject has it
+                return gameObject->HasComponent(depName);
             }
         }
         return false;
@@ -102,8 +113,9 @@ GameObjectFactory::~GameObjectFactory()
 
 //----------------------------------------------------------------------------------------------------
 
-void GameObjectFactory::Initialize(Services& services)
+void GameObjectFactory::Initialize(Services& services, GameWorld& world)
 {
+    mpWorld = &world;
     mServices = std::move(services);
 }
 
@@ -133,6 +145,7 @@ GameObjectHandle GameObjectFactory::Create(const char* templateFile)
     // We have data, so allocate space for the object
     handle = mGameObjectPool.Allocate();
     GameObject* gameObject = handle.Get();
+    gameObject->spWorld = mpWorld;
 
     // Load components
     Json::Value jcomponents = root["Components"];
@@ -180,6 +193,7 @@ GameObjectHandle GameObjectFactory::Create(SerialReader& reader)
     // TODO: 
     if (gameObject->Deserialize(reader))
     {
+        gameObject->spWorld = mpWorld;
         LinkDependencies(handle, mServices);
         return handle;
     }

@@ -23,6 +23,8 @@ Application::Application()
 	, mWindow(nullptr)
 	, mRunning(true)
     , mOwner(true)
+    , mWidth(0)
+    , mHeight(0)
 {
 }
 
@@ -38,6 +40,8 @@ void Application::Initialize(HINSTANCE instance, LPCSTR appName, u32 width, u32 
 {
 	mInstance = instance;
 	mAppName = appName;
+    mWidth = width;
+    mHeight = height;
 
 	OnInitialize(width, height);
 }

@@ -24,6 +24,7 @@
 //====================================================================================================
 
 class GraphicsSystem;
+class Application;
 
 //====================================================================================================
 // Class Declarations
@@ -34,7 +35,7 @@ typedef std::vector<GameObjectHandle> GameObjectHandles;
 class GameWorld
 {
 public:
-    GameWorld(u16 maxObjects);
+    GameWorld(Application* app, u16 maxObjects);
     ~GameWorld();
 
     // Note: camera param temp until camera component created
@@ -56,8 +57,13 @@ public:
     bool LoadLevel(const char* levelName);
     bool SaveLevel(const char* levelName);
 
+    s32 GetScreenWidth() const;
+    s32 GetScreenHeight() const;
+
 private:
     NONCOPYABLE(GameWorld);
+
+    Application* mpApplication;
 
     GameSettings mSettings;
 

@@ -78,12 +78,13 @@ EditorAPI unsigned int GetGameObject(Handle handle, unsigned char* dst, unsigned
  */
 EditorAPI int SelectGameObject(Handle handle);
 
-/* Creates a new GameObject and adds it to the world.
+/* Creates a new GameObject from a template and adds it to the world.
+ * @param tempalteFile: template to create the object from.
  * @param dst: externally managed buffer to write the new object's data to.
  * @param size: size of the external buffer.
  * Returns the number of bytes written to the dst. Returns 0 if fails.
  */
-EditorAPI unsigned int CreateNewGameObject(unsigned char* dst, unsigned int size);
+EditorAPI unsigned int CreateGameObjectFromTemplate(const char* templateFile, unsigned char* dst, unsigned int size);
 
 /* Renames a GameObject.
  * @param handle: handle of the desired GameObject.

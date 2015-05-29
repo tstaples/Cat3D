@@ -2,6 +2,7 @@
 #include "GameObject.h"
 
 #include "Component.h"
+#include "GameWorld.h"
 #include "SerialWriter.h"
 #include "SerialReader.h"
 
@@ -28,6 +29,8 @@ namespace
         return false;
     }
 }
+
+GameWorld* GameObject::spWorld = nullptr;
 
 GameObject::GameObject()
     : mName("Unknown")
@@ -200,4 +203,11 @@ bool GameObject::HasComponent(const char* componentName) const
         }
     }
     return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+GameWorld* GameObject::GetWorld() const
+{
+    return spWorld;
 }

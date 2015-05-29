@@ -43,6 +43,8 @@ public:
     // Must be called between BeginRender() and EndRender()
     void Update();
 
+    void SetCamera(Camera& camera);
+
 private:
     virtual bool OnSubscribe(GameObjectHandle handle);
 

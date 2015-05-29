@@ -228,9 +228,9 @@ bool EditorCommands::SelectGameObject(Handle handle)
 
 //----------------------------------------------------------------------------------------------------
 
-bool EditorCommands::CreateEmptyGameObject(Handle& handle)
+bool EditorCommands::CreateGameObjectFromTemplate(const char* templateFile, Handle& handle)
 {
-    GameObjectHandle gohandle = mApp.mGameWorld.CreateGameObject("../Data/GameObjects/default.json", 
+    GameObjectHandle gohandle = mApp.mGameWorld.CreateGameObject(templateFile, 
         Math::Vector3::Zero(), Math::Quaternion::Identity());
     if (gohandle.IsValid())
     {
@@ -238,7 +238,7 @@ bool EditorCommands::CreateEmptyGameObject(Handle& handle)
         mApp.mObjects.push_back(EditorObject(gohandle));
         return true;
     }
-    SetError("[EditorCommands] Failed to create empty GameObject");
+    SetError("[EditorCommands] Failed to create GameObject");
     return false;
 }
 
@@ -271,8 +271,6 @@ bool EditorCommands::AddComponent(Handle handle, const char* componentName)
         // only care about component dependencies
         // if we're adding a component that requires a service, but the GO doesn't have everything
         // the service needs, then don't subscribe.
-        // if we add a 
-
         success = mApp.mGameWorld.mFactory.AddComponent(handle, componentName);
     }
     return success;
