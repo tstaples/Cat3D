@@ -26,8 +26,8 @@
 
 META_CLASS_BEGIN(RenderService)
 META_DEPENDENCIES_BEGIN
-    META_DEPENDENCY("TransformComponent")
-    META_DEPENDENCY("MeshComponent")
+    META_DEPENDENCY("TransformComponent", "Component")
+    META_DEPENDENCY("MeshComponent", "Component")
 META_DEPENDENCIES_END
 META_CLASS_END
 
