@@ -144,6 +144,7 @@ namespace Editor
                 // Show the object's components in the inspector and update the scene hierarchy
                 inspector.Display(gameObject);
                 sceneHierarchy.Popualate();
+                sceneHierarchy.SelectNode(gameObject.handle);
             }
             else
             {

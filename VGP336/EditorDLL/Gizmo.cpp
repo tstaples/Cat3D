@@ -160,6 +160,7 @@ bool TranslateGizmo::CheckSelection(const Objects& selectedObjs, const Math::Ray
     }
 
     // Get the colliders for the arms in local space
+    f32 width = mArmWidth;// * scale;
     Math::AABB armX, armY, armZ;
     BuildArms(ext, mArmWidth, armX, armY, armZ);
 
@@ -169,11 +170,11 @@ bool TranslateGizmo::CheckSelection(const Objects& selectedObjs, const Math::Ray
     {
         mSelectedArm |= Axis::X;
     }
-    if (Math::Intersect(localRay, armY))
+    else if (Math::Intersect(localRay, armY))
     {
         mSelectedArm |= Axis::Y;
     }
-    if (Math::Intersect(localRay, armZ))
+    else if (Math::Intersect(localRay, armZ))
     {
         mSelectedArm |= Axis::Z;
     }
@@ -244,13 +245,14 @@ void TranslateGizmo::Draw(const Objects& selectedObjs)
 
 
     // debug
+    f32 width = mArmWidth;// * scale;
     const f32 halfExt = ext * 0.5f;
     Math::AABB armX, armY, armZ;
-    BuildArms(ext, mArmWidth, armX, armY, armZ);
+    BuildArms(ext, width, armX, armY, armZ);
     armX.center = center; armX.center.x += halfExt;
     armY.center = center; armY.center.y += halfExt;
     armZ.center = center; armZ.center.z += halfExt;
-    //SimpleDraw::AddAABB(armX, Color::Cyan());
-    //SimpleDraw::AddAABB(armY, Color::Cyan());
-    //SimpleDraw::AddAABB(armZ, Color::Cyan());
+    SimpleDraw::AddAABB(armX, Color::Cyan());
+    SimpleDraw::AddAABB(armY, Color::Cyan());
+    SimpleDraw::AddAABB(armZ, Color::Cyan());
 }

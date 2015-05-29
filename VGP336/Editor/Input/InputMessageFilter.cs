@@ -43,12 +43,12 @@ namespace Editor
                 Viewport.IsFocused = Viewport.Contains(mpos);
                 Console.LogDebug("Editor", "Viewport focused: {0}", Viewport.IsFocused);
             }
-            else if (m.Msg == WM_MOUSEMOVE)
-            {
-                // Temp
-                Point mpos = Owner.GetRelativeMousePos();
-                Console.LogDebug("Editor", "Mouse Position: {0} ", mpos.ToString());
-            }
+            //else if (m.Msg == WM_MOUSEMOVE)
+            //{
+            //    // Temp
+            //    Point mpos = Owner.GetRelativeMousePos();
+            //    Console.LogDebug("Editor", "Mouse Position: {0} ", mpos.ToString());
+            //}
 
             bool ret = false;
             if (Viewport.IsFocused)

@@ -24,6 +24,7 @@ namespace Editor
             {
                 // Nothing was selected; de-select everything
                 inspector.Clear();
+                sceneHierarchy.ClearSelection();
                 return false;
             }
 

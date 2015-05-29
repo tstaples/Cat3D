@@ -112,18 +112,7 @@ namespace Editor
                 Field[] fields = new Field[numFields];
                 for (uint j = 0; j < numFields; ++j)
                 {
-                    Field field = new Field();
-                    field.name = sIn.ReadStringLE();
-                    field.type = sIn.ReadInt();
-                    field.size = sIn.ReadInt();
-                    field.offset = sIn.ReadInt();
-                    field.dataType = NativeTypes.GetType(field.type);
-
-                    // Use our hacky conversion method
-                    byte[] fdata = sIn.GetBlock(field.size);
-                    field.value = NativeTypes.ConvertToType(fdata, field.dataType, field.type);
-
-                    fields[j] = field;
+                    fields[j] = Field.Load(ref sIn);
                 }
                 component.Fields = fields;
                 gameObject.Components.Add(component);
@@ -145,7 +134,7 @@ namespace Editor
             for (int i = 0; i < numFields; ++i)
             {
                 Field field = c.Fields[i];
-                byte[] fdata = NativeTypes.ConvertToBytes(field.value, field.dataType, field.type);
+                byte[] fdata = NativeTypes.ConvertToBytes(field.value, field.type);
                 sOut.WriteArray(fdata);
             }
             return buffer;

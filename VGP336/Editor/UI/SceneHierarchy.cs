@@ -27,6 +27,11 @@ namespace Editor
             GameObjects.Clear();
         }
 
+        public void ClearSelection()
+        {
+            Tree.SelectedNode = null;
+        }
+
         public void Popualate()
         {
             // Clear any existing items
@@ -61,8 +66,7 @@ namespace Editor
             // Hilight this node to show it has been selected
             Tree.SelectedNode = node;
 
-            // find node by name (TODO: ensure unique names during object creation)
-            // use object handle etc. to look up component data
+            // Get the object's handle from the tag and look for it
             // tell inspector to display it
             GameObject.Handle handle = (GameObject.Handle)node.Tag;
             if (GameObjects.ContainsKey(handle))
@@ -82,10 +86,16 @@ namespace Editor
 
         public void SelectNode(GameObject.Handle handle)
         {
-            if (GameObjects.ContainsKey(handle))
+            // TODO: find out why GameObjects.Contains(handle) isn't working
+            // so we don't have to do a linear search.
+            foreach (var pair in GameObjects)
             {
-                Tree.SelectedNode = FindNode(handle);
-                Debug.Assert(Tree.SelectedNode != null);
+                if (pair.Key == handle)
+                {
+                    // TODO: make this work.
+                    Tree.SelectedNode = FindNode(handle);
+                    Debug.Assert(Tree.SelectedNode != null);
+                }
             }
         }
 

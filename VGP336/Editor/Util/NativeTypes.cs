@@ -85,135 +85,81 @@ namespace Editor
             return Types[(EType)t];
         }
 
-        public static object ConvertToType(byte[] bytes, Type type, int originalType)
+        public static object ConvertToType(byte[] bytes, int type)
         {
-            EType ot = (EType)originalType;
-            #region BasicTypes
-            if (type == typeof(int))
+            EType eType = (EType)type;
+            switch (eType)
             {
-                return BitConverter.ToInt32(bytes, 0);
+                case EType.Int: 
+                    return BitConverter.ToInt32(bytes, 0);
+                case EType.Uint:
+                    return BitConverter.ToUInt32(bytes, 0);
+                case EType.Short:
+                    return BitConverter.ToInt16(bytes, 0);
+                case EType.UShort:
+                    return BitConverter.ToUInt16(bytes, 0);
+                case EType.Char:
+                    return Convert.ToSByte(bytes[0]);
+                case EType.UChar:
+                    return bytes[0];
+                case EType.Float:
+                    return BitConverter.ToSingle(bytes, 0);
+                case EType.Double:
+                    return BitConverter.ToDouble(bytes, 0);
+                case EType.Bool:
+                    return BitConverter.ToBoolean(bytes, 0);
+                case EType.String:
+                    {
+                        SerializeIn sIn = new SerializeIn(bytes);
+                        return sIn.ReadStringLE();
+                    }
+                case EType.Vector3:
+                    {
+                        Vector3 v = new Vector3();
+                        return (Vector3)bytes;
+                    }
             }
-            if (type == typeof(uint))
-            {
-                return BitConverter.ToUInt32(bytes, 0);
-            }
-            if (type == typeof(short))
-            {
-                return BitConverter.ToInt16(bytes, 0);
-            }
-            if (type == typeof(ushort))
-            {
-                return BitConverter.ToUInt16(bytes, 0);
-            }
-            if (type == typeof(sbyte))
-            {
-                return Convert.ToSByte(bytes[0]);
-            }
-            if (type == typeof(byte))
-            {
-                return bytes[0];
-            }
-            else if (type == typeof(float))
-            {
-                return BitConverter.ToSingle(bytes, 0);
-            }
-            else if (type == typeof(double))
-            {
-                return BitConverter.ToDouble(bytes, 0);
-            }
-            else if (type == typeof(bool))
-            {
-                return BitConverter.ToBoolean(bytes, 0);
-            }
-            #endregion
-            else if (type == typeof(string))
-            {
-                if (ot == EType.String)
-                {
-                    // Assume all string types are length encoded
-                    SerializeIn sIn = new SerializeIn(bytes);
-                    return sIn.ReadStringLE();
-                }
-                return SerializeIn.GetString(bytes, 0, bytes.Length);
-            }
-            else if (type == typeof(Vector3))
-            {
-                Vector3 v = new Vector3();
-                v = (Vector3)bytes;
-                return v;
-            }
-            else if (type == typeof(AABB))
-            {
-                AABB aabb = new AABB();
-                aabb = (AABB)bytes;
-                return aabb;
-            }
-            return Convert.ChangeType(bytes, type);
+            return Convert.ChangeType(bytes, GetType(type));
         }
 
-        public static byte[] ConvertToBytes(object obj, Type type, int eType)
+        public static byte[] ConvertToBytes(object obj, int type)
         {
-            EType t = (EType)eType;
-            #region basic types
-            if (type == typeof(int))
+            EType eType = (EType)type;
+            switch (eType)
             {
-                return BitConverter.GetBytes((int)obj);
-            }
-            if (type == typeof(uint))
-            {
-                return BitConverter.GetBytes((uint)obj);
-            }
-            if (type == typeof(short))
-            {
-                return BitConverter.GetBytes((short)obj);
-            }
-            if (type == typeof(ushort))
-            {
-                return BitConverter.GetBytes((ushort)obj);
-            }
-            if (type == typeof(sbyte))
-            {
-                return BitConverter.GetBytes((sbyte)obj);
-            }
-            if (type == typeof(byte))
-            {
-                return BitConverter.GetBytes((byte)obj);
-            }
-            else if (type == typeof(float))
-            {
-                return BitConverter.GetBytes((float)obj);
-            }
-            else if (type == typeof(double))
-            {
-                return BitConverter.GetBytes((double)obj);
-            }
-            else if (type == typeof(bool))
-            {
-                return BitConverter.GetBytes((bool)obj);
-            }
-            #endregion
-            else if (type == typeof(string))
-            {
-                if (t == EType.WString || t == EType.String)
-                {
-                    // TODO: clean this up
-                    string str = obj.ToString();
-                    byte[] bytes = new byte[str.Length + sizeof(uint)];
-                    SerializeOut sOut = new SerializeOut(bytes);
-                    sOut.WriteStringLE(str);
-                    return bytes;
-                }
-                return SerializeOut.GetBytes(obj.ToString());
-            }
-            else if (type == typeof(Vector3))
-            {
-                Vector3 v = (Vector3)obj;
-                return v.ToBytes();
-            }
-            else if (type == typeof(AABB))
-            {
-                AABB aabb = (AABB)obj;
-                return aabb.ToBytes();
+                case EType.Int: 
+                    return BitConverter.GetBytes((int)obj);
+                case EType.Uint:
+                    return BitConverter.GetBytes((uint)obj);
+                case EType.Short:
+                    return BitConverter.GetBytes((short)obj);
+                case EType.UShort:
+                    return BitConverter.GetBytes((ushort)obj);
+                case EType.Char:
+                    return BitConverter.GetBytes((sbyte)obj);
+                case EType.UChar:
+                    return BitConverter.GetBytes((byte)obj);
+                case EType.Float:
+                    return BitConverter.GetBytes((float)obj);
+                case EType.Double:
+                    return BitConverter.GetBytes((double)obj);
+                case EType.Bool:
+                    return BitConverter.GetBytes((bool)obj);
+                case EType.String:
+                case EType.WString:
+                    {
+                        // Length encode the string
+                        string str = obj.ToString();
+                        byte[] bytes = new byte[str.Length + sizeof(uint)];
+                        SerializeOut sOut = new SerializeOut(bytes);
+                        sOut.WriteStringLE(str);
+                        return bytes;
+                    }
+                case EType.Vector3:
+                    {
+                        Vector3 v = new Vector3();
+                        return v.ToBytes();
+                    }
             }
             Debug.Assert(false);
             return null;
