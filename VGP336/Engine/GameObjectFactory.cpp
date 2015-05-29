@@ -26,26 +26,25 @@ namespace
         return nullptr;
     }
 
-    bool CheckServiceDependencies(GameObjectHandle& handle, const char* newComponent, const Service* service)
-    {
-        const GameObject* gameObject = handle.Get();
-
-        // Get the service's dependencies from it's metaclass
-        const char* serviceName = service->GetName();
-        const MetaClass* metaClass = MetaDB::GetMetaClass(serviceName);
-        const u32 numDependencies = metaClass->GetNumDependencies();
-        const MetaDependency* dependencies = metaClass->GetDependencyList();
-        for (u32 j=0; j < numDependencies; ++j)
-        {
-            // Check if the gameObject already has the dependency, or if it's the item being added
-            const char* depName = dependencies[j].GetName();
-            if (!gameObject->HasComponent(depName) && strcmp(newComponent, depName) != 0)
-            {
-                throw new Exceptions::MissingDependencyException(handle, depName);
-            }
-        }
-        return true;
-    }
+    //bool CheckServiceDependencies(GameObjectHandle& handle, const char* newComponent, const Service* service)
+    //{
+    //    const GameObject* gameObject = handle.Get();
+    //    // Get the service's dependencies from it's metaclass
+    //    const char* serviceName = service->GetName();
+    //    const MetaClass* metaClass = MetaDB::GetMetaClass(serviceName);
+    //    const u32 numDependencies = metaClass->GetNumDependencies();
+    //    const MetaDependency* dependencies = metaClass->GetDependencyList();
+    //    for (u32 j=0; j < numDependencies; ++j)
+    //    {
+    //        // Check if the gameObject already has the dependency, or if it's the item being added
+    //        const char* depName = dependencies[j].GetName();
+    //        if (!gameObject->HasComponent(depName) && strcmp(newComponent, depName) != 0)
+    //        {
+    //            throw new Exceptions::MissingDependencyException(handle, depName);
+    //        }
+    //    }
+    //    return true;
+    //}
 
     bool LinkDependency(GameObjectHandle& handle, const Services& services, Component* c)
     {
@@ -57,15 +56,15 @@ namespace
             // Nothing to do
             return true;
         }
-
-        const MetaDependency* dependencies = metaClass->GetDependencyList();
+        
         for (u32 j=0; j < numDependencies; ++j)
         {
             // Check if any of the component's dependencies match the services
-            const char* depName = dependencies[j].GetName();
-            
-            // Hack: rely on dependency name to see if it's a service or component
-            if (strstr(depName, "Service") != nullptr)
+            const MetaDependency* metaDependency = metaClass->GetDependencyAtIndex(j);
+            const char* depName = metaDependency->GetName();
+            const char* depTag = metaDependency->GetTag();
+
+            if (strcmp(depTag, "Service") == 0)
             {
                 Service* service = LookUpService(services, depName);
                 if (service != nullptr)
@@ -77,7 +76,7 @@ namespace
                     return true;
                 }
             }
-            else if (strstr(depName, "Component") != nullptr)
+            else if (strcmp(depTag, "Component") == 0)
             {
                 // Dependency is a component, so check if the GameObject has it
                 return gameObject->HasComponent(depName);
@@ -222,6 +221,49 @@ bool GameObjectFactory::AddComponent(GameObjectHandle handle, const char* compon
         // In the future this may need to change.
         LinkDependency(handle, mServices, component);
         return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool GameObjectFactory::RemoveComponent(GameObjectHandle handle, const char* componentMetaName)
+{
+    GameObject* gameObject = handle.Get();
+    if (gameObject == nullptr)
+    {
+        return false;
+    }
+
+    GameObject::Components::iterator it = gameObject->mComponents.begin();
+    for (it; it != gameObject->mComponents.end(); ++it)
+    {
+        Component* component = *it;
+        const MetaClass* metaClass = component->GetMetaClass();
+        if (strcmp(componentMetaName, metaClass->GetName()) == 0)
+        {
+            // - Check if component requires any services, if so unsub the gameOBject from them
+            const u32 numDeps = metaClass->GetNumDependencies();
+            for (u32 i=0; i < numDeps; ++i)
+            {
+                const MetaDependency* metaDependency = metaClass->GetDependencyAtIndex(i);
+                const char* depTag = metaDependency->GetTag();
+                if (strcmp(depTag, "Service") == 0)
+                {
+                    // Look up the service and unsubscribe the gameObject
+                    const char* depName = metaDependency->GetName();
+                    Service* service = LookUpService(mServices, depName);
+                    if (service != nullptr && gameObject->HasService(service->GetID()))
+                    {
+                        service->UnSubscribe(handle);
+                    }
+                }
+            }
+            // Remove and Delete the component
+            gameObject->mComponents.erase(it);
+            SafeDelete(component);
+            return true;
+        }
     }
     return false;
 }

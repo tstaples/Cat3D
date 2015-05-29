@@ -45,12 +45,7 @@ public:
     GameObjectHandle Create(SerialReader& reader);
 
     bool AddComponent(GameObjectHandle handle, const char* componentMetaName);
-
-    /*enum ErrorCode
-    {
-        ServiceDoesNotExist,
-        ServiceDependenciesNotMet,
-    };*/
+    bool RemoveComponent(GameObjectHandle handle, const char* componentMetaName);
 
 private:
     GameObjectPool& mGameObjectPool;
