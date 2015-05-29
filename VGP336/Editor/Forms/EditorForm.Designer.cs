@@ -83,7 +83,7 @@
             this.EditorTableLayout.ColumnCount = 3;
             this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 21.67266F));
             this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 78.32734F));
-            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 419F));
+            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 429F));
             this.EditorTableLayout.Controls.Add(this.InspectorBox, 2, 1);
             this.EditorTableLayout.Controls.Add(this.ViewPanel, 1, 1);
             this.EditorTableLayout.Controls.Add(this.SceneHierarchyBox, 0, 1);
@@ -107,10 +107,10 @@
             this.InspectorBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.InspectorBox.Controls.Add(this.InspectorGrid);
             this.InspectorBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.InspectorBox.Location = new System.Drawing.Point(1055, 69);
+            this.InspectorBox.Location = new System.Drawing.Point(1045, 69);
             this.InspectorBox.MinimumSize = new System.Drawing.Size(250, 500);
             this.InspectorBox.Name = "InspectorBox";
-            this.InspectorBox.Size = new System.Drawing.Size(414, 517);
+            this.InspectorBox.Size = new System.Drawing.Size(424, 517);
             this.InspectorBox.TabIndex = 1;
             this.InspectorBox.TabStop = false;
             this.InspectorBox.Text = "Inspector";
@@ -121,7 +121,7 @@
             this.InspectorGrid.Location = new System.Drawing.Point(3, 16);
             this.InspectorGrid.Name = "InspectorGrid";
             this.InspectorGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.InspectorGrid.Size = new System.Drawing.Size(408, 498);
+            this.InspectorGrid.Size = new System.Drawing.Size(418, 498);
             this.InspectorGrid.TabIndex = 0;
             this.InspectorGrid.ToolbarVisible = false;
             this.InspectorGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.InspectorGrid_PropertyValueChanged);
@@ -137,7 +137,7 @@
             this.SceneHierarchyBox.Location = new System.Drawing.Point(4, 69);
             this.SceneHierarchyBox.MinimumSize = new System.Drawing.Size(200, 500);
             this.SceneHierarchyBox.Name = "SceneHierarchyBox";
-            this.SceneHierarchyBox.Size = new System.Drawing.Size(221, 517);
+            this.SceneHierarchyBox.Size = new System.Drawing.Size(219, 517);
             this.SceneHierarchyBox.TabIndex = 3;
             this.SceneHierarchyBox.TabStop = false;
             this.SceneHierarchyBox.Text = "Scene Hierarchy";
@@ -150,7 +150,7 @@
             this.SceneHierarchyTree.LabelEdit = true;
             this.SceneHierarchyTree.Location = new System.Drawing.Point(8, 13);
             this.SceneHierarchyTree.Name = "SceneHierarchyTree";
-            this.SceneHierarchyTree.Size = new System.Drawing.Size(206, 501);
+            this.SceneHierarchyTree.Size = new System.Drawing.Size(204, 501);
             this.SceneHierarchyTree.TabIndex = 0;
             this.SceneHierarchyTree.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.SceneHierarchyTree_AfterLabelEdit);
             this.SceneHierarchyTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.SceneHierarchyTree_NodeMouseClick);
@@ -161,7 +161,7 @@
             this.fileToolStripMenuItem});
             this.MainMenuStrip.Location = new System.Drawing.Point(1, 1);
             this.MainMenuStrip.Name = "MainMenuStrip";
-            this.MainMenuStrip.Size = new System.Drawing.Size(227, 24);
+            this.MainMenuStrip.Size = new System.Drawing.Size(225, 24);
             this.MainMenuStrip.TabIndex = 5;
             this.MainMenuStrip.Text = "menuStrip1";
             // 
@@ -214,9 +214,9 @@
             this.ToolMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.createToolStripMenuItem,
             this.componentToolStripMenuItem});
-            this.ToolMenuStrip.Location = new System.Drawing.Point(229, 1);
+            this.ToolMenuStrip.Location = new System.Drawing.Point(227, 1);
             this.ToolMenuStrip.Name = "ToolMenuStrip";
-            this.ToolMenuStrip.Size = new System.Drawing.Size(822, 24);
+            this.ToolMenuStrip.Size = new System.Drawing.Size(814, 24);
             this.ToolMenuStrip.TabIndex = 4;
             this.ToolMenuStrip.Text = "menuStrip1";
             // 
@@ -273,10 +273,10 @@
             // 
             this.ConsoleTabControl.Controls.Add(this.ConsoleTab);
             this.ConsoleTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ConsoleTabControl.Location = new System.Drawing.Point(232, 593);
+            this.ConsoleTabControl.Location = new System.Drawing.Point(230, 593);
             this.ConsoleTabControl.Name = "ConsoleTabControl";
             this.ConsoleTabControl.SelectedIndex = 0;
-            this.ConsoleTabControl.Size = new System.Drawing.Size(816, 265);
+            this.ConsoleTabControl.Size = new System.Drawing.Size(808, 265);
             this.ConsoleTabControl.TabIndex = 6;
             // 
             // ConsoleTab
@@ -285,7 +285,7 @@
             this.ConsoleTab.Location = new System.Drawing.Point(4, 22);
             this.ConsoleTab.Name = "ConsoleTab";
             this.ConsoleTab.Padding = new System.Windows.Forms.Padding(3);
-            this.ConsoleTab.Size = new System.Drawing.Size(808, 239);
+            this.ConsoleTab.Size = new System.Drawing.Size(800, 239);
             this.ConsoleTab.TabIndex = 0;
             this.ConsoleTab.Text = "Console";
             this.ConsoleTab.UseVisualStyleBackColor = true;
@@ -304,7 +304,7 @@
             // ConsoleSplitContainer.Panel2
             // 
             this.ConsoleSplitContainer.Panel2.Controls.Add(this.ConsoleMessageDetailsLabel);
-            this.ConsoleSplitContainer.Size = new System.Drawing.Size(802, 233);
+            this.ConsoleSplitContainer.Size = new System.Drawing.Size(794, 233);
             this.ConsoleSplitContainer.SplitterDistance = 168;
             this.ConsoleSplitContainer.TabIndex = 0;
             // 
@@ -320,7 +320,7 @@
             this.ConsoleList.Location = new System.Drawing.Point(0, 0);
             this.ConsoleList.Name = "ConsoleList";
             this.ConsoleList.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ConsoleList.Size = new System.Drawing.Size(802, 168);
+            this.ConsoleList.Size = new System.Drawing.Size(794, 168);
             this.ConsoleList.TabIndex = 0;
             this.ConsoleList.UseCompatibleStateImageBehavior = false;
             this.ConsoleList.View = System.Windows.Forms.View.Details;
@@ -374,11 +374,11 @@
             this.ViewPanel.AutoSize = true;
             this.ViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ViewPanel.Location = new System.Drawing.Point(232, 69);
+            this.ViewPanel.Location = new System.Drawing.Point(230, 69);
             this.ViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
             this.ViewPanel.Name = "ViewPanel";
             this.ViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.ViewPanel.Size = new System.Drawing.Size(816, 517);
+            this.ViewPanel.Size = new System.Drawing.Size(808, 517);
             this.ViewPanel.TabIndex = 2;
             this.ViewPanel.TabStop = true;
             // 
@@ -393,6 +393,7 @@
             this.Name = "EditorForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Editor";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.EditorForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.EditorForm_FormClosed);
             this.EditorTableLayout.ResumeLayout(false);
             this.EditorTableLayout.PerformLayout();

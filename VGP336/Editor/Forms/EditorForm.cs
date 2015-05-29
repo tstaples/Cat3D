@@ -67,9 +67,18 @@ namespace Editor
             NativeMethods.UpdateFrame();
         }
 
+        private void EditorForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!levelManager.SaveIfLevelDirty())
+            {
+                // Cancel the close event
+                e.Cancel = true;
+            }
+        }
+
         private void EditorForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Console.LogInfo("Editor", "Shutting down");
+            Console.LogInfo("Editor", "Shutting down: {0}", e.CloseReason);
             NativeMethods.Terminate();
         }
         #endregion
