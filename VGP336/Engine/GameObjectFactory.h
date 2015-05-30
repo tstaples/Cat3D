@@ -12,6 +12,7 @@
 //====================================================================================================
 
 #include "Components.h"
+#include "Delegate.h"
 #include "GameObject.h"
 #include "MemHandle.h"
 #include "MemoryPool.h"
@@ -24,7 +25,9 @@
 typedef MemoryPool<TransformComponent> TransformPool;
 typedef MemoryPool<ColliderComponent> ColliderPool;
 typedef MemoryPool<MeshComponent> MeshPool;
+
 typedef std::vector<Service*> Services;
+typedef Delegate<bool, GameObjectHandle> OnDestroyGameObjectDelegate;
 
 class GameWorld;
 
@@ -44,14 +47,20 @@ public:
     GameObjectHandle Create(const char* templateFileName);
     GameObjectHandle Create(SerialReader& reader);
 
+    bool Destroy(GameObjectHandle handle);
+
     bool AddComponent(GameObjectHandle handle, const char* componentMetaName);
     bool RemoveComponent(GameObjectHandle handle, const char* componentMetaName);
+
+    // Delegates
+    OnDestroyGameObjectDelegate OnDestroyGameObject;
 
 private:
     GameObjectPool& mGameObjectPool;
     Services mServices;
 
     GameWorld* mpWorld;
+
     // TODO
     // Component memory pools
     //TransformPool mTransformPool;

@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace Editor
 {
-    public delegate bool InputCallback();
+    public delegate bool InputCallback(Keys key);
 
     public class InputHandler
     {
@@ -27,13 +27,13 @@ namespace Editor
             Callbacks[key].Add(callback);
         }
 
-        public bool OnInput(int key)
+        public bool OnInput(int key, Keys keycode)
         {
             if (Callbacks.ContainsKey(key))
             {
                 foreach (InputCallback callback in Callbacks[key])
                 {
-                    if (callback())
+                    if (callback(keycode))
                     {
                         // This callback consumed the input
                         return true;

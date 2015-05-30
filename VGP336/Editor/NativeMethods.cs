@@ -60,6 +60,9 @@ namespace Editor
         public unsafe static extern uint CreateGameObjectFromTemplate(string templateFile, byte[] buffer, uint size);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int DestroyGameObject(NativeTypes.Handle handle);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern int RenameGameObject(NativeTypes.Handle handle, string name);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]

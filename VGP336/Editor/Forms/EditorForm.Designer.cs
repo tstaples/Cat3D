@@ -33,6 +33,7 @@
             this.InspectorBox = new System.Windows.Forms.GroupBox();
             this.inspectorGrid = new System.Windows.Forms.PropertyGrid();
             this.InspectorContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ViewPanel = new Editor.SelectablePanel();
             this.SceneHierarchyBox = new System.Windows.Forms.GroupBox();
             this.SceneHierarchyTree = new System.Windows.Forms.TreeView();
             this.MainMenuStrip = new System.Windows.Forms.MenuStrip();
@@ -59,10 +60,10 @@
             this.CountCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ConsoleMessageDetailsLabel = new System.Windows.Forms.Label();
             this.SceneHierarchyContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.RenameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteGameObjectMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveFileBox = new System.Windows.Forms.SaveFileDialog();
             this.OpenFileBox = new System.Windows.Forms.OpenFileDialog();
-            this.ViewPanel = new Editor.SelectablePanel();
             this.EditorTableLayout.SuspendLayout();
             this.InspectorBox.SuspendLayout();
             this.SceneHierarchyBox.SuspendLayout();
@@ -85,7 +86,7 @@
             this.EditorTableLayout.ColumnCount = 3;
             this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 21.67266F));
             this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 78.32734F));
-            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 475F));
+            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 388F));
             this.EditorTableLayout.Controls.Add(this.InspectorBox, 2, 1);
             this.EditorTableLayout.Controls.Add(this.ViewPanel, 1, 1);
             this.EditorTableLayout.Controls.Add(this.SceneHierarchyBox, 0, 1);
@@ -109,10 +110,10 @@
             this.InspectorBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.InspectorBox.Controls.Add(this.inspectorGrid);
             this.InspectorBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.InspectorBox.Location = new System.Drawing.Point(999, 69);
+            this.InspectorBox.Location = new System.Drawing.Point(1086, 69);
             this.InspectorBox.MinimumSize = new System.Drawing.Size(250, 500);
             this.InspectorBox.Name = "InspectorBox";
-            this.InspectorBox.Size = new System.Drawing.Size(470, 517);
+            this.InspectorBox.Size = new System.Drawing.Size(383, 517);
             this.InspectorBox.TabIndex = 1;
             this.InspectorBox.TabStop = false;
             this.InspectorBox.Text = "Inspector";
@@ -124,7 +125,7 @@
             this.inspectorGrid.Location = new System.Drawing.Point(3, 16);
             this.inspectorGrid.Name = "inspectorGrid";
             this.inspectorGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.inspectorGrid.Size = new System.Drawing.Size(464, 498);
+            this.inspectorGrid.Size = new System.Drawing.Size(377, 498);
             this.inspectorGrid.TabIndex = 0;
             this.inspectorGrid.ToolbarVisible = false;
             this.inspectorGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.InspectorGrid_PropertyValueChanged);
@@ -132,7 +133,20 @@
             // InspectorContextMenu
             // 
             this.InspectorContextMenu.Name = "InspectorContextMenu";
-            this.InspectorContextMenu.Size = new System.Drawing.Size(153, 26);
+            this.InspectorContextMenu.Size = new System.Drawing.Size(61, 4);
+            // 
+            // ViewPanel
+            // 
+            this.ViewPanel.AutoSize = true;
+            this.ViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ViewPanel.Location = new System.Drawing.Point(239, 69);
+            this.ViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
+            this.ViewPanel.Name = "ViewPanel";
+            this.ViewPanel.Padding = new System.Windows.Forms.Padding(3);
+            this.ViewPanel.Size = new System.Drawing.Size(840, 517);
+            this.ViewPanel.TabIndex = 2;
+            this.ViewPanel.TabStop = true;
             // 
             // SceneHierarchyBox
             // 
@@ -145,7 +159,7 @@
             this.SceneHierarchyBox.Location = new System.Drawing.Point(4, 69);
             this.SceneHierarchyBox.MinimumSize = new System.Drawing.Size(200, 500);
             this.SceneHierarchyBox.Name = "SceneHierarchyBox";
-            this.SceneHierarchyBox.Size = new System.Drawing.Size(209, 517);
+            this.SceneHierarchyBox.Size = new System.Drawing.Size(228, 517);
             this.SceneHierarchyBox.TabIndex = 3;
             this.SceneHierarchyBox.TabStop = false;
             this.SceneHierarchyBox.Text = "Scene Hierarchy";
@@ -158,7 +172,7 @@
             this.SceneHierarchyTree.LabelEdit = true;
             this.SceneHierarchyTree.Location = new System.Drawing.Point(8, 13);
             this.SceneHierarchyTree.Name = "SceneHierarchyTree";
-            this.SceneHierarchyTree.Size = new System.Drawing.Size(194, 501);
+            this.SceneHierarchyTree.Size = new System.Drawing.Size(213, 501);
             this.SceneHierarchyTree.TabIndex = 0;
             this.SceneHierarchyTree.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.SceneHierarchyTree_AfterLabelEdit);
             this.SceneHierarchyTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.SceneHierarchyTree_NodeMouseClick);
@@ -169,7 +183,7 @@
             this.fileToolStripMenuItem});
             this.MainMenuStrip.Location = new System.Drawing.Point(1, 1);
             this.MainMenuStrip.Name = "MainMenuStrip";
-            this.MainMenuStrip.Size = new System.Drawing.Size(215, 24);
+            this.MainMenuStrip.Size = new System.Drawing.Size(234, 24);
             this.MainMenuStrip.TabIndex = 5;
             this.MainMenuStrip.Text = "menuStrip1";
             // 
@@ -222,9 +236,9 @@
             this.ToolMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.createToolStripMenuItem,
             this.componentToolStripMenuItem});
-            this.ToolMenuStrip.Location = new System.Drawing.Point(217, 1);
+            this.ToolMenuStrip.Location = new System.Drawing.Point(236, 1);
             this.ToolMenuStrip.Name = "ToolMenuStrip";
-            this.ToolMenuStrip.Size = new System.Drawing.Size(778, 24);
+            this.ToolMenuStrip.Size = new System.Drawing.Size(846, 24);
             this.ToolMenuStrip.TabIndex = 4;
             this.ToolMenuStrip.Text = "menuStrip1";
             // 
@@ -289,10 +303,10 @@
             // 
             this.ConsoleTabControl.Controls.Add(this.ConsoleTab);
             this.ConsoleTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ConsoleTabControl.Location = new System.Drawing.Point(220, 593);
+            this.ConsoleTabControl.Location = new System.Drawing.Point(239, 593);
             this.ConsoleTabControl.Name = "ConsoleTabControl";
             this.ConsoleTabControl.SelectedIndex = 0;
-            this.ConsoleTabControl.Size = new System.Drawing.Size(772, 265);
+            this.ConsoleTabControl.Size = new System.Drawing.Size(840, 265);
             this.ConsoleTabControl.TabIndex = 6;
             // 
             // ConsoleTab
@@ -301,7 +315,7 @@
             this.ConsoleTab.Location = new System.Drawing.Point(4, 22);
             this.ConsoleTab.Name = "ConsoleTab";
             this.ConsoleTab.Padding = new System.Windows.Forms.Padding(3);
-            this.ConsoleTab.Size = new System.Drawing.Size(764, 239);
+            this.ConsoleTab.Size = new System.Drawing.Size(832, 239);
             this.ConsoleTab.TabIndex = 0;
             this.ConsoleTab.Text = "Console";
             this.ConsoleTab.UseVisualStyleBackColor = true;
@@ -320,7 +334,7 @@
             // ConsoleSplitContainer.Panel2
             // 
             this.ConsoleSplitContainer.Panel2.Controls.Add(this.ConsoleMessageDetailsLabel);
-            this.ConsoleSplitContainer.Size = new System.Drawing.Size(758, 233);
+            this.ConsoleSplitContainer.Size = new System.Drawing.Size(826, 233);
             this.ConsoleSplitContainer.SplitterDistance = 168;
             this.ConsoleSplitContainer.TabIndex = 0;
             // 
@@ -336,7 +350,7 @@
             this.ConsoleList.Location = new System.Drawing.Point(0, 0);
             this.ConsoleList.Name = "ConsoleList";
             this.ConsoleList.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ConsoleList.Size = new System.Drawing.Size(758, 168);
+            this.ConsoleList.Size = new System.Drawing.Size(826, 168);
             this.ConsoleList.TabIndex = 0;
             this.ConsoleList.UseCompatibleStateImageBehavior = false;
             this.ConsoleList.View = System.Windows.Forms.View.Details;
@@ -373,30 +387,25 @@
             // SceneHierarchyContextMenu
             // 
             this.SceneHierarchyContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.renameToolStripMenuItem});
+            this.RenameToolStripMenuItem,
+            this.DeleteGameObjectMenuItem});
             this.SceneHierarchyContextMenu.Name = "SceneHierarchyContextMenu";
-            this.SceneHierarchyContextMenu.Size = new System.Drawing.Size(118, 26);
+            this.SceneHierarchyContextMenu.Size = new System.Drawing.Size(118, 48);
             this.SceneHierarchyContextMenu.Text = "Hi";
             // 
-            // renameToolStripMenuItem
+            // RenameToolStripMenuItem
             // 
-            this.renameToolStripMenuItem.Name = "renameToolStripMenuItem";
-            this.renameToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
-            this.renameToolStripMenuItem.Text = "Rename";
-            this.renameToolStripMenuItem.Click += new System.EventHandler(this.renameToolStripMenuItem_Click);
+            this.RenameToolStripMenuItem.Name = "RenameToolStripMenuItem";
+            this.RenameToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.RenameToolStripMenuItem.Text = "Rename";
+            this.RenameToolStripMenuItem.Click += new System.EventHandler(this.RenameToolStripMenuItem_Click);
             // 
-            // ViewPanel
+            // DeleteGameObjectMenuItem
             // 
-            this.ViewPanel.AutoSize = true;
-            this.ViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ViewPanel.Location = new System.Drawing.Point(220, 69);
-            this.ViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
-            this.ViewPanel.Name = "ViewPanel";
-            this.ViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.ViewPanel.Size = new System.Drawing.Size(772, 517);
-            this.ViewPanel.TabIndex = 2;
-            this.ViewPanel.TabStop = true;
+            this.DeleteGameObjectMenuItem.Name = "DeleteGameObjectMenuItem";
+            this.DeleteGameObjectMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.DeleteGameObjectMenuItem.Text = "Delete";
+            this.DeleteGameObjectMenuItem.Click += new System.EventHandler(this.DeleteGameObjectMenuItem_Click);
             // 
             // EditorForm
             // 
@@ -445,7 +454,7 @@
         private System.Windows.Forms.ToolStripMenuItem newGameObjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem componentToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip SceneHierarchyContextMenu;
-        private System.Windows.Forms.ToolStripMenuItem renameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem RenameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem boxColliderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem meshToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem meshRendererToolStripMenuItem;
@@ -468,6 +477,7 @@
         private System.Windows.Forms.OpenFileDialog OpenFileBox;
         private System.Windows.Forms.ToolStripMenuItem cameraToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip InspectorContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem DeleteGameObjectMenuItem;
     }
 }
 

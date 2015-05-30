@@ -154,6 +154,7 @@ namespace Editor
             {
                 if (Inspector.RemoveComponentFromCurrentObject(componentName))
                 {
+                    levelManager.IsLevelDirty = true;
                     Console.LogDebug("Editor", "Successfully removed {0}", componentName);
                 }
                 else
@@ -187,13 +188,19 @@ namespace Editor
             }
             levelManager.IsLevelDirty = true;
         }
-        private void renameToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RenameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (SceneHierarchyTree.SelectedNode != null)
             {
                 Console.LogDebug("Editor", "Beginning edit on node: {0} with Handle: {1}", SceneHierarchyTree.SelectedNode.Text, SceneHierarchyTree.SelectedNode.Tag);
                 SceneHierarchyTree.SelectedNode.BeginEdit();
             }
+        }
+        private void DeleteGameObjectMenuItem_Click(object sender, EventArgs e)
+        {
+            SceneHierarchy.DeleteSelectedNode();
+            Inspector.Clear();
+            levelManager.IsLevelDirty = true;
         }
         #endregion Scene Hierarchy
 

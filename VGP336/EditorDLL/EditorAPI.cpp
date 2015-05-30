@@ -181,6 +181,13 @@ unsigned int CreateGameObjectFromTemplate(const char* templateFile, unsigned cha
 
 //----------------------------------------------------------------------------------------------------
 
+int DestroyGameObject(Handle handle)
+{
+    return (int)cmd.DestroyGameObject(handle);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 int RenameGameObject(Handle handle, const char* name)
 {
     return (int)cmd.RenameGameObject(handle, name);

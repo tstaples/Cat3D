@@ -244,6 +244,33 @@ bool EditorCommands::CreateGameObjectFromTemplate(const char* templateFile, Hand
 
 //----------------------------------------------------------------------------------------------------
 
+bool EditorCommands::DestroyGameObject(Handle handle)
+{
+    GameObjectHandle gohandle = handle;
+    if (gohandle.IsValid())
+    {
+        if (mApp.mGameWorld.mFactory.Destroy(gohandle))
+        {
+            // Remove the object from the editor's list
+            EditorObjects::iterator it = mApp.mObjects.begin();
+            for (it; it != mApp.mObjects.end(); ++it)
+            {
+                if (it->GetHandle() == handle)
+                {
+                    mApp.mObjects.erase(it);
+                    break;
+                }
+            }
+            // Deleted object would have been the one selected
+            mApp.mSelectedObjects.clear();
+            return true;
+        }
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
 bool EditorCommands::RenameGameObject(Handle handle, const char* name)
 {
     ASSERT(name != nullptr, "[EditorCommands] Renaming error: name is uninitialized");

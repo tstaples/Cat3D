@@ -20,6 +20,7 @@ public:
     bool GetGameObject(Handle handle, u8* dst, u32 size, u32& bytesWritten);
     bool SelectGameObject(Handle handle);
     bool CreateGameObjectFromTemplate(const char* templateFile, Handle& handle);
+    bool DestroyGameObject(Handle handle);
     bool RenameGameObject(Handle handle, const char* name);
     bool AddComponent(Handle handle, const char* componentName);
     bool RemoveComponent(Handle handle, const char* componentName);

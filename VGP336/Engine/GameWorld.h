@@ -61,6 +61,10 @@ public:
     s32 GetScreenHeight() const;
 
 private:
+    // Delegates
+    bool OnGameObjectDestroyed(GameObjectHandle handle);
+
+private:
     NONCOPYABLE(GameWorld);
 
     Application* mpApplication;

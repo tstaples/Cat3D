@@ -86,6 +86,8 @@ EditorAPI int SelectGameObject(Handle handle);
  */
 EditorAPI unsigned int CreateGameObjectFromTemplate(const char* templateFile, unsigned char* dst, unsigned int size);
 
+EditorAPI int DestroyGameObject(Handle handle);
+
 /* Renames a GameObject.
  * @param handle: handle of the desired GameObject.
  * @param name: new name for the GameObject.

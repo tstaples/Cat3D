@@ -97,6 +97,28 @@ namespace
         }
         return true;
     }
+
+    void UnHookServices(GameObjectHandle& handle, const Services& services, Component* component)
+    {
+        GameObject* gameObject = handle.Get();
+        const MetaClass* metaClass = component->GetMetaClass();
+        const u32 numDeps = metaClass->GetNumDependencies();
+        for (u32 i=0; i < numDeps; ++i)
+        {
+            const MetaDependency* metaDependency = metaClass->GetDependencyAtIndex(i);
+            const char* depTag = metaDependency->GetTag();
+            if (strcmp(depTag, "Service") == 0)
+            {
+                // Look up the service and unsubscribe the gameObject
+                const char* depName = metaDependency->GetName();
+                Service* service = LookUpService(services, depName);
+                if (service != nullptr && gameObject->HasService(service->GetID()))
+                {
+                    service->UnSubscribe(handle);
+                }
+            }
+        }
+    }
 }
 
 GameObjectFactory::GameObjectFactory(GameObjectPool& gameObjectPool)
@@ -201,6 +223,34 @@ GameObjectHandle GameObjectFactory::Create(SerialReader& reader)
 
 //----------------------------------------------------------------------------------------------------
 
+bool GameObjectFactory::Destroy(GameObjectHandle handle)
+{
+    if (!handle.IsValid())
+        return false;
+
+    if (OnDestroyGameObject(handle))
+    {
+        GameObject* gameObject = handle.Get();
+        GameObject::Components::iterator it = gameObject->mComponents.begin();
+        for (it; it != gameObject->mComponents.end(); ++it)
+        {
+            Component* component = *it;
+
+            // Unsubscribe from any services
+            UnHookServices(handle, mServices, component);
+
+            // Delete the component
+            SafeDelete(component);
+        }
+        gameObject->mComponents.clear();
+        mGameObjectPool.Free(handle);
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
 bool GameObjectFactory::AddComponent(GameObjectHandle handle, const char* componentMetaName)
 {
     const MetaClass* metaClass = MetaDB::GetMetaClass(componentMetaName);
@@ -239,26 +289,14 @@ bool GameObjectFactory::RemoveComponent(GameObjectHandle handle, const char* com
     for (it; it != gameObject->mComponents.end(); ++it)
     {
         Component* component = *it;
+
+        // Look up component by name
         const MetaClass* metaClass = component->GetMetaClass();
         if (strcmp(componentMetaName, metaClass->GetName()) == 0)
         {
-            // - Check if component requires any services, if so unsub the gameOBject from them
-            const u32 numDeps = metaClass->GetNumDependencies();
-            for (u32 i=0; i < numDeps; ++i)
-            {
-                const MetaDependency* metaDependency = metaClass->GetDependencyAtIndex(i);
-                const char* depTag = metaDependency->GetTag();
-                if (strcmp(depTag, "Service") == 0)
-                {
-                    // Look up the service and unsubscribe the gameObject
-                    const char* depName = metaDependency->GetName();
-                    Service* service = LookUpService(mServices, depName);
-                    if (service != nullptr && gameObject->HasService(service->GetID()))
-                    {
-                        service->UnSubscribe(handle);
-                    }
-                }
-            }
+            // Unsubscribe
+            UnHookServices(handle, mServices, component);
+
             // Remove and Delete the component
             gameObject->mComponents.erase(it);
             SafeDelete(component);

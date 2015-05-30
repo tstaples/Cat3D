@@ -105,6 +105,24 @@ namespace Editor
             NativeMethods.RenameGameObject(handle.ToNativeHandle(), name);
         }
 
+        public void DeleteSelectedNode()
+        {
+            if (Tree.SelectedNode != null)
+            {
+                GameObject.Handle handle = (GameObject.Handle)Tree.SelectedNode.Tag;
+                if (NativeMethods.DestroyGameObject(handle.ToNativeHandle()) == NativeMethods.True)
+                {
+                    // Remove the node from the tree
+                    Tree.Nodes.Remove(Tree.SelectedNode);
+                    Console.LogInfo("Editor", "Successfully deleted GameObject");
+                }
+                else
+                {
+                    Console.LogError("Editor", "Failed to delete GameObject");
+                }
+            }
+        }
+
         private TreeNode FindNode(GameObject.Handle handle)
         {
             foreach (TreeNode node in Tree.Nodes)

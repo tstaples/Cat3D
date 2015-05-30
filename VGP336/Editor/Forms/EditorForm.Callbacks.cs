@@ -12,7 +12,7 @@ namespace Editor
 {
     partial class EditorForm
     {
-        public bool OnViewportFocus()
+        public bool OnViewportFocus(Keys key)
         {
             // Update the viewport's focus flag since it can't seem to do it itself
             Point mpos = GetRelativeMousePos();
@@ -21,7 +21,7 @@ namespace Editor
             return false; // Don't want to consume the input
         }
 
-        public bool OnLeftClick()
+        public bool OnSelectObject(Keys key)
         {
             // We only care the the user clicked inside the viewport
             if (!Viewport.IsFocused)
@@ -53,7 +53,7 @@ namespace Editor
             return false;
         }
 
-        public bool OnRightClickInspector()
+        public bool OnRightClickInspector(Keys key)
         {
             // No component selected
             Inspector.SelectedComponentName = null;
@@ -97,6 +97,23 @@ namespace Editor
                         InspectorContextMenu.Show(MousePosition);
                         return false; // Don't consume or the menu option won't select properly
                     }
+                }
+            }
+            return false;
+        }
+
+        public bool OnDeleteGameObject(Keys key)
+        {
+            if (key == Keys.Delete)
+            {
+                // Ensure the command isn't meant for another window, ie. deleting an asset
+                if (Inspector.IsAnObjectSelected() &&
+                   (InspectorGrid.Focused || Viewport.IsFocused || SceneHierarchyTree.Focused))
+                {
+                    SceneHierarchy.DeleteSelectedNode();
+                    Inspector.Clear();
+                    levelManager.IsLevelDirty = true;
+                    return true;
                 }
             }
             return false;

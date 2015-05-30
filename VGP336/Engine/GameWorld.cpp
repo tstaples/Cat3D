@@ -45,6 +45,7 @@ bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, C
         &mRenderService
     };
     mFactory.Initialize(services, *this);
+    mFactory.OnDestroyGameObject = DELEGATE(&GameWorld::OnGameObjectDestroyed, this);
     return true;
 }
 
@@ -182,6 +183,19 @@ s32 GameWorld::GetScreenWidth() const
 s32 GameWorld::GetScreenHeight() const
 {
     return mpApplication->GetScreenHeight();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool GameWorld::OnGameObjectDestroyed(GameObjectHandle handle)
+{
+    auto it = std::find(mGameObjectHandles.begin(), mGameObjectHandles.end(), handle);
+    if (&it != nullptr)
+    {
+        mGameObjectHandles.erase(it);
+        return true;
+    }
+    return false;
 }
 
 /*
