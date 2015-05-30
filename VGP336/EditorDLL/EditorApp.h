@@ -18,6 +18,8 @@ public:
 	EditorApp();
 	virtual ~EditorApp();
 
+    void InitializeGameView(HINSTANCE instance, HWND hWnd, LPCSTR appName, u32 width, u32 height);
+
 private:
 	// Application implementation
 	virtual void OnInitialize(u32 width, u32 height) override;
@@ -28,7 +30,6 @@ private:
 
 private:
     // Application
-	Window mWindow;
 	Timer mTimer;
 	GraphicsSystem mGraphicsSystem;
 	Camera mCamera;
@@ -41,6 +42,7 @@ private:
     Gizmo* mpGizmo;
 
     // Game
+	Window mGameWindow;
     GameWorld mGameWorld;
     bool mIsGameRunning;
 

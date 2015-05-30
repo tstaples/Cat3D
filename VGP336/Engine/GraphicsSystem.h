@@ -24,6 +24,9 @@ public:
 	void Initialize(HWND window, bool fullscreen);
 	void Terminate();
 
+    void BindWindow(HWND window);
+    void Finalize();
+
 	void BeginRender(const Color& clearColor = Color::Black());
 	void EndRender();
 
@@ -41,13 +44,22 @@ public:
 	ID3D11DeviceContext* GetContext()	{ return mpImmediateContext; }
 	
 private:
+    bool CreateSwapChain(HWND hWnd, UINT width, UINT height, IDXGISwapChain*& pSwapChain);
+
+private:
 	NONCOPYABLE(GraphicsSystem);
+    typedef std::vector<ID3D11RenderTargetView*> RenderTargetViews;
+    typedef std::vector<IDXGISwapChain*> SwapChains;
 
 	ID3D11Device* mpD3DDevice;
 	ID3D11DeviceContext* mpImmediateContext;
 
 	IDXGISwapChain* mpSwapChain;
 	ID3D11RenderTargetView* mpRenderTargetView;
+
+    SwapChains mSwapChains;
+    RenderTargetViews mRenderTargetViews;
+    ID3D11RenderTargetView** mpRenderTargetViews; // array
 
 	ID3D11Texture2D* mpDepthStencilBuffer;
 	ID3D11DepthStencilView* mpDepthStencilView;
@@ -62,6 +74,7 @@ private:
 	
 	bool mFullscreen;
 	bool mInitialized;
+    bool mFinalized;
 };
 
 #endif // #ifndef INCLUDED_ENGINE_GRAPHICSSYSTEM_H

@@ -32,6 +32,14 @@ namespace
 		D3D_FEATURE_LEVEL_10_0,
 	};
 	const UINT kNumFeatureLevels = ARRAYSIZE(kFeatureLevels);
+
+    void GetViewportSize(HWND hWnd, UINT& width, UINT& height)
+    {
+        RECT rc = { 0 };
+	    GetClientRect(hWnd, &rc);
+	    width = rc.right - rc.left;
+	    height = rc.bottom - rc.top;
+    }
 }
 
 //====================================================================================================
@@ -151,6 +159,7 @@ void GraphicsSystem::Initialize(HWND window, bool fullscreen)
 
 	// Cache swap chain description
 	mpSwapChain->GetDesc(&mSwapChainDesc);
+    mSwapChains.push_back(mpSwapChain);
 
 	// The next thing we need to do is to create a render target view. A render target view is a type
 	// of resource view in Direct3D 11. A resource view allows a resource to be bound to the graphics
@@ -183,6 +192,7 @@ void GraphicsSystem::Initialize(HWND window, bool fullscreen)
 	hr = mpD3DDevice->CreateRenderTargetView(pBackBuffer, nullptr, &mpRenderTargetView);
 	SafeRelease(pBackBuffer);
 	ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to create render target view.");
+    mRenderTargetViews.push_back(mpRenderTargetView);
 
 	// The depth buffer allows Direct3D to keep track of the depth of every pixel drawn to the screen.
 	// The default behavior of the depth buffer in Direct3D 11 is to check every pixel being drawn to
@@ -259,6 +269,48 @@ void GraphicsSystem::Initialize(HWND window, bool fullscreen)
 
 //----------------------------------------------------------------------------------------------------
 
+void GraphicsSystem::BindWindow(HWND window)
+{
+	UINT width = 0, height = 0;
+    GetViewportSize(window, width, height);
+
+    // Create the swap chain
+    IDXGISwapChain* swapChain = nullptr;
+    VERIFY(CreateSwapChain(window, width, height, swapChain), "[GraphicsSystem] Failed to create swap chain.");
+    mSwapChains.push_back(swapChain);
+
+    // Create the backbuffer
+    ID3D11Texture2D* pBackBuffer = nullptr;
+	HRESULT hr = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+	ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to access swap chain buffer.");
+
+    // Create the render target
+    ID3D11RenderTargetView* pRenderTarget = nullptr;
+    hr = mpD3DDevice->CreateRenderTargetView(pBackBuffer, nullptr, &pRenderTarget);
+	SafeRelease(pBackBuffer);
+	ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to create render target view.");
+    mRenderTargetViews.push_back(pRenderTarget);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void GraphicsSystem::Finalize()
+{
+    ASSERT(!mFinalized, "[GraphicsSystem] Already finalized");
+
+    const UINT numRenderTargets = mRenderTargetViews.size();
+    mpRenderTargetViews = new ID3D11RenderTargetView*[numRenderTargets];
+    for (u32 i=0; i < numRenderTargets; ++i)
+    {
+        mpRenderTargetViews[i] = mRenderTargetViews[i];
+    }
+    mpImmediateContext->OMSetRenderTargets(numRenderTargets, mpRenderTargetViews, mpDepthStencilView);
+
+    mFinalized = true;
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void GraphicsSystem::Terminate()
 {
 	// Check if we have already terminated the system
@@ -269,6 +321,15 @@ void GraphicsSystem::Terminate()
 	}
 
 	LOG("[GraphicsSystem] Terminating...");
+
+    //const u32 numRenderTargets = mRenderTargetViews.size();
+    //for (u32 i=0; i <numRenderTargets; ++i)
+    //{
+    //    SafeRelease(mpRenderTargetViews[i]);
+    //    SafeRelease(mRenderTargetViews[i]);
+    //    SafeRelease(mSwapChains[i]);
+    //}
+    //mRenderTargetViews.clear();
 
 	SafeRelease(mpDisableDepthStencil);
 	SafeRelease(mpDepthStencilView);
@@ -288,6 +349,15 @@ void GraphicsSystem::Terminate()
 
 void GraphicsSystem::BeginRender(const Color& clearColor)
 {
+    //f32* colour = clearColor.ToFloatArray();
+    //const u32 numRenderTargets = mRenderTargetViews.size();
+    //for (u32 i=0; i < numRenderTargets; ++i)
+    //{
+    //    ID3D11RenderTargetView* renderTargetView = mpRenderTargetViews[i];
+    //
+    //    // Clear all the render target views
+	//    mpImmediateContext->ClearRenderTargetView(renderTargetView, colour);
+    //}
 	mpImmediateContext->ClearRenderTargetView(mpRenderTargetView, clearColor.ToFloatArray());
 	mpImmediateContext->ClearDepthStencilView(mpDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
@@ -296,7 +366,11 @@ void GraphicsSystem::BeginRender(const Color& clearColor)
 
 void GraphicsSystem::EndRender()
 {
-	mpSwapChain->Present(0, 0);
+    //for (IDXGISwapChain* swapChain : mSwapChains)
+    //{
+    //    swapChain->Present(0, 0);
+    //}
+    mpSwapChain->Present(0, 0);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -388,4 +462,45 @@ u32 GraphicsSystem::GetHeight() const
 {
 	ASSERT(mpSwapChain != nullptr, "[GraphicsSystem] Failed to get swap chain buffer width.");
 	return mSwapChainDesc.BufferDesc.Height;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool GraphicsSystem::CreateSwapChain(HWND hWnd, UINT width, UINT height, IDXGISwapChain*& pSwapChain)
+{
+    DXGI_SWAP_CHAIN_DESC descSwapChain;
+	ZeroMemory(&descSwapChain, sizeof(descSwapChain));
+	descSwapChain.BufferCount = 1;
+	descSwapChain.BufferDesc.Width = width;
+	descSwapChain.BufferDesc.Height = height;
+	descSwapChain.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	descSwapChain.BufferDesc.RefreshRate.Numerator = 60;
+	descSwapChain.BufferDesc.RefreshRate.Denominator = 1;
+	descSwapChain.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	descSwapChain.OutputWindow = hWnd;
+	descSwapChain.SampleDesc.Count = 1;
+	descSwapChain.SampleDesc.Quality = 0;
+	descSwapChain.Windowed = !mFullscreen;
+
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/hh404556(v=vs.85).aspx
+    IDXGIDevice2* pDXGIDevice = nullptr;
+    HRESULT hr = mpD3DDevice->QueryInterface(__uuidof(IDXGIDevice2), (void**)&pDXGIDevice);
+    ASSERT(SUCCEEDED(hr), "[GraphicSystem] Failed to get IDXGIDevice2");
+
+    IDXGIAdapter* pDXGIAdapter = nullptr;
+    hr = pDXGIDevice->GetAdapter(&pDXGIAdapter);
+    ASSERT(SUCCEEDED(hr), "[GraphicSystem] Failed to get IDXGIAdapter");
+
+    IDXGIFactory2* pIDXGIFactory2 = nullptr;
+    hr = pDXGIAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&pIDXGIFactory2);
+    ASSERT(SUCCEEDED(hr), "[GraphicSystem] Failed to get IDXGIFactory2");
+
+    hr = pIDXGIFactory2->CreateSwapChain(mpD3DDevice, &descSwapChain, &pSwapChain);
+    if (SUCCEEDED(hr))
+    {
+        // Cache the description
+        pSwapChain->GetDesc(&descSwapChain);
+        return true;
+    }
+    return false;
 }

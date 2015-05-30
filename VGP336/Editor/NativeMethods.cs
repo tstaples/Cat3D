@@ -25,6 +25,13 @@ namespace Editor
             int screenHeight);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern void InitializeGameViewport(
+            IntPtr instancePtrAddress,
+            IntPtr hWndPtrAddress,
+            int screenWidth,
+            int screenHeight);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern bool GetLastEditorError(NativeTypes.Error error);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]

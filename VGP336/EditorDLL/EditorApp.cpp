@@ -42,6 +42,14 @@ EditorApp::~EditorApp()
 
 //----------------------------------------------------------------------------------------------------
 
+void EditorApp::InitializeGameView(HINSTANCE instance, HWND hWnd, LPCSTR appName, u32 width, u32 height)
+{
+    mGameWindow.Initialize(instance, appName, width, height);
+    mGraphicsSystem.BindWindow(hWnd);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void EditorApp::OnInitialize(u32 width, u32 height)
 {
     Meta::MetaRegistration();
@@ -67,6 +75,8 @@ void EditorApp::OnInitialize(u32 width, u32 height)
     {
         mObjects.push_back(EditorObject(handle));
     }
+
+    //mGraphicsSystem.Finalize();
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -80,6 +90,7 @@ void EditorApp::OnTerminate()
     mObjects.clear();
 	SimpleDraw::Terminate();
 	mGraphicsSystem.Terminate();
+    mGameWindow.Terminate();
 }
 
 //----------------------------------------------------------------------------------------------------

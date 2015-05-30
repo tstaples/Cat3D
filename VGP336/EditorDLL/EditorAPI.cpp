@@ -98,6 +98,17 @@ void Initialize(int* instancePtrAddress, int* hPrevInstancePtrAddress, int* hWnd
 
 //----------------------------------------------------------------------------------------------------
 
+void InitializeGameViewport(int* instancePtrAddress, int* hWndPtrAddress, int screenWidth, int screenHeight)
+{
+    // C# passes HINSTANCE and HWND values to C++ DLL as (int*)
+    HINSTANCE hInstance = (HINSTANCE)instancePtrAddress;
+    HWND hWnd = (HWND)hWndPtrAddress;
+
+    app.InitializeGameView(hInstance, hWnd, "Game", screenWidth, screenHeight);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void WndProc(int* hWndPtrAddress, int msg, int wParam, int lParam)
 {
     app.ForwardInput((HWND)hWndPtrAddress, msg, wParam, lParam);

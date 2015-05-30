@@ -33,6 +33,12 @@ EditorAPI void Initialize(
     int screenWidth,
     int screenHeight);
 
+EditorAPI void InitializeGameViewport(
+    int* instancePtrAddress,
+    int* hWndPtrAddress,
+    int screenWidth,
+    int screenHeight);
+
 EditorAPI void WndProc(
     int* hWndPtrAddress, 
     int msg, 
