@@ -63,6 +63,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventHandlers\ToolMenuHandler.cs" />
+    <Compile Include="GameObject\Components\CameraComponent.cs" />
     <Compile Include="GameObject\Components\ColliderComponent.cs" />
     <Compile Include="GameObject\Components\MeshComponent.cs" />
     <Compile Include="GameObject\Components\MeshRendererComponent.cs" />
@@ -78,10 +80,13 @@
       <DependentUpon>EditorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GameObject\GameObject.cs" />
-    <Compile Include="GameObject\SceneHierarchy.cs" />
+    <Compile Include="EventHandlers\LevelManager.cs" />
+    <Compile Include="GameObject\Meta.cs" />
+    <Compile Include="Util\Console.cs" />
+    <Compile Include="UI\SceneHierarchy.cs" />
     <Compile Include="Input\InputHandler.cs" />
     <Compile Include="Input\InputMessageFilter.cs" />
-    <Compile Include="GameObject\Inspector.cs" />
+    <Compile Include="UI\Inspector.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -91,8 +91,8 @@ u32 GetFieldOffset(DataType ClassType::* field)
 #define META_DEPENDENCIES_BEGIN\
         static const MetaDependency sDependencies[] = {
 
-#define META_DEPENDENCY(CLASS_NAME)\
-        MetaDependency(CLASS_NAME),
+#define META_DEPENDENCY(CLASS_NAME, TAG)\
+        MetaDependency(CLASS_NAME, TAG),
 
 #define META_DEPENDENCIES_END\
         };\

@@ -24,18 +24,18 @@
 //====================================================================================================
 
 class GraphicsSystem;
-class Level;
+class Application;
 
 //====================================================================================================
 // Class Declarations
 //====================================================================================================
 
+typedef std::vector<GameObjectHandle> GameObjectHandles;
+
 class GameWorld
 {
-    typedef std::vector<GameObjectHandle> GameObjectHandles;
-
 public:
-    GameWorld(u16 maxObjects);
+    GameWorld(Application* app, u16 maxObjects);
     ~GameWorld();
 
     // Note: camera param temp until camera component created
@@ -45,17 +45,29 @@ public:
     void OnUpdate(f32 deltaTime);
     void OnRender();
 
-    // Creates and adds a new GameObject to the world.
-    // @param templateFile: template to create the object from. Pass in nullptr to create and empty object.
-    // @param pos: position in world space the game object will be placed.
-    // @param rot: rotation of the object in world space.
-    void CreateGameObject(const char* templateFile, Math::Vector3 pos, Math::Quaternion rot);
+    /* Creates and adds a new GameObject to the world.
+     * @param templateFile: template to create the object from. Pass in nullptr to create and empty object.
+     * @param pos: position in world space the game object will be placed.
+     * @param rot: rotation of the object in world space.
+     * Returns the handle to the newly created GameObject.
+     */
+    GameObjectHandle CreateGameObject(const char* templateFile, Math::Vector3 pos, Math::Quaternion rot);
 
+    bool NewLevel(const char* levelName);
     bool LoadLevel(const char* levelName);
-    //bool SaveCurrentLevel(const char* path)
+    bool SaveLevel(const char* levelName);
+
+    s32 GetScreenWidth() const;
+    s32 GetScreenHeight() const;
+
+private:
+    // Delegates
+    bool OnGameObjectDestroyed(GameObjectHandle handle);
 
 private:
     NONCOPYABLE(GameWorld);
+
+    Application* mpApplication;
 
     GameSettings mSettings;
 
@@ -68,10 +80,12 @@ private:
     GameObjectHandles mGameObjectHandles;
 
     LevelLoader mLevelLoader;
+    Level mCurrentLevel;
 
 private:
     // Only the editor will need to directly access the GameWorld's members
     friend class EditorApp;
+    friend class EditorCommands;
     friend class TestApp; // temp
 };
 

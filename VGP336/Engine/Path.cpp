@@ -63,6 +63,27 @@ std::wstring Path::GetFileNameWithoutExtension() const
 
 //----------------------------------------------------------------------------------------------------
 
+std::string Path::GetExtensionA() const
+{
+    return IO::WCharToChar(GetExtension());
+}
+
+//----------------------------------------------------------------------------------------------------
+
+std::string Path::GetFileNameA() const
+{
+    return IO::WCharToChar(GetFileName());
+}
+
+//----------------------------------------------------------------------------------------------------
+
+std::string Path::GetFileNameWithoutExtensionA() const
+{
+    return IO::WCharToChar(GetFileNameWithoutExtension());
+}
+
+//----------------------------------------------------------------------------------------------------
+
 std::wstring Path::GetFullPath() const
 {
     // Convert to TCHAR array
@@ -76,6 +97,13 @@ std::wstring Path::GetFullPath() const
 
 //----------------------------------------------------------------------------------------------------
 
+std::string Path::GetFullPathA() const
+{
+    return IO::WCharToChar(GetFullPath());
+}
+
+//----------------------------------------------------------------------------------------------------
+
 std::wstring Path::GetPath() const
 {
     return mPath;
@@ -83,7 +111,7 @@ std::wstring Path::GetPath() const
 
 //----------------------------------------------------------------------------------------------------
 
-std::string Path::GetPathString() const
+std::string Path::GetPathA() const
 {
     return IO::WCharToChar(mPath);
 }
@@ -121,6 +149,22 @@ void Path::ConvertForwardslashToBackslash()
         }
     }
     mFormat = Back;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+Path& Path::operator=(const std::wstring& rhs)
+{
+    mPath = rhs;
+    return *this;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+Path& Path::operator=(const std::string& rhs)
+{
+    mPath = IO::CharToWChar(rhs);
+    return *this;
 }
 
 } // namespace IO

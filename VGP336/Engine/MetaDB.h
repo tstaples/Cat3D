@@ -22,6 +22,7 @@ class MetaDB
 public:
     static void Register(const MetaClass* metaClass);
     static const MetaClass* GetMetaClass(const char* className);
+    static bool ExportMetaData(u8* dst, u32 dstSize, u32& offset);
 
 private:
     // No need to ever create this class

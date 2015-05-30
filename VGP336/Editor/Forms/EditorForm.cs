@@ -8,66 +8,138 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace Editor
 {
     public partial class EditorForm : Form
     {
-        private Inspector InspectorPanel;
-        private SceneHierarchy SceneTree;
+        #region Accessors/members
 
+        private Inspector inspector;
+        private SceneHierarchy sceneHierarchy;
+        private LevelManager levelManager;
+        private ToolMenuHandler toolMenuHandler;
+
+        public PropertyGrid InspectorGrid
+        {
+            get { return inspectorGrid; }
+        }
+        public SelectablePanel Viewport
+        {
+            get { return EditorViewPanel; }
+            private set { }
+        }
+        public Inspector Inspector
+        {
+            get { return inspector; }
+        }
+        public SceneHierarchy SceneHierarchy
+        {
+            get { return sceneHierarchy; }
+        }
+        public LevelManager LevelManager
+        {
+            get { return levelManager; }
+        }
+        #endregion Accessors/members
+
+        #region API calls/constructor
         public EditorForm()
         {
             InitializeComponent();
 
             // Get handles to current instance and window
             IntPtr hInstance = Marshal.GetHINSTANCE(this.GetType().Module);
-            IntPtr hWnd = this.ViewPanel.Handle;
+            IntPtr EditorhWnd = this.EditorViewPanel.Handle;
+            IntPtr GamehWnd = this.GameViewPanel.Handle;
 
             // Initialize the engine within the view panel
-            NativeMethods.Initialize(hInstance, IntPtr.Zero, hWnd, 1, this.ViewPanel.Width, this.ViewPanel.Height);
+            NativeMethods.Initialize(hInstance, IntPtr.Zero, EditorhWnd, 1, this.EditorViewPanel.Width, this.EditorViewPanel.Height);
+            //NativeMethods.InitializeGameViewport(hInstance, GamehWnd, GameViewPanel.Width, GameViewPanel.Height);
 
-            ViewPanel.Focus();
+            // Load in metadata from the engine
+            Meta.Initialize();
 
-            InspectorPanel = new Inspector(ref InspectorGrid);
-            SceneTree = new SceneHierarchy(ref SceneHierarchyTree, ref InspectorPanel);
-            SceneTree.Popualate();
+            Console.Initialize(ref ConsoleList);
+            inspector = new Inspector(ref inspectorGrid);
+            sceneHierarchy = new SceneHierarchy(ref SceneHierarchyTree, ref inspector);
+            sceneHierarchy.Popualate();
+            Console.LogInfo("Editor", "Successfully initialized");
+
+            levelManager = new LevelManager(this, ref SaveFileBox, ref OpenFileBox);
+            levelManager.IsLevelDirty = false;
+
+            toolMenuHandler = new ToolMenuHandler(this);
         }
-
         private void Terminate()
         {
+            Console.LogInfo("Editor", "Shutting down");
             NativeMethods.Terminate();
         }
-
         public void OnIdle(object sender, EventArgs e)
         {
             NativeMethods.UpdateFrame();
         }
-
+        private void EditorForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!levelManager.SaveIfLevelDirty())
+            {
+                // Cancel the close event
+                e.Cancel = true;
+            }
+        }
         private void EditorForm_FormClosed(object sender, FormClosedEventArgs e)
         {
+            Console.LogInfo("Editor", "Shutting down: {0}", e.CloseReason);
             NativeMethods.Terminate();
         }
+        #endregion API calls/constructor
 
-        public void OnResize(object sender, EventArgs e)
+        #region Util
+        public Point GetRelativeMousePos()
         {
-            // TODO
+            return this.PointToClient(MousePosition);
+        }
+        public Point GetMousePos()
+        {
+            return MousePosition;
+        }
+        public void UpdateTitleLevelStatus()
+        {
+            // levelname will be appended with a '*' if there are changes to the current level
+            // that haven't been saved.
+            string levelName = levelManager.CurrentLevel;
+            if (levelManager.IsLevelDirty)
+            {
+                levelName += "*";
+            }
+            this.Text = "Editor - " + levelName;
+        }
+        public bool IsEditorViewportActive()
+        {
+            return (ViewportTabControl.SelectedIndex == 0);
+        }
+        #endregion Util
+
+        private void ConsoleList_Click(object sender, EventArgs e)
+        {
+            ListViewItem item = ConsoleList.SelectedItems[0];
+            ConsoleMessageDetailsLabel.Text = Console.GetMessageDetails(item);
         }
 
-        public bool IsViewPortFocused()
-        {
-            // Offset cursor by window position to get relative position
-            // TODO: either do this properly or account for window resizing by updating bounds
-            //Point offset = this.Location;
-            //Point mpos = new Point(MousePosition.X - offset.X, MousePosition.Y - offset.Y);
-            return ViewPanel.Bounds.Contains(MousePosition);
-        }
-
+        #region Inspector
         private void InspectorGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             object newVal = e.ChangedItem.Value;
             string compName = e.ChangedItem.Parent.Label;
             string fieldName = e.ChangedItem.Label;
+
+            // No change
+            if (newVal == e.OldValue)
+            {
+                return;
+            }
 
             // Hack: NotifyParentPropertyAttribute(true) currently used to identify children
             if (e.ChangedItem.PropertyDescriptor.Attributes.Contains(new NotifyParentPropertyAttribute(true)))
@@ -77,47 +149,111 @@ namespace Editor
                 fieldName = e.ChangedItem.Parent.Label;
                 newVal = e.ChangedItem.Parent.Value;
             }
-            InspectorPanel.OnComponentModified(compName, fieldName, newVal);
+            inspector.OnComponentModified(compName, fieldName, newVal);
+            levelManager.IsLevelDirty = true;
+            Console.LogDebug("Editor", "{0}'s property: {1} changed from: {2} to {3}", compName, fieldName, e.OldValue, newVal);
         }
+        private void OnRemoveComponent(object sender, EventArgs e)
+        {
+            string componentName = Inspector.SelectedComponentName;
+            if (componentName != null)
+            {
+                if (Inspector.RemoveComponentFromCurrentObject(componentName))
+                {
+                    levelManager.IsLevelDirty = true;
+                    Console.LogDebug("Editor", "Successfully removed {0}", componentName);
+                }
+                else
+                {
+                    Console.LogError("Editor", "Failed to removed {0}", componentName);
+                }
+            }
+        }
+        #endregion Inspector
 
+        #region Scene Hierarchy
         private void SceneHierarchyTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
             {
                 // Display the right-click context menu strip above the selected item
                 SceneHierarchyContextMenu.Show(MousePosition);
+                Console.LogDebug("Editor", "Showing SceneHierarchyContextMenu");
             }
-            SceneTree.OnNodeSelected(e.Node);
+            Console.LogDebug("Editor", "Node {0} with handle {1} selected", e.Node.Text, e.Node.Tag);
+            sceneHierarchy.OnNodeSelected(e.Node);
         }
-
-        private void newGameObjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            byte[] buffer = new byte[2048];
-            uint size = NativeMethods.CreateAndSelectGameObject(buffer);
-            GameObject gameObject = GameObject.Deserialize(buffer, size);
-            InspectorPanel.Display(gameObject);
-            SceneTree.Popualate();
-        }
-
-        private void renameToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (SceneHierarchyTree.SelectedNode != null)
-            {
-                SceneHierarchyTree.SelectedNode.BeginEdit();
-            }
-        }
-
         private void SceneHierarchyTree_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
             // TODO: Check label for invalid characters
             string newLabel = e.Label;
-            SceneTree.RenameSelectedNode(newLabel);
+            // Label will be null if the user cancels the edit
+            if (newLabel != null)
+            {
+                sceneHierarchy.RenameSelectedNode(newLabel);
+            }
+            levelManager.IsLevelDirty = true;
         }
-
-        private void meshToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RenameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
-            int i = 0;
+            if (SceneHierarchyTree.SelectedNode != null)
+            {
+                Console.LogDebug("Editor", "Beginning edit on node: {0} with Handle: {1}", SceneHierarchyTree.SelectedNode.Text, SceneHierarchyTree.SelectedNode.Tag);
+                SceneHierarchyTree.SelectedNode.BeginEdit();
+            }
         }
+        private void DeleteGameObjectMenuItem_Click(object sender, EventArgs e)
+        {
+            SceneHierarchy.DeleteSelectedNode();
+            Inspector.Clear();
+            levelManager.IsLevelDirty = true;
+        }
+        #endregion Scene Hierarchy
+
+        #region Tool Menu Strip
+        private void OnCreateNewGameObject(object sender, EventArgs e)
+        {
+            string templateFile = "../Data/GameObjects/default.json";
+            toolMenuHandler.OnCreateObject(templateFile);
+        }
+        private void OnCreateCamera(object sender, EventArgs e)
+        {
+            string templateFile = "../Data/GameObjects/camera.json";
+            toolMenuHandler.OnCreateObject(templateFile);
+        }
+        private void OnComponentMenuItem_Click(object sender, EventArgs e)
+        {
+            // Hack: assuming the component name on the dropdown + "Component" is the meta name
+            string componentName = sender.ToString();
+            if (inspector.AddComponentToCurrentObject(componentName))
+            {
+                levelManager.IsLevelDirty = true;
+                Console.LogInfo("Editor", "Added {0} Component to selected GameObject", componentName);
+            }
+            else
+            {
+                Console.LogError("Editor", "Failed to add {0} Component to selected GameObject", componentName);
+            }
+        }
+        #endregion Tool Menu Strip
+
+        #region Level events
+        public void OnNewLevel(object sender, EventArgs e)
+        {
+            levelManager.OnNewLevel();
+        }
+        public void OnSaveLevelAs(object sender, EventArgs e)
+        {
+            levelManager.OnSaveLevelAs();
+        }
+        public void OnSaveLevel(object sender, EventArgs e)
+        {
+            levelManager.OnSaveLevel();
+        }
+        public void OnOpenLevel(object sender, EventArgs e)
+        {
+            levelManager.OnOpenLevel();
+        }
+        #endregion Level events
     }
 }

@@ -24,8 +24,15 @@
 // Class Definitions
 //====================================================================================================
 
+META_CLASS_BEGIN(RenderService)
+META_DEPENDENCIES_BEGIN
+    META_DEPENDENCY("TransformComponent", "Component")
+    META_DEPENDENCY("MeshComponent", "Component")
+META_DEPENDENCIES_END
+META_CLASS_END
+
 RenderService::RenderService()
-    : Service("RenderService")
+    : Service("RenderService", kID)
     , mpGraphicsSystem(nullptr)
 {
 }
@@ -74,7 +81,6 @@ void RenderService::Update()
             // Destroy old texture and load new one
             Texture& texture = meshRendererComponent->GetTexture();
             std::wstring texturePath = IO::CharToWChar(meshRendererComponent->GetTexturePath());
-            //std::wstring texturePath = meshRendererComponent->GetTexturePath();
             texture.Terminate();
             texture.Initialize(*mpGraphicsSystem, texturePath.c_str());
             mRenderer.SetTexture(texture);
@@ -102,16 +108,19 @@ void RenderService::Update()
 
 //----------------------------------------------------------------------------------------------------
 
-void RenderService::OnSubscribe(GameObjectHandle handle)
+bool RenderService::OnSubscribe(GameObjectHandle handle)
 {
     GameObject* gameObject = handle.Get();
     TransformComponent* transformComponent = nullptr;
     MeshComponent* meshComponent = nullptr;
     MeshRendererComponent* meshRendererComponent = nullptr;
     
-    // TODO: throw exception instead of asserting
-    gameObject->GetComponent(transformComponent);
-    gameObject->GetComponent(meshComponent);
+    // Ensure the GameObject has the required components
+    if (!gameObject->FindComponent(transformComponent) ||
+        !gameObject->FindComponent(meshComponent))
+    {
+        return false;
+    }
 
     // Init the mesh buffer
     Mesh& mesh = meshComponent->GetMesh();
@@ -127,4 +136,12 @@ void RenderService::OnSubscribe(GameObjectHandle handle)
         texture.Initialize(*mpGraphicsSystem, texturePath.c_str()); 
         mRenderer.SetTexture(texture);
     }
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void RenderService::SetCamera(Camera& camera)
+{
+    mRenderer.SetCamera(camera);
 }

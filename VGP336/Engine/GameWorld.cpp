@@ -10,14 +10,16 @@
 #include "Precompiled.h"
 #include "GameWorld.h"
 
+#include "Application.h"
 #include "SerialReader.h"
 
 //====================================================================================================
 // local Definitions
 //====================================================================================================
 
-GameWorld::GameWorld(u16 maxObjects)
-    : mGameObjectPool(maxObjects)
+GameWorld::GameWorld(Application* app, u16 maxObjects)
+    : mpApplication(app)
+    , mGameObjectPool(maxObjects)
     , mFactory(mGameObjectPool)
 {
 }
@@ -42,7 +44,8 @@ bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, C
     {
         &mRenderService
     };
-    mFactory.Initialize(services);
+    mFactory.Initialize(services, *this);
+    mFactory.OnDestroyGameObject = DELEGATE(&GameWorld::OnGameObjectDestroyed, this);
     return true;
 }
 
@@ -50,6 +53,7 @@ bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, C
 
 bool GameWorld::OnShutdown()
 {
+    mRenderService.Terminate();
     mFactory.Terminate();
     mGameObjectHandles.clear();
     mGameObjectPool.Flush();
@@ -87,7 +91,7 @@ void GameWorld::OnRender()
 
 //----------------------------------------------------------------------------------------------------
 
-void GameWorld::CreateGameObject(const char* templateFile, Math::Vector3 pos, Math::Quaternion rot)
+GameObjectHandle GameWorld::CreateGameObject(const char* templateFile, Math::Vector3 pos, Math::Quaternion rot)
 {
     // Use the templateFile if it's not null, otherwise use the default object template.
     // Note: For now we're assuming all GameObjects have a transform component
@@ -104,6 +108,24 @@ void GameWorld::CreateGameObject(const char* templateFile, Math::Vector3 pos, Ma
 
     // Add the object to the world
     mGameObjectHandles.push_back(handle);
+    return handle;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool GameWorld::NewLevel(const char* levelName)
+{
+    // Clear current level data
+    mRenderService.UnSubscribeAll();
+    mGameObjectHandles.clear();
+    mGameObjectPool.Flush();
+
+    // Reset the current level data
+    mCurrentLevel.path = levelName;
+    mCurrentLevel.settings = mSettings;
+    mCurrentLevel.buffer = nullptr;
+    mCurrentLevel.bufferSize = 0;
+    return true;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -111,9 +133,9 @@ void GameWorld::CreateGameObject(const char* templateFile, Math::Vector3 pos, Ma
 bool GameWorld::LoadLevel(const char* levelName)
 {
     // Clear current level data
+    mRenderService.UnSubscribeAll();
     mGameObjectHandles.clear();
     mGameObjectPool.Flush();
-    mRenderService.UnSubscribeAll();
 
     // 1 level = 1 file for now
     // level loader will give us a vector of Level objects containing the buffers for each gameobject and the game settings
@@ -129,8 +151,48 @@ bool GameWorld::LoadLevel(const char* levelName)
         {
             SerialReader reader(level.buffer, level.bufferSize);
             GameObjectHandle handle = mFactory.Create(reader);
+            if (!handle.IsValid())
+            {
+                return false;
+            }
             mGameObjectHandles.push_back(handle);
         }
+        // Set the current level now that everything has loaded successfully
+        mCurrentLevel = level;
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool GameWorld::SaveLevel(const char* levelName)
+{
+    return mLevelLoader.SaveToFile(levelName, mGameObjectHandles, mSettings);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+s32 GameWorld::GetScreenWidth() const
+{
+    return mpApplication->GetScreenWidth();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+s32 GameWorld::GetScreenHeight() const
+{
+    return mpApplication->GetScreenHeight();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool GameWorld::OnGameObjectDestroyed(GameObjectHandle handle)
+{
+    auto it = std::find(mGameObjectHandles.begin(), mGameObjectHandles.end(), handle);
+    if (&it != nullptr)
+    {
+        mGameObjectHandles.erase(it);
         return true;
     }
     return false;

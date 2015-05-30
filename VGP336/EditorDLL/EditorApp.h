@@ -10,6 +10,8 @@
 
 class Gizmo;
 
+typedef std::vector<EditorObject> EditorObjects;
+
 class EditorApp : public Application
 {
 public:
@@ -25,14 +27,11 @@ private:
     virtual void OnResizeWindow() override;
 
 private:
+    // Application
 	Window mWindow;
 	Timer mTimer;
 	GraphicsSystem mGraphicsSystem;
 	Camera mCamera;
-
-    // Screen
-    u32 mWidth;
-    u32 mHeight;
 
     // Input
     InputData mInputData;
@@ -41,13 +40,13 @@ private:
 
     Gizmo* mpGizmo;
 
-    GameObjectFactory mFactory;
-    GameObjectPool mGameObjectPool;
-    Octree<EditorObject> mOctree;
-    std::vector<EditorObject> mObjects;
-    std::vector<EditorObject*> mSelectedObjects;
+    // Game
+    GameWorld mGameWorld;
+    bool mIsGameRunning;
 
-    RenderService mRenderService;
+    Octree<EditorObject> mOctree;
+    EditorObjects mObjects;
+    std::vector<EditorObject*> mSelectedObjects;
 
 private:
     friend class InputCallbacks;

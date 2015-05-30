@@ -30,6 +30,10 @@ class GraphicsSystem;
 class RenderService : public Service
 {
 public:
+    META_DECLARE_CLASS
+
+    static const u16 kID = 0;
+
     RenderService();
     ~RenderService();
     
@@ -39,8 +43,10 @@ public:
     // Must be called between BeginRender() and EndRender()
     void Update();
 
+    void SetCamera(Camera& camera);
+
 private:
-    virtual void OnSubscribe(GameObjectHandle handle);
+    virtual bool OnSubscribe(GameObjectHandle handle);
 
 private:
     GraphicsSystem* mpGraphicsSystem;

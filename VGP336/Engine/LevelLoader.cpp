@@ -11,7 +11,15 @@ LevelLoader::LevelLoader()
     : mBufferHasData(false)
     , mOffset(0)
 {
+    mBuffer = new u8[LEVEL_BUFFER_SIZE];
     memset(mBuffer, 0, LEVEL_BUFFER_SIZE);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+LevelLoader::~LevelLoader()
+{
+    SafeDeleteArray(mBuffer);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -43,6 +51,7 @@ bool LevelLoader::Load(const char* filename, Level& level, Mode mode)
     level.numGameObjects = reader.Read<u32>();
     level.buffer = mBuffer + reader.GetOffset();
     level.bufferSize = fileSize - reader.GetOffset();
+    level.path = filename;
     
     // Track the offset and set that we have data in the temp buffer
     mOffset = fileSize;
@@ -79,6 +88,10 @@ bool LevelLoader::SaveLocal(const GameObjectHandles& handles, const GameSettings
 
 bool LevelLoader::SaveToFile(const char* filename, const GameObjectHandles& handles, const GameSettings& settings, Mode mode)
 {
+    if (SaveLocal(handles, settings))
+    {
+        return WriteBufferToFile(filename, mode);
+    }
     return false;
 }
 

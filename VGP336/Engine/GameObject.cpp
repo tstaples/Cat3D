@@ -2,6 +2,7 @@
 #include "GameObject.h"
 
 #include "Component.h"
+#include "GameWorld.h"
 #include "SerialWriter.h"
 #include "SerialReader.h"
 
@@ -11,9 +12,30 @@ META_FIELD_BEGIN
 META_FIELD_END
 META_CLASS_END
 
+namespace
+{
+    bool GetComponentByName(const GameObject::Components& components, const char* name, Component* component)
+    {
+        for (Component* c : components)
+        {
+            const MetaClass* compMetaClass = c->GetMetaClass();
+            if (strcmp(name, compMetaClass->GetName()) == 0)
+            {
+                component = c;
+                return true;
+            }
+        }
+        component = nullptr;
+        return false;
+    }
+}
+
+GameWorld* GameObject::spWorld = nullptr;
+
 GameObject::GameObject()
     : mName("Unknown")
 {
+    memset(mServiceSubscriptions, 0, kNumServices);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -41,6 +63,32 @@ void GameObject::Update(f32 deltaTime)
         // Reset flag as anything that relies on it will have been dealt with already
         //c->SetIsDirty(false);
     }
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void GameObject::AddService(u16 id)
+{
+    ASSERT(id < kNumServices, "[GameObject] serivce ID out of bounds");
+    ASSERT(!mServiceSubscriptions[id], "[GameObject] already subscribed to service id: %u", id);
+    mServiceSubscriptions[id] = true;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void GameObject::RemoveService(u16 id)
+{
+    ASSERT(id < kNumServices, "[GameObject] serivce ID out of bounds");
+    ASSERT(mServiceSubscriptions[id], "[GameObject] not subscribed to service id: %u", id);
+    mServiceSubscriptions[id] = false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool GameObject::HasService(u16 id) const
+{
+    ASSERT(id < kNumServices, "[GameObject] serivce ID out of bounds");
+    return mServiceSubscriptions[id];
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -98,15 +146,17 @@ bool GameObject::Deserialize(SerialReader& reader)
     const u32 numComponents = reader.Read<u32>();
     for (u32 i=0; i < numComponents; ++i)
     {
+        bool isNewComponent = false;
+
         // Look up component by name
         Component* component = nullptr;
         std::string compMetaClassName = reader.ReadLengthEncodedString();
-        if (!GetComponentByName(compMetaClassName.c_str(), component))
+        if (!GetComponentByName(mComponents, compMetaClassName.c_str(), component))
         {
-            return false;
             // If it doesn't exist, create it
-            //const MetaClass* compMetaClass = MetaDB::GetMetaClass(compMetaClassName.c_str());
-            //component = static_cast<Component*>(compMetaClass->Create());
+            const MetaClass* compMetaClass = MetaDB::GetMetaClass(compMetaClassName.c_str());
+            component = static_cast<Component*>(compMetaClass->Create());
+            isNewComponent = true;
         }
 
         // Read in the component fields
@@ -118,8 +168,8 @@ bool GameObject::Deserialize(SerialReader& reader)
 
             std::string fieldName = reader.ReadLengthEncodedString();
             MetaType::Type fieldType = reader.Read<MetaType::Type>();
-            const u32 fieldOffset = reader.Read<u32>();
             const u32 fieldSize = reader.Read<u32>();
+            const u32 fieldOffset = reader.Read<u32>();
             
             // May as well make use of the metadata
             ASSERT(fieldName == metaField->GetName(), "[GameObject] Deserialization error: field names do not match");
@@ -128,8 +178,13 @@ bool GameObject::Deserialize(SerialReader& reader)
             ASSERT(fieldSize == metaField->GetType()->GetSize(), "[GameObject] Deserialization error: field sizes do not match");
 
             // Get a pointer to the field and deserialize the data into it
-            void* fieldData = ((char*)component) + fieldOffset;
+            void* fieldData = ((u8*)component) + fieldOffset;
             metaType->Deserialize(reader, fieldData);
+        }
+
+        if (isNewComponent)
+        {
+            AddComponent(component);
         }
     }
     return true;
@@ -137,18 +192,22 @@ bool GameObject::Deserialize(SerialReader& reader)
 
 //----------------------------------------------------------------------------------------------------
 
-// TODO: Move to anon namespace
-bool GameObject::GetComponentByName(const char* name, Component* component)
+bool GameObject::HasComponent(const char* componentName) const
 {
     for (Component* c : mComponents)
     {
         const MetaClass* compMetaClass = c->GetMetaClass();
-        if (strcmp(name, compMetaClass->GetName()) == 0)
+        if (strcmp(componentName, compMetaClass->GetName()) == 0)
         {
-            component = c;
             return true;
         }
     }
-    component = nullptr;
     return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+GameWorld* GameObject::GetWorld() const
+{
+    return spWorld;
 }

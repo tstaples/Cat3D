@@ -29,8 +29,9 @@ struct GameSettings;
 
 struct Level
 {
+    IO::Path path;
     GameSettings settings;
-    const u8* buffer;
+    const u8* buffer;   // refers to LevelLoader's buffer
     u32 bufferSize;
     u32 numGameObjects;
 };
@@ -51,6 +52,7 @@ public:
     };
 
     LevelLoader();
+    ~LevelLoader();
     
     /* Loads the data for a level.
      * @param filename: path to the level file.
@@ -83,7 +85,7 @@ public:
 private:
     NONCOPYABLE(LevelLoader);
 
-    u8 mBuffer[LEVEL_BUFFER_SIZE];
+    u8* mBuffer;
     u32 mOffset;
     bool mBufferHasData;
 };

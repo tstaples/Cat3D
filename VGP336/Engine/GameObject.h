@@ -19,6 +19,7 @@
 //====================================================================================================
 
 class Component;
+class GameWorld;
 
 //====================================================================================================
 // Class Declarations
@@ -39,6 +40,10 @@ public:
     void Update(f32 deltaTime);
     void AddComponent(Component* component);
 
+    void AddService(u16 id);
+    void RemoveService(u16 id);
+    bool HasService(u16 id) const;
+
     // Returns bool rather than pointer to force caching local pointer
     template<typename T>
     bool GetComponent(T*& component);
@@ -50,11 +55,13 @@ public:
     template<typename T>
     bool FindComponent(const T*& component) const;
 
-    bool GetComponentByName(const char* name, Component* component);
+    bool HasComponent(const char* componentName) const;
 
     void SetName(const char* name)              { mName = name; }
     const char* GetName() const                 { return mName.c_str(); }
     const Components& GetComponents() const     { return mComponents; }
+
+    GameWorld* GetWorld() const;
 
     bool Serialize(SerialWriter& writer);
     bool Deserialize(SerialReader& reader);
@@ -65,6 +72,11 @@ private:
 
     std::string mName; // See TODO in TString
     Components mComponents;
+
+    static const u16 kNumServices = 1; // TODO: find better way to do this
+    bool mServiceSubscriptions[kNumServices];
+
+    static class GameWorld* spWorld;
 };
 
 //====================================================================================================

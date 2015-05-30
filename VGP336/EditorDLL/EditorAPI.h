@@ -18,7 +18,12 @@
 // API Function Prototypes
 //====================================================================================================
 
-// TODO: document
+extern "C" struct Matrix;
+extern "C" struct Vector3;
+extern "C" struct Handle;
+extern "C" struct Error;
+
+EditorAPI bool GetLastEditorError(Error& error);
 
 EditorAPI void Initialize(
     int* instancePtrAddress,
@@ -38,35 +43,65 @@ EditorAPI void UpdateFrame();
 EditorAPI void Terminate();
 EditorAPI int IsGameRunning();
 
-// Serializes the currently selected GameObjects.
-// @param buffer: externally managed buffer to hold the serialized data.
-// Returns the number of bytes copied to the buffer.
-EditorAPI unsigned int GetSelectedObjectData(unsigned char* buffer);
+/* Serializes the currently selected GameObjects.
+ * @param buffer: externally managed buffer to hold the serialized data.
+ * @param size: size of the external buffer.
+ * Returns the number of bytes copied to the buffer.
+ */
+EditorAPI unsigned int GetSelectedObjectData(unsigned char* dst, unsigned int size);
 
-// Updates the values of a particular component.
-// @param buffer: buffer containing the serialized component data.
-// @param size: size in bytes of the component data.
-// Returns 0 if succeeded.
-EditorAPI int UpdateComponent(unsigned char* buffer, unsigned int size);
+/* Updates the values of a particular component.
+ * @param buffer: buffer containing the serialized component data.
+ * @param size: size in bytes of the buffer.
+ * Returns 1 if succeeded.
+ */
+EditorAPI int UpdateComponent(const unsigned char* buffer, unsigned int size);
 
-// Gets basic info about all objects in the world.
-// @param buffer: externally managed buffer to output the serialized data to.
-// Returns the number of bytes copied to the buffer.
-EditorAPI unsigned int DiscoverGameObjects(unsigned char* buffer);
+/* Gets basic info about all objects in the world.
+ * @param buffer: externally managed buffer to output the serialized data to.
+ * @param size: size of the external buffer.
+ * Returns the number of bytes copied to the buffer.
+ */
+EditorAPI unsigned int DiscoverGameObjects(unsigned char* dst, unsigned int size);
 
-// Gets the serialized data for a GameObject.
-// @param index: handle index of the desired GameObject.
-// @param buffer: output buffer to write the serialized data to.
-// Returns the number of bytes copied to the buffer.
-EditorAPI unsigned int GetGameObject(unsigned short index, unsigned char* buffer);
+/* Gets the serialized data for a GameObject.
+ * @param handle: handle of the desired GameObject.
+ * @param buffer: output buffer to write the serialized data to.
+ * @param size: size of the external buffer.
+ * Returns the number of bytes copied to the buffer.
+ */
+EditorAPI unsigned int GetGameObject(Handle handle, unsigned char* dst, unsigned int size);
 
-EditorAPI void SelectGameObject(unsigned short index);
+/* Selects a GameObject.
+ * @param handle: handle of the GameObject to select.
+ * Returns 1 if the GameObject was successfully selected.
+ */
+EditorAPI int SelectGameObject(Handle handle);
 
-EditorAPI unsigned int CreateAndSelectGameObject(unsigned char* buffer);
+/* Creates a new GameObject from a template and adds it to the world.
+ * @param tempalteFile: template to create the object from.
+ * @param dst: externally managed buffer to write the new object's data to.
+ * @param size: size of the external buffer.
+ * Returns the number of bytes written to the dst. Returns 0 if fails.
+ */
+EditorAPI unsigned int CreateGameObjectFromTemplate(const char* templateFile, unsigned char* dst, unsigned int size);
 
-EditorAPI void RenameGameObject(unsigned short index, const char* name);
+EditorAPI int DestroyGameObject(Handle handle);
 
-extern "C" struct Matrix;
-extern "C" struct Vector3;
+/* Renames a GameObject.
+ * @param handle: handle of the desired GameObject.
+ * @param name: new name for the GameObject.
+ * Returns 1 if the GameObject was renamed successfully.
+ */
+EditorAPI int RenameGameObject(Handle handle, const char* name);
+
+EditorAPI int AddComponent(Handle handle, const char* componentName);
+EditorAPI int RemoveComponent(Handle handle, const char* componentName);
+
+EditorAPI unsigned int GetMetaData(unsigned char* dst, unsigned int size);
+
+EditorAPI int NewLevel(const char* filename);
+EditorAPI int LoadLevel(const char* filename);
+EditorAPI int SaveLevel(const char* filename);
 
 #endif //#ifndef INCLUDED_EDITORAPI_H

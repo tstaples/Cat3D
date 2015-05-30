@@ -46,9 +46,44 @@ struct Matrix
 	float _41, _42, _43, _44;
 };
 
+//----------------------------------------------------------------------------------------------------
+
+struct Handle
+{
+    u16 instance;
+    u16 index;
+
+    Handle()
+    {
+        instance = U16_MAX;
+        index = U16_MAX;
+    }
+};
+
+struct Error
+{
+    char message[2048];
+};
+
+
 //====================================================================================================
 // Functions
 //====================================================================================================
+
+bool GetLastEditorError(Error& error)
+{
+    memset(error.message, 0, sizeof(error.message));
+    const char* msg = cmd.GetLastError();
+    if (msg)
+    {
+        strcpy_s(error.message, msg);
+        return true;
+    }
+    strcpy_s(error.message, "None");
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
 
 void Initialize(int* instancePtrAddress, int* hPrevInstancePtrAddress, int* hWndPtrAddress, int nCmdShow, int screenWidth, int screenHeight)
 {
@@ -91,62 +126,113 @@ int IsGameRunning()
 
 //----------------------------------------------------------------------------------------------------
 
-unsigned int GetSelectedObjectData(unsigned char* buffer)
+unsigned int GetSelectedObjectData(unsigned char* dst, unsigned int size)
 {
-    unsigned int size = 0;
-    unsigned char* buff = (unsigned char*)cmd.GetSelectedObjectData(size);
-    memcpy(buffer, buff, size);
-    return size;
+    unsigned int written = 0;
+    cmd.GetSelectedObjectData(dst, size, written);
+    return written;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-int UpdateComponent(unsigned char* buffer, unsigned int size)
+int UpdateComponent(const unsigned char* buffer, unsigned int size)
 {
     return (int)cmd.UpdateComponent(buffer, size);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-unsigned int DiscoverGameObjects(unsigned char* buffer)
+unsigned int DiscoverGameObjects(unsigned char* dst, unsigned int size)
 {
-    unsigned int size = 0;
-    unsigned char* buff = (unsigned char*)cmd.DiscoverGameObjects(size);
-    memcpy(buffer, buff, size);
-    return size;
+    unsigned int written = 0;
+    cmd.DiscoverGameObjects(dst, size, written);
+    return written;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-unsigned int GetGameObject(unsigned short index, unsigned char* buffer)
+unsigned int GetGameObject(Handle handle, unsigned char* dst, unsigned int size)
 {
-    unsigned int size = 0;
-    unsigned char* buff = (unsigned char*)cmd.GetGameObject(index, size);
-    memcpy(buffer, buff, size);
-    return size;
+    unsigned int written = 0;
+    cmd.GetGameObject(handle, dst, size, written);
+    return written;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-void SelectGameObject(unsigned short index)
+int SelectGameObject(Handle handle)
 {
-    cmd.SelectGameObject(index);
+    return (int)cmd.SelectGameObject(handle);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-unsigned int CreateAndSelectGameObject(unsigned char* buffer)
+unsigned int CreateGameObjectFromTemplate(const char* templateFile, unsigned char* dst, unsigned int size)
 {
-    u16 index = -1; // Init as invalid
-    cmd.CreateEmptyGameObject(index);
-    cmd.SelectGameObject(index);
-    u32 buffsize = 0;
-    const char* buff = (const char*)cmd.GetGameObject(index, buffsize);
-    memcpy(buffer, buff, buffsize);
-    return buffsize;
+    unsigned int written = 0;
+
+    Handle handle;
+    if (cmd.CreateGameObjectFromTemplate(templateFile, handle))
+    {
+        cmd.GetGameObject(handle, dst, size, written);
+    }
+    return written;
 }
 
-void RenameGameObject(unsigned short index, const char* name)
+//----------------------------------------------------------------------------------------------------
+
+int DestroyGameObject(Handle handle)
 {
-    cmd.RenameGameObject((u16)index, name);
+    return (int)cmd.DestroyGameObject(handle);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+int RenameGameObject(Handle handle, const char* name)
+{
+    return (int)cmd.RenameGameObject(handle, name);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+int AddComponent(Handle handle, const char* componentName)
+{
+    return (int)cmd.AddComponent(handle, componentName);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+int RemoveComponent(Handle handle, const char* componentName)
+{
+    return (int)cmd.RemoveComponent(handle, componentName);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+unsigned int GetMetaData(unsigned char* dst, unsigned int size)
+{
+    unsigned int written = 0;
+    VERIFY(cmd.GetMetaData(dst, size, written), "[EditorAPI] Failed to get meta data");
+    return written;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+int NewLevel(const char* filename)
+{
+    return (int)cmd.NewLevel(filename);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+int LoadLevel(const char* filename)
+{
+    return (int)cmd.LoadLevel(filename);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+int SaveLevel(const char* filename)
+{
+    return (int)cmd.SaveLevel(filename);
 }

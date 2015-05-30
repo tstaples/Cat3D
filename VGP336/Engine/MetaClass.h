@@ -65,11 +65,11 @@ public:
     // Returns a pointer to the MetaField.
     const MetaField* GetFieldAtIndex(u32 index) const;
 
-    const MetaDependency* GetDependencyList() const { return mDependencies; }
-    u32 GetNumDependencies() const                  { return mNumDependencies; }
+    const MetaDependency* GetDependencyAtIndex(u32 index) const;
 
-    const char* GetName() const { return mName; }
-    u32 GetNumFields() const    { return mNumFields; }
+    const char* GetName() const     { return mName; }
+    u32 GetNumFields() const        { return mNumFields; }
+    u32 GetNumDependencies() const  { return mNumDependencies; }
 
 private:
     // Will point to literal constant, so shallow copy is fine.

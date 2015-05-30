@@ -9,8 +9,12 @@ namespace Editor
 {
     class NativeMethods
     {
+        public static int True = 1;
+        public static int False = 0;
+
         const string kDLLName = "EditorDLL.dll";
 
+        #region Application functions
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern void Initialize(
             IntPtr instancePtrAddress, 
@@ -19,6 +23,9 @@ namespace Editor
             int nCmdShow, 
             int screenWidth, 
             int screenHeight);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern bool GetLastEditorError(NativeTypes.Error error);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern void WndProc(IntPtr hWndPtrAddress, int msg, int wParam, int lParam);
@@ -31,41 +38,50 @@ namespace Editor
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern int IsGameRunning();
+        #endregion
 
+        #region GameObject functions
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern uint GetSelectedObjectData(byte[] buffer);
+        public unsafe static extern uint GetSelectedObjectData(byte[] buffer, uint size);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl, CharSet=CharSet.Ansi)]
         public unsafe static extern int UpdateComponent(byte[] buffer, uint size);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern uint DiscoverGameObjects(byte[] buffer);
+        public unsafe static extern uint DiscoverGameObjects(byte[] buffer, uint size);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern uint GetGameObject(ushort index, byte[] buffer);
+        public unsafe static extern uint GetGameObject(NativeTypes.Handle handle, byte[] buffer, uint size);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern void SelectGameObject(ushort index);
+        public unsafe static extern int SelectGameObject(NativeTypes.Handle handle);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern uint CreateAndSelectGameObject(byte[] buffer);
+        public unsafe static extern uint CreateGameObjectFromTemplate(string templateFile, byte[] buffer, uint size);
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
-        public unsafe static extern void RenameGameObject(ushort index, string name);
+        public unsafe static extern int DestroyGameObject(NativeTypes.Handle handle);
 
-        //[DllImport(kDLLName, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        //[return: MarshalAs(UnmanagedType.LPStr)]
-        //public static extern string MyFunction([InAttribute()] [MarshalAsAttribute(UnmanagedType.LPStr)] string MyParameter);
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int RenameGameObject(NativeTypes.Handle handle, string name);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int AddComponent(NativeTypes.Handle handle, string componentName);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int RemoveComponent(NativeTypes.Handle handle, string componentName);
+        #endregion
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern uint GetMetaData(byte[] buffer, uint size);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int NewLevel(string filename);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int LoadLevel(string filename);
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int SaveLevel(string filename);
     }
-
-
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct Matrix
-    {
-        float _11, _12, _13, _14;
-        float _21, _22, _23, _24;
-        float _31, _32, _33, _34;
-        float _41, _42, _43, _44;
-    };
 }

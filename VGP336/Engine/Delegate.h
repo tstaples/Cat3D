@@ -26,6 +26,10 @@ class Delegate
 {
 	typedef ReturnType (*InvokeType)(void*, Params...);
 public:
+    Delegate()
+		: mInstance(nullptr)
+        , mInvoke(nullptr)
+    {}
 	Delegate(void* callee, InvokeType callback)
 		: mInstance(callee)
 		, mInvoke(callback)

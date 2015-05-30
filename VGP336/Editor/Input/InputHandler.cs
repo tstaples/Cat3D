@@ -7,27 +7,38 @@ using System.Windows.Forms;
 
 namespace Editor
 {
-    public delegate bool InputCallback();
+    public delegate bool InputCallback(Keys key);
 
     public class InputHandler
     {
-        private Dictionary<int, InputCallback> Callbacks;
+        private Dictionary<int, List<InputCallback>> Callbacks;
 
         public InputHandler()
         {
-            Callbacks = new Dictionary<int, InputCallback>();
+            Callbacks = new Dictionary<int, List<InputCallback>>();
         }
 
         public void Register(int key, InputCallback callback)
         {
-            Callbacks.Add(key, callback);
+            if (!Callbacks.ContainsKey(key))
+            {
+                Callbacks.Add(key, new List<InputCallback>());
+            }
+            Callbacks[key].Add(callback);
         }
 
-        public bool OnInput(int key)
+        public bool OnInput(int key, Keys keycode)
         {
             if (Callbacks.ContainsKey(key))
             {
-                return Callbacks[key]();
+                foreach (InputCallback callback in Callbacks[key])
+                {
+                    if (callback(keycode))
+                    {
+                        // This callback consumed the input
+                        return true;
+                    }
+                }
             }
             return false;
         }

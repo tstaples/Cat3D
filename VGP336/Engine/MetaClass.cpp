@@ -52,3 +52,11 @@ const MetaField* MetaClass::GetFieldAtIndex(u32 index) const
     ASSERT(index < mNumFields, "[MetaClass] Invalid field index for MetaClass: %s", mName);
     return (mFields + index);
 }
+
+//----------------------------------------------------------------------------------------------------
+
+const MetaDependency* MetaClass::GetDependencyAtIndex(u32 index) const
+{
+    ASSERT(index < mNumDependencies, "[MetaClass] Invalid MetaDependency index for MetaClass: %s", mName);
+    return (mDependencies + index);
+}

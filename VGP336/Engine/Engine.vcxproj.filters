@@ -232,6 +232,9 @@
     <ClCompile Include="LevelLoader.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
+    <ClCompile Include="CameraComponent.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InputEvent.h">
@@ -491,6 +494,12 @@
     </ClInclude>
     <ClInclude Include="GameSettings.h">
       <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Services.h">
+      <Filter>GameObject\Services</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraComponent.h">
+      <Filter>GameObject\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
