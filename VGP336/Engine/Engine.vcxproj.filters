@@ -235,6 +235,12 @@
     <ClCompile Include="CameraComponent.cpp">
       <Filter>GameObject\Components</Filter>
     </ClCompile>
+    <ClCompile Include="PhysicsService.cpp">
+      <Filter>GameObject\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBodyComponent.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InputEvent.h">
@@ -499,6 +505,12 @@
       <Filter>GameObject\Services</Filter>
     </ClInclude>
     <ClInclude Include="CameraComponent.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsService.h">
+      <Filter>GameObject\Services</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBodyComponent.h">
       <Filter>GameObject\Components</Filter>
     </ClInclude>
   </ItemGroup>

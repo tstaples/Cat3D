@@ -3,7 +3,7 @@
 
 #include "GameObject.h"
 #include "Components.h"
-#include "RenderService.h"
+#include "Services.h"
 
 void Meta::MetaRegistration()
 {
@@ -11,6 +11,9 @@ void Meta::MetaRegistration()
     MetaDB::Register(CameraComponent::StaticGetMetaClass());
     MetaDB::Register(MeshComponent::StaticGetMetaClass());
     MetaDB::Register(MeshRendererComponent::StaticGetMetaClass());
+    MetaDB::Register(RigidBodyComponent::StaticGetMetaClass());
     MetaDB::Register(TransformComponent::StaticGetMetaClass());
+
+    MetaDB::Register(PhysicsService::StaticGetMetaClass());
     MetaDB::Register(RenderService::StaticGetMetaClass());
 }

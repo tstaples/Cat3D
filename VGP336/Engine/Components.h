@@ -6,6 +6,7 @@
 #include "MeshComponent.h"
 #include "MeshRendererComponent.h"
 #include "ModelComponent.h"
+#include "RigidBodyComponent.h"
 #include "TransformComponent.h"
 
 #endif // #ifndef INCLUDED_ENGINE_COMPONENTS_H
