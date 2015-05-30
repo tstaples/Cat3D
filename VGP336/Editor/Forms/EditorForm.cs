@@ -27,7 +27,7 @@ namespace Editor
         }
         public SelectablePanel Viewport
         {
-            get { return ViewPanel; }
+            get { return EditorViewPanel; }
             private set { }
         }
         public Inspector Inspector
@@ -51,10 +51,12 @@ namespace Editor
 
             // Get handles to current instance and window
             IntPtr hInstance = Marshal.GetHINSTANCE(this.GetType().Module);
-            IntPtr hWnd = this.ViewPanel.Handle;
+            IntPtr EditorhWnd = this.EditorViewPanel.Handle;
+            IntPtr GamehWnd = this.GameViewPanel.Handle;
 
             // Initialize the engine within the view panel
-            NativeMethods.Initialize(hInstance, IntPtr.Zero, hWnd, 1, this.ViewPanel.Width, this.ViewPanel.Height);
+            NativeMethods.Initialize(hInstance, IntPtr.Zero, EditorhWnd, 1, this.EditorViewPanel.Width, this.EditorViewPanel.Height);
+            //NativeMethods.InitializeGameViewport(hInstance, GamehWnd, GameViewPanel.Width, GameViewPanel.Height);
 
             // Load in metadata from the engine
             Meta.Initialize();
@@ -113,6 +115,10 @@ namespace Editor
                 levelName += "*";
             }
             this.Text = "Editor - " + levelName;
+        }
+        public bool IsEditorViewportActive()
+        {
+            return (ViewportTabControl.SelectedIndex == 0);
         }
         #endregion Util
 

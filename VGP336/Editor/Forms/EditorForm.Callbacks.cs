@@ -108,7 +108,8 @@ namespace Editor
             {
                 // Ensure the command isn't meant for another window, ie. deleting an asset
                 if (Inspector.IsAnObjectSelected() &&
-                   (InspectorGrid.Focused || Viewport.IsFocused || SceneHierarchyTree.Focused))
+                   (InspectorGrid.Focused || Viewport.IsFocused || SceneHierarchyTree.Focused) &&
+                    IsEditorViewportActive())
                 {
                     SceneHierarchy.DeleteSelectedNode();
                     Inspector.Clear();
