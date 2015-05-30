@@ -34,6 +34,7 @@ GameWorld* GameObject::spWorld = nullptr;
 
 GameObject::GameObject()
     : mName("Unknown")
+    , mToBeDestroyed(false)
 {
     memset(mServiceSubscriptions, 0, kNumServices);
 }
@@ -42,6 +43,7 @@ GameObject::GameObject()
 
 GameObject::GameObject(const char* name)
     : mName(name)
+    , mToBeDestroyed(false)
 {
 }
 

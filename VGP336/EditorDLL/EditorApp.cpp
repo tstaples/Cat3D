@@ -63,7 +63,7 @@ void EditorApp::OnInitialize(u32 width, u32 height)
     mGameWorld.OnInitialize(settings, mGraphicsSystem, mCamera);
 
     // Discover any objects the gameworld has on startup
-    for (GameObjectHandle handle : mGameWorld.mGameObjectHandles)
+    for (GameObjectHandle handle : mGameWorld.mUpdateList)
     {
         mObjects.push_back(EditorObject(handle));
     }

@@ -77,7 +77,10 @@ private:
     GameObjectFactory mFactory;
     GameObjectPool mGameObjectPool;
 
-    GameObjectHandles mGameObjectHandles;
+    // TODO: Hold gameObject pointers for faster access
+    // then get the handle through the gameObject
+    GameObjectHandles mUpdateList;
+    GameObjectHandles mDestroyedList;
 
     LevelLoader mLevelLoader;
     Level mCurrentLevel;

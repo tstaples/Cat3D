@@ -349,7 +349,7 @@ bool EditorCommands::LoadLevel(const char* filename)
     {
         // Clear any existing items and discover the new ones
         mApp.mObjects.clear();
-        for (GameObjectHandle handle : mApp.mGameWorld.mGameObjectHandles)
+        for (GameObjectHandle handle : mApp.mGameWorld.mUpdateList)
         {
             mApp.mObjects.push_back(EditorObject(handle));
         }

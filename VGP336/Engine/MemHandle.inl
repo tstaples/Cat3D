@@ -36,3 +36,15 @@ const DataType* MemHandle<DataType>::Get() const
     }
     return data;
 }
+
+template <typename DataType>
+bool MemHandle<DataType>::IsValid() const
+{
+    return sMemoryPool && sMemoryPool->IsValid(*this);
+}
+
+template <typename DataType>
+void MemHandle<DataType>::Invalidate()
+{
+    mIndex = U16_MAX; mInstance = U16_MAX;
+}

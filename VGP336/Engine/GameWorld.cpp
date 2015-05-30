@@ -55,7 +55,8 @@ bool GameWorld::OnShutdown()
 {
     mRenderService.Terminate();
     mFactory.Terminate();
-    mGameObjectHandles.clear();
+    mUpdateList.clear();
+    mDestroyedList.clear();
     mGameObjectPool.Flush();
     return true;
 }
@@ -73,11 +74,39 @@ bool GameWorld::OnInput()
 void GameWorld::OnUpdate(f32 deltaTime)
 {
     // Update all the game objects
-    for (GameObjectHandle& handle : mGameObjectHandles)
+    // Recompute size each time to account for new objects that may be added
+    for (u32 i=0; i < mUpdateList.size(); ++i)
     {
+        GameObjectHandle handle = mUpdateList[i];
         GameObject* gameObject = handle.Get();
-        gameObject->Update(deltaTime);
+        if (gameObject->IsValid())
+        {
+            gameObject->Update(deltaTime);
+        }
     }
+
+    // Prune the destroyed objects
+    for (GameObjectHandle& handle : mDestroyedList)
+    {
+        // Terminate the gameObject
+
+        // Find the handle in the update list
+        const u32 numUpdate = mUpdateList.size();
+        for (u32 i=0; i < numUpdate; ++i)
+        {
+            if (handle == mUpdateList[i])
+            {
+                // Remove from the update list
+                mUpdateList[i] = mUpdateList.back();
+                mUpdateList.pop_back();
+                
+                // Destroy the object
+                mFactory.Destroy(handle);
+                break;
+            }
+        }
+    }
+    mDestroyedList.clear();
 
     // TODO: Update other services
 }
@@ -107,7 +136,7 @@ GameObjectHandle GameWorld::CreateGameObject(const char* templateFile, Math::Vec
     }
 
     // Add the object to the world
-    mGameObjectHandles.push_back(handle);
+    mUpdateList.push_back(handle);
     return handle;
 }
 
@@ -117,7 +146,7 @@ bool GameWorld::NewLevel(const char* levelName)
 {
     // Clear current level data
     mRenderService.UnSubscribeAll();
-    mGameObjectHandles.clear();
+    mUpdateList.clear();
     mGameObjectPool.Flush();
 
     // Reset the current level data
@@ -134,7 +163,7 @@ bool GameWorld::LoadLevel(const char* levelName)
 {
     // Clear current level data
     mRenderService.UnSubscribeAll();
-    mGameObjectHandles.clear();
+    mUpdateList.clear();
     mGameObjectPool.Flush();
 
     // 1 level = 1 file for now
@@ -155,7 +184,7 @@ bool GameWorld::LoadLevel(const char* levelName)
             {
                 return false;
             }
-            mGameObjectHandles.push_back(handle);
+            mUpdateList.push_back(handle);
         }
         // Set the current level now that everything has loaded successfully
         mCurrentLevel = level;
@@ -168,7 +197,7 @@ bool GameWorld::LoadLevel(const char* levelName)
 
 bool GameWorld::SaveLevel(const char* levelName)
 {
-    return mLevelLoader.SaveToFile(levelName, mGameObjectHandles, mSettings);
+    return mLevelLoader.SaveToFile(levelName, mUpdateList, mSettings);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -189,10 +218,21 @@ s32 GameWorld::GetScreenHeight() const
 
 bool GameWorld::OnGameObjectDestroyed(GameObjectHandle handle)
 {
-    auto it = std::find(mGameObjectHandles.begin(), mGameObjectHandles.end(), handle);
+    if (!handle.IsValid())
+    {
+        return false;
+    }
+
+    // Flag for destruction
+    //GameObject* gameObject = handle.Get();
+    //gameObject->mToBeDestroyed = true;
+    //mDestroyedList.push_back(handle);
+    //return true;
+
+    auto it = std::find(mUpdateList.begin(), mUpdateList.end(), handle);
     if (&it != nullptr)
     {
-        mGameObjectHandles.erase(it);
+        mUpdateList.erase(it);
         return true;
     }
     return false;
