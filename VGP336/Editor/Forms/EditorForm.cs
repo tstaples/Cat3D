@@ -255,5 +255,10 @@ namespace Editor
             levelManager.OnOpenLevel();
         }
         #endregion Level events
+
+        private void EditorForm_Resize(object sender, EventArgs e)
+        {
+            // TODO: Make EditorViewPanel aware of its new dimensions on resize
+        }
     }
 }

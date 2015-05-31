@@ -99,7 +99,7 @@ bool Application::ProcessInput(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
     switch (message)
 	{
     case WM_SIZE:
-        OnResizeWindow();
+        OnResizeWindow(hWnd);
         break;
 	case WM_CHAR:
 		{

@@ -61,6 +61,9 @@ public:
     const char* GetName() const                 { return mName.c_str(); }
     const Components& GetComponents() const     { return mComponents; }
 
+    bool IsActive() const                       { return mActive; }
+    void SetActive(bool state)                  { mActive = state; }
+
     GameWorld* GetWorld() const;
 
     bool Serialize(SerialWriter& writer);
@@ -75,6 +78,9 @@ private:
 
     static const u16 kNumServices = 1; // TODO: find better way to do this
     bool mServiceSubscriptions[kNumServices];
+
+    bool mActive; // In the update list
+    bool mEnabled; // TODO
 
     static class GameWorld* spWorld;
 };

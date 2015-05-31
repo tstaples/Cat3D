@@ -77,6 +77,8 @@ private:
     GameObjectFactory mFactory;
     GameObjectPool mGameObjectPool;
 
+    // TODO: hold a list for objects to update
+    // and a list for destroyed objects
     GameObjectHandles mGameObjectHandles;
 
     LevelLoader mLevelLoader;

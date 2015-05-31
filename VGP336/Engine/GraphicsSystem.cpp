@@ -58,6 +58,9 @@ GraphicsSystem::GraphicsSystem()
 	, mFeatureLevel(D3D_FEATURE_LEVEL_11_0)
 	, mFullscreen(false)
 	, mInitialized(false)
+    , mFinalized(false)
+    , mCurrentWindowIndex(0)
+    , mpRenderTargetViews(nullptr)
 {
 	// Empty
 }
@@ -135,21 +138,35 @@ void GraphicsSystem::Initialize(HWND window, bool fullscreen)
 	for (UINT driverTypeIndex = 0; driverTypeIndex < kNumDriverTypes; ++driverTypeIndex)
 	{
 		mDriverType = kDriverTypes[driverTypeIndex];
-		hr = D3D11CreateDeviceAndSwapChain
-		(
-			nullptr,
-			mDriverType,
-			nullptr,
-			createDeviceFlags,
-			kFeatureLevels,
-			kNumFeatureLevels,
-			D3D11_SDK_VERSION,
-			&descSwapChain,
-			&mpSwapChain,
-			&mpD3DDevice,
+        hr = D3D11CreateDevice
+        (
+            nullptr,
+            mDriverType,
+            nullptr,
+            createDeviceFlags,
+            kFeatureLevels,
+            kNumFeatureLevels,
+            D3D11_SDK_VERSION,
+            &mpD3DDevice,
 			&mFeatureLevel,
 			&mpImmediateContext
-		);
+        );
+
+		//hr = D3D11CreateDeviceAndSwapChain
+		//(
+		//	nullptr,
+		//	mDriverType,
+		//	nullptr,
+		//	createDeviceFlags,
+		//	kFeatureLevels,
+		//	kNumFeatureLevels,
+		//	D3D11_SDK_VERSION,
+		//	&descSwapChain,
+		//	&mpSwapChain,
+		//	&mpD3DDevice,
+		//	&mFeatureLevel,
+		//	&mpImmediateContext
+		//);
 		if (SUCCEEDED(hr))
 		{
 			break;
@@ -157,9 +174,10 @@ void GraphicsSystem::Initialize(HWND window, bool fullscreen)
 	}
 	ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to create device or swap chain.");
 
-	// Cache swap chain description
-	mpSwapChain->GetDesc(&mSwapChainDesc);
-    mSwapChains.push_back(mpSwapChain);
+    BindWindow(window);
+    
+    // Cache swap chain description
+	//mpSwapChain->GetDesc(&mSwapChainDesc);
 
 	// The next thing we need to do is to create a render target view. A render target view is a type
 	// of resource view in Direct3D 11. A resource view allows a resource to be bound to the graphics
@@ -175,9 +193,9 @@ void GraphicsSystem::Initialize(HWND window, bool fullscreen)
 	// do Direct3D 11 resource views.
 
 	// Create a render target view
-	ID3D11Texture2D* pBackBuffer = nullptr;
-	hr = mpSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-	ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to access swap chain buffer.");
+	//ID3D11Texture2D* pBackBuffer = nullptr;
+	//hr = mpSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+	//ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to access swap chain buffer.");
 
 	// We need to create a render target view because we would like to bind the back buffer of our
 	// swap chain as a render target. This enables Direct3D 11 to render onto it. We first call
@@ -189,10 +207,10 @@ void GraphicsSystem::Initialize(HWND window, bool fullscreen)
 	// the immediate context to bind it to the pipeline. This ensures the output that the pipeline renders
 	// gets written to the back buffer. The code to create and set the render target view is as follows:
 
-	hr = mpD3DDevice->CreateRenderTargetView(pBackBuffer, nullptr, &mpRenderTargetView);
-	SafeRelease(pBackBuffer);
-	ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to create render target view.");
-    mRenderTargetViews.push_back(mpRenderTargetView);
+	//hr = mpD3DDevice->CreateRenderTargetView(pBackBuffer, nullptr, &mpRenderTargetView);
+	//SafeRelease(pBackBuffer);
+	//ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to create render target view.");
+    //mRenderTargetViews.push_back(mpRenderTargetView);
 
 	// The depth buffer allows Direct3D to keep track of the depth of every pixel drawn to the screen.
 	// The default behavior of the depth buffer in Direct3D 11 is to check every pixel being drawn to
@@ -232,7 +250,7 @@ void GraphicsSystem::Initialize(HWND window, bool fullscreen)
 	ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to create depth stencil view.");
 	
 	// Set the render target view and depth stencil view
-	mpImmediateContext->OMSetRenderTargets(1, &mpRenderTargetView, mpDepthStencilView);
+	//mpImmediateContext->OMSetRenderTargets(1, &mpRenderTargetView, mpDepthStencilView);
 		
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
@@ -298,13 +316,13 @@ void GraphicsSystem::Finalize()
 {
     ASSERT(!mFinalized, "[GraphicsSystem] Already finalized");
 
-    const UINT numRenderTargets = mRenderTargetViews.size();
-    mpRenderTargetViews = new ID3D11RenderTargetView*[numRenderTargets];
-    for (u32 i=0; i < numRenderTargets; ++i)
-    {
-        mpRenderTargetViews[i] = mRenderTargetViews[i];
-    }
-    mpImmediateContext->OMSetRenderTargets(numRenderTargets, mpRenderTargetViews, mpDepthStencilView);
+    //const UINT numRenderTargets = mRenderTargetViews.size();
+    //mpRenderTargetViews = new ID3D11RenderTargetView*[numRenderTargets]; // TODO: can we delete this after we set render targets?
+    //for (u32 i=0; i < numRenderTargets; ++i)
+    //{
+    //    mpRenderTargetViews[i] = mRenderTargetViews[i];
+    //}
+    //mpImmediateContext->OMSetRenderTargets(numRenderTargets, mpRenderTargetViews, mpDepthStencilView);
 
     mFinalized = true;
 }
@@ -347,18 +365,17 @@ void GraphicsSystem::Terminate()
 
 //----------------------------------------------------------------------------------------------------
 
-void GraphicsSystem::BeginRender(const Color& clearColor)
+void GraphicsSystem::BeginRender(u32 windowIndex, const Color& clearColor)
 {
-    //f32* colour = clearColor.ToFloatArray();
-    //const u32 numRenderTargets = mRenderTargetViews.size();
-    //for (u32 i=0; i < numRenderTargets; ++i)
-    //{
-    //    ID3D11RenderTargetView* renderTargetView = mpRenderTargetViews[i];
-    //
-    //    // Clear all the render target views
-	//    mpImmediateContext->ClearRenderTargetView(renderTargetView, colour);
-    //}
-	mpImmediateContext->ClearRenderTargetView(mpRenderTargetView, clearColor.ToFloatArray());
+    ASSERT(windowIndex < mRenderTargetViews.size(), "[GraphicsSystem] Invalid window index");
+    
+    ID3D11RenderTargetView* renderTargetView = mRenderTargetViews[windowIndex];
+    mpImmediateContext->OMSetRenderTargets(1, &renderTargetView, mpDepthStencilView);
+
+    mpImmediateContext->ClearRenderTargetView(renderTargetView, clearColor.ToFloatArray());
+    mCurrentWindowIndex = windowIndex;
+
+	//mpImmediateContext->ClearRenderTargetView(mpRenderTargetView, clearColor.ToFloatArray());
 	mpImmediateContext->ClearDepthStencilView(mpDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
@@ -366,11 +383,9 @@ void GraphicsSystem::BeginRender(const Color& clearColor)
 
 void GraphicsSystem::EndRender()
 {
-    //for (IDXGISwapChain* swapChain : mSwapChains)
-    //{
-    //    swapChain->Present(0, 0);
-    //}
-    mpSwapChain->Present(0, 0);
+    IDXGISwapChain* swapChain = mSwapChains[mCurrentWindowIndex];
+    swapChain->Present(0, 0);
+    //mpSwapChain->Present(0, 0);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -400,44 +415,44 @@ void GraphicsSystem::ResetViewport()
 //----------------------------------------------------------------------------------------------------
 
 // https://msdn.microsoft.com/en-us/library/windows/desktop/bb205075(v=vs.85).aspx#Handling_Window_Resizing
-void GraphicsSystem::Resize(u32& width, u32& height)
+void GraphicsSystem::Resize(HWND window, u32& width, u32& height)
 {
-    ASSERT(mpSwapChain, "[GraphicsSystem] Failed to resize: Swap chain unitialized");
-
-    // Release all outstanding references to the swap chain's buffers
-    SafeRelease(mpDepthStencilBuffer);
-    SafeRelease(mpRenderTargetView);
-
-    UINT createDeviceFlags = 0;
-#ifdef _DEBUG
-	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
-
-    // Preserve exisiting buffer count and format
-    // Automatically choose the width and height to match the client rect for HWND
-    HRESULT hr = mpSwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, createDeviceFlags);
-    ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to resize buffers");
-
-    ID3D11Texture2D* pBackBuffer = nullptr;
-    hr = mpSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-    ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to get buffer");
-
-    hr = mpD3DDevice->CreateRenderTargetView(pBackBuffer, nullptr, &mpRenderTargetView);
-    ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to create render target view");
-    SafeRelease(pBackBuffer);
-
-    // Set the render target
-    mpImmediateContext->OMSetRenderTargets(1, &mpRenderTargetView, nullptr);
-
-    // Update the swap chain desc so it's aware of the new size
-    mpSwapChain->GetDesc(&mSwapChainDesc);
-    width = GetWidth();
-    height = GetHeight();
-
-    // Update the viewport's dimensions
-    mViewport.Width = (FLOAT)width;
-	mViewport.Height = (FLOAT)height;
-	mpImmediateContext->RSSetViewports(1, &mViewport);
+//    ASSERT(mpSwapChain, "[GraphicsSystem] Failed to resize: Swap chain unitialized");
+//
+//    // Release all outstanding references to the swap chain's buffers
+//    SafeRelease(mpDepthStencilBuffer);
+//    SafeRelease(mpRenderTargetView);
+//
+//    UINT createDeviceFlags = 0;
+//#ifdef _DEBUG
+//	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+//#endif
+//
+//    // Preserve exisiting buffer count and format
+//    // Automatically choose the width and height to match the client rect for HWND
+//    HRESULT hr = mpSwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, createDeviceFlags);
+//    ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to resize buffers");
+//
+//    ID3D11Texture2D* pBackBuffer = nullptr;
+//    hr = mpSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+//    ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to get buffer");
+//
+//    hr = mpD3DDevice->CreateRenderTargetView(pBackBuffer, nullptr, &mpRenderTargetView);
+//    ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to create render target view");
+//    SafeRelease(pBackBuffer);
+//
+//    // Set the render target
+//    mpImmediateContext->OMSetRenderTargets(1, &mpRenderTargetView, nullptr);
+//
+//    // Update the swap chain desc so it's aware of the new size
+//    mpSwapChain->GetDesc(&mSwapChainDesc);
+//    width = GetWidth();
+//    height = GetHeight();
+//
+//    // Update the viewport's dimensions
+//    mViewport.Width = (FLOAT)width;
+//	mViewport.Height = (FLOAT)height;
+//	mpImmediateContext->RSSetViewports(1, &mViewport);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -452,7 +467,7 @@ void GraphicsSystem::EnableDepthTesting(bool enable)
 
 u32 GraphicsSystem::GetWidth() const
 {
-	ASSERT(mpSwapChain != nullptr, "[GraphicsSystem] Failed to get swap chain buffer width.");
+	ASSERT(mSwapChains[mCurrentWindowIndex] != nullptr, "[GraphicsSystem] Failed to get swap chain buffer width.");
 	return mSwapChainDesc.BufferDesc.Width;
 }
 
@@ -460,7 +475,7 @@ u32 GraphicsSystem::GetWidth() const
 
 u32 GraphicsSystem::GetHeight() const
 {
-	ASSERT(mpSwapChain != nullptr, "[GraphicsSystem] Failed to get swap chain buffer width.");
+	ASSERT(mSwapChains[mCurrentWindowIndex] != nullptr, "[GraphicsSystem] Failed to get swap chain buffer width.");
 	return mSwapChainDesc.BufferDesc.Height;
 }
 

@@ -228,7 +228,7 @@ void EditorApp::OnUpdate()
     }
 
 	// Render
-	mGraphicsSystem.BeginRender(Color::Black());
+	mGraphicsSystem.BeginRender(0, Color::Black());
 
     DrawGroundPlane(100, 5);
 
@@ -245,8 +245,8 @@ void EditorApp::OnUpdate()
 
 //----------------------------------------------------------------------------------------------------
 
-void EditorApp::OnResizeWindow()
+void EditorApp::OnResizeWindow(HWND window)
 {
-    mGraphicsSystem.Resize(mWidth, mHeight);
+    mGraphicsSystem.Resize(window, mWidth, mHeight);
 	mCamera.Setup(Math::kPiByTwo, (f32)mWidth / (f32)mHeight, 0.01f, 10000.0f);
 }

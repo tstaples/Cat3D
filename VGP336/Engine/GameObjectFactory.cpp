@@ -235,12 +235,13 @@ bool GameObjectFactory::Destroy(GameObjectHandle handle)
         for (it; it != gameObject->mComponents.end(); ++it)
         {
             Component* component = *it;
+            const MetaClass* metaClass = component->GetMetaClass();
 
             // Unsubscribe from any services
             UnHookServices(handle, mServices, component);
 
             // Delete the component
-            SafeDelete(component);
+            metaClass->Destroy(component);
         }
         gameObject->mComponents.clear();
         mGameObjectPool.Free(handle);
@@ -299,7 +300,7 @@ bool GameObjectFactory::RemoveComponent(GameObjectHandle handle, const char* com
 
             // Remove and Delete the component
             gameObject->mComponents.erase(it);
-            SafeDelete(component);
+            metaClass->Destroy(component);
             return true;
         }
     }

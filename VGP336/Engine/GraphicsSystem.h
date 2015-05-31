@@ -27,13 +27,13 @@ public:
     void BindWindow(HWND window);
     void Finalize();
 
-	void BeginRender(const Color& clearColor = Color::Black());
+	void BeginRender(u32 windowIndex, const Color& clearColor = Color::Black());
 	void EndRender();
 
 	void ToggleFullscreen();
 	void ResetRenderTarget();
 	void ResetViewport();
-    void Resize(u32& width, u32& height);
+    void Resize(HWND window, u32& width, u32& height);
 
 	void EnableDepthTesting(bool enable);
 	
@@ -57,6 +57,7 @@ private:
 	IDXGISwapChain* mpSwapChain;
 	ID3D11RenderTargetView* mpRenderTargetView;
 
+    u32 mCurrentWindowIndex;
     SwapChains mSwapChains;
     RenderTargetViews mRenderTargetViews;
     ID3D11RenderTargetView** mpRenderTargetViews; // array

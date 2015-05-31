@@ -26,7 +26,7 @@ private:
 	virtual void OnTerminate() override;
 	virtual bool OnInput(const InputEvent& evt) override;
 	virtual void OnUpdate() override;
-    virtual void OnResizeWindow() override;
+    virtual void OnResizeWindow(HWND window) override;
 
 private:
     // Application

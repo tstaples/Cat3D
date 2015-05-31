@@ -8,6 +8,7 @@ namespace Editor
     public class SelectablePanel : Panel
     {
         public bool IsFocused;
+        public Rectangle bounds;
 
         public SelectablePanel()
         {
@@ -20,7 +21,8 @@ namespace Editor
         public bool Contains(Point point)
         {
             Point rel = this.PointToClient(point);
-            return this.Bounds.Contains(point);
+            return this.bounds.Contains(point);
+            //return this.Bounds.Contains(point);
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
