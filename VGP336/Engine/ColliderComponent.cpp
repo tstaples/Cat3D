@@ -1,6 +1,8 @@
 #include "Precompiled.h"
 #include "ColliderComponent.h"
 
+#include "GameObject.h"
+#include "TransformComponent.h"
 
 META_CLASS_BEGIN(ColliderComponent)
 META_FIELD_BEGIN
@@ -18,6 +20,12 @@ ColliderComponent::ColliderComponent()
 //----------------------------------------------------------------------------------------------------
 
 ColliderComponent::~ColliderComponent()
+{
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void ColliderComponent::Update(f32 deltaTime)
 {
 }
 

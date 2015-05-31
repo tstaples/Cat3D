@@ -26,6 +26,8 @@ public:
     ColliderComponent();
     ~ColliderComponent();
 
+    virtual void Update(f32 deltaTime) override;
+
     void SetBoundary(const Math::AABB& aabb);
     Math::AABB GetBoundary() const;
 

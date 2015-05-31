@@ -8,7 +8,6 @@ template <typename T>
 class Octree
 {
 public:
-    //typedef std::vector<Math::AABB> Objects; // Temp until able to access transform from gameobject
     typedef std::map<T*, Math::AABB> Objects;
 
 public:
@@ -26,7 +25,10 @@ public:
     // Returns true if any objects are found intersecting with the ray, and are stored objects vector
     bool GetIntersectingObjects(const Math::Ray& ray, std::vector<T*>& objects);
 
-    const Math::AABB& GetBoundingBox() const { return mAABB; }
+    // TODO: update child oct bounds when region is set
+    void SetBoundingRegion(const Math::AABB& region);
+    const Math::AABB& GetBoundingBox() const    { return mAABB; }
+    void SetMaxDepth(s32 depth)                 { mMaxDepth = depth; }
 
     void Debug_DrawTree();
 
@@ -37,20 +39,11 @@ private:
 
 private:
     Math::AABB mAABB;   // Bounding volume
-    s32 mMaxDepth;       // Max recursion depth TODO: set based on total objects
+    s32 mMaxDepth;      // Max recursion depth TODO: set based on total objects
 
-    Objects mObjects;    // Objects in this volume
+    Objects mObjects;   // Objects in this volume
 
     Octree* mpParent;
-
-    /*
-	    Children follow a predictable pattern to make accesses simple.
-	    Here, - means less than 'origin' in that dimension, + means greater than.
-	    child:	0 1 2 3 4 5 6 7
-	    x:      - - - - + + + +
-	    y:      - - + + - - + +
-	    z:      - + - + - + - +
-	*/
     Octree* mpChildren[kNumChildren];
     u8 mActiveChildren; // Bitmask indicating which children are active
 };

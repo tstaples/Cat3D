@@ -43,6 +43,8 @@ PhysicsService::~PhysicsService()
 
 void PhysicsService::Initialize(const Math::AABB& worldRegion, s32 maxDepth)
 {
+    mOctree.SetBoundingRegion(worldRegion);
+    mOctree.SetMaxDepth(maxDepth);
 }
 
 //----------------------------------------------------------------------------------------------------

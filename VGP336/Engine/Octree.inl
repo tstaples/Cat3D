@@ -267,6 +267,15 @@ inline bool Octree<T>::GetIntersectingObjects(const Math::Ray& ray, std::vector<
 //----------------------------------------------------------------------------------------------------
 
 template <typename T>
+void Octree<T>::SetBoundingRegion(const Math::AABB& region)
+{
+    // TODO: update child oct bounds when region is set
+    mAABB = region;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+template <typename T>
 inline void Octree<T>::Debug_DrawTree()
 {
     SimpleDraw::AddAABB(mAABB, Color::Green());

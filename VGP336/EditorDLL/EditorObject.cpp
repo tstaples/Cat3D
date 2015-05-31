@@ -37,7 +37,7 @@ Math::AABB EditorObject::GetCollider() const
     const ColliderComponent* collider = nullptr;
     if (gameObject->FindComponent(collider))
     {
-        return collider->GetBoundary();
+        return Math::AABB(GetPosition(), collider->GetBoundary().extend);
     }
     return Math::AABB(GetPosition(), Math::Vector3(5.0f, 5.0f, 5.0f));
 }
