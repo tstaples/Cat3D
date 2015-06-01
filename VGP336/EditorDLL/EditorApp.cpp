@@ -83,6 +83,8 @@ void EditorApp::OnInitialize(u32 width, u32 height)
 
 void EditorApp::OnTerminate()
 {
+    mRunning = false;
+    mIsGameRunning = false;
     VERIFY(mGameWorld.OnShutdown(), "[EditorApp] GameWorld failed to shutdown");
 
     SafeDelete(mpGizmo);
@@ -90,7 +92,7 @@ void EditorApp::OnTerminate()
     mObjects.clear();
 	SimpleDraw::Terminate();
 	mGraphicsSystem.Terminate();
-    mGameWindow.Terminate();
+    //mGameWindow.Terminate();
 }
 
 //----------------------------------------------------------------------------------------------------
