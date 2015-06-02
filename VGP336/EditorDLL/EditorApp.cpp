@@ -44,7 +44,6 @@ EditorApp::~EditorApp()
 
 void EditorApp::InitializeGameView(HINSTANCE instance, HWND hWnd, LPCSTR appName, u32 width, u32 height)
 {
-    mGameWindow.Initialize(instance, appName, width, height);
     mGraphicsSystem.BindWindow(hWnd);
 }
 
@@ -75,8 +74,6 @@ void EditorApp::OnInitialize(u32 width, u32 height)
     {
         mObjects.push_back(EditorObject(handle));
     }
-
-    //mGraphicsSystem.Finalize();
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -230,7 +227,7 @@ void EditorApp::OnUpdate()
     }
 
 	// Render
-	mGraphicsSystem.BeginRender(0, Color::Black());
+	mGraphicsSystem.BeginRender(0, Color::Blue());
 
     DrawGroundPlane(100, 5);
 
@@ -243,6 +240,11 @@ void EditorApp::OnUpdate()
 
 	SimpleDraw::Render(mCamera);
 	mGraphicsSystem.EndRender();
+
+	mGraphicsSystem.BeginRender(1, Color::Green());
+    mGameWorld.OnRender();
+	mGraphicsSystem.EndRender();
+
 }
 
 //----------------------------------------------------------------------------------------------------

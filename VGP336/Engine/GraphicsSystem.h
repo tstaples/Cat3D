@@ -62,7 +62,6 @@ private:
     std::vector<WindowDataContainer*> mWindowDataContainers;
 
 	ID3D11Texture2D* mpDepthStencilBuffer;
-	//ID3D11DepthStencilView* mpDepthStencilView;
 	ID3D11DepthStencilState* mpDisableDepthStencil;
 
 	D3D_DRIVER_TYPE mDriverType;
@@ -70,8 +69,6 @@ private:
 
 	DXGI_SWAP_CHAIN_DESC mSwapChainDesc;
 
-	//D3D11_VIEWPORT mViewport;
-	
 	bool mFullscreen;
 	bool mInitialized;
 };

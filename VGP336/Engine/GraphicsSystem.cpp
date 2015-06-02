@@ -229,10 +229,15 @@ void GraphicsSystem::BeginRender(u32 windowIndex, const Color& clearColor)
 {
     ASSERT(windowIndex < mWindowDataContainers.size(), "[GraphicsSystem] Invalid window index");
     
+    // Get the data for the selected window
     WindowDataContainer* windowData = mWindowDataContainers[windowIndex];
     mpCurrentSwapChain = windowData->pSwapChain;
     mpCurrentRenderTargetView = windowData->pRenderTargetView;
     mpCurrentDepthStencilView = windowData->pDepthStencilView;
+
+    // Clear the render target and depth stencil
+    mpImmediateContext->ClearRenderTargetView(mpCurrentRenderTargetView, clearColor.ToFloatArray());
+	mpImmediateContext->ClearDepthStencilView(mpCurrentDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
     // Set the render target for this window
     mpImmediateContext->OMSetRenderTargets(1, &mpCurrentRenderTargetView, mpCurrentDepthStencilView);
@@ -240,9 +245,7 @@ void GraphicsSystem::BeginRender(u32 windowIndex, const Color& clearColor)
     // Set the viewport
 	mpImmediateContext->RSSetViewports(1, &windowData->viewport);
 
-    mpImmediateContext->ClearRenderTargetView(mpCurrentRenderTargetView, clearColor.ToFloatArray());
-	mpImmediateContext->ClearDepthStencilView(mpCurrentDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
+    // Update the stored index
     mCurrentWindowIndex = windowIndex;
 }
 

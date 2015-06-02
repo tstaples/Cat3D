@@ -42,7 +42,6 @@ private:
     Gizmo* mpGizmo;
 
     // Game
-	Window mGameWindow;
     GameWorld mGameWorld;
     bool mIsGameRunning;
 
