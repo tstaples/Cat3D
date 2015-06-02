@@ -56,7 +56,6 @@ namespace Editor
 
             // Initialize the engine within the view panel
             NativeMethods.Initialize(hInstance, IntPtr.Zero, EditorhWnd, 1, this.EditorViewPanel.Width, this.EditorViewPanel.Height);
-            //NativeMethods.InitializeGameViewport(hInstance, GamehWnd, GameViewPanel.Width, GameViewPanel.Height);
 
             // Load in metadata from the engine
             Meta.Initialize();

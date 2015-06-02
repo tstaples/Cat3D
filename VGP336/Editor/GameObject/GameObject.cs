@@ -177,6 +177,10 @@ namespace Editor
             {
                 component = new CameraComponent();
             }
+            else if (name == "RigidBodyComponent")
+            {
+                component = new RigidBodyComponent();
+            }
             return component;
         }
 
