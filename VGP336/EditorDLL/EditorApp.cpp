@@ -61,7 +61,10 @@ void EditorApp::OnInitialize(u32 width, u32 height)
 
     mpGizmo = new TranslateGizmo(mCamera, 1.0f, 5.0f);
 
+    // TODO: Read settings from editor
     GameSettings settings;
+    settings.timeStep = 1.0f / 60.0f;
+    settings.gravity = -9.8f;
     mGameWorld.OnInitialize(settings, mGraphicsSystem, mCamera);
 
     // Discover any objects the gameworld has on startup
@@ -153,6 +156,7 @@ void EditorApp::OnUpdate()
 	
     // Set time to 0 when not running
     mTimer.Update();
+    LOG("FPS: %f", mTimer.GetFramesPerSecond());
 	const f32 deltaTime = (mIsGameRunning) ? mTimer.GetElapsedTime() : 0.0f;
     mGameWorld.OnUpdate(deltaTime);
 

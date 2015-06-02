@@ -9,6 +9,7 @@ struct GameSettings
 {
     u16 startingLevelIndex;
 
+    f32 timeStep;
     f32 gravity;
 };
 

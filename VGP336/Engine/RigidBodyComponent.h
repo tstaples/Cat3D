@@ -34,6 +34,8 @@ private:
     f32 mAngularDrag;
     bool mUseGravity;
     bool mIsKinematic;
+
+    Math::Vector3 mVelocity;
 };
 
 //====================================================================================================

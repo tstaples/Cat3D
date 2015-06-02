@@ -16,10 +16,16 @@ namespace Editor
     {
         #region Accessors/members
 
+        private enum GameState { Playing, Paused, Stopped }
+
         private Inspector inspector;
         private SceneHierarchy sceneHierarchy;
         private LevelManager levelManager;
         private ToolMenuHandler toolMenuHandler;
+
+        private GameState gameState;
+        private System.Timers.Timer updateTimer;
+        private const double interval = (1.0f / 60.0f) * 1000.0f; // ms
 
         public PropertyGrid InspectorGrid
         {
@@ -70,6 +76,11 @@ namespace Editor
             levelManager.IsLevelDirty = false;
 
             toolMenuHandler = new ToolMenuHandler(this);
+
+            // Create the timer for updating the game when it is being played
+            updateTimer = new System.Timers.Timer(interval);
+            updateTimer.Elapsed += OnIdle;
+            gameState = GameState.Stopped;
         }
         private void Terminate()
         {
@@ -257,16 +268,36 @@ namespace Editor
 
         private void PlayButton_Click(object sender, EventArgs e)
         {
+            // Remove the idle event since we only want our timer to call it
+            Application.Idle -= this.OnIdle;
+            gameState = GameState.Playing;
+            updateTimer.Enabled = true;
             NativeMethods.StartGame();
         }
 
         private void PauseButton_Click(object sender, EventArgs e)
         {
+            if (gameState == GameState.Playing)
+            {
+                // Only restore idle event if the game was being played.
+                // This prevents adding it multiple times
+                Application.Idle += this.OnIdle;
+            }
+            gameState = GameState.Paused;
+            updateTimer.Enabled = false;
             NativeMethods.PauseGame();
         }
 
         private void StopButton_Click(object sender, EventArgs e)
         {
+            if (gameState == GameState.Playing)
+            {
+                // Only restore idle event if the game was being played.
+                // This prevents adding it multiple times
+                Application.Idle += this.OnIdle;
+            }
+            gameState = GameState.Stopped;
+            updateTimer.Enabled = false;
             NativeMethods.StopGame();
         }
     }

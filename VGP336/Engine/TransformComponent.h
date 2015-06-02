@@ -30,6 +30,7 @@ public:
     void Translate(const Math::Vector3& t);
 
     Math::Vector3 GetPosition() const;
+    void SetPosition(const Math::Vector3& v);
 
     Math::Matrix GetTransform() const;
 

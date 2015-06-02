@@ -38,10 +38,12 @@ void RigidBodyComponent::Update(f32 deltaTime)
 {
     const f32 kGravity = -9.8f; // temp until read from settings
 
+    LOG("deltaTime: %f", deltaTime);
     TransformComponent* transformComponent = nullptr;
     GetObj()->GetComponent(transformComponent);
 
     Math::Vector3 pos = transformComponent->GetPosition();
-    pos.y += kGravity * deltaTime;
-    transformComponent->Translate(pos);
+    mVelocity.y += kGravity * deltaTime;
+    pos += mVelocity * deltaTime;
+    transformComponent->SetPosition(pos);
 }

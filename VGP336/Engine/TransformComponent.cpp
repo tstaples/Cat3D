@@ -52,3 +52,11 @@ void TransformComponent::Translate(const Math::Vector3& t)
     mPosition += t;
     mTransform = mTransform * Math::Matrix::Translation(t);
 }
+
+//----------------------------------------------------------------------------------------------------
+
+void TransformComponent::SetPosition(const Math::Vector3& v)
+{
+    mPosition = v;
+    mTransform = mTransform * Math::Matrix::Translation(v);
+}
