@@ -2,6 +2,7 @@
 #include "RigidBodyComponent.h"
 
 #include "GameObject.h"
+#include "GameWorld.h"
 #include "TransformComponent.h"
 
 META_CLASS_BEGIN(RigidBodyComponent)
@@ -9,8 +10,8 @@ META_FIELD_BEGIN
     META_FIELD(mMass, "Mass")
     META_FIELD(mDrag, "Drag")
     META_FIELD(mAngularDrag, "AngularDrag")
-    META_FIELD(mUseGravity, "Use Gravity")
-    META_FIELD(mIsKinematic, "Is Kinematic")
+    META_FIELD(mUseGravity, "UseGravity")
+    META_FIELD(mIsKinematic, "IsKinematic")
 META_FIELD_END
 META_DEPENDENCIES_BEGIN
     META_DEPENDENCY("PhysicsService", "Service")
@@ -36,14 +37,18 @@ RigidBodyComponent::~RigidBodyComponent()
 
 void RigidBodyComponent::Update(f32 deltaTime)
 {
-    const f32 kGravity = -9.8f; // temp until read from settings
+    const GameWorld* world = GetObj()->GetWorld();
+    const f32 kGravity = world->GetGameSettings().gravity;
 
     LOG("deltaTime: %f", deltaTime);
     TransformComponent* transformComponent = nullptr;
     GetObj()->GetComponent(transformComponent);
 
     Math::Vector3 pos = transformComponent->GetPosition();
-    mVelocity.y += kGravity * deltaTime;
+    if (mUseGravity)
+    {
+        mVelocity.y += kGravity * deltaTime;
+    }
     pos += mVelocity * deltaTime;
     transformComponent->SetPosition(pos);
 }

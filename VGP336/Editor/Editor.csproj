@@ -99,7 +99,6 @@
     <Compile Include="Util\NativeTypes.cs" />
     <Compile Include="Util\SerializeIn.cs" />
     <Compile Include="Util\SerializeOut.cs" />
-    <Compile Include="Util\Timer.cs" />
     <Compile Include="Util\Vector3.cs" />
     <EmbeddedResource Include="Forms\EditorForm.resx">
       <DependentUpon>EditorForm.cs</DependentUpon>

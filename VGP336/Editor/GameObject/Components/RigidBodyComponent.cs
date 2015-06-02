@@ -37,15 +37,15 @@ namespace Editor
         [CategoryAttribute("RigidBody")]
         public bool UseGravity
         {
-            get { return (bool)GetField("Use Gravity").value; }
-            set { GetField("Use Gravity").value = value; }
+            get { return (bool)GetField("UseGravity").value; }
+            set { GetField("UseGravity").value = value; }
         }
 
         [CategoryAttribute("RigidBody")]
         public bool IsKinematic
         {
-            get { return (bool)GetField("Is Kinematic").value; }
-            set { GetField("Is Kinematic").value = value; }
+            get { return (bool)GetField("IsKinematic").value; }
+            set { GetField("IsKinematic").value = value; }
         }
         #endregion accessors
 

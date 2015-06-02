@@ -60,6 +60,8 @@ public:
     s32 GetScreenWidth() const;
     s32 GetScreenHeight() const;
 
+    const GameSettings& GetGameSettings() const { return mSettings; }
+
 private:
     // Delegates
     bool OnGameObjectDestroyed(GameObjectHandle handle);
