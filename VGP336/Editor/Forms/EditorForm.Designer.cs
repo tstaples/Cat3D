@@ -75,6 +75,9 @@
             this.InspectorTab = new System.Windows.Forms.TabPage();
             this.EditorViewPanel = new Editor.SelectablePanel();
             this.GameViewPanel = new Editor.SelectablePanel();
+            this.PlayButton = new System.Windows.Forms.Button();
+            this.PauseButton = new System.Windows.Forms.Button();
+            this.StopButton = new System.Windows.Forms.Button();
             this.SceneHierarchyContextMenu.SuspendLayout();
             this.ViewportTabControl.SuspendLayout();
             this.EditorViewportTab.SuspendLayout();
@@ -145,7 +148,7 @@
             this.ViewportTabControl.MinimumSize = new System.Drawing.Size(800, 400);
             this.ViewportTabControl.Name = "ViewportTabControl";
             this.ViewportTabControl.SelectedIndex = 0;
-            this.ViewportTabControl.Size = new System.Drawing.Size(884, 563);
+            this.ViewportTabControl.Size = new System.Drawing.Size(884, 541);
             this.ViewportTabControl.TabIndex = 7;
             // 
             // EditorViewportTab
@@ -154,7 +157,7 @@
             this.EditorViewportTab.Location = new System.Drawing.Point(4, 22);
             this.EditorViewportTab.Name = "EditorViewportTab";
             this.EditorViewportTab.Padding = new System.Windows.Forms.Padding(3);
-            this.EditorViewportTab.Size = new System.Drawing.Size(876, 537);
+            this.EditorViewportTab.Size = new System.Drawing.Size(876, 515);
             this.EditorViewportTab.TabIndex = 0;
             this.EditorViewportTab.Text = "Editor";
             this.EditorViewportTab.UseVisualStyleBackColor = true;
@@ -165,7 +168,7 @@
             this.GameViewportTab.Location = new System.Drawing.Point(4, 22);
             this.GameViewportTab.Name = "GameViewportTab";
             this.GameViewportTab.Padding = new System.Windows.Forms.Padding(3);
-            this.GameViewportTab.Size = new System.Drawing.Size(876, 533);
+            this.GameViewportTab.Size = new System.Drawing.Size(876, 521);
             this.GameViewportTab.TabIndex = 1;
             this.GameViewportTab.Text = "Game";
             this.GameViewportTab.UseVisualStyleBackColor = true;
@@ -176,7 +179,7 @@
             this.SceneHierarchyTree.LabelEdit = true;
             this.SceneHierarchyTree.Location = new System.Drawing.Point(3, 3);
             this.SceneHierarchyTree.Name = "SceneHierarchyTree";
-            this.SceneHierarchyTree.Size = new System.Drawing.Size(221, 531);
+            this.SceneHierarchyTree.Size = new System.Drawing.Size(221, 509);
             this.SceneHierarchyTree.TabIndex = 0;
             this.SceneHierarchyTree.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.SceneHierarchyTree_AfterLabelEdit);
             this.SceneHierarchyTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.SceneHierarchyTree_NodeMouseClick);
@@ -323,7 +326,7 @@
             this.inspectorGrid.Location = new System.Drawing.Point(3, 3);
             this.inspectorGrid.Name = "inspectorGrid";
             this.inspectorGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.inspectorGrid.Size = new System.Drawing.Size(332, 790);
+            this.inspectorGrid.Size = new System.Drawing.Size(332, 759);
             this.inspectorGrid.TabIndex = 0;
             this.inspectorGrid.ToolbarVisible = false;
             this.inspectorGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.InspectorGrid_PropertyValueChanged);
@@ -335,7 +338,7 @@
             this.ConsoleTabControl.Location = new System.Drawing.Point(0, 0);
             this.ConsoleTabControl.Name = "ConsoleTabControl";
             this.ConsoleTabControl.SelectedIndex = 0;
-            this.ConsoleTabControl.Size = new System.Drawing.Size(1123, 255);
+            this.ConsoleTabControl.Size = new System.Drawing.Size(1123, 246);
             this.ConsoleTabControl.TabIndex = 6;
             // 
             // ConsoleTab
@@ -344,7 +347,7 @@
             this.ConsoleTab.Location = new System.Drawing.Point(4, 22);
             this.ConsoleTab.Name = "ConsoleTab";
             this.ConsoleTab.Padding = new System.Windows.Forms.Padding(3);
-            this.ConsoleTab.Size = new System.Drawing.Size(1115, 229);
+            this.ConsoleTab.Size = new System.Drawing.Size(1115, 220);
             this.ConsoleTab.TabIndex = 0;
             this.ConsoleTab.Text = "Console";
             this.ConsoleTab.UseVisualStyleBackColor = true;
@@ -363,8 +366,8 @@
             // ConsoleSplitContainer.Panel2
             // 
             this.ConsoleSplitContainer.Panel2.Controls.Add(this.ConsoleMessageDetailsLabel);
-            this.ConsoleSplitContainer.Size = new System.Drawing.Size(1109, 223);
-            this.ConsoleSplitContainer.SplitterDistance = 160;
+            this.ConsoleSplitContainer.Size = new System.Drawing.Size(1109, 214);
+            this.ConsoleSplitContainer.SplitterDistance = 153;
             this.ConsoleSplitContainer.TabIndex = 0;
             // 
             // ConsoleList
@@ -379,7 +382,7 @@
             this.ConsoleList.Location = new System.Drawing.Point(0, 0);
             this.ConsoleList.Name = "ConsoleList";
             this.ConsoleList.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ConsoleList.Size = new System.Drawing.Size(1109, 160);
+            this.ConsoleList.Size = new System.Drawing.Size(1109, 153);
             this.ConsoleList.TabIndex = 0;
             this.ConsoleList.UseCompatibleStateImageBehavior = false;
             this.ConsoleList.View = System.Windows.Forms.View.Details;
@@ -422,13 +425,16 @@
             // 
             // MenuStripSplitContainer.Panel1
             // 
+            this.MenuStripSplitContainer.Panel1.Controls.Add(this.StopButton);
+            this.MenuStripSplitContainer.Panel1.Controls.Add(this.PauseButton);
+            this.MenuStripSplitContainer.Panel1.Controls.Add(this.PlayButton);
             this.MenuStripSplitContainer.Panel1.Controls.Add(this.MainMenuStrip);
             // 
             // MenuStripSplitContainer.Panel2
             // 
             this.MenuStripSplitContainer.Panel2.Controls.Add(this.InspectorSplitContainer);
             this.MenuStripSplitContainer.Size = new System.Drawing.Size(1473, 862);
-            this.MenuStripSplitContainer.SplitterDistance = 36;
+            this.MenuStripSplitContainer.SplitterDistance = 67;
             this.MenuStripSplitContainer.TabIndex = 8;
             // 
             // InspectorSplitContainer
@@ -444,7 +450,7 @@
             // InspectorSplitContainer.Panel2
             // 
             this.InspectorSplitContainer.Panel2.Controls.Add(this.InspectorTabControl);
-            this.InspectorSplitContainer.Size = new System.Drawing.Size(1473, 822);
+            this.InspectorSplitContainer.Size = new System.Drawing.Size(1473, 791);
             this.InspectorSplitContainer.SplitterDistance = 1123;
             this.InspectorSplitContainer.TabIndex = 0;
             // 
@@ -462,8 +468,8 @@
             // ConsoleViewportSplitContainer.Panel2
             // 
             this.ConsoleViewportSplitContainer.Panel2.Controls.Add(this.ConsoleTabControl);
-            this.ConsoleViewportSplitContainer.Size = new System.Drawing.Size(1123, 822);
-            this.ConsoleViewportSplitContainer.SplitterDistance = 563;
+            this.ConsoleViewportSplitContainer.Size = new System.Drawing.Size(1123, 791);
+            this.ConsoleViewportSplitContainer.SplitterDistance = 541;
             this.ConsoleViewportSplitContainer.TabIndex = 8;
             // 
             // HierarchyViewportSplitContainer
@@ -479,7 +485,7 @@
             // HierarchyViewportSplitContainer.Panel2
             // 
             this.HierarchyViewportSplitContainer.Panel2.Controls.Add(this.ViewportTabControl);
-            this.HierarchyViewportSplitContainer.Size = new System.Drawing.Size(1123, 563);
+            this.HierarchyViewportSplitContainer.Size = new System.Drawing.Size(1123, 541);
             this.HierarchyViewportSplitContainer.SplitterDistance = 235;
             this.HierarchyViewportSplitContainer.TabIndex = 0;
             // 
@@ -490,7 +496,7 @@
             this.SceneHierarchyTabControl.Location = new System.Drawing.Point(0, 0);
             this.SceneHierarchyTabControl.Name = "SceneHierarchyTabControl";
             this.SceneHierarchyTabControl.SelectedIndex = 0;
-            this.SceneHierarchyTabControl.Size = new System.Drawing.Size(235, 563);
+            this.SceneHierarchyTabControl.Size = new System.Drawing.Size(235, 541);
             this.SceneHierarchyTabControl.TabIndex = 0;
             // 
             // SceneHierarchyTab
@@ -499,7 +505,7 @@
             this.SceneHierarchyTab.Location = new System.Drawing.Point(4, 22);
             this.SceneHierarchyTab.Name = "SceneHierarchyTab";
             this.SceneHierarchyTab.Padding = new System.Windows.Forms.Padding(3);
-            this.SceneHierarchyTab.Size = new System.Drawing.Size(227, 537);
+            this.SceneHierarchyTab.Size = new System.Drawing.Size(227, 515);
             this.SceneHierarchyTab.TabIndex = 0;
             this.SceneHierarchyTab.Text = "Scene Hierarchy";
             this.SceneHierarchyTab.UseVisualStyleBackColor = true;
@@ -511,7 +517,7 @@
             this.InspectorTabControl.Location = new System.Drawing.Point(0, 0);
             this.InspectorTabControl.Name = "InspectorTabControl";
             this.InspectorTabControl.SelectedIndex = 0;
-            this.InspectorTabControl.Size = new System.Drawing.Size(346, 822);
+            this.InspectorTabControl.Size = new System.Drawing.Size(346, 791);
             this.InspectorTabControl.TabIndex = 0;
             // 
             // InspectorTab
@@ -520,7 +526,7 @@
             this.InspectorTab.Location = new System.Drawing.Point(4, 22);
             this.InspectorTab.Name = "InspectorTab";
             this.InspectorTab.Padding = new System.Windows.Forms.Padding(3);
-            this.InspectorTab.Size = new System.Drawing.Size(338, 796);
+            this.InspectorTab.Size = new System.Drawing.Size(338, 765);
             this.InspectorTab.TabIndex = 0;
             this.InspectorTab.Text = "Inspector";
             this.InspectorTab.UseVisualStyleBackColor = true;
@@ -534,7 +540,7 @@
             this.EditorViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
             this.EditorViewPanel.Name = "EditorViewPanel";
             this.EditorViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.EditorViewPanel.Size = new System.Drawing.Size(870, 531);
+            this.EditorViewPanel.Size = new System.Drawing.Size(870, 509);
             this.EditorViewPanel.TabIndex = 2;
             this.EditorViewPanel.TabStop = true;
             // 
@@ -547,9 +553,39 @@
             this.GameViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
             this.GameViewPanel.Name = "GameViewPanel";
             this.GameViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.GameViewPanel.Size = new System.Drawing.Size(870, 527);
+            this.GameViewPanel.Size = new System.Drawing.Size(870, 515);
             this.GameViewPanel.TabIndex = 3;
             this.GameViewPanel.TabStop = true;
+            // 
+            // PlayButton
+            // 
+            this.PlayButton.Location = new System.Drawing.Point(624, 27);
+            this.PlayButton.Name = "PlayButton";
+            this.PlayButton.Size = new System.Drawing.Size(75, 23);
+            this.PlayButton.TabIndex = 6;
+            this.PlayButton.Text = "Play";
+            this.PlayButton.UseVisualStyleBackColor = true;
+            this.PlayButton.Click += new System.EventHandler(this.PlayButton_Click);
+            // 
+            // PauseButton
+            // 
+            this.PauseButton.Location = new System.Drawing.Point(705, 27);
+            this.PauseButton.Name = "PauseButton";
+            this.PauseButton.Size = new System.Drawing.Size(75, 23);
+            this.PauseButton.TabIndex = 7;
+            this.PauseButton.Text = "Pause";
+            this.PauseButton.UseVisualStyleBackColor = true;
+            this.PauseButton.Click += new System.EventHandler(this.PauseButton_Click);
+            // 
+            // StopButton
+            // 
+            this.StopButton.Location = new System.Drawing.Point(786, 27);
+            this.StopButton.Name = "StopButton";
+            this.StopButton.Size = new System.Drawing.Size(75, 23);
+            this.StopButton.TabIndex = 8;
+            this.StopButton.Text = "Stop";
+            this.StopButton.UseVisualStyleBackColor = true;
+            this.StopButton.Click += new System.EventHandler(this.StopButton_Click);
             // 
             // EditorForm
             // 
@@ -653,6 +689,9 @@
         private System.Windows.Forms.ToolStripMenuItem meshToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem meshRendererToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem rigidBodyToolStripMenuItem1;
+        private System.Windows.Forms.Button StopButton;
+        private System.Windows.Forms.Button PauseButton;
+        private System.Windows.Forms.Button PlayButton;
     }
 }
 

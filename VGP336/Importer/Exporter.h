@@ -45,13 +45,13 @@ public:
 private:
     size_t CalculateSize(const Meshes& meshes, const StringVec& texPaths, const BoneVec& bones, const Animations& animations);
 
-    void ExportMeshes(const Meshes& meshes, FileBuffer& buffer);
-    void ExportTextures(const StringVec& texPaths, FileBuffer& buffer);
-    void ExportBones(const BoneVec& bones, FileBuffer& buffer);
-    void ExportBoneWeights(const Meshes& meshes, FileBuffer& buffer);
-    void ExportAnimations(const Animations& animations, FileBuffer& buffer);
+    void ExportMeshes(const Meshes& meshes, IO::FileBuffer& buffer);
+    void ExportTextures(const StringVec& texPaths, IO::FileBuffer& buffer);
+    void ExportBones(const BoneVec& bones, IO::FileBuffer& buffer);
+    void ExportBoneWeights(const Meshes& meshes, IO::FileBuffer& buffer);
+    void ExportAnimations(const Animations& animations, IO::FileBuffer& buffer);
 
-    void WriteLengthEncodedString(const std::string& str, FileBuffer& buffer);
+    void WriteLengthEncodedString(const std::string& str, IO::FileBuffer& buffer);
 };
 
 inline void DebugPrint(const char* pFormat, ...)

@@ -83,5 +83,15 @@ namespace Editor
 
         [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern int SaveLevel(string filename);
+
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int StartGame();
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int PauseGame();
+
+        [DllImport(kDLLName, CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int StopGame();
     }
 }

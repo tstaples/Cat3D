@@ -88,7 +88,7 @@ bool Exporter::Export(const char* outpath,
     size_t size = CalculateSize(meshes, texPaths, bones, animations);
 
     // Init our buffer
-    FileBuffer buffer(size);
+    IO::FileBuffer buffer(size);
 
     // Write header (TODO: read version from config)
     Header header(VERSION_MAJOR, VERSION_MINOR, "CATM");
@@ -114,7 +114,7 @@ bool Exporter::Export(const char* outpath,
 
 //----------------------------------------------------------------------------------------------------
 
-void Exporter::ExportMeshes(const Meshes& meshes, FileBuffer& buffer)
+void Exporter::ExportMeshes(const Meshes& meshes, IO::FileBuffer& buffer)
 {
     // Write how many meshes this file contains
     const u32 numMeshes = meshes.size();
@@ -165,7 +165,7 @@ void Exporter::ExportMeshes(const Meshes& meshes, FileBuffer& buffer)
 
 //----------------------------------------------------------------------------------------------------
 
-void Exporter::ExportTextures(const StringVec& texPaths, FileBuffer& buffer)
+void Exporter::ExportTextures(const StringVec& texPaths, IO::FileBuffer& buffer)
 {
     // Write the number of textures
     const u32 numTextures = texPaths.size();
@@ -188,7 +188,7 @@ void Exporter::ExportTextures(const StringVec& texPaths, FileBuffer& buffer)
 
 //----------------------------------------------------------------------------------------------------
 
-void Exporter::ExportBones(const BoneVec& bones, FileBuffer& buffer)
+void Exporter::ExportBones(const BoneVec& bones, IO::FileBuffer& buffer)
 {
     // Write how many bones there are
     const u32 numBones = bones.size();
@@ -233,7 +233,7 @@ void Exporter::ExportBones(const BoneVec& bones, FileBuffer& buffer)
 
 //----------------------------------------------------------------------------------------------------
 
-void Exporter::ExportBoneWeights(const Meshes& meshes, FileBuffer& buffer)
+void Exporter::ExportBoneWeights(const Meshes& meshes, IO::FileBuffer& buffer)
 {
     for (auto mesh : meshes)
     {
@@ -285,7 +285,7 @@ void Exporter::ExportBoneWeights(const Meshes& meshes, FileBuffer& buffer)
 */
 
 // NOTE: When loading, resize model.mBoneAnimations to number of bones and init each element to null
-void Exporter::ExportAnimations(const Animations& animations, FileBuffer& buffer)
+void Exporter::ExportAnimations(const Animations& animations, IO::FileBuffer& buffer)
 {
     // Write number of animation clips
     const u32 numAnimations = animations.size();
@@ -401,7 +401,7 @@ size_t Exporter::CalculateSize(const Meshes& meshes, const StringVec& texPaths, 
 
 //----------------------------------------------------------------------------------------------------
 
-void Exporter::WriteLengthEncodedString(const std::string& str, FileBuffer& buffer)
+void Exporter::WriteLengthEncodedString(const std::string& str, IO::FileBuffer& buffer)
 {
     u32 len = str.length();
     buffer.Write(len);

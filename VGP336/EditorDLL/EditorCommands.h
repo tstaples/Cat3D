@@ -31,6 +31,10 @@ public:
     bool SaveLevel(const char* filename);
     bool LoadLevel(const char* filename);
 
+    bool StartGame();
+    bool PauseGame();
+    bool StopGame();
+
 private:
     EditorApp& mApp;
 };

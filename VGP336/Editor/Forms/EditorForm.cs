@@ -254,5 +254,20 @@ namespace Editor
             levelManager.OnOpenLevel();
         }
         #endregion Level events
+
+        private void PlayButton_Click(object sender, EventArgs e)
+        {
+            NativeMethods.StartGame();
+        }
+
+        private void PauseButton_Click(object sender, EventArgs e)
+        {
+            NativeMethods.PauseGame();
+        }
+
+        private void StopButton_Click(object sender, EventArgs e)
+        {
+            NativeMethods.StopGame();
+        }
     }
 }

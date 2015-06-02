@@ -357,3 +357,29 @@ bool EditorCommands::LoadLevel(const char* filename)
     }
     return false;
 }
+
+//----------------------------------------------------------------------------------------------------
+
+bool EditorCommands::StartGame()
+{
+    mApp.mIsGameRunning = true;
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool EditorCommands::PauseGame()
+{
+    mApp.mIsGameRunning = false;
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool EditorCommands::StopGame()
+{
+    mApp.mIsGameRunning = false;
+    // Reload current scene
+    //mApp.mGameWorld.mLevelLoader.Load(mApp.mGameWorld.mCurrentLevel.path, mApp.mGameWorld.mCurrentLevel);
+    return true;
+}

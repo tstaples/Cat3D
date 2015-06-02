@@ -61,6 +61,23 @@ namespace Editor
             }
         }
 
+        public void UpdateSelectedObject(ref GameObject gameObject)
+        {
+            // Store the current items
+            GridItemCollection oldItems = GridView.SelectedGridItem.GridItems;
+
+            // Update the selected object to the new one
+            currentGameObject = gameObject;
+            GridView.SelectedObject = currentGameObject.Components;
+
+            // Copy over the 'expanded' state of each item
+            GridItemCollection newItems = GridView.SelectedGridItem.GridItems;
+            for (int i = 0; i < oldItems.Count; ++i)
+            {
+                newItems[i].Expanded = oldItems[i].Expanded;
+            }
+        }
+
         public bool OnComponentModified(string name, string propertyName, object newVal)
         {
             // Name in property grid omits the "Component" part

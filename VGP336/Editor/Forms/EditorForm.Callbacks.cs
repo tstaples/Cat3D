@@ -50,6 +50,11 @@ namespace Editor
                 sceneHierarchy.SelectNode(gameObject.handle);
                 return true;
             }
+            else
+            {
+                // Update the currently displayed object
+                //Inspector.UpdateSelectedObject(ref gameObject);
+            }
             return false;
         }
 
