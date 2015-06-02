@@ -362,8 +362,11 @@ bool EditorCommands::LoadLevel(const char* filename)
 
 bool EditorCommands::StartGame()
 {
+    GameWorld& gameWorld = mApp.mGameWorld;
+    bool saved = gameWorld.SaveLevelToMemory();
+    ASSERT(saved, "[EditorCommands] Failed to save level to memory");
     mApp.mIsGameRunning = true;
-    return true;
+    return saved;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -378,8 +381,18 @@ bool EditorCommands::PauseGame()
 
 bool EditorCommands::StopGame()
 {
-    mApp.mIsGameRunning = false;
     // Reload current scene
-    //mApp.mGameWorld.mLevelLoader.Load(mApp.mGameWorld.mCurrentLevel.path, mApp.mGameWorld.mCurrentLevel);
-    return true;
+    GameWorld& gameWorld = mApp.mGameWorld;
+    bool loaded = gameWorld.ReLoadCurrentLevel();
+    ASSERT(loaded, "[EditorCommands] Failed to load level from memory");
+    mApp.mIsGameRunning = false;
+
+    // Update the editor's objects
+    mApp.mObjects.clear();
+    for (GameObjectHandle handle : mApp.mGameWorld.mUpdateList)
+    {
+        mApp.mObjects.push_back(EditorObject(handle));
+    }
+
+    return loaded;
 }

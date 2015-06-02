@@ -57,6 +57,7 @@ void RenderService::Initialize(GraphicsSystem& graphicsSystem, Camera& camera)
 
 void RenderService::Terminate()
 {
+    Service::Terminate();
     mpGraphicsSystem = nullptr;
     mRenderer.Terminate();
 }

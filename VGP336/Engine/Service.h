@@ -28,11 +28,14 @@ public:
 
     // Subscribes the gameobject to this service
     bool Subscribe(GameObjectHandle handle);
+    
     // UnSubscribes the gameobject to this service
     void UnSubscribe(GameObjectHandle handle);
 
     // Clears subscriber list
     void UnSubscribeAll();
+
+    virtual void Terminate() = 0;
 
     u16 GetID() const { return mID; }
 

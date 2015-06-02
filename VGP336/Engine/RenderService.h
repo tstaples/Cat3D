@@ -38,7 +38,7 @@ public:
     ~RenderService();
     
     void Initialize(GraphicsSystem& graphicsSystem, Camera& camera);
-    void Terminate();
+    virtual void Terminate();
 
     // Must be called between BeginRender() and EndRender()
     void Update();

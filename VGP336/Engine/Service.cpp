@@ -69,3 +69,10 @@ void Service::UnSubscribeAll()
 {
     mSubscribers.clear();
 }
+
+// ---------------------------------------------------------------------------------------------------
+
+void Service::Terminate()
+{
+    UnSubscribeAll();
+}

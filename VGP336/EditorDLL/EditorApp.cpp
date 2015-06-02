@@ -156,7 +156,7 @@ void EditorApp::OnUpdate()
 	
     // Set time to 0 when not running
     mTimer.Update();
-    LOG("FPS: %f", mTimer.GetFramesPerSecond());
+    //LOG("FPS: %f", mTimer.GetFramesPerSecond());
 	const f32 deltaTime = (mIsGameRunning) ? mTimer.GetElapsedTime() : 0.0f;
     mGameWorld.OnUpdate(deltaTime);
 

@@ -296,9 +296,27 @@ namespace Editor
                 // This prevents adding it multiple times
                 Application.Idle += this.OnIdle;
             }
+
+            // Store the handle of the currenlty selected object so we can re-select it after
+            GameObject.Handle selectedHandle = new GameObject.Handle();
+            if (Inspector.IsAnObjectSelected())
+            {
+                selectedHandle = Inspector.CurrentGameObject.handle;
+                // Hack: update instance count to match the new handle after the level is re-loaded
+                selectedHandle.instance++;
+            }
+
             gameState = GameState.Stopped;
             updateTimer.Enabled = false;
             NativeMethods.StopGame();
+            
+            // Update the scene hierarchy since the old items will be invalid
+            SceneHierarchy.Popualate();
+            if (selectedHandle.IsValid())
+            {
+                // Re-select the previously selected object
+                NativeMethods.SelectGameObject(selectedHandle.ToNativeHandle());
+            }
         }
     }
 }

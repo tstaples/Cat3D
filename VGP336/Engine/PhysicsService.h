@@ -36,8 +36,8 @@ public:
     ~PhysicsService();
     
     void Initialize(const Math::AABB& worldRegion, s32 maxDepth);
-    void Terminate();
     void Update(f32 deltaTime);
+    virtual void Terminate();
 
 private:
     virtual bool OnSubscribe(GameObjectHandle handle);

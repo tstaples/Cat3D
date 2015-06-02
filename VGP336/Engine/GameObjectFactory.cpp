@@ -137,7 +137,7 @@ GameObjectFactory::~GameObjectFactory()
 void GameObjectFactory::Initialize(Services& services, GameWorld& world)
 {
     mpWorld = &world;
-    mServices = std::move(services);
+    mServices = services;
 }
 
 //----------------------------------------------------------------------------------------------------

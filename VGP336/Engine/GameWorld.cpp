@@ -22,6 +22,9 @@ GameWorld::GameWorld(Application* app, u16 maxObjects)
     , mGameObjectPool(maxObjects)
     , mFactory(mGameObjectPool)
 {
+    mCurrentLevel.buffer = nullptr;
+    mCurrentLevel.bufferSize = 0;
+    mCurrentLevel.numGameObjects = 0;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -43,12 +46,10 @@ bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, C
     mPhysicsService.Initialize(worldRegion, 10);
 
     // Store all our services in a list to pass to the GameObjectFactory
-    Services services =
-    {
-        &mRenderService,
-        &mPhysicsService
-    };
-    mFactory.Initialize(services, *this);
+    mServiceList.push_back(&mRenderService);
+    mServiceList.push_back(&mPhysicsService);
+
+    mFactory.Initialize(mServiceList, *this);
     mFactory.OnDestroyGameObject = DELEGATE(&GameWorld::OnGameObjectDestroyed, this);
     return true;
 }
@@ -57,8 +58,11 @@ bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, C
 
 bool GameWorld::OnShutdown()
 {
-    mRenderService.Terminate();
-    mPhysicsService.Terminate();
+    // Unsubscribe and terminate services
+    for (Service* service : mServiceList)
+    {
+        service->Terminate();
+    }
 
     mFactory.Terminate();
     mUpdateList.clear();
@@ -152,9 +156,7 @@ GameObjectHandle GameWorld::CreateGameObject(const char* templateFile, Math::Vec
 bool GameWorld::NewLevel(const char* levelName)
 {
     // Clear current level data
-    mRenderService.UnSubscribeAll();
-    mUpdateList.clear();
-    mGameObjectPool.Flush();
+    ClearCurrentLevel();
 
     // Reset the current level data
     mCurrentLevel.path = levelName;
@@ -169,9 +171,7 @@ bool GameWorld::NewLevel(const char* levelName)
 bool GameWorld::LoadLevel(const char* levelName)
 {
     // Clear current level data
-    mRenderService.UnSubscribeAll();
-    mUpdateList.clear();
-    mGameObjectPool.Flush();
+    ClearCurrentLevel();
 
     // 1 level = 1 file for now
     // level loader will give us a vector of Level objects containing the buffers for each gameobject and the game settings
@@ -202,9 +202,40 @@ bool GameWorld::LoadLevel(const char* levelName)
 
 //----------------------------------------------------------------------------------------------------
 
+bool GameWorld::ReLoadCurrentLevel()
+{
+    // Clear current level data
+    ClearCurrentLevel();
+
+    if (mLevelLoader.LoadLocal(mCurrentLevel))
+    {
+        for (u32 i=0; i < mCurrentLevel.numGameObjects; ++i)
+        {
+            SerialReader reader(mCurrentLevel.buffer, mCurrentLevel.bufferSize);
+            GameObjectHandle handle = mFactory.Create(reader);
+            if (!handle.IsValid())
+            {
+                return false;
+            }
+            mUpdateList.push_back(handle);
+        }
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
 bool GameWorld::SaveLevel(const char* levelName)
 {
     return mLevelLoader.SaveToFile(levelName, mUpdateList, mSettings);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool GameWorld::SaveLevelToMemory()
+{
+    return mLevelLoader.SaveLocal(mUpdateList, mSettings);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -219,6 +250,19 @@ s32 GameWorld::GetScreenWidth() const
 s32 GameWorld::GetScreenHeight() const
 {
     return mpApplication->GetScreenHeight();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void GameWorld::ClearCurrentLevel()
+{
+    for (Service* service : mServiceList)
+    {
+        service->UnSubscribeAll();
+    }
+    mUpdateList.clear();
+    mDestroyedList.clear(); // just in case
+    mGameObjectPool.Flush();
 }
 
 //----------------------------------------------------------------------------------------------------

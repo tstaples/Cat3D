@@ -158,6 +158,7 @@ bool GameObject::Deserialize(SerialReader& reader)
             // If it doesn't exist, create it
             const MetaClass* compMetaClass = MetaDB::GetMetaClass(compMetaClassName.c_str());
             component = static_cast<Component*>(compMetaClass->Create());
+            component->mpGameObject = this;
             isNewComponent = true;
         }
 

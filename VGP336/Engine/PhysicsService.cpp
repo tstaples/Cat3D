@@ -51,6 +51,7 @@ void PhysicsService::Initialize(const Math::AABB& worldRegion, s32 maxDepth)
 
 void PhysicsService::Terminate()
 {
+    Service::Terminate();
 }
 
 //----------------------------------------------------------------------------------------------------

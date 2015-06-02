@@ -66,6 +66,10 @@ private:
     // Delegates
     bool OnGameObjectDestroyed(GameObjectHandle handle);
 
+    bool SaveLevelToMemory();
+    bool ReLoadCurrentLevel();
+    void ClearCurrentLevel();
+
 private:
     NONCOPYABLE(GameWorld);
 
@@ -74,6 +78,7 @@ private:
     GameSettings mSettings;
 
     // Services
+    Services mServiceList; // used for iterating and calling generic methods
     RenderService mRenderService;
     PhysicsService mPhysicsService;
 
