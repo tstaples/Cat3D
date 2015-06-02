@@ -36,13 +36,17 @@ bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, C
 {
     mSettings = settings;
 
+    Math::AABB worldRegion(Math::Vector3::Zero(), Math::Vector3(1000.0f, 1000.0f, 1000.0f));
+
     // Init services
     mRenderService.Initialize(gs, camera);
+    mPhysicsService.Initialize(worldRegion, 10);
 
     // Store all our services in a list to pass to the GameObjectFactory
     Services services =
     {
-        &mRenderService
+        &mRenderService,
+        &mPhysicsService
     };
     mFactory.Initialize(services, *this);
     mFactory.OnDestroyGameObject = DELEGATE(&GameWorld::OnGameObjectDestroyed, this);
@@ -54,6 +58,8 @@ bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, C
 bool GameWorld::OnShutdown()
 {
     mRenderService.Terminate();
+    mPhysicsService.Terminate();
+
     mFactory.Terminate();
     mUpdateList.clear();
     mDestroyedList.clear();
@@ -109,6 +115,7 @@ void GameWorld::OnUpdate(f32 deltaTime)
     mDestroyedList.clear();
 
     // TODO: Update other services
+    mPhysicsService.Update(deltaTime);
 }
 
 //----------------------------------------------------------------------------------------------------

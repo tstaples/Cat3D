@@ -8,6 +8,8 @@
 struct GameSettings
 {
     u16 startingLevelIndex;
+
+    f32 gravity;
 };
 
 #endif // #ifndef INCLUDED_ENGNIE_GAMESETTINGS_H

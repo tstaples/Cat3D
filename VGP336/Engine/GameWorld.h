@@ -17,7 +17,7 @@
 #include "GameObjectFactory.h"
 #include "GameSettings.h"
 #include "LevelLoader.h"
-#include "Service.h"
+#include "Services.h"
 
 //====================================================================================================
 // Forward Declarations
@@ -73,6 +73,7 @@ private:
 
     // Services
     RenderService mRenderService;
+    PhysicsService mPhysicsService;
 
     GameObjectFactory mFactory;
     GameObjectPool mGameObjectPool;

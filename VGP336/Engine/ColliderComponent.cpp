@@ -10,6 +10,9 @@ META_FIELD_BEGIN
     META_FIELD(mExtend, "Extend")
     META_FIELD(mIsTrigger, "IsTrigger")
 META_FIELD_END
+META_DEPENDENCIES_BEGIN
+    META_DEPENDENCY("PhysicsService", "Service")
+META_DEPENDENCIES_END
 META_CLASS_END
 
 ColliderComponent::ColliderComponent()

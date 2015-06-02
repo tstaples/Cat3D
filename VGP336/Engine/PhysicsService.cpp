@@ -76,10 +76,9 @@ void PhysicsService::Update(f32 deltaTime)
         bool hasRigidBody = gameObject->FindComponent(rigidBodyComponent);
         bool hasCollider = gameObject->FindComponent(colliderComponent);
         
+        // Get the collider if the object has one
         Math::Vector3 position = transformComponent->GetPosition();
-        Math::AABB collider;
-        collider.center = position;
-        collider.extend = Math::Vector3(1.0f, 1.0f, 1.0f); // default
+        Math::AABB collider(position, Math::Vector3(1.0f, 1.0f, 1.0f)); // default
         if (hasCollider)
         {
             // Use the collider's extend if the object has one
@@ -87,8 +86,12 @@ void PhysicsService::Update(f32 deltaTime)
             collider.center = position + aabb.center; // Offset the collider from object position
             collider.extend = aabb.extend;
         }
+        
         // Insert the item into the tree
         mOctree.Insert(*it, collider);
+
+        // TODO: do collision resolution here as the object's positions will have been updated
+        // by their components.
     }
 }
 

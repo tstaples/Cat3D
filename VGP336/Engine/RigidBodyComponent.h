@@ -26,6 +26,8 @@ public:
     RigidBodyComponent();
     ~RigidBodyComponent();
 
+    virtual void Update(f32 deltaTime) override;
+
 private:
     f32 mMass;
     f32 mDrag;
