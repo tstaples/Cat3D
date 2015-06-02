@@ -17,6 +17,7 @@ META_CLASS_END
 
 ColliderComponent::ColliderComponent()
     : mIsTrigger(false)
+    , mExtend(1.0f, 1.0f, 1.0f)
 {
 }
 

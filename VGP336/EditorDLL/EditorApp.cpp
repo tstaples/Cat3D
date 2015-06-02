@@ -210,25 +210,14 @@ void EditorApp::OnUpdate()
 
         }
 
-        // Draw collider component box
-        ColliderComponent* colliderComponent = nullptr;
-        if (gameObject->FindComponent(colliderComponent))
-        {
-            TransformComponent* transformComponent = nullptr;
-            gameObject->GetComponent(transformComponent);
-            Math::AABB aabb = colliderComponent->GetBoundary();
-            Math::Vector3 pos = transformComponent->GetPosition() + aabb.center;
-            Math::AABB region(pos, aabb.extend);
-            SimpleDraw::AddAABB(region, Color::Green());
-        }
-
-        Color col = Color::White();
         if (object.IsSelected())
         {
+            // Draw the gizmo if any object is selected
             drawGizmo = true;
-            col = Color::Red();
+
+            // Draw the collider
+            object.Draw();
         }
-        //SimpleDraw::AddAABB(object.GetCollider(), col);
     }
 
 	// Render
