@@ -39,7 +39,7 @@ bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, C
 {
     mSettings = settings;
 
-    Math::AABB worldRegion(Math::Vector3::Zero(), Math::Vector3(1000.0f, 1000.0f, 1000.0f));
+    Math::AABB worldRegion(Math::Vector3::Zero(), Math::Vector3(100.0f, 100.0f, 100.0f));
 
     // Init services
     mRenderService.Initialize(gs, camera);

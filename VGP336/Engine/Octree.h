@@ -14,9 +14,9 @@ public:
     static const u16 kNumChildren = 8;
     static const u16 kMinSize = 1;  // Smallest is 1x1x1 cube
     
-    Octree(const Math::AABB& octRegion, s32 maxDepth=10);
-    Octree(const Math::AABB& octRegion, T& object, const Math::AABB& objRegion, s32 maxDepth=10);
-    Octree(const Math::AABB& octRegion, Objects& objects, s32 maxDepth=10);
+    Octree(const Math::AABB& octRegion, u32 maxElements = 1, s32 maxDepth=10);
+    Octree(const Math::AABB& octRegion, T& object, const Math::AABB& objRegion, u32 maxElements = 1, s32 maxDepth=10);
+    Octree(const Math::AABB& octRegion, Objects& objects, u32 maxElements = 1, s32 maxDepth=10);
     ~Octree();
 
     void Insert(T& object, const Math::AABB& region);
@@ -40,6 +40,7 @@ private:
 private:
     Math::AABB mAABB;   // Bounding volume
     s32 mMaxDepth;      // Max recursion depth TODO: set based on total objects
+    u32 mMaxElements;   // Max number of elements a leaf node can contain
 
     Objects mObjects;   // Objects in this volume
 

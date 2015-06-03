@@ -49,11 +49,12 @@ namespace
 //----------------------------------------------------------------------------------------------------
 
 template <typename T>
-inline Octree<T>::Octree(const Math::AABB& octRegion, s32 maxDepth)
+inline Octree<T>::Octree(const Math::AABB& octRegion, u32 maxElements, s32 maxDepth)
     : mAABB(octRegion)
     , mpParent(nullptr)
     , mActiveChildren(0)
     , mMaxDepth(maxDepth)
+    , mMaxElements(maxElements)
 {
     for (u32 i=0; i < kNumChildren; ++i)
     {
@@ -64,11 +65,12 @@ inline Octree<T>::Octree(const Math::AABB& octRegion, s32 maxDepth)
 //----------------------------------------------------------------------------------------------------
 
 template <typename T>
-inline Octree<T>::Octree(const Math::AABB& octRegion, T& gameObject, const Math::AABB& objRegion, s32 maxDepth)
+inline Octree<T>::Octree(const Math::AABB& octRegion, T& gameObject, const Math::AABB& objRegion, u32 maxElements, s32 maxDepth)
     : mAABB(octRegion)
     , mpParent(nullptr)
     , mActiveChildren(0)
     , mMaxDepth(maxDepth)
+    , mMaxElements(maxElements)
 {
     for (u32 i=0; i < kNumChildren; ++i)
     {
@@ -80,12 +82,13 @@ inline Octree<T>::Octree(const Math::AABB& octRegion, T& gameObject, const Math:
 //----------------------------------------------------------------------------------------------------
 
 template <typename T>
-inline Octree<T>::Octree(const Math::AABB& octRegion, Objects& objects, s32 maxDepth)
+inline Octree<T>::Octree(const Math::AABB& octRegion, Objects& objects, u32 maxElements, s32 maxDepth)
     : mAABB(octRegion)
     , mpParent(nullptr)
     , mActiveChildren(0)
     , mObjects(objects)
     , mMaxDepth(maxDepth)
+    , mMaxElements(maxElements)
 {
     for (u32 i=0; i < kNumChildren; ++i)
     {
@@ -127,9 +130,9 @@ inline void Octree<T>::Insert(T& object, const Math::AABB& region, s32 depth)
     {
         mObjects.insert(std::make_pair(&object, region));
 
-        // Check if this node currently contains anything
+        // Check if this node is full
         const u32 numObjects = mObjects.size();
-        if (numObjects > 1)
+        if (numObjects > mMaxElements)
         {
             // Split the region into octants
             std::vector<Math::AABB> octants = BuildRegions(mAABB);
@@ -142,7 +145,7 @@ inline void Octree<T>::Insert(T& object, const Math::AABB& region, s32 depth)
                 if (mpChildren[index] == nullptr)
                 {
                     // Create a new child if it doesn't exist already
-                    mpChildren[index] = new Octree(octants[index], *objectIter.first, objectIter.second);
+                    mpChildren[index] = new Octree(octants[index], std::move(*objectIter.first), objectIter.second);
                     mActiveChildren |= index; // Set the flag for the new child
                 }
                 else
@@ -151,6 +154,8 @@ inline void Octree<T>::Insert(T& object, const Math::AABB& region, s32 depth)
                     mpChildren[index]->Insert(object, region, depth + 1);
                 }
             }
+            // This node no longer contains any objects
+            mObjects.clear();
         }
     }
     else

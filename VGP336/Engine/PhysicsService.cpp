@@ -29,7 +29,9 @@ META_CLASS_END
 
 PhysicsService::PhysicsService()
     : Service("PhysicsService", kID)
-    , mOctree(Math::AABB(0.0f, 0.0f, 0.0f, Math::Vector3(1.0f, 1.0f, 1.0f)), 10)
+    , mOctree(Math::AABB(0.0f, 0.0f, 0.0f, 
+              Math::Vector3(1.0f, 1.0f, 1.0f)),
+              1, 10)
 {
 }
 
@@ -58,7 +60,10 @@ void PhysicsService::Terminate()
 
 void PhysicsService::Update(f32 deltaTime)
 {
-    Math::Vector3 defaultExtend(1.0f, 1.0f, 1.0f);
+    if (mSubscribers.empty())
+    {
+        return;
+    }
 
     // Recreate the tree every frame
     // TODO: Use pool for oct allocation
@@ -94,6 +99,7 @@ void PhysicsService::Update(f32 deltaTime)
         // TODO: do collision resolution here as the object's positions will have been updated
         // by their components.
     }
+    mOctree.Debug_DrawTree();
 }
 
 //----------------------------------------------------------------------------------------------------
