@@ -83,12 +83,12 @@
             this.cylinderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.coneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.torusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.EditorViewPanel = new Editor.SelectablePanel();
-            this.GameViewPanel = new Editor.SelectablePanel();
             this.AssetTab = new System.Windows.Forms.TabPage();
             this.AssetSplitContainer = new System.Windows.Forms.SplitContainer();
             this.AssetDirectoryTreeView = new System.Windows.Forms.TreeView();
             this.AssetListView = new System.Windows.Forms.ListView();
+            this.EditorViewPanel = new Editor.SelectablePanel();
+            this.GameViewPanel = new Editor.SelectablePanel();
             this.SceneHierarchyContextMenu.SuspendLayout();
             this.ViewportTabControl.SuspendLayout();
             this.EditorViewportTab.SuspendLayout();
@@ -634,32 +634,6 @@
             this.torusToolStripMenuItem.Text = "Torus";
             this.torusToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
             // 
-            // EditorViewPanel
-            // 
-            this.EditorViewPanel.AutoSize = true;
-            this.EditorViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.EditorViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.EditorViewPanel.Location = new System.Drawing.Point(3, 3);
-            this.EditorViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
-            this.EditorViewPanel.Name = "EditorViewPanel";
-            this.EditorViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.EditorViewPanel.Size = new System.Drawing.Size(870, 509);
-            this.EditorViewPanel.TabIndex = 2;
-            this.EditorViewPanel.TabStop = true;
-            // 
-            // GameViewPanel
-            // 
-            this.GameViewPanel.AutoSize = true;
-            this.GameViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.GameViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.GameViewPanel.Location = new System.Drawing.Point(3, 3);
-            this.GameViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
-            this.GameViewPanel.Name = "GameViewPanel";
-            this.GameViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.GameViewPanel.Size = new System.Drawing.Size(870, 509);
-            this.GameViewPanel.TabIndex = 3;
-            this.GameViewPanel.TabStop = true;
-            // 
             // AssetTab
             // 
             this.AssetTab.Controls.Add(this.AssetSplitContainer);
@@ -703,6 +677,32 @@
             this.AssetListView.Size = new System.Drawing.Size(809, 220);
             this.AssetListView.TabIndex = 0;
             this.AssetListView.UseCompatibleStateImageBehavior = false;
+            // 
+            // EditorViewPanel
+            // 
+            this.EditorViewPanel.AutoSize = true;
+            this.EditorViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.EditorViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.EditorViewPanel.Location = new System.Drawing.Point(3, 3);
+            this.EditorViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
+            this.EditorViewPanel.Name = "EditorViewPanel";
+            this.EditorViewPanel.Padding = new System.Windows.Forms.Padding(3);
+            this.EditorViewPanel.Size = new System.Drawing.Size(870, 509);
+            this.EditorViewPanel.TabIndex = 2;
+            this.EditorViewPanel.TabStop = true;
+            // 
+            // GameViewPanel
+            // 
+            this.GameViewPanel.AutoSize = true;
+            this.GameViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.GameViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.GameViewPanel.Location = new System.Drawing.Point(3, 3);
+            this.GameViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
+            this.GameViewPanel.Name = "GameViewPanel";
+            this.GameViewPanel.Padding = new System.Windows.Forms.Padding(3);
+            this.GameViewPanel.Size = new System.Drawing.Size(870, 509);
+            this.GameViewPanel.TabIndex = 3;
+            this.GameViewPanel.TabStop = true;
             // 
             // EditorForm
             // 

@@ -282,6 +282,7 @@ namespace Editor
         }
         #endregion Level events
 
+        #region Play in editor
         private void PlayButton_Click(object sender, EventArgs e)
         {
             if (gameState == GameState.Playing)
@@ -343,5 +344,6 @@ namespace Editor
                 NativeMethods.SelectGameObject(selectedHandle.ToNativeHandle());
             }
         }
+        #endregion Play in editor
     }
 }
