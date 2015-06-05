@@ -85,6 +85,10 @@
             this.torusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EditorViewPanel = new Editor.SelectablePanel();
             this.GameViewPanel = new Editor.SelectablePanel();
+            this.AssetTab = new System.Windows.Forms.TabPage();
+            this.AssetSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.AssetDirectoryTreeView = new System.Windows.Forms.TreeView();
+            this.AssetListView = new System.Windows.Forms.ListView();
             this.SceneHierarchyContextMenu.SuspendLayout();
             this.ViewportTabControl.SuspendLayout();
             this.EditorViewportTab.SuspendLayout();
@@ -116,6 +120,11 @@
             this.SceneHierarchyTab.SuspendLayout();
             this.InspectorTabControl.SuspendLayout();
             this.InspectorTab.SuspendLayout();
+            this.AssetTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.AssetSplitContainer)).BeginInit();
+            this.AssetSplitContainer.Panel1.SuspendLayout();
+            this.AssetSplitContainer.Panel2.SuspendLayout();
+            this.AssetSplitContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // InspectorContextMenu
@@ -296,7 +305,7 @@
             // cubeToolStripMenuItem
             // 
             this.cubeToolStripMenuItem.Name = "cubeToolStripMenuItem";
-            this.cubeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.cubeToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.cubeToolStripMenuItem.Text = "Cube";
             this.cubeToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
             // 
@@ -362,6 +371,7 @@
             // ConsoleTabControl
             // 
             this.ConsoleTabControl.Controls.Add(this.ConsoleTab);
+            this.ConsoleTabControl.Controls.Add(this.AssetTab);
             this.ConsoleTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ConsoleTabControl.Location = new System.Drawing.Point(0, 0);
             this.ConsoleTabControl.Name = "ConsoleTabControl";
@@ -592,35 +602,35 @@
             // planeToolStripMenuItem
             // 
             this.planeToolStripMenuItem.Name = "planeToolStripMenuItem";
-            this.planeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.planeToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.planeToolStripMenuItem.Text = "Plane";
             this.planeToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
             // 
             // sphereToolStripMenuItem
             // 
             this.sphereToolStripMenuItem.Name = "sphereToolStripMenuItem";
-            this.sphereToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sphereToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.sphereToolStripMenuItem.Text = "Sphere";
             this.sphereToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
             // 
             // cylinderToolStripMenuItem
             // 
             this.cylinderToolStripMenuItem.Name = "cylinderToolStripMenuItem";
-            this.cylinderToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.cylinderToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.cylinderToolStripMenuItem.Text = "Cylinder";
             this.cylinderToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
             // 
             // coneToolStripMenuItem
             // 
             this.coneToolStripMenuItem.Name = "coneToolStripMenuItem";
-            this.coneToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.coneToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.coneToolStripMenuItem.Text = "Cone";
             this.coneToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
             // 
             // torusToolStripMenuItem
             // 
             this.torusToolStripMenuItem.Name = "torusToolStripMenuItem";
-            this.torusToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.torusToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.torusToolStripMenuItem.Text = "Torus";
             this.torusToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
             // 
@@ -649,6 +659,50 @@
             this.GameViewPanel.Size = new System.Drawing.Size(870, 509);
             this.GameViewPanel.TabIndex = 3;
             this.GameViewPanel.TabStop = true;
+            // 
+            // AssetTab
+            // 
+            this.AssetTab.Controls.Add(this.AssetSplitContainer);
+            this.AssetTab.Location = new System.Drawing.Point(4, 22);
+            this.AssetTab.Name = "AssetTab";
+            this.AssetTab.Size = new System.Drawing.Size(1115, 220);
+            this.AssetTab.TabIndex = 1;
+            this.AssetTab.Text = "Assets";
+            this.AssetTab.UseVisualStyleBackColor = true;
+            // 
+            // AssetSplitContainer
+            // 
+            this.AssetSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.AssetSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.AssetSplitContainer.Name = "AssetSplitContainer";
+            // 
+            // AssetSplitContainer.Panel1
+            // 
+            this.AssetSplitContainer.Panel1.Controls.Add(this.AssetDirectoryTreeView);
+            // 
+            // AssetSplitContainer.Panel2
+            // 
+            this.AssetSplitContainer.Panel2.Controls.Add(this.AssetListView);
+            this.AssetSplitContainer.Size = new System.Drawing.Size(1115, 220);
+            this.AssetSplitContainer.SplitterDistance = 302;
+            this.AssetSplitContainer.TabIndex = 0;
+            // 
+            // AssetDirectoryTreeView
+            // 
+            this.AssetDirectoryTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.AssetDirectoryTreeView.Location = new System.Drawing.Point(0, 0);
+            this.AssetDirectoryTreeView.Name = "AssetDirectoryTreeView";
+            this.AssetDirectoryTreeView.Size = new System.Drawing.Size(302, 220);
+            this.AssetDirectoryTreeView.TabIndex = 0;
+            // 
+            // AssetListView
+            // 
+            this.AssetListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.AssetListView.Location = new System.Drawing.Point(0, 0);
+            this.AssetListView.Name = "AssetListView";
+            this.AssetListView.Size = new System.Drawing.Size(809, 220);
+            this.AssetListView.TabIndex = 0;
+            this.AssetListView.UseCompatibleStateImageBehavior = false;
             // 
             // EditorForm
             // 
@@ -700,6 +754,11 @@
             this.SceneHierarchyTab.ResumeLayout(false);
             this.InspectorTabControl.ResumeLayout(false);
             this.InspectorTab.ResumeLayout(false);
+            this.AssetTab.ResumeLayout(false);
+            this.AssetSplitContainer.Panel1.ResumeLayout(false);
+            this.AssetSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.AssetSplitContainer)).EndInit();
+            this.AssetSplitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -762,6 +821,10 @@
         private System.Windows.Forms.ToolStripMenuItem cylinderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem coneToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem torusToolStripMenuItem;
+        private System.Windows.Forms.TabPage AssetTab;
+        private System.Windows.Forms.SplitContainer AssetSplitContainer;
+        private System.Windows.Forms.TreeView AssetDirectoryTreeView;
+        private System.Windows.Forms.ListView AssetListView;
     }
 }
 

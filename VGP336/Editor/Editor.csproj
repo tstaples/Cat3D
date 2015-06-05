@@ -63,6 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventHandlers\AssetManager.cs" />
     <Compile Include="EventHandlers\ToolMenuHandler.cs" />
     <Compile Include="GameObject\Components\CameraComponent.cs" />
     <Compile Include="GameObject\Components\ColliderComponent.cs" />

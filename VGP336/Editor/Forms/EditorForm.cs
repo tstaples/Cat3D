@@ -22,6 +22,7 @@ namespace Editor
         private SceneHierarchy sceneHierarchy;
         private LevelManager levelManager;
         private ToolMenuHandler toolMenuHandler;
+        private AssetManager assetManager;
 
         private GameState gameState;
         private System.Timers.Timer updateTimer;
@@ -76,6 +77,10 @@ namespace Editor
             levelManager.IsLevelDirty = false;
 
             toolMenuHandler = new ToolMenuHandler(this);
+
+            assetManager = new AssetManager(ref AssetDirectoryTreeView, ref AssetListView);
+            // TODO: Load from project path
+            assetManager.Populate("../Data/");
 
             // Create the timer for updating the game when it is being played
             updateTimer = new System.Timers.Timer(interval);
