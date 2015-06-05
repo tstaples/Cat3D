@@ -85,8 +85,10 @@
             this.torusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.AssetTab = new System.Windows.Forms.TabPage();
             this.AssetSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.AssetDirectoryTreeView = new System.Windows.Forms.TreeView();
-            this.AssetListView = new System.Windows.Forms.ListView();
+            this.assetDirectoryTreeView = new System.Windows.Forms.TreeView();
+            this.assetListView = new System.Windows.Forms.ListView();
+            this.AssetViewSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.thumnailSizeTrackbar = new System.Windows.Forms.TrackBar();
             this.EditorViewPanel = new Editor.SelectablePanel();
             this.GameViewPanel = new Editor.SelectablePanel();
             this.SceneHierarchyContextMenu.SuspendLayout();
@@ -125,6 +127,11 @@
             this.AssetSplitContainer.Panel1.SuspendLayout();
             this.AssetSplitContainer.Panel2.SuspendLayout();
             this.AssetSplitContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.AssetViewSplitContainer)).BeginInit();
+            this.AssetViewSplitContainer.Panel1.SuspendLayout();
+            this.AssetViewSplitContainer.Panel2.SuspendLayout();
+            this.AssetViewSplitContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.thumnailSizeTrackbar)).BeginInit();
             this.SuspendLayout();
             // 
             // InspectorContextMenu
@@ -652,31 +659,62 @@
             // 
             // AssetSplitContainer.Panel1
             // 
-            this.AssetSplitContainer.Panel1.Controls.Add(this.AssetDirectoryTreeView);
+            this.AssetSplitContainer.Panel1.Controls.Add(this.assetDirectoryTreeView);
             // 
             // AssetSplitContainer.Panel2
             // 
-            this.AssetSplitContainer.Panel2.Controls.Add(this.AssetListView);
+            this.AssetSplitContainer.Panel2.Controls.Add(this.AssetViewSplitContainer);
             this.AssetSplitContainer.Size = new System.Drawing.Size(1115, 220);
             this.AssetSplitContainer.SplitterDistance = 302;
             this.AssetSplitContainer.TabIndex = 0;
             // 
-            // AssetDirectoryTreeView
+            // assetDirectoryTreeView
             // 
-            this.AssetDirectoryTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.AssetDirectoryTreeView.Location = new System.Drawing.Point(0, 0);
-            this.AssetDirectoryTreeView.Name = "AssetDirectoryTreeView";
-            this.AssetDirectoryTreeView.Size = new System.Drawing.Size(302, 220);
-            this.AssetDirectoryTreeView.TabIndex = 0;
+            this.assetDirectoryTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.assetDirectoryTreeView.Location = new System.Drawing.Point(0, 0);
+            this.assetDirectoryTreeView.Name = "assetDirectoryTreeView";
+            this.assetDirectoryTreeView.Size = new System.Drawing.Size(302, 220);
+            this.assetDirectoryTreeView.TabIndex = 0;
             // 
-            // AssetListView
+            // assetListView
             // 
-            this.AssetListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.AssetListView.Location = new System.Drawing.Point(0, 0);
-            this.AssetListView.Name = "AssetListView";
-            this.AssetListView.Size = new System.Drawing.Size(809, 220);
-            this.AssetListView.TabIndex = 0;
-            this.AssetListView.UseCompatibleStateImageBehavior = false;
+            this.assetListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.assetListView.Location = new System.Drawing.Point(0, 0);
+            this.assetListView.Name = "assetListView";
+            this.assetListView.Size = new System.Drawing.Size(809, 184);
+            this.assetListView.TabIndex = 0;
+            this.assetListView.UseCompatibleStateImageBehavior = false;
+            this.assetListView.View = System.Windows.Forms.View.SmallIcon;
+            // 
+            // AssetViewSplitContainer
+            // 
+            this.AssetViewSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.AssetViewSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.AssetViewSplitContainer.Name = "AssetViewSplitContainer";
+            this.AssetViewSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // AssetViewSplitContainer.Panel1
+            // 
+            this.AssetViewSplitContainer.Panel1.Controls.Add(this.thumnailSizeTrackbar);
+            // 
+            // AssetViewSplitContainer.Panel2
+            // 
+            this.AssetViewSplitContainer.Panel2.Controls.Add(this.assetListView);
+            this.AssetViewSplitContainer.Size = new System.Drawing.Size(809, 220);
+            this.AssetViewSplitContainer.SplitterDistance = 32;
+            this.AssetViewSplitContainer.TabIndex = 1;
+            // 
+            // thumnailSizeTrackbar
+            // 
+            this.thumnailSizeTrackbar.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.thumnailSizeTrackbar.BackColor = System.Drawing.SystemColors.Window;
+            this.thumnailSizeTrackbar.LargeChange = 1;
+            this.thumnailSizeTrackbar.Location = new System.Drawing.Point(702, 3);
+            this.thumnailSizeTrackbar.Maximum = 3;
+            this.thumnailSizeTrackbar.Name = "thumnailSizeTrackbar";
+            this.thumnailSizeTrackbar.Size = new System.Drawing.Size(104, 45);
+            this.thumnailSizeTrackbar.TabIndex = 0;
+            this.thumnailSizeTrackbar.TickStyle = System.Windows.Forms.TickStyle.None;
             // 
             // EditorViewPanel
             // 
@@ -759,6 +797,12 @@
             this.AssetSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.AssetSplitContainer)).EndInit();
             this.AssetSplitContainer.ResumeLayout(false);
+            this.AssetViewSplitContainer.Panel1.ResumeLayout(false);
+            this.AssetViewSplitContainer.Panel1.PerformLayout();
+            this.AssetViewSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.AssetViewSplitContainer)).EndInit();
+            this.AssetViewSplitContainer.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.thumnailSizeTrackbar)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -823,8 +867,10 @@
         private System.Windows.Forms.ToolStripMenuItem torusToolStripMenuItem;
         private System.Windows.Forms.TabPage AssetTab;
         private System.Windows.Forms.SplitContainer AssetSplitContainer;
-        private System.Windows.Forms.TreeView AssetDirectoryTreeView;
-        private System.Windows.Forms.ListView AssetListView;
+        private System.Windows.Forms.TreeView assetDirectoryTreeView;
+        private System.Windows.Forms.ListView assetListView;
+        private System.Windows.Forms.SplitContainer AssetViewSplitContainer;
+        private System.Windows.Forms.TrackBar thumnailSizeTrackbar;
     }
 }
 

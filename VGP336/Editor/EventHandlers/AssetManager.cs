@@ -9,24 +9,60 @@ using System.Drawing;
 
 namespace Editor
 {
+    internal struct AssetItem
+    {
+        public string filename;
+        public Bitmap[] thumbnails;
+    }
+
     public class AssetManager
     {
+        private enum EThumbnailState
+        {
+            List    = 0,
+            Small   = 1,
+            Medium  = 2,
+            Large   = 3
+        }
+        
         private string rootAssetPath;
         private TreeView assetTreeView;
         private ListView assetListView;
+
         private ImageList assetThumbnails;
-        private Size thumnailSize;
+        private TrackBar thumbnailSizeSlider;
+        private List<Size> thumbnailSizes;
+        private EThumbnailState thumbnailState;
 
-        public AssetManager(ref TreeView assetTree, ref ListView assetList)
+        Dictionary<int, List<AssetItem>> assetMap;
+        List<AssetItem> currentAssetItems;
+
+        public AssetManager(EditorForm owner)
         {
-            assetTreeView = assetTree;
-            assetTreeView.NodeMouseClick += OnNodeClicked;
-            
-            assetListView = assetList;
+            assetMap = new Dictionary<int, List<AssetItem>>();
 
-            thumnailSize = new Size(128, 128);
+            assetTreeView = owner.AssetDirectoryTreeView;
+            assetTreeView.NodeMouseClick += OnNodeClicked;
+
+            // Create a list of sizes to match thumbnail display state
+            thumbnailSizes = new List<Size>();
+            thumbnailSizes.Add(new Size(16, 16));
+            thumbnailSizes.Add(new Size(32, 32));
+            thumbnailSizes.Add(new Size(64, 64));
+            thumbnailSizes.Add(new Size(128, 128));
+            thumbnailState = EThumbnailState.Medium;
+
+            // Init the image list that will hold our thumbails
             assetThumbnails = new ImageList();
-            assetThumbnails.ImageSize = thumnailSize;
+            assetThumbnails.ImageSize = GetTBSize();
+            
+            assetListView = owner.AssetListView;
+            assetListView.LargeImageList = assetThumbnails;
+            assetListView.View = View.LargeIcon;
+
+            thumbnailSizeSlider = owner.ThumbnailSizeTrackback;
+            thumbnailSizeSlider.Value = (int)thumbnailState;
+            thumbnailSizeSlider.ValueChanged += OnThumbnailTrackbarValueChanged;
         }
 
         public void Populate(string assetPath)
@@ -50,7 +86,12 @@ namespace Editor
 
                 // Traverse this directory recursively
                 Traverse(dir, ref dirnode);
-                
+
+                // Get all the files in this directory, then pair the dir name hash with the thumbnails of the directory
+                List<string> files = new List<string>(Directory.EnumerateFiles(dir));
+                int hash = dirname.GetHashCode();
+                assetMap.Add(hash, LoadThumbnails(files));
+
                 // Add this directory and it's children to the parent in node
                 node.Nodes.Add(dirnode);
             }
@@ -78,21 +119,67 @@ namespace Editor
             assetListView.Items.Clear();
             assetThumbnails.Images.Clear();
 
-            string pathToNode = rootAssetPath + GetPathToNode(e.Node);
-            List<string> files = new List<string>(Directory.EnumerateFiles(pathToNode));
             int imageIndex = 0;
-            foreach (string file in files)
+            int sizeIndex = (int)thumbnailState;
+            int hash = e.Node.Text.GetHashCode();
+            currentAssetItems = assetMap[hash];
+            foreach (AssetItem assetItem in currentAssetItems)
             {
                 ListViewItem item = new ListViewItem();
-                item.Text = Path.GetFileName(file);
-                item.ImageIndex = imageIndex++;
+                item.Text = assetItem.filename;
+                item.ImageIndex = imageIndex++; // index corresponds to image list
 
-                Bitmap thumbnail = WindowsThumbnailProvider.GetThumbnail(file, thumnailSize.Width, thumnailSize.Height, ThumbnailOptions.None);
-                assetThumbnails.Images.Add(thumbnail);
-
+                assetThumbnails.Images.Add(assetItem.thumbnails[sizeIndex]);
                 assetListView.Items.Add(item);
             }
-            assetListView.LargeImageList = assetThumbnails;
+        }
+
+        private void OnThumbnailTrackbarValueChanged(object sender, EventArgs e)
+        {
+            thumbnailState = (EThumbnailState)thumbnailSizeSlider.Value;
+            if (thumbnailState == EThumbnailState.List)
+            {
+                assetListView.View = View.List;
+            }
+            else
+            {
+                assetListView.View = View.LargeIcon;
+                
+                // Reload the thumbnails with the new size
+                UpdateThumbnails();
+            }
+        }
+
+        private void UpdateThumbnails()
+        {
+            assetThumbnails.ImageSize = GetTBSize();
+
+            int sizeIndex = (int)thumbnailState;
+            foreach (AssetItem assetItem in currentAssetItems)
+            {
+                // Re-assign the thumbnail with the correct sized one
+                assetThumbnails.Images.Add(assetItem.thumbnails[sizeIndex]);
+            }
+        }
+
+        private List<AssetItem> LoadThumbnails(List<string> files)
+        {
+            List<AssetItem> assetItems = new List<AssetItem>();
+            foreach (string file in files)
+            {
+                AssetItem assetItem = new AssetItem();
+                assetItem.filename = Path.GetFileName(file);
+                assetItem.thumbnails = new Bitmap[thumbnailSizes.Count];
+
+                // Load each thumbnail
+                for (int i = 0; i < thumbnailSizes.Count; ++i)
+                {
+                    Size tbSize = thumbnailSizes[i];
+                    assetItem.thumbnails[i] = WindowsThumbnailProvider.GetThumbnail(file, tbSize.Width, tbSize.Height, ThumbnailOptions.None);
+                }
+                assetItems.Add(assetItem);
+            }
+            return assetItems;
         }
 
         private string GetPathToNode(TreeNode node)
@@ -105,6 +192,11 @@ namespace Editor
                 currentNode = currentNode.Parent;
             }
             return pathToThisNode;
+        }
+
+        private Size GetTBSize()
+        {
+            return thumbnailSizes[(int)thumbnailState];
         }
     }
 }

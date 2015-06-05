@@ -49,6 +49,18 @@ namespace Editor
         {
             get { return levelManager; }
         }
+        public ListView AssetListView
+        {
+            get { return assetListView; }
+        }
+        public TreeView AssetDirectoryTreeView
+        {
+            get { return assetDirectoryTreeView; }
+        }
+        public TrackBar ThumbnailSizeTrackback
+        {
+            get { return thumnailSizeTrackbar; }
+        }
         #endregion Accessors/members
 
         #region API calls/constructor
@@ -78,7 +90,7 @@ namespace Editor
 
             toolMenuHandler = new ToolMenuHandler(this);
 
-            assetManager = new AssetManager(ref AssetDirectoryTreeView, ref AssetListView);
+            assetManager = new AssetManager(this);
             // TODO: Load from project path
             assetManager.Populate("../Data/");
 
