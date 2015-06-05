@@ -28,10 +28,11 @@ public:
     enum eFilters : u32
     {
         Cube,
-        Quad,
+        Plane,
         Sphere,
         Cylinder,
-        Torus
+        Torus,
+        Cone
     };
 
     MeshComponent();

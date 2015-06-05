@@ -37,9 +37,7 @@
             this.OpenFileBox = new System.Windows.Forms.OpenFileDialog();
             this.ViewportTabControl = new System.Windows.Forms.TabControl();
             this.EditorViewportTab = new System.Windows.Forms.TabPage();
-            this.EditorViewPanel = new Editor.SelectablePanel();
             this.GameViewportTab = new System.Windows.Forms.TabPage();
-            this.GameViewPanel = new Editor.SelectablePanel();
             this.SceneHierarchyTree = new System.Windows.Forms.TreeView();
             this.miniToolStrip = new System.Windows.Forms.MenuStrip();
             this.MainMenuStrip = new System.Windows.Forms.MenuStrip();
@@ -80,6 +78,13 @@
             this.SceneHierarchyTab = new System.Windows.Forms.TabPage();
             this.InspectorTabControl = new System.Windows.Forms.TabControl();
             this.InspectorTab = new System.Windows.Forms.TabPage();
+            this.planeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sphereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cylinderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.coneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.torusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditorViewPanel = new Editor.SelectablePanel();
+            this.GameViewPanel = new Editor.SelectablePanel();
             this.SceneHierarchyContextMenu.SuspendLayout();
             this.ViewportTabControl.SuspendLayout();
             this.EditorViewportTab.SuspendLayout();
@@ -164,19 +169,6 @@
             this.EditorViewportTab.Text = "Editor";
             this.EditorViewportTab.UseVisualStyleBackColor = true;
             // 
-            // EditorViewPanel
-            // 
-            this.EditorViewPanel.AutoSize = true;
-            this.EditorViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.EditorViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.EditorViewPanel.Location = new System.Drawing.Point(3, 3);
-            this.EditorViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
-            this.EditorViewPanel.Name = "EditorViewPanel";
-            this.EditorViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.EditorViewPanel.Size = new System.Drawing.Size(870, 509);
-            this.EditorViewPanel.TabIndex = 2;
-            this.EditorViewPanel.TabStop = true;
-            // 
             // GameViewportTab
             // 
             this.GameViewportTab.Controls.Add(this.GameViewPanel);
@@ -187,19 +179,6 @@
             this.GameViewportTab.TabIndex = 1;
             this.GameViewportTab.Text = "Game";
             this.GameViewportTab.UseVisualStyleBackColor = true;
-            // 
-            // GameViewPanel
-            // 
-            this.GameViewPanel.AutoSize = true;
-            this.GameViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.GameViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.GameViewPanel.Location = new System.Drawing.Point(3, 3);
-            this.GameViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
-            this.GameViewPanel.Name = "GameViewPanel";
-            this.GameViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.GameViewPanel.Size = new System.Drawing.Size(870, 509);
-            this.GameViewPanel.TabIndex = 3;
-            this.GameViewPanel.TabStop = true;
             // 
             // SceneHierarchyTree
             // 
@@ -304,7 +283,12 @@
             // geometryToolStripMenuItem
             // 
             this.geometryToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cubeToolStripMenuItem});
+            this.cubeToolStripMenuItem,
+            this.planeToolStripMenuItem,
+            this.sphereToolStripMenuItem,
+            this.cylinderToolStripMenuItem,
+            this.coneToolStripMenuItem,
+            this.torusToolStripMenuItem});
             this.geometryToolStripMenuItem.Name = "geometryToolStripMenuItem";
             this.geometryToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.geometryToolStripMenuItem.Text = "Geometry";
@@ -605,6 +589,67 @@
             this.InspectorTab.Text = "Inspector";
             this.InspectorTab.UseVisualStyleBackColor = true;
             // 
+            // planeToolStripMenuItem
+            // 
+            this.planeToolStripMenuItem.Name = "planeToolStripMenuItem";
+            this.planeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.planeToolStripMenuItem.Text = "Plane";
+            this.planeToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
+            // 
+            // sphereToolStripMenuItem
+            // 
+            this.sphereToolStripMenuItem.Name = "sphereToolStripMenuItem";
+            this.sphereToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sphereToolStripMenuItem.Text = "Sphere";
+            this.sphereToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
+            // 
+            // cylinderToolStripMenuItem
+            // 
+            this.cylinderToolStripMenuItem.Name = "cylinderToolStripMenuItem";
+            this.cylinderToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.cylinderToolStripMenuItem.Text = "Cylinder";
+            this.cylinderToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
+            // 
+            // coneToolStripMenuItem
+            // 
+            this.coneToolStripMenuItem.Name = "coneToolStripMenuItem";
+            this.coneToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.coneToolStripMenuItem.Text = "Cone";
+            this.coneToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
+            // 
+            // torusToolStripMenuItem
+            // 
+            this.torusToolStripMenuItem.Name = "torusToolStripMenuItem";
+            this.torusToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.torusToolStripMenuItem.Text = "Torus";
+            this.torusToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
+            // 
+            // EditorViewPanel
+            // 
+            this.EditorViewPanel.AutoSize = true;
+            this.EditorViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.EditorViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.EditorViewPanel.Location = new System.Drawing.Point(3, 3);
+            this.EditorViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
+            this.EditorViewPanel.Name = "EditorViewPanel";
+            this.EditorViewPanel.Padding = new System.Windows.Forms.Padding(3);
+            this.EditorViewPanel.Size = new System.Drawing.Size(870, 509);
+            this.EditorViewPanel.TabIndex = 2;
+            this.EditorViewPanel.TabStop = true;
+            // 
+            // GameViewPanel
+            // 
+            this.GameViewPanel.AutoSize = true;
+            this.GameViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.GameViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.GameViewPanel.Location = new System.Drawing.Point(3, 3);
+            this.GameViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
+            this.GameViewPanel.Name = "GameViewPanel";
+            this.GameViewPanel.Padding = new System.Windows.Forms.Padding(3);
+            this.GameViewPanel.Size = new System.Drawing.Size(870, 509);
+            this.GameViewPanel.TabIndex = 3;
+            this.GameViewPanel.TabStop = true;
+            // 
             // EditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -712,6 +757,11 @@
         private System.Windows.Forms.Button PlayButton;
         private System.Windows.Forms.ToolStripMenuItem geometryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cubeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem planeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sphereToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cylinderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem coneToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem torusToolStripMenuItem;
     }
 }
 

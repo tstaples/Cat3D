@@ -18,7 +18,12 @@ MeshComponent::MeshComponent()
 {
     mMeshPaths = 
     {
-        "../Data/Models/cube.catm"
+        "../Data/Models/cube.catm",
+        "../Data/Models/plane.catm",
+        "../Data/Models/sphere.catm",
+        "../Data/Models/cylinder.catm",
+        "../Data/Models/torus.catm",
+        "../Data/Models/cone.catm",
     };
 }
 
