@@ -26,8 +26,10 @@ namespace Editor
         }
         
         private string rootAssetPath;
+        private EditorForm owner;
         private TreeView assetTreeView;
         private ListView assetListView;
+        private ContextMenuStrip assetViewContextMenu;
 
         private ImageList assetThumbnails;
         private TrackBar thumbnailSizeSlider;
@@ -37,12 +39,16 @@ namespace Editor
         Dictionary<int, List<AssetItem>> assetMap;
         List<AssetItem> currentAssetItems;
 
+
         public AssetManager(EditorForm owner)
         {
-            assetMap = new Dictionary<int, List<AssetItem>>();
+            this.owner = owner;
 
             assetTreeView = owner.AssetDirectoryTreeView;
             assetTreeView.NodeMouseClick += OnNodeClicked;
+            assetTreeView.AfterLabelEdit += AfterRenameItem;
+
+            InitContextMenu();
 
             // Create a list of sizes to match thumbnail display state
             thumbnailSizes = new List<Size>();
@@ -50,7 +56,7 @@ namespace Editor
             thumbnailSizes.Add(new Size(32, 32));
             thumbnailSizes.Add(new Size(64, 64));
             thumbnailSizes.Add(new Size(128, 128));
-            thumbnailState = EThumbnailState.Medium;
+            thumbnailState = EThumbnailState.List;
 
             // Init the image list that will hold our thumbails
             assetThumbnails = new ImageList();
@@ -58,39 +64,43 @@ namespace Editor
             
             assetListView = owner.AssetListView;
             assetListView.LargeImageList = assetThumbnails;
-            assetListView.View = View.LargeIcon;
+            assetListView.SmallImageList = assetThumbnails;
+            assetListView.View = View.List;
 
             thumbnailSizeSlider = owner.ThumbnailSizeTrackback;
             thumbnailSizeSlider.Value = (int)thumbnailState;
             thumbnailSizeSlider.ValueChanged += OnThumbnailTrackbarValueChanged;
+
+            assetMap = new Dictionary<int, List<AssetItem>>();
         }
 
         public void Populate(string assetPath)
         {
             TreeNode root = new TreeNode("Assets");
+            root.Name = assetPath;
             root.Expand();
 
             Traverse(assetPath, ref root);
             assetTreeView.Nodes.Add(root);
-            rootAssetPath = assetPath + "/";
+            rootAssetPath = assetPath;
         }
-
         private void Traverse(string directory, ref TreeNode node)
         {
+            // Get all the files in this directory, then pair the dir name hash with the thumbnails of the directory
+            List<string> files = new List<string>(Directory.EnumerateFileSystemEntries(directory));
+            int hash = directory.GetHashCode();
+            assetMap.Add(hash, LoadThumbnails(files));
+
             List<string> directories = new List<string>(Directory.EnumerateDirectories(directory));
             foreach (string dir in directories)
             {
                 // Create a node for this directory
                 string dirname = Path.GetFileName(dir);
                 TreeNode dirnode = new TreeNode(dirname);
+                dirnode.Name = dir;
 
                 // Traverse this directory recursively
                 Traverse(dir, ref dirnode);
-
-                // Get all the files in this directory, then pair the dir name hash with the thumbnails of the directory
-                List<string> files = new List<string>(Directory.EnumerateFiles(dir));
-                int hash = dirname.GetHashCode();
-                assetMap.Add(hash, LoadThumbnails(files));
 
                 // Add this directory and it's children to the parent in node
                 node.Nodes.Add(dirnode);
@@ -101,19 +111,16 @@ namespace Editor
         {
             if (e.Button == MouseButtons.Right)
             {
-                // TODO: show context menu
-                return;
+                OnDisplayContextMenu(e.Node);
             }
-            else if (e.Button != MouseButtons.Left)
+            
+            // Invalid input or same node was clicked; do nothing
+            if (assetTreeView.SelectedNode != null && 
+                assetTreeView.SelectedNode == e.Node)
             {
                 return;
             }
-
-            // Same node was clicked; do nothing
-            if (assetTreeView.SelectedNode != null && assetTreeView.SelectedNode == e.Node)
-            {
-                return;
-            }
+            assetTreeView.SelectedNode = e.Node;
 
             // Clear the currently displayed items
             assetListView.Items.Clear();
@@ -121,7 +128,8 @@ namespace Editor
 
             int imageIndex = 0;
             int sizeIndex = (int)thumbnailState;
-            int hash = e.Node.Text.GetHashCode();
+            string path = e.Node.Name;
+            int hash = path.GetHashCode();
             currentAssetItems = assetMap[hash];
             foreach (AssetItem assetItem in currentAssetItems)
             {
@@ -133,7 +141,6 @@ namespace Editor
                 assetListView.Items.Add(item);
             }
         }
-
         private void OnThumbnailTrackbarValueChanged(object sender, EventArgs e)
         {
             thumbnailState = (EThumbnailState)thumbnailSizeSlider.Value;
@@ -143,13 +150,12 @@ namespace Editor
             }
             else
             {
+                // Use large icons for everything else since we manually scale the thumbnails
                 assetListView.View = View.LargeIcon;
-                
-                // Reload the thumbnails with the new size
-                UpdateThumbnails();
             }
+            // Reload the thumbnails with the new size
+            UpdateThumbnails();
         }
-
         private void UpdateThumbnails()
         {
             assetThumbnails.ImageSize = GetTBSize();
@@ -161,7 +167,6 @@ namespace Editor
                 assetThumbnails.Images.Add(assetItem.thumbnails[sizeIndex]);
             }
         }
-
         private List<AssetItem> LoadThumbnails(List<string> files)
         {
             List<AssetItem> assetItems = new List<AssetItem>();
@@ -182,21 +187,92 @@ namespace Editor
             return assetItems;
         }
 
-        private string GetPathToNode(TreeNode node)
-        {
-            string pathToThisNode = "";
-            TreeNode currentNode = node;
-            while (currentNode.Parent != null)
-            {
-                pathToThisNode = currentNode.Text + "/" + pathToThisNode;
-                currentNode = currentNode.Parent;
-            }
-            return pathToThisNode;
-        }
-
         private Size GetTBSize()
         {
             return thumbnailSizes[(int)thumbnailState];
         }
+        private bool IsValidPath(string path)
+        {
+            char[] invalidChars = Path.GetInvalidPathChars();
+            foreach (char invalid in invalidChars)
+            {
+                if (path.Contains(invalid))
+                {
+                    return false;
+                }
+            }
+            // Edge case since they're technically valid, but not on their own
+            if (path == "" || path == " ")
+            {
+                return false;
+            }
+            return true;
+        }
+
+        #region Context menu
+        private void OnDisplayContextMenu(TreeNode node)
+        {
+            if (node.Name == rootAssetPath)
+            {
+                // Disable renaming and deleting of the root folder
+                assetViewContextMenu.Items[1].Enabled = false;
+                assetViewContextMenu.Items[2].Enabled = false;
+            }
+            else
+            {
+                assetViewContextMenu.Items[1].Enabled = true;
+                assetViewContextMenu.Items[2].Enabled = true;
+            }
+            assetViewContextMenu.Show(owner.GetMousePos());
+        }
+        private void InitContextMenu()
+        {
+            assetViewContextMenu = new ContextMenuStrip();
+            assetViewContextMenu.Items.Add("Create subdirectory", null, OnCreateSubdirectoryClicked);
+            assetViewContextMenu.Items.Add("Rename", null, OnRenameItemClicked);
+            assetViewContextMenu.Items.Add("Delete");
+            assetViewContextMenu.Items.Add("Refresh");
+            assetViewContextMenu.Items.Add("Import Asset");
+        }
+        private void OnCreateSubdirectoryClicked(object sender, EventArgs e)
+        {
+            TreeNode node = new TreeNode();
+            node.Text = "NewFolder"; // default
+            string path = assetTreeView.SelectedNode.Name + "/" + node.Text;
+            node.Name = path;
+            assetMap.Add(path.GetHashCode(), new List<AssetItem>());
+            Directory.CreateDirectory(path);
+
+            // Add the new node as a child of the selected one
+            int index = assetTreeView.SelectedNode.Nodes.Add(node);
+            assetTreeView.SelectedNode.Nodes[index].BeginEdit();
+        }
+        private void OnRenameItemClicked(object sender, EventArgs e)
+        {
+            assetTreeView.SelectedNode.BeginEdit();
+        }
+        private void AfterRenameItem(object sender, NodeLabelEditEventArgs e)
+        {
+            string oldName = e.Node.Name;
+            string newName = e.Label;
+            if (newName == null || newName == "" || !IsValidPath(newName))
+            {
+                e.CancelEdit = true;
+                return;
+            }
+
+            string path = e.Node.Name; // Get the current path from the node's name
+            string dir = Directory.GetParent(path) + "/"; // This gives us the full path, but it still works
+            string newPathName = dir + newName;
+            Directory.Move(path, newPathName); // Rename the directory
+            e.Node.Name = newPathName;
+
+            // Move the asset items to the new key and remove the old one
+            int oldHash = oldName.GetHashCode();
+            List<AssetItem> assetItems = assetMap[oldHash];
+            assetMap.Remove(oldHash);
+            assetMap.Add(newPathName.GetHashCode(), assetItems);
+        }
+        #endregion Context menu
     }
 }

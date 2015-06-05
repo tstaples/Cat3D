@@ -377,8 +377,8 @@
             // 
             // ConsoleTabControl
             // 
-            this.ConsoleTabControl.Controls.Add(this.ConsoleTab);
             this.ConsoleTabControl.Controls.Add(this.AssetTab);
+            this.ConsoleTabControl.Controls.Add(this.ConsoleTab);
             this.ConsoleTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ConsoleTabControl.Location = new System.Drawing.Point(0, 0);
             this.ConsoleTabControl.Name = "ConsoleTabControl";
@@ -671,6 +671,7 @@
             // assetDirectoryTreeView
             // 
             this.assetDirectoryTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.assetDirectoryTreeView.LabelEdit = true;
             this.assetDirectoryTreeView.Location = new System.Drawing.Point(0, 0);
             this.assetDirectoryTreeView.Name = "assetDirectoryTreeView";
             this.assetDirectoryTreeView.Size = new System.Drawing.Size(302, 220);
