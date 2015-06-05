@@ -366,6 +366,7 @@ bool EditorCommands::StartGame()
     bool saved = gameWorld.SaveLevelToMemory();
     ASSERT(saved, "[EditorCommands] Failed to save level to memory");
     mApp.mIsGameRunning = true;
+    mApp.UpdateDelegate = DELEGATE(&EditorApp::OnGameUpdate, &mApp);
     return saved;
 }
 
@@ -386,6 +387,7 @@ bool EditorCommands::StopGame()
     bool loaded = gameWorld.ReLoadCurrentLevel();
     ASSERT(loaded, "[EditorCommands] Failed to load level from memory");
     mApp.mIsGameRunning = false;
+    mApp.UpdateDelegate = DELEGATE(&EditorApp::OnEditorUpdate, &mApp);
 
     // Update the editor's objects
     mApp.mObjects.clear();

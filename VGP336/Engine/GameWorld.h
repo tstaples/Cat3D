@@ -12,6 +12,7 @@
 // Includes
 //====================================================================================================
 
+#include "AssetLoader.h"
 #include "Components.h"
 #include "GameObject.h"
 #include "GameObjectFactory.h"
@@ -90,6 +91,7 @@ private:
     GameObjectHandles mUpdateList;
     GameObjectHandles mDestroyedList;
 
+    AssetLoader mAssetLoader;
     LevelLoader mLevelLoader;
     Level mCurrentLevel;
 

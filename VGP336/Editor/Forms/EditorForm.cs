@@ -25,7 +25,7 @@ namespace Editor
 
         private GameState gameState;
         private System.Timers.Timer updateTimer;
-        private const double interval = (1.0f / 60.0f) * 1000.0f; // ms
+        private const double interval = (1.0 / 60.0) * 1000.0; // ms
 
         public PropertyGrid InspectorGrid
         {
@@ -79,12 +79,18 @@ namespace Editor
 
             // Create the timer for updating the game when it is being played
             updateTimer = new System.Timers.Timer(interval);
-            updateTimer.Elapsed += OnIdle;
+            //updateTimer.Elapsed += OnIdle;
             gameState = GameState.Stopped;
         }
         private void Terminate()
         {
             Console.LogInfo("Editor", "Shutting down");
+            if (gameState == GameState.Playing)
+            {
+                // Disable the timer so it doesn't potentially interrupt the shutdown
+                updateTimer.Stop();
+                gameState = GameState.Stopped;
+            }
             NativeMethods.Terminate();
         }
         public void OnIdle(object sender, EventArgs e)
@@ -101,8 +107,7 @@ namespace Editor
         }
         private void EditorForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Console.LogInfo("Editor", "Shutting down: {0}", e.CloseReason);
-            NativeMethods.Terminate();
+            Terminate();
         }
         #endregion API calls/constructor
 
@@ -231,6 +236,12 @@ namespace Editor
             string templateFile = "../Data/GameObjects/camera.json";
             toolMenuHandler.OnCreateObject(templateFile);
         }
+        private void OnCreateGeometry(object sender, EventArgs e)
+        {
+            string geoName = sender.ToString().ToLower();
+            string templateFile = "../Data/GameObjects/" + geoName + ".json";
+            toolMenuHandler.OnCreateObject(templateFile);
+        }
         private void OnComponentMenuItem_Click(object sender, EventArgs e)
         {
             // Hack: assuming the component name on the dropdown + "Component" is the meta name
@@ -268,33 +279,42 @@ namespace Editor
 
         private void PlayButton_Click(object sender, EventArgs e)
         {
+            if (gameState == GameState.Playing)
+                return;
+
             // Remove the idle event since we only want our timer to call it
-            Application.Idle -= this.OnIdle;
+            //Application.Idle -= this.OnIdle;
             gameState = GameState.Playing;
-            updateTimer.Enabled = true;
+            //updateTimer.Enabled = true;
             NativeMethods.StartGame();
         }
 
         private void PauseButton_Click(object sender, EventArgs e)
         {
+            if (gameState == GameState.Paused)
+                return;
+
             if (gameState == GameState.Playing)
             {
                 // Only restore idle event if the game was being played.
                 // This prevents adding it multiple times
-                Application.Idle += this.OnIdle;
+                //Application.Idle += this.OnIdle;
             }
             gameState = GameState.Paused;
-            updateTimer.Enabled = false;
+            //updateTimer.Enabled = false;
             NativeMethods.PauseGame();
         }
 
         private void StopButton_Click(object sender, EventArgs e)
         {
+            if (gameState == GameState.Stopped)
+                return;
+
             if (gameState == GameState.Playing)
             {
                 // Only restore idle event if the game was being played.
                 // This prevents adding it multiple times
-                Application.Idle += this.OnIdle;
+                //Application.Idle += this.OnIdle;
             }
 
             // Store the handle of the currenlty selected object so we can re-select it after
@@ -307,7 +327,7 @@ namespace Editor
             }
 
             gameState = GameState.Stopped;
-            updateTimer.Enabled = false;
+            //updateTimer.Enabled = false;
             NativeMethods.StopGame();
             
             // Update the scene hierarchy since the old items will be invalid

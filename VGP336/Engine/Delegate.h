@@ -40,6 +40,13 @@ public:
 		return (*mInvoke)(mInstance, p1...);
 	}
 
+    Delegate<ReturnType, Params...>& operator=(const Delegate<ReturnType, Params...>& rhs)
+    {
+        mInstance = rhs.mInstance;
+        mInvoke = rhs.mInvoke;
+        return *this;
+    }
+
 	bool Empty() const
 	{
 		return mInstance == nullptr || mInvoke == nullptr;

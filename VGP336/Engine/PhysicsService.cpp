@@ -11,6 +11,7 @@
 #include "PhysicsService.h"
 
 #include "EngineMath.h"
+#include "GameWorld.h"
 #include "MemHandle.h"
 #include "MemoryPool.h"
 #include "ColliderComponent.h"
@@ -65,6 +66,8 @@ void PhysicsService::Update(f32 deltaTime)
         return;
     }
 
+    Integrate(deltaTime);
+
     // Recreate the tree every frame
     // TODO: Use pool for oct allocation
     mOctree.Destroy();
@@ -78,18 +81,20 @@ void PhysicsService::Update(f32 deltaTime)
         RigidBodyComponent* rigidBodyComponent = nullptr;
         ColliderComponent* colliderComponent = nullptr;
 
-        VERIFY(gameObject->GetComponent(transformComponent), "[PhysicsService] Object missing transform component");
+        gameObject->GetComponent(transformComponent);
         bool hasRigidBody = gameObject->FindComponent(rigidBodyComponent);
         bool hasCollider = gameObject->FindComponent(colliderComponent);
         
+        Math::Vector3 pos = transformComponent->GetPosition();
+        Math::Vector3 oldPos = transformComponent->GetOldPosition();
+
         // Get the collider if the object has one
-        Math::Vector3 position = transformComponent->GetPosition();
-        Math::AABB collider(position, Math::Vector3(1.0f, 1.0f, 1.0f)); // default
+        Math::AABB collider(pos, Math::Vector3(1.0f, 1.0f, 1.0f)); // default
         if (hasCollider)
         {
             // Use the collider's extend if the object has one
             Math::AABB aabb = colliderComponent->GetBoundary();
-            collider.center = position + aabb.center; // Offset the collider from object position
+            collider.center = pos + aabb.center; // Offset the collider from object position
             collider.extend = aabb.extend;
         }
         
@@ -100,6 +105,39 @@ void PhysicsService::Update(f32 deltaTime)
         // by their components.
     }
     mOctree.Debug_DrawTree();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void PhysicsService::Integrate(f32 deltaTime)
+{
+    const GameWorld* world = GetWorld();
+    const f32 kTimeStep = Math::Sqr(world->GetGameSettings().timeStep);
+    for (GameObjectHandle handle : mSubscribers)
+    {
+        // Get component data
+        GameObject* gameObject = handle.Get();
+        TransformComponent* transformComponent = nullptr;
+        RigidBodyComponent* rigidBodyComponent = nullptr;
+        gameObject->GetComponent(transformComponent);
+        if (!gameObject->FindComponent(rigidBodyComponent))
+        {
+            continue;
+        }
+
+        Math::Vector3 pos = transformComponent->GetPosition();
+        Math::Vector3 vel = rigidBodyComponent->GetVelocity();
+
+        f32 kInvdrag = 1.0f - rigidBodyComponent->GetDrag();
+        Math::Vector3 gravity(0.0f, 0.0f, 0.0f);
+        if (rigidBodyComponent->UseGravity())
+        {
+            gravity = world->GetGameSettings().gravity;
+            vel += gravity * deltaTime;
+        }
+        rigidBodyComponent->SetVelocity(vel);
+        transformComponent->SetPosition(pos + vel * deltaTime);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------

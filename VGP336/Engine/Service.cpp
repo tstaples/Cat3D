@@ -4,13 +4,16 @@
 //====================================================================================================
 
 #include "Precompiled.h"
-#include "MemoryPool.h"
 #include "Service.h"
+
+#include "GameWorld.h"
+#include "MemoryPool.h"
 
 //====================================================================================================
 // Class Definitions
 //====================================================================================================
 
+GameWorld* Service::spGameWorld = nullptr;
 
 Service::Service(const char* name, u16 id)
     : mName(name)

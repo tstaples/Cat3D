@@ -42,6 +42,9 @@ public:
 private:
     virtual bool OnSubscribe(GameObjectHandle handle);
 
+    void Integrate(f32 deltaTime);
+
+private:
     Octree<GameObjectHandle> mOctree;
 };
 

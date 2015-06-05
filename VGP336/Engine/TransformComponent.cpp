@@ -37,6 +37,13 @@ Math::Vector3 TransformComponent::GetPosition() const
 
 //----------------------------------------------------------------------------------------------------
 
+Math::Vector3 TransformComponent::GetOldPosition() const
+{
+    return mOldPos;
+}
+
+//----------------------------------------------------------------------------------------------------
+
 Math::Matrix TransformComponent::GetTransform() const
 {
     Math::Matrix rot =  Math::Matrix::RotationX(mRotation.x) * 
@@ -59,4 +66,18 @@ void TransformComponent::SetPosition(const Math::Vector3& v)
 {
     mPosition = v;
     mTransform = mTransform * Math::Matrix::Translation(v);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void TransformComponent::SetOldPosition(const Math::Vector3& v)
+{
+    mOldPos = v;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void TransformComponent::SetTransform(const Math::Matrix& transform)
+{
+    mTransform = transform;
 }

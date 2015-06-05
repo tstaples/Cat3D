@@ -272,7 +272,33 @@ inline bool Octree<T>::GetIntersectingObjects(const Math::Ray& ray, std::vector<
 //----------------------------------------------------------------------------------------------------
 
 template <typename T>
-void Octree<T>::SetBoundingRegion(const Math::AABB& region)
+inline bool Octree<T>::GetIntersectingObjects(std::vector<T*>& objects)
+{
+    s32 depth = 0;
+    return GetIntersectingObjects(objects, depth);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+template <typename T>
+inline bool Octree<T>::GetIntersectingObjects(std::vector<T*>& objects, s32 depth)
+{
+    // TODO
+    if (IsLeaf())
+    {
+        // Nothing to intersect with
+        if (mObjects.size() <= 1)
+        {
+            return false;
+        }
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+template <typename T>
+inline void Octree<T>::SetBoundingRegion(const Math::AABB& region)
 {
     // TODO: update child oct bounds when region is set
     mAABB = region;

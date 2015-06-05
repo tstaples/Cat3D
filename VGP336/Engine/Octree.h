@@ -24,6 +24,8 @@ public:
 
     // Returns true if any objects are found intersecting with the ray, and are stored objects vector
     bool GetIntersectingObjects(const Math::Ray& ray, std::vector<T*>& objects);
+    // Returns true if any objects in the tree have intersecting regions.
+    bool GetIntersectingObjects(std::vector<T*>& objects);
 
     // TODO: update child oct bounds when region is set
     void SetBoundingRegion(const Math::AABB& region);
@@ -36,6 +38,7 @@ private:
     void Insert(T& object, const Math::AABB& region, s32 depth);
     bool IsLeaf();
     bool GetIntersectingObjects(const Math::Ray& ray, std::vector<T*>& objects, s32 depth);
+    bool GetIntersectingObjects(std::vector<T*>& objects, s32 depth);
 
 private:
     Math::AABB mAABB;   // Bounding volume

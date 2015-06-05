@@ -30,11 +30,12 @@ public:
     void Translate(const Math::Vector3& t);
 
     Math::Vector3 GetPosition() const;
-    void SetPosition(const Math::Vector3& v);
-
+    Math::Vector3 GetOldPosition() const;
     Math::Matrix GetTransform() const;
 
-    void SetTransform(const Math::Matrix& transform) { mTransform = transform; }
+    void SetPosition(const Math::Vector3& v);
+    void SetOldPosition(const Math::Vector3& v);
+    void SetTransform(const Math::Matrix& transform);
 
 private:
     //http://www.gamasutra.com/view/feature/131686/rotating_objects_using_quaternions.php
@@ -43,6 +44,7 @@ private:
     Math::Vector3 mRotation;
     Math::Vector3 mScale;
 
+    Math::Vector3 mOldPos;
     Math::Matrix mTransform;
 };
 

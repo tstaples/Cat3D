@@ -71,11 +71,53 @@ void AssetLoader::Terminate()
 
 bool AssetLoader::LoadModel(const wchar_t* pFilename, Model& model)
 {
+    ASSERT(mpGraphicsSystem != nullptr, "[AssetLoader] Asset loader is unitialized");
+
     // Get the asset type and pass to corresponding function
     std::string extension = IO::GetExtension(pFilename);
     if (extension.compare("catm") == 0)
     {
         return LoadCatmFile(pFilename, model);
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool AssetLoader::LoadMesh(const wchar_t* pFilename, Mesh& mesh, MeshBuffer& meshBuffer, std::vector<Texture*>& textures)
+{
+    ASSERT(mpGraphicsSystem != nullptr, "[AssetLoader] Asset loader is unitialized");
+
+    std::string extension = IO::GetExtension(pFilename);
+    if (extension.compare("catm") == 0)
+    {
+        std::string filename = IO::WCharToChar(pFilename);
+        IO::FileBuffer buffer(filename.c_str());
+        if (buffer.Initialized())
+        {
+            // Init the reader with the model data
+            SerialReader sin(buffer.GetBuffer(), buffer.Size());
+
+            // Read the signature and check that it matches
+            std::string sig = sin.ReadFormatted(4);
+            if (sig.compare("CATM") != 0)
+            {
+                return false;
+            }
+            const u32 version = sin.Read<u32>();
+
+            // Load the mesh data into the model
+            LoadSingleMesh(sin, mesh, meshBuffer);
+
+            // Load the texture paths from the file
+            StringVec paths;
+            LoadTexturesPaths(pFilename, sin, paths);
+
+            // Load the textures from the files into the model
+            LoadTextures(paths, textures);
+
+            return true;
+        }
     }
     return false;
 }
@@ -108,7 +150,7 @@ bool AssetLoader::LoadCatmFile(const wchar_t* pFilename, Model& model)
         LoadTexturesPaths(pFilename, sin, paths);
 
         // Load the textures from the files into the model
-        LoadTextures(paths, model);
+        LoadTextures(paths, model.mTextures);
 
         // Load bone data and weights, then link up pointers
         LoadBones(sin, model);
@@ -159,7 +201,35 @@ void AssetLoader::LoadMeshes(SerialReader& reader, Model& model)
 
 //----------------------------------------------------------------------------------------------------
 
-void AssetLoader::LoadTextures(const StringVec& paths, Model& model)
+void AssetLoader::LoadSingleMesh(SerialReader& reader, Mesh& mesh, MeshBuffer& meshBuffer)
+{
+    // Don't care about mesh count
+    reader.Seek(sizeof(u32), reader.Current);
+
+    // Read the verticies
+    u32 numVerts = reader.Read<u32>();
+    Mesh::Vertex* vertexBuffer = new Mesh::Vertex[numVerts];
+    reader.ReadArray(vertexBuffer, sizeof(Mesh::Vertex) * numVerts);
+
+    // Read in the indices
+    u32 numIndices = reader.Read<u32>();
+    u16* indexBuffer = new u16[numIndices];
+    reader.ReadArray(indexBuffer, sizeof(u16) * numIndices);
+
+    // Generate the push and add it to the model
+    MeshBuilder::GenerateMesh(mesh, vertexBuffer, numVerts, indexBuffer, numIndices);
+
+    // Clear the temp buffers
+	SafeDeleteArray(vertexBuffer);
+	SafeDeleteArray(indexBuffer);
+
+    // Create the mesh buffer and add it to the model
+	meshBuffer.Initialize(*mpGraphicsSystem, Mesh::GetVertexFormat(), mesh, true);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void AssetLoader::LoadTextures(const StringVec& paths, std::vector<Texture*>& textures)
 {
     const u32 numTextures = paths.size();
     for(auto path : paths)
@@ -168,7 +238,7 @@ void AssetLoader::LoadTextures(const StringVec& paths, Model& model)
         IO::CharToWChar(path, wbuffer, 256);
 
         Texture* texture = mTextureManager.GetResource(wbuffer);
-        model.mTextures.push_back(texture);
+        textures.push_back(texture);
     }
 }
 

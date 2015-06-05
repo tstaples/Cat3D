@@ -20,7 +20,7 @@ META_CLASS_END
 
 RigidBodyComponent::RigidBodyComponent()
     : mMass(1.0f)
-    , mDrag(0.0f)
+    , mDrag(0.01f)
     , mAngularDrag(0.0f)
     , mUseGravity(true)
     , mIsKinematic(false)
@@ -37,18 +37,18 @@ RigidBodyComponent::~RigidBodyComponent()
 
 void RigidBodyComponent::Update(f32 deltaTime)
 {
-    const GameWorld* world = GetObj()->GetWorld();
-    const f32 kGravity = world->GetGameSettings().gravity;
+    //const GameWorld* world = GetObj()->GetWorld();
+    //const Math::Vector3 kGravity = world->GetGameSettings().gravity;
 
-    LOG("deltaTime: %f", deltaTime);
-    TransformComponent* transformComponent = nullptr;
-    GetObj()->GetComponent(transformComponent);
+    //LOG("deltaTime: %f", deltaTime);
+    //TransformComponent* transformComponent = nullptr;
+    //GetObj()->GetComponent(transformComponent);
 
-    Math::Vector3 pos = transformComponent->GetPosition();
-    if (mUseGravity)
-    {
-        mVelocity.y += kGravity * deltaTime;
-    }
-    pos += mVelocity * deltaTime;
-    transformComponent->SetPosition(pos);
+    //Math::Vector3 pos = transformComponent->GetPosition();
+    //if (mUseGravity)
+    //{
+    //    mVelocity += kGravity * deltaTime;
+    //}
+    //pos += mVelocity * deltaTime;
+    //transformComponent->SetPosition(pos);
 }

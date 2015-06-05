@@ -14,7 +14,7 @@
             "Properties" : [
                 {
                     "Name" : "TexturePath",
-                    "Data" : [ "../Data/Images/grass.jpg" ]
+                    "Data" : [ "../Engine/Images/default.png" ]
                 }
             ]
         },

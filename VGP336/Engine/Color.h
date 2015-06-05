@@ -21,6 +21,8 @@ struct Color
 	Color() : r(1.0f), g(1.0f), b(1.0f), a(1.0f) {}
 	Color(f32 r, f32 g, f32 b, f32 a) : r(r), g(g), b(b), a(a) {}
 
+
+    inline void SetBytes(u8 _r, u8 _g, u8 _b, u8 _a);
 	inline f32* ToFloatArray() const;
 
 	static Color Red();
@@ -40,7 +42,15 @@ struct Color
 
 inline f32* Color::ToFloatArray() const
 {
-	return (*(FLOAT(*)[4])this);
+	return (*(f32(*)[4])this);
+}
+
+inline void Color::SetBytes(u8 _r, u8 _g, u8 _b, u8 _a)
+{
+    r = ((f32)_r) / 256.0f;
+    g = ((f32)_g) / 256.0f;
+    b = ((f32)_b) / 256.0f;
+    a = ((f32)_a) / 256.0f;
 }
 
 inline Color Color::Red()		{ return Color(1.0f, 0.0f, 0.0f, 1.0f); }

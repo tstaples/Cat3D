@@ -37,13 +37,12 @@ public:
     MeshComponent();
     ~MeshComponent();
 
-    virtual void Update(f32 deltaTime) override;
-
     u32 GetFilter() const           { return mFilter; }
     Mesh& GetMesh()                 { return mMesh; }
     MeshBuffer& GetMeshBuffer()     { return mMeshBuffer; }
+    const char* GetCurrentMeshPath() const { return mMeshPaths[mFilter].c_str(); }
 
-//private:
+private:
     friend RenderService;
 
     u32 mFilter;
@@ -51,6 +50,8 @@ public:
 
     Mesh mMesh;
     MeshBuffer mMeshBuffer;
+
+    std::vector<std::string> mMeshPaths;
 };
 
 //====================================================================================================

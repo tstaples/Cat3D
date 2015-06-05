@@ -28,6 +28,15 @@ public:
 
     virtual void Update(f32 deltaTime) override;
 
+    f32 GetMass() const         { return mMass; }
+    f32 GetDrag() const         { return mDrag; }
+    f32 GetAngularDrag() const  { return mAngularDrag; }
+    bool UseGravity() const     { return mUseGravity; }
+    bool IsKinematic() const    { return mIsKinematic; }
+
+    const Math::Vector3& GetVelocity() const { return mVelocity; }
+    void SetVelocity(const Math::Vector3& v) { mVelocity = v; }
+
 private:
     f32 mMass;
     f32 mDrag;

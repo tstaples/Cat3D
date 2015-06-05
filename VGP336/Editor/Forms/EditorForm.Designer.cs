@@ -37,7 +37,9 @@
             this.OpenFileBox = new System.Windows.Forms.OpenFileDialog();
             this.ViewportTabControl = new System.Windows.Forms.TabControl();
             this.EditorViewportTab = new System.Windows.Forms.TabPage();
+            this.EditorViewPanel = new Editor.SelectablePanel();
             this.GameViewportTab = new System.Windows.Forms.TabPage();
+            this.GameViewPanel = new Editor.SelectablePanel();
             this.SceneHierarchyTree = new System.Windows.Forms.TreeView();
             this.miniToolStrip = new System.Windows.Forms.MenuStrip();
             this.MainMenuStrip = new System.Windows.Forms.MenuStrip();
@@ -49,6 +51,8 @@
             this.createToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.newGameObjectToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.cameraToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.geometryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cubeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.componentToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.cameraToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.colliderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,6 +70,9 @@
             this.CountCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ConsoleMessageDetailsLabel = new System.Windows.Forms.Label();
             this.MenuStripSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.StopButton = new System.Windows.Forms.Button();
+            this.PauseButton = new System.Windows.Forms.Button();
+            this.PlayButton = new System.Windows.Forms.Button();
             this.InspectorSplitContainer = new System.Windows.Forms.SplitContainer();
             this.ConsoleViewportSplitContainer = new System.Windows.Forms.SplitContainer();
             this.HierarchyViewportSplitContainer = new System.Windows.Forms.SplitContainer();
@@ -73,11 +80,6 @@
             this.SceneHierarchyTab = new System.Windows.Forms.TabPage();
             this.InspectorTabControl = new System.Windows.Forms.TabControl();
             this.InspectorTab = new System.Windows.Forms.TabPage();
-            this.EditorViewPanel = new Editor.SelectablePanel();
-            this.GameViewPanel = new Editor.SelectablePanel();
-            this.PlayButton = new System.Windows.Forms.Button();
-            this.PauseButton = new System.Windows.Forms.Button();
-            this.StopButton = new System.Windows.Forms.Button();
             this.SceneHierarchyContextMenu.SuspendLayout();
             this.ViewportTabControl.SuspendLayout();
             this.EditorViewportTab.SuspendLayout();
@@ -162,16 +164,42 @@
             this.EditorViewportTab.Text = "Editor";
             this.EditorViewportTab.UseVisualStyleBackColor = true;
             // 
+            // EditorViewPanel
+            // 
+            this.EditorViewPanel.AutoSize = true;
+            this.EditorViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.EditorViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.EditorViewPanel.Location = new System.Drawing.Point(3, 3);
+            this.EditorViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
+            this.EditorViewPanel.Name = "EditorViewPanel";
+            this.EditorViewPanel.Padding = new System.Windows.Forms.Padding(3);
+            this.EditorViewPanel.Size = new System.Drawing.Size(870, 509);
+            this.EditorViewPanel.TabIndex = 2;
+            this.EditorViewPanel.TabStop = true;
+            // 
             // GameViewportTab
             // 
             this.GameViewportTab.Controls.Add(this.GameViewPanel);
             this.GameViewportTab.Location = new System.Drawing.Point(4, 22);
             this.GameViewportTab.Name = "GameViewportTab";
             this.GameViewportTab.Padding = new System.Windows.Forms.Padding(3);
-            this.GameViewportTab.Size = new System.Drawing.Size(876, 521);
+            this.GameViewportTab.Size = new System.Drawing.Size(876, 515);
             this.GameViewportTab.TabIndex = 1;
             this.GameViewportTab.Text = "Game";
             this.GameViewportTab.UseVisualStyleBackColor = true;
+            // 
+            // GameViewPanel
+            // 
+            this.GameViewPanel.AutoSize = true;
+            this.GameViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.GameViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.GameViewPanel.Location = new System.Drawing.Point(3, 3);
+            this.GameViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
+            this.GameViewPanel.Name = "GameViewPanel";
+            this.GameViewPanel.Padding = new System.Windows.Forms.Padding(3);
+            this.GameViewPanel.Size = new System.Drawing.Size(870, 509);
+            this.GameViewPanel.TabIndex = 3;
+            this.GameViewPanel.TabStop = true;
             // 
             // SceneHierarchyTree
             // 
@@ -253,7 +281,8 @@
             // 
             this.createToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newGameObjectToolStripMenuItem1,
-            this.cameraToolStripMenuItem2});
+            this.cameraToolStripMenuItem2,
+            this.geometryToolStripMenuItem});
             this.createToolStripMenuItem1.Name = "createToolStripMenuItem1";
             this.createToolStripMenuItem1.Size = new System.Drawing.Size(53, 20);
             this.createToolStripMenuItem1.Text = "Create";
@@ -271,6 +300,21 @@
             this.cameraToolStripMenuItem2.Size = new System.Drawing.Size(167, 22);
             this.cameraToolStripMenuItem2.Text = "Camera";
             this.cameraToolStripMenuItem2.Click += new System.EventHandler(this.OnCreateCamera);
+            // 
+            // geometryToolStripMenuItem
+            // 
+            this.geometryToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cubeToolStripMenuItem});
+            this.geometryToolStripMenuItem.Name = "geometryToolStripMenuItem";
+            this.geometryToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.geometryToolStripMenuItem.Text = "Geometry";
+            // 
+            // cubeToolStripMenuItem
+            // 
+            this.cubeToolStripMenuItem.Name = "cubeToolStripMenuItem";
+            this.cubeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.cubeToolStripMenuItem.Text = "Cube";
+            this.cubeToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
             // 
             // componentToolStripMenuItem1
             // 
@@ -437,6 +481,36 @@
             this.MenuStripSplitContainer.SplitterDistance = 67;
             this.MenuStripSplitContainer.TabIndex = 8;
             // 
+            // StopButton
+            // 
+            this.StopButton.Location = new System.Drawing.Point(786, 27);
+            this.StopButton.Name = "StopButton";
+            this.StopButton.Size = new System.Drawing.Size(75, 23);
+            this.StopButton.TabIndex = 8;
+            this.StopButton.Text = "Stop";
+            this.StopButton.UseVisualStyleBackColor = true;
+            this.StopButton.Click += new System.EventHandler(this.StopButton_Click);
+            // 
+            // PauseButton
+            // 
+            this.PauseButton.Location = new System.Drawing.Point(705, 27);
+            this.PauseButton.Name = "PauseButton";
+            this.PauseButton.Size = new System.Drawing.Size(75, 23);
+            this.PauseButton.TabIndex = 7;
+            this.PauseButton.Text = "Pause";
+            this.PauseButton.UseVisualStyleBackColor = true;
+            this.PauseButton.Click += new System.EventHandler(this.PauseButton_Click);
+            // 
+            // PlayButton
+            // 
+            this.PlayButton.Location = new System.Drawing.Point(624, 27);
+            this.PlayButton.Name = "PlayButton";
+            this.PlayButton.Size = new System.Drawing.Size(75, 23);
+            this.PlayButton.TabIndex = 6;
+            this.PlayButton.Text = "Play";
+            this.PlayButton.UseVisualStyleBackColor = true;
+            this.PlayButton.Click += new System.EventHandler(this.PlayButton_Click);
+            // 
             // InspectorSplitContainer
             // 
             this.InspectorSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -530,62 +604,6 @@
             this.InspectorTab.TabIndex = 0;
             this.InspectorTab.Text = "Inspector";
             this.InspectorTab.UseVisualStyleBackColor = true;
-            // 
-            // EditorViewPanel
-            // 
-            this.EditorViewPanel.AutoSize = true;
-            this.EditorViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.EditorViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.EditorViewPanel.Location = new System.Drawing.Point(3, 3);
-            this.EditorViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
-            this.EditorViewPanel.Name = "EditorViewPanel";
-            this.EditorViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.EditorViewPanel.Size = new System.Drawing.Size(870, 509);
-            this.EditorViewPanel.TabIndex = 2;
-            this.EditorViewPanel.TabStop = true;
-            // 
-            // GameViewPanel
-            // 
-            this.GameViewPanel.AutoSize = true;
-            this.GameViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.GameViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.GameViewPanel.Location = new System.Drawing.Point(3, 3);
-            this.GameViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
-            this.GameViewPanel.Name = "GameViewPanel";
-            this.GameViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.GameViewPanel.Size = new System.Drawing.Size(870, 515);
-            this.GameViewPanel.TabIndex = 3;
-            this.GameViewPanel.TabStop = true;
-            // 
-            // PlayButton
-            // 
-            this.PlayButton.Location = new System.Drawing.Point(624, 27);
-            this.PlayButton.Name = "PlayButton";
-            this.PlayButton.Size = new System.Drawing.Size(75, 23);
-            this.PlayButton.TabIndex = 6;
-            this.PlayButton.Text = "Play";
-            this.PlayButton.UseVisualStyleBackColor = true;
-            this.PlayButton.Click += new System.EventHandler(this.PlayButton_Click);
-            // 
-            // PauseButton
-            // 
-            this.PauseButton.Location = new System.Drawing.Point(705, 27);
-            this.PauseButton.Name = "PauseButton";
-            this.PauseButton.Size = new System.Drawing.Size(75, 23);
-            this.PauseButton.TabIndex = 7;
-            this.PauseButton.Text = "Pause";
-            this.PauseButton.UseVisualStyleBackColor = true;
-            this.PauseButton.Click += new System.EventHandler(this.PauseButton_Click);
-            // 
-            // StopButton
-            // 
-            this.StopButton.Location = new System.Drawing.Point(786, 27);
-            this.StopButton.Name = "StopButton";
-            this.StopButton.Size = new System.Drawing.Size(75, 23);
-            this.StopButton.TabIndex = 8;
-            this.StopButton.Text = "Stop";
-            this.StopButton.UseVisualStyleBackColor = true;
-            this.StopButton.Click += new System.EventHandler(this.StopButton_Click);
             // 
             // EditorForm
             // 
@@ -692,6 +710,8 @@
         private System.Windows.Forms.Button StopButton;
         private System.Windows.Forms.Button PauseButton;
         private System.Windows.Forms.Button PlayButton;
+        private System.Windows.Forms.ToolStripMenuItem geometryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cubeToolStripMenuItem;
     }
 }
 
