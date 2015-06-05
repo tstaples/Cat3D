@@ -12,6 +12,7 @@ namespace Editor
     internal struct AssetItem
     {
         public string filename;
+        public DateTime lastModified; // Used for diffing
         public Bitmap[] thumbnails;
     }
 
@@ -174,6 +175,7 @@ namespace Editor
             {
                 AssetItem assetItem = new AssetItem();
                 assetItem.filename = Path.GetFileName(file);
+                assetItem.lastModified = Directory.GetLastWriteTime(file);
                 assetItem.thumbnails = new Bitmap[thumbnailSizes.Count];
 
                 // Load each thumbnail
@@ -231,7 +233,7 @@ namespace Editor
             assetViewContextMenu.Items.Add("Create subdirectory", null, OnCreateSubdirectoryClicked);
             assetViewContextMenu.Items.Add("Rename", null, OnRenameItemClicked);
             assetViewContextMenu.Items.Add("Delete");
-            assetViewContextMenu.Items.Add("Refresh");
+            assetViewContextMenu.Items.Add("Refresh", null, OnRefreshItemClicked);
             assetViewContextMenu.Items.Add("Import Asset");
         }
         private void OnCreateSubdirectoryClicked(object sender, EventArgs e)
@@ -272,6 +274,23 @@ namespace Editor
             List<AssetItem> assetItems = assetMap[oldHash];
             assetMap.Remove(oldHash);
             assetMap.Add(newPathName.GetHashCode(), assetItems);
+        }
+        private void OnRefreshItemClicked(object sender, EventArgs e)
+        {
+            //TODO
+            string path = assetTreeView.SelectedNode.Name;
+            int hash = path.GetHashCode();
+            List<AssetItem> assetItems = assetMap[hash];
+            List<string> files = new List<string>(Directory.EnumerateFileSystemEntries(path));
+
+            for (int i = 0; i < files.Count; ++i)
+            {
+                if (i >= assetItems.Count)
+                {
+
+                }
+            }
+
         }
         #endregion Context menu
     }
