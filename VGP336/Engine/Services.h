@@ -3,5 +3,6 @@
 
 #include "PhysicsService.h"
 #include "RenderService.h"
+#include "TerrainService.h"
 
 #endif

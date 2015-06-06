@@ -1,57 +1,59 @@
-#ifndef INCLUDED_ENGINE_COMPONENT_H
-#define INCLUDED_ENGINE_COMPONENT_H
+#ifndef INCLUDED_ENGINE_TERRAINSERVICE_H
+#define INCLUDED_ENGINE_TERRAINSERVICE_H
 
 //====================================================================================================
-// Filename:	Component.h
+// Filename:	TerrainService.h
 // Created by:	Tyler Staples
-// Description: Base Class for a component.
+// Description: Class representing a Render service.
 //====================================================================================================
 
 //====================================================================================================
 // Includes
 //====================================================================================================
 
-#include "MemHandle.h"
-#include "Meta.h"
+#include "Service.h"
+
+#include "AssetLoader.h"
+#include "GameObject.h"
+#include "MeshRenderer.h"
 
 //====================================================================================================
 // Forward Declarations
 //====================================================================================================
 
-class GameObject;
-class GameWorld;
+class Camera;
+class GraphicsSystem;
+class MeshComponent;
+class MeshRendererComponent;
 
 //====================================================================================================
 // Class Declarations
 //====================================================================================================
 
-class Component
+class TerrainService : public Service
 {
 public:
     META_DECLARE_CLASS
 
-    Component();
-    virtual ~Component();
+    static const u16 kID = 2;
 
-    virtual void Initialize() {}
-    virtual void Terminate() {}
-    virtual void Update(f32 deltaTime) {} // Not all components need to update; do nothing
-    virtual void Render() {}
+    TerrainService();
+    ~TerrainService();
+    
+    void Initialize(GraphicsSystem& graphicsSystem, Camera& camera);
+    virtual void Terminate();
 
-    void SetIsDirty(bool state)         { mIsDirty = state; }
-    bool IsDirty() const                { return mIsDirty; }
+    // Must be called between BeginRender() and EndRender()
+    void Update();
 
-    GameObject* GetObj()                { return mpGameObject; }
-    const GameObject* GetObj() const    { return mpGameObject; }
-
-    const GameWorld* GetWorld() const;
+    void SetCamera(Camera& camera);
 
 private:
-    friend GameObject;
+    virtual bool OnSubscribe(GameObjectHandle handle);
 
-    GameObject* mpGameObject;
-
-    bool mIsDirty; // Indicates if the component's state has changed
+private:
+    GraphicsSystem* mpGraphicsSystem;
+    Camera* mpCamera;   // Use this view matrix to render the terrain
 };
 
-#endif // #ifndef INCLUDED_ENGINE_COMPONENT_H
+#endif // #ifndef INCLUDED_ENGINE_RENDERSERVICE_H

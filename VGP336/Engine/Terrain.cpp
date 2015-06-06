@@ -152,12 +152,12 @@ f32 Terrain::GetHeight(const Math::Vector3& position)
 	if (deltaX > deltaZ) // Bottom half of the quad
 	{
         // Start from d and lerp x and y the amount we're into the cell
-		height = d + ((1.0f - deltaX) * (d - a)) + (deltaZ * c);
+		height = d + ((1.0f - deltaX) * (a - d)) + (deltaZ * (c - d));
 	}
 	else
 	{
         // Start from b and lerp x and y the amount we're into the cell
-		height = b + ((1.0f - deltaZ) * (b - a)) + (deltaX * c);
+		height = b + ((1.0f - deltaZ) * (a - b)) + (deltaX * (c - b));
 	}
 	return height;
 }

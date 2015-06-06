@@ -13,7 +13,9 @@ void Meta::MetaRegistration()
     MetaDB::Register(MeshRendererComponent::StaticGetMetaClass());
     MetaDB::Register(RigidBodyComponent::StaticGetMetaClass());
     MetaDB::Register(TransformComponent::StaticGetMetaClass());
+    MetaDB::Register(TerrainComponent::StaticGetMetaClass());
 
     MetaDB::Register(PhysicsService::StaticGetMetaClass());
     MetaDB::Register(RenderService::StaticGetMetaClass());
+    MetaDB::Register(TerrainService::StaticGetMetaClass());
 }
