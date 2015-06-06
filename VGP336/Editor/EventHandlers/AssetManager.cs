@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace Editor
 {
@@ -64,6 +65,8 @@ namespace Editor
             assetThumbnails.ImageSize = GetTBSize();
             
             assetListView = owner.AssetListView;
+            assetListView.DragEnter += OnAssetListViewItemDragEnter;
+            assetListView.DragDrop += OnAssetListViewItemDrag;
             assetListView.LargeImageList = assetThumbnails;
             assetListView.SmallImageList = assetThumbnails;
             assetListView.View = View.List;
@@ -90,7 +93,8 @@ namespace Editor
             // Get all the files in this directory, then pair the dir name hash with the thumbnails of the directory
             List<string> files = new List<string>(Directory.EnumerateFileSystemEntries(directory));
             int hash = directory.GetHashCode();
-            assetMap.Add(hash, LoadThumbnails(files));
+            //assetMap.Add(hash, LoadThumbnails(files));
+            assetMap[hash] = LoadThumbnails(files);
 
             List<string> directories = new List<string>(Directory.EnumerateDirectories(directory));
             foreach (string dir in directories)
@@ -211,6 +215,42 @@ namespace Editor
             return true;
         }
 
+        private void OnAssetListViewItemDragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Copy;
+        }
+        private void OnAssetListViewItemDrag(object sender, DragEventArgs e)
+        {
+            string importerPath = "../Tools/Importer/Importer.exe";
+            string destPath = assetTreeView.SelectedNode.Name + "/";
+
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            foreach (string file in files)
+            {
+                string ext = Path.GetExtension(file);
+                string filename = Path.GetFileNameWithoutExtension(file);
+
+                // TODO: regex match against all supported types
+                if (ext == "fbx" || ext == "x")
+                {
+                    ProcessStartInfo startInfo = new ProcessStartInfo();
+                    startInfo.CreateNoWindow = true;
+                    startInfo.WorkingDirectory = Directory.GetCurrentDirectory();
+                    startInfo.Arguments = file + " " + destPath + filename + ".catm";
+
+                    Process process = new Process();
+                    process.StartInfo = startInfo;
+                    process.Start();
+                }
+                else
+                {
+                    // Preserve the extension
+                    File.Copy(file, destPath + Path.GetFileName(file));
+                }
+            }
+            // Refresh asset view to show new items
+        }
+
         #region Context menu
         private void OnDisplayContextMenu(TreeNode node)
         {
@@ -277,20 +317,22 @@ namespace Editor
         }
         private void OnRefreshItemClicked(object sender, EventArgs e)
         {
-            //TODO
             string path = assetTreeView.SelectedNode.Name;
-            int hash = path.GetHashCode();
-            List<AssetItem> assetItems = assetMap[hash];
             List<string> files = new List<string>(Directory.EnumerateFileSystemEntries(path));
 
-            for (int i = 0; i < files.Count; ++i)
-            {
-                if (i >= assetItems.Count)
-                {
+            // Reload the entire directory for now because i'm lazy
+            // TODO: only add the new items
+            int hash = path.GetHashCode();
+            assetMap[hash].Clear();
+            assetMap.Remove(hash);
 
-                }
-            }
-
+            // Re-discover all directories under the selected one
+            TreeNode node = assetTreeView.SelectedNode;
+            node.Nodes.Clear();
+            Traverse(path, ref node);
+            assetTreeView.SelectedNode = node;
+            
+            // Update listview
         }
         #endregion Context menu
     }

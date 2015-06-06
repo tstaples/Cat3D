@@ -37,7 +37,10 @@
             this.OpenFileBox = new System.Windows.Forms.OpenFileDialog();
             this.ViewportTabControl = new System.Windows.Forms.TabControl();
             this.EditorViewportTab = new System.Windows.Forms.TabPage();
+            this.EditorViewPanel = new Editor.SelectablePanel();
             this.GameViewportTab = new System.Windows.Forms.TabPage();
+            this.GameViewPanel = new Editor.SelectablePanel();
+            this.inspectorGrid = new System.Windows.Forms.PropertyGrid();
             this.SceneHierarchyTree = new System.Windows.Forms.TreeView();
             this.miniToolStrip = new System.Windows.Forms.MenuStrip();
             this.MainMenuStrip = new System.Windows.Forms.MenuStrip();
@@ -51,14 +54,24 @@
             this.cameraToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.geometryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cubeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.planeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sphereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cylinderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.coneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.torusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.componentToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.cameraToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.colliderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.meshToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.meshRendererToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.rigidBodyToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.inspectorGrid = new System.Windows.Forms.PropertyGrid();
             this.ConsoleTabControl = new System.Windows.Forms.TabControl();
+            this.AssetTab = new System.Windows.Forms.TabPage();
+            this.AssetSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.assetDirectoryTreeView = new System.Windows.Forms.TreeView();
+            this.AssetViewSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.thumnailSizeTrackbar = new System.Windows.Forms.TrackBar();
+            this.assetListView = new System.Windows.Forms.ListView();
             this.ConsoleTab = new System.Windows.Forms.TabPage();
             this.ConsoleSplitContainer = new System.Windows.Forms.SplitContainer();
             this.ConsoleList = new System.Windows.Forms.ListView();
@@ -76,27 +89,22 @@
             this.HierarchyViewportSplitContainer = new System.Windows.Forms.SplitContainer();
             this.SceneHierarchyTabControl = new System.Windows.Forms.TabControl();
             this.SceneHierarchyTab = new System.Windows.Forms.TabPage();
-            this.InspectorTabControl = new System.Windows.Forms.TabControl();
-            this.InspectorTab = new System.Windows.Forms.TabPage();
-            this.planeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sphereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cylinderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.coneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.torusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.AssetTab = new System.Windows.Forms.TabPage();
-            this.AssetSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.assetDirectoryTreeView = new System.Windows.Forms.TreeView();
-            this.assetListView = new System.Windows.Forms.ListView();
-            this.AssetViewSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.thumnailSizeTrackbar = new System.Windows.Forms.TrackBar();
-            this.EditorViewPanel = new Editor.SelectablePanel();
-            this.GameViewPanel = new Editor.SelectablePanel();
             this.SceneHierarchyContextMenu.SuspendLayout();
             this.ViewportTabControl.SuspendLayout();
             this.EditorViewportTab.SuspendLayout();
             this.GameViewportTab.SuspendLayout();
             this.MainMenuStrip.SuspendLayout();
             this.ConsoleTabControl.SuspendLayout();
+            this.AssetTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.AssetSplitContainer)).BeginInit();
+            this.AssetSplitContainer.Panel1.SuspendLayout();
+            this.AssetSplitContainer.Panel2.SuspendLayout();
+            this.AssetSplitContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.AssetViewSplitContainer)).BeginInit();
+            this.AssetViewSplitContainer.Panel1.SuspendLayout();
+            this.AssetViewSplitContainer.Panel2.SuspendLayout();
+            this.AssetViewSplitContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.thumnailSizeTrackbar)).BeginInit();
             this.ConsoleTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ConsoleSplitContainer)).BeginInit();
             this.ConsoleSplitContainer.Panel1.SuspendLayout();
@@ -120,18 +128,6 @@
             this.HierarchyViewportSplitContainer.SuspendLayout();
             this.SceneHierarchyTabControl.SuspendLayout();
             this.SceneHierarchyTab.SuspendLayout();
-            this.InspectorTabControl.SuspendLayout();
-            this.InspectorTab.SuspendLayout();
-            this.AssetTab.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.AssetSplitContainer)).BeginInit();
-            this.AssetSplitContainer.Panel1.SuspendLayout();
-            this.AssetSplitContainer.Panel2.SuspendLayout();
-            this.AssetSplitContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.AssetViewSplitContainer)).BeginInit();
-            this.AssetViewSplitContainer.Panel1.SuspendLayout();
-            this.AssetViewSplitContainer.Panel2.SuspendLayout();
-            this.AssetViewSplitContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.thumnailSizeTrackbar)).BeginInit();
             this.SuspendLayout();
             // 
             // InspectorContextMenu
@@ -145,20 +141,22 @@
             this.RenameToolStripMenuItem,
             this.DeleteGameObjectMenuItem});
             this.SceneHierarchyContextMenu.Name = "SceneHierarchyContextMenu";
-            this.SceneHierarchyContextMenu.Size = new System.Drawing.Size(118, 48);
+            this.SceneHierarchyContextMenu.Size = new System.Drawing.Size(137, 48);
             this.SceneHierarchyContextMenu.Text = "Hi";
             // 
             // RenameToolStripMenuItem
             // 
             this.RenameToolStripMenuItem.Name = "RenameToolStripMenuItem";
-            this.RenameToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.RenameToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
+            this.RenameToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.RenameToolStripMenuItem.Text = "Rename";
             this.RenameToolStripMenuItem.Click += new System.EventHandler(this.RenameToolStripMenuItem_Click);
             // 
             // DeleteGameObjectMenuItem
             // 
             this.DeleteGameObjectMenuItem.Name = "DeleteGameObjectMenuItem";
-            this.DeleteGameObjectMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.DeleteGameObjectMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.DeleteGameObjectMenuItem.Size = new System.Drawing.Size(136, 22);
             this.DeleteGameObjectMenuItem.Text = "Delete";
             this.DeleteGameObjectMenuItem.Click += new System.EventHandler(this.DeleteGameObjectMenuItem_Click);
             // 
@@ -185,6 +183,19 @@
             this.EditorViewportTab.Text = "Editor";
             this.EditorViewportTab.UseVisualStyleBackColor = true;
             // 
+            // EditorViewPanel
+            // 
+            this.EditorViewPanel.AutoSize = true;
+            this.EditorViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.EditorViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.EditorViewPanel.Location = new System.Drawing.Point(3, 3);
+            this.EditorViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
+            this.EditorViewPanel.Name = "EditorViewPanel";
+            this.EditorViewPanel.Padding = new System.Windows.Forms.Padding(3);
+            this.EditorViewPanel.Size = new System.Drawing.Size(870, 509);
+            this.EditorViewPanel.TabIndex = 2;
+            this.EditorViewPanel.TabStop = true;
+            // 
             // GameViewportTab
             // 
             this.GameViewportTab.Controls.Add(this.GameViewPanel);
@@ -196,9 +207,42 @@
             this.GameViewportTab.Text = "Game";
             this.GameViewportTab.UseVisualStyleBackColor = true;
             // 
+            // GameViewPanel
+            // 
+            this.GameViewPanel.AutoSize = true;
+            this.GameViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.GameViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.GameViewPanel.Location = new System.Drawing.Point(3, 3);
+            this.GameViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
+            this.GameViewPanel.Name = "GameViewPanel";
+            this.GameViewPanel.Padding = new System.Windows.Forms.Padding(3);
+            this.GameViewPanel.Size = new System.Drawing.Size(870, 509);
+            this.GameViewPanel.TabIndex = 3;
+            this.GameViewPanel.TabStop = true;
+            // 
+            // inspectorGrid
+            // 
+            this.inspectorGrid.CategorySplitterColor = System.Drawing.Color.Silver;
+            this.inspectorGrid.ContextMenuStrip = this.InspectorContextMenu;
+            this.inspectorGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.inspectorGrid.HelpBackColor = System.Drawing.Color.DarkGray;
+            this.inspectorGrid.HelpBorderColor = System.Drawing.Color.Silver;
+            this.inspectorGrid.LineColor = System.Drawing.Color.DarkGray;
+            this.inspectorGrid.Location = new System.Drawing.Point(0, 0);
+            this.inspectorGrid.Name = "inspectorGrid";
+            this.inspectorGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
+            this.inspectorGrid.Size = new System.Drawing.Size(346, 791);
+            this.inspectorGrid.TabIndex = 0;
+            this.inspectorGrid.ToolbarVisible = false;
+            this.inspectorGrid.ViewBackColor = System.Drawing.Color.DarkGray;
+            this.inspectorGrid.ViewBorderColor = System.Drawing.Color.Silver;
+            this.inspectorGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.InspectorGrid_PropertyValueChanged);
+            // 
             // SceneHierarchyTree
             // 
+            this.SceneHierarchyTree.BackColor = System.Drawing.Color.DarkGray;
             this.SceneHierarchyTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SceneHierarchyTree.ForeColor = System.Drawing.Color.Black;
             this.SceneHierarchyTree.LabelEdit = true;
             this.SceneHierarchyTree.Location = new System.Drawing.Point(3, 3);
             this.SceneHierarchyTree.Name = "SceneHierarchyTree";
@@ -218,6 +262,7 @@
             // 
             // MainMenuStrip
             // 
+            this.MainMenuStrip.BackColor = System.Drawing.Color.DarkGray;
             this.MainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.createToolStripMenuItem1,
@@ -316,6 +361,41 @@
             this.cubeToolStripMenuItem.Text = "Cube";
             this.cubeToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
             // 
+            // planeToolStripMenuItem
+            // 
+            this.planeToolStripMenuItem.Name = "planeToolStripMenuItem";
+            this.planeToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.planeToolStripMenuItem.Text = "Plane";
+            this.planeToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
+            // 
+            // sphereToolStripMenuItem
+            // 
+            this.sphereToolStripMenuItem.Name = "sphereToolStripMenuItem";
+            this.sphereToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.sphereToolStripMenuItem.Text = "Sphere";
+            this.sphereToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
+            // 
+            // cylinderToolStripMenuItem
+            // 
+            this.cylinderToolStripMenuItem.Name = "cylinderToolStripMenuItem";
+            this.cylinderToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.cylinderToolStripMenuItem.Text = "Cylinder";
+            this.cylinderToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
+            // 
+            // coneToolStripMenuItem
+            // 
+            this.coneToolStripMenuItem.Name = "coneToolStripMenuItem";
+            this.coneToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.coneToolStripMenuItem.Text = "Cone";
+            this.coneToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
+            // 
+            // torusToolStripMenuItem
+            // 
+            this.torusToolStripMenuItem.Name = "torusToolStripMenuItem";
+            this.torusToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.torusToolStripMenuItem.Text = "Torus";
+            this.torusToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
+            // 
             // componentToolStripMenuItem1
             // 
             this.componentToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -363,18 +443,6 @@
             this.rigidBodyToolStripMenuItem1.Text = "RigidBody";
             this.rigidBodyToolStripMenuItem1.Click += new System.EventHandler(this.OnComponentMenuItem_Click);
             // 
-            // inspectorGrid
-            // 
-            this.inspectorGrid.ContextMenuStrip = this.InspectorContextMenu;
-            this.inspectorGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.inspectorGrid.Location = new System.Drawing.Point(3, 3);
-            this.inspectorGrid.Name = "inspectorGrid";
-            this.inspectorGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.inspectorGrid.Size = new System.Drawing.Size(332, 759);
-            this.inspectorGrid.TabIndex = 0;
-            this.inspectorGrid.ToolbarVisible = false;
-            this.inspectorGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.InspectorGrid_PropertyValueChanged);
-            // 
             // ConsoleTabControl
             // 
             this.ConsoleTabControl.Controls.Add(this.AssetTab);
@@ -386,8 +454,91 @@
             this.ConsoleTabControl.Size = new System.Drawing.Size(1123, 246);
             this.ConsoleTabControl.TabIndex = 6;
             // 
+            // AssetTab
+            // 
+            this.AssetTab.Controls.Add(this.AssetSplitContainer);
+            this.AssetTab.Location = new System.Drawing.Point(4, 22);
+            this.AssetTab.Name = "AssetTab";
+            this.AssetTab.Size = new System.Drawing.Size(1115, 220);
+            this.AssetTab.TabIndex = 1;
+            this.AssetTab.Text = "Assets";
+            this.AssetTab.UseVisualStyleBackColor = true;
+            // 
+            // AssetSplitContainer
+            // 
+            this.AssetSplitContainer.BackColor = System.Drawing.Color.Silver;
+            this.AssetSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.AssetSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.AssetSplitContainer.Name = "AssetSplitContainer";
+            // 
+            // AssetSplitContainer.Panel1
+            // 
+            this.AssetSplitContainer.Panel1.Controls.Add(this.assetDirectoryTreeView);
+            // 
+            // AssetSplitContainer.Panel2
+            // 
+            this.AssetSplitContainer.Panel2.Controls.Add(this.AssetViewSplitContainer);
+            this.AssetSplitContainer.Size = new System.Drawing.Size(1115, 220);
+            this.AssetSplitContainer.SplitterDistance = 302;
+            this.AssetSplitContainer.TabIndex = 0;
+            // 
+            // assetDirectoryTreeView
+            // 
+            this.assetDirectoryTreeView.BackColor = System.Drawing.Color.DarkGray;
+            this.assetDirectoryTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.assetDirectoryTreeView.LabelEdit = true;
+            this.assetDirectoryTreeView.Location = new System.Drawing.Point(0, 0);
+            this.assetDirectoryTreeView.Name = "assetDirectoryTreeView";
+            this.assetDirectoryTreeView.Size = new System.Drawing.Size(302, 220);
+            this.assetDirectoryTreeView.TabIndex = 0;
+            // 
+            // AssetViewSplitContainer
+            // 
+            this.AssetViewSplitContainer.BackColor = System.Drawing.Color.Silver;
+            this.AssetViewSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.AssetViewSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.AssetViewSplitContainer.Name = "AssetViewSplitContainer";
+            this.AssetViewSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // AssetViewSplitContainer.Panel1
+            // 
+            this.AssetViewSplitContainer.Panel1.BackColor = System.Drawing.Color.DarkGray;
+            this.AssetViewSplitContainer.Panel1.Controls.Add(this.thumnailSizeTrackbar);
+            // 
+            // AssetViewSplitContainer.Panel2
+            // 
+            this.AssetViewSplitContainer.Panel2.Controls.Add(this.assetListView);
+            this.AssetViewSplitContainer.Size = new System.Drawing.Size(809, 220);
+            this.AssetViewSplitContainer.SplitterDistance = 32;
+            this.AssetViewSplitContainer.TabIndex = 1;
+            // 
+            // thumnailSizeTrackbar
+            // 
+            this.thumnailSizeTrackbar.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.thumnailSizeTrackbar.BackColor = System.Drawing.Color.DarkGray;
+            this.thumnailSizeTrackbar.LargeChange = 1;
+            this.thumnailSizeTrackbar.Location = new System.Drawing.Point(702, 3);
+            this.thumnailSizeTrackbar.Maximum = 3;
+            this.thumnailSizeTrackbar.Name = "thumnailSizeTrackbar";
+            this.thumnailSizeTrackbar.Size = new System.Drawing.Size(104, 45);
+            this.thumnailSizeTrackbar.TabIndex = 0;
+            this.thumnailSizeTrackbar.TickStyle = System.Windows.Forms.TickStyle.None;
+            // 
+            // assetListView
+            // 
+            this.assetListView.AllowDrop = true;
+            this.assetListView.BackColor = System.Drawing.Color.DarkGray;
+            this.assetListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.assetListView.Location = new System.Drawing.Point(0, 0);
+            this.assetListView.Name = "assetListView";
+            this.assetListView.Size = new System.Drawing.Size(809, 184);
+            this.assetListView.TabIndex = 0;
+            this.assetListView.UseCompatibleStateImageBehavior = false;
+            this.assetListView.View = System.Windows.Forms.View.SmallIcon;
+            // 
             // ConsoleTab
             // 
+            this.ConsoleTab.BackColor = System.Drawing.Color.Silver;
             this.ConsoleTab.Controls.Add(this.ConsoleSplitContainer);
             this.ConsoleTab.Location = new System.Drawing.Point(4, 22);
             this.ConsoleTab.Name = "ConsoleTab";
@@ -395,7 +546,6 @@
             this.ConsoleTab.Size = new System.Drawing.Size(1115, 220);
             this.ConsoleTab.TabIndex = 0;
             this.ConsoleTab.Text = "Console";
-            this.ConsoleTab.UseVisualStyleBackColor = true;
             // 
             // ConsoleSplitContainer
             // 
@@ -410,6 +560,7 @@
             // 
             // ConsoleSplitContainer.Panel2
             // 
+            this.ConsoleSplitContainer.Panel2.BackColor = System.Drawing.Color.DarkGray;
             this.ConsoleSplitContainer.Panel2.Controls.Add(this.ConsoleMessageDetailsLabel);
             this.ConsoleSplitContainer.Size = new System.Drawing.Size(1109, 214);
             this.ConsoleSplitContainer.SplitterDistance = 153;
@@ -417,6 +568,7 @@
             // 
             // ConsoleList
             // 
+            this.ConsoleList.BackColor = System.Drawing.Color.DarkGray;
             this.ConsoleList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.SourceCol,
             this.LevelCol,
@@ -470,6 +622,7 @@
             // 
             // MenuStripSplitContainer.Panel1
             // 
+            this.MenuStripSplitContainer.Panel1.BackColor = System.Drawing.Color.DarkGray;
             this.MenuStripSplitContainer.Panel1.Controls.Add(this.StopButton);
             this.MenuStripSplitContainer.Panel1.Controls.Add(this.PauseButton);
             this.MenuStripSplitContainer.Panel1.Controls.Add(this.PlayButton);
@@ -524,7 +677,8 @@
             // 
             // InspectorSplitContainer.Panel2
             // 
-            this.InspectorSplitContainer.Panel2.Controls.Add(this.InspectorTabControl);
+            this.InspectorSplitContainer.Panel2.BackColor = System.Drawing.Color.DarkGray;
+            this.InspectorSplitContainer.Panel2.Controls.Add(this.inspectorGrid);
             this.InspectorSplitContainer.Size = new System.Drawing.Size(1473, 791);
             this.InspectorSplitContainer.SplitterDistance = 1123;
             this.InspectorSplitContainer.TabIndex = 0;
@@ -573,175 +727,19 @@
             this.SceneHierarchyTabControl.SelectedIndex = 0;
             this.SceneHierarchyTabControl.Size = new System.Drawing.Size(235, 541);
             this.SceneHierarchyTabControl.TabIndex = 0;
+            this.SceneHierarchyTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.OnDrawTabControl);
             // 
             // SceneHierarchyTab
             // 
+            this.SceneHierarchyTab.BackColor = System.Drawing.Color.DarkGray;
             this.SceneHierarchyTab.Controls.Add(this.SceneHierarchyTree);
+            this.SceneHierarchyTab.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.SceneHierarchyTab.Location = new System.Drawing.Point(4, 22);
             this.SceneHierarchyTab.Name = "SceneHierarchyTab";
             this.SceneHierarchyTab.Padding = new System.Windows.Forms.Padding(3);
             this.SceneHierarchyTab.Size = new System.Drawing.Size(227, 515);
             this.SceneHierarchyTab.TabIndex = 0;
             this.SceneHierarchyTab.Text = "Scene Hierarchy";
-            this.SceneHierarchyTab.UseVisualStyleBackColor = true;
-            // 
-            // InspectorTabControl
-            // 
-            this.InspectorTabControl.Controls.Add(this.InspectorTab);
-            this.InspectorTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.InspectorTabControl.Location = new System.Drawing.Point(0, 0);
-            this.InspectorTabControl.Name = "InspectorTabControl";
-            this.InspectorTabControl.SelectedIndex = 0;
-            this.InspectorTabControl.Size = new System.Drawing.Size(346, 791);
-            this.InspectorTabControl.TabIndex = 0;
-            // 
-            // InspectorTab
-            // 
-            this.InspectorTab.Controls.Add(this.inspectorGrid);
-            this.InspectorTab.Location = new System.Drawing.Point(4, 22);
-            this.InspectorTab.Name = "InspectorTab";
-            this.InspectorTab.Padding = new System.Windows.Forms.Padding(3);
-            this.InspectorTab.Size = new System.Drawing.Size(338, 765);
-            this.InspectorTab.TabIndex = 0;
-            this.InspectorTab.Text = "Inspector";
-            this.InspectorTab.UseVisualStyleBackColor = true;
-            // 
-            // planeToolStripMenuItem
-            // 
-            this.planeToolStripMenuItem.Name = "planeToolStripMenuItem";
-            this.planeToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
-            this.planeToolStripMenuItem.Text = "Plane";
-            this.planeToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
-            // 
-            // sphereToolStripMenuItem
-            // 
-            this.sphereToolStripMenuItem.Name = "sphereToolStripMenuItem";
-            this.sphereToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
-            this.sphereToolStripMenuItem.Text = "Sphere";
-            this.sphereToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
-            // 
-            // cylinderToolStripMenuItem
-            // 
-            this.cylinderToolStripMenuItem.Name = "cylinderToolStripMenuItem";
-            this.cylinderToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
-            this.cylinderToolStripMenuItem.Text = "Cylinder";
-            this.cylinderToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
-            // 
-            // coneToolStripMenuItem
-            // 
-            this.coneToolStripMenuItem.Name = "coneToolStripMenuItem";
-            this.coneToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
-            this.coneToolStripMenuItem.Text = "Cone";
-            this.coneToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
-            // 
-            // torusToolStripMenuItem
-            // 
-            this.torusToolStripMenuItem.Name = "torusToolStripMenuItem";
-            this.torusToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
-            this.torusToolStripMenuItem.Text = "Torus";
-            this.torusToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
-            // 
-            // AssetTab
-            // 
-            this.AssetTab.Controls.Add(this.AssetSplitContainer);
-            this.AssetTab.Location = new System.Drawing.Point(4, 22);
-            this.AssetTab.Name = "AssetTab";
-            this.AssetTab.Size = new System.Drawing.Size(1115, 220);
-            this.AssetTab.TabIndex = 1;
-            this.AssetTab.Text = "Assets";
-            this.AssetTab.UseVisualStyleBackColor = true;
-            // 
-            // AssetSplitContainer
-            // 
-            this.AssetSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.AssetSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.AssetSplitContainer.Name = "AssetSplitContainer";
-            // 
-            // AssetSplitContainer.Panel1
-            // 
-            this.AssetSplitContainer.Panel1.Controls.Add(this.assetDirectoryTreeView);
-            // 
-            // AssetSplitContainer.Panel2
-            // 
-            this.AssetSplitContainer.Panel2.Controls.Add(this.AssetViewSplitContainer);
-            this.AssetSplitContainer.Size = new System.Drawing.Size(1115, 220);
-            this.AssetSplitContainer.SplitterDistance = 302;
-            this.AssetSplitContainer.TabIndex = 0;
-            // 
-            // assetDirectoryTreeView
-            // 
-            this.assetDirectoryTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.assetDirectoryTreeView.LabelEdit = true;
-            this.assetDirectoryTreeView.Location = new System.Drawing.Point(0, 0);
-            this.assetDirectoryTreeView.Name = "assetDirectoryTreeView";
-            this.assetDirectoryTreeView.Size = new System.Drawing.Size(302, 220);
-            this.assetDirectoryTreeView.TabIndex = 0;
-            // 
-            // assetListView
-            // 
-            this.assetListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.assetListView.Location = new System.Drawing.Point(0, 0);
-            this.assetListView.Name = "assetListView";
-            this.assetListView.Size = new System.Drawing.Size(809, 184);
-            this.assetListView.TabIndex = 0;
-            this.assetListView.UseCompatibleStateImageBehavior = false;
-            this.assetListView.View = System.Windows.Forms.View.SmallIcon;
-            // 
-            // AssetViewSplitContainer
-            // 
-            this.AssetViewSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.AssetViewSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.AssetViewSplitContainer.Name = "AssetViewSplitContainer";
-            this.AssetViewSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // AssetViewSplitContainer.Panel1
-            // 
-            this.AssetViewSplitContainer.Panel1.Controls.Add(this.thumnailSizeTrackbar);
-            // 
-            // AssetViewSplitContainer.Panel2
-            // 
-            this.AssetViewSplitContainer.Panel2.Controls.Add(this.assetListView);
-            this.AssetViewSplitContainer.Size = new System.Drawing.Size(809, 220);
-            this.AssetViewSplitContainer.SplitterDistance = 32;
-            this.AssetViewSplitContainer.TabIndex = 1;
-            // 
-            // thumnailSizeTrackbar
-            // 
-            this.thumnailSizeTrackbar.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.thumnailSizeTrackbar.BackColor = System.Drawing.SystemColors.Window;
-            this.thumnailSizeTrackbar.LargeChange = 1;
-            this.thumnailSizeTrackbar.Location = new System.Drawing.Point(702, 3);
-            this.thumnailSizeTrackbar.Maximum = 3;
-            this.thumnailSizeTrackbar.Name = "thumnailSizeTrackbar";
-            this.thumnailSizeTrackbar.Size = new System.Drawing.Size(104, 45);
-            this.thumnailSizeTrackbar.TabIndex = 0;
-            this.thumnailSizeTrackbar.TickStyle = System.Windows.Forms.TickStyle.None;
-            // 
-            // EditorViewPanel
-            // 
-            this.EditorViewPanel.AutoSize = true;
-            this.EditorViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.EditorViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.EditorViewPanel.Location = new System.Drawing.Point(3, 3);
-            this.EditorViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
-            this.EditorViewPanel.Name = "EditorViewPanel";
-            this.EditorViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.EditorViewPanel.Size = new System.Drawing.Size(870, 509);
-            this.EditorViewPanel.TabIndex = 2;
-            this.EditorViewPanel.TabStop = true;
-            // 
-            // GameViewPanel
-            // 
-            this.GameViewPanel.AutoSize = true;
-            this.GameViewPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.GameViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.GameViewPanel.Location = new System.Drawing.Point(3, 3);
-            this.GameViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
-            this.GameViewPanel.Name = "GameViewPanel";
-            this.GameViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.GameViewPanel.Size = new System.Drawing.Size(870, 509);
-            this.GameViewPanel.TabIndex = 3;
-            this.GameViewPanel.TabStop = true;
             // 
             // EditorForm
             // 
@@ -749,6 +747,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BackColor = System.Drawing.Color.Silver;
             this.ClientSize = new System.Drawing.Size(1473, 862);
             this.Controls.Add(this.MenuStripSplitContainer);
             this.MinimumSize = new System.Drawing.Size(1024, 768);
@@ -766,6 +765,17 @@
             this.MainMenuStrip.ResumeLayout(false);
             this.MainMenuStrip.PerformLayout();
             this.ConsoleTabControl.ResumeLayout(false);
+            this.AssetTab.ResumeLayout(false);
+            this.AssetSplitContainer.Panel1.ResumeLayout(false);
+            this.AssetSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.AssetSplitContainer)).EndInit();
+            this.AssetSplitContainer.ResumeLayout(false);
+            this.AssetViewSplitContainer.Panel1.ResumeLayout(false);
+            this.AssetViewSplitContainer.Panel1.PerformLayout();
+            this.AssetViewSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.AssetViewSplitContainer)).EndInit();
+            this.AssetViewSplitContainer.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.thumnailSizeTrackbar)).EndInit();
             this.ConsoleTab.ResumeLayout(false);
             this.ConsoleSplitContainer.Panel1.ResumeLayout(false);
             this.ConsoleSplitContainer.Panel2.ResumeLayout(false);
@@ -791,19 +801,6 @@
             this.HierarchyViewportSplitContainer.ResumeLayout(false);
             this.SceneHierarchyTabControl.ResumeLayout(false);
             this.SceneHierarchyTab.ResumeLayout(false);
-            this.InspectorTabControl.ResumeLayout(false);
-            this.InspectorTab.ResumeLayout(false);
-            this.AssetTab.ResumeLayout(false);
-            this.AssetSplitContainer.Panel1.ResumeLayout(false);
-            this.AssetSplitContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.AssetSplitContainer)).EndInit();
-            this.AssetSplitContainer.ResumeLayout(false);
-            this.AssetViewSplitContainer.Panel1.ResumeLayout(false);
-            this.AssetViewSplitContainer.Panel1.PerformLayout();
-            this.AssetViewSplitContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.AssetViewSplitContainer)).EndInit();
-            this.AssetViewSplitContainer.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.thumnailSizeTrackbar)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -845,8 +842,6 @@
         private System.Windows.Forms.TabPage SceneHierarchyTab;
         private System.Windows.Forms.SplitContainer InspectorSplitContainer;
         private System.Windows.Forms.SplitContainer ConsoleViewportSplitContainer;
-        private System.Windows.Forms.TabControl InspectorTabControl;
-        private System.Windows.Forms.TabPage InspectorTab;
         private System.Windows.Forms.ToolStripMenuItem createToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem newGameObjectToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem cameraToolStripMenuItem2;
