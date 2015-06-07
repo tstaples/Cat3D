@@ -16,6 +16,16 @@
 namespace
 {
     f32 kTimer = 0.0f;
+
+    void DestroyGameObjectList(GameObjectHandles& handles, GameObjectFactory& factory)
+    {
+        const u32 size = handles.size();
+        for (u32 i=0; i < size; ++i)
+        {
+            factory.Destroy(handles[i]);
+        }
+        handles.clear();
+    }
 }
 
 //====================================================================================================
@@ -42,9 +52,11 @@ GameWorld::~GameWorld()
 
 bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, Camera& camera)
 {
+    mpGraphicsSystem = &gs;
     mSettings = settings;
 
     mAssetLoader.Initialize(gs);
+    mTextureManager.Initialize(gs);
 
     Math::AABB worldRegion(Math::Vector3::Zero(), Math::Vector3(100.0f, 100.0f, 100.0f));
 
@@ -52,13 +64,19 @@ bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, C
     Service::spGameWorld = this; // Set the world
     mRenderService.Initialize(gs, camera, mAssetLoader);
     mPhysicsService.Initialize(worldRegion, 10);
+    mTerrainService.Initialize(gs, camera, mTextureManager);
 
     // Store all our services in a list to pass to the GameObjectFactory
     mServiceList.push_back(&mRenderService);
     mServiceList.push_back(&mPhysicsService);
+    mServiceList.push_back(&mTerrainService);
 
     mFactory.Initialize(mServiceList, *this);
     mFactory.OnDestroyGameObject = DELEGATE(&GameWorld::OnGameObjectDestroyed, this);
+
+
+    //GameObjectHandle handle = mFactory.Create("../Data/GameObjects/defaultTerrain.json");
+    //mUpdateList.push_back(handle);
     return true;
 }
 
@@ -72,10 +90,13 @@ bool GameWorld::OnShutdown()
         service->Terminate();
     }
 
+    // Manually destroy all game objects to ensure resources are freed properly
+    DestroyGameObjectList(mUpdateList, mFactory);
+    DestroyGameObjectList(mDestroyedList, mFactory);
+
+    mTextureManager.Terminate();
     mAssetLoader.Terminate();
     mFactory.Terminate();
-    mUpdateList.clear();
-    mDestroyedList.clear();
     mGameObjectPool.Flush();
     return true;
 }
@@ -139,6 +160,7 @@ void GameWorld::OnUpdate(f32 deltaTime)
 
 void GameWorld::OnRender()
 {
+    mTerrainService.Update();
     mRenderService.Update();
 }
 
@@ -301,25 +323,3 @@ bool GameWorld::OnGameObjectDestroyed(GameObjectHandle handle)
     }
     return false;
 }
-
-/*
-    Editor::OnPlay()
-    - save current scene and store away
-    - set isPlaying true
-        GameWorld::OnPlay()
-        - load startup scene (from settings)
-        - add physics and scripting services to update list
-
-    Editor::Update()
-        GameWorld::Update()
-        - update scene
-            - update gameobjects
-        - update services in service list
-    - if (IsPlaying)
-
-
-    GameWorld::OnPauseBegin()
-    - remove physics and script services from update list
-
-
-*/

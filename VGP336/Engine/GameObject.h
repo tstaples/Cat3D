@@ -76,7 +76,7 @@ private:
     std::string mName; // See TODO in TString
     Components mComponents;
 
-    static const u16 kNumServices = 2; // TODO: find better way to do this
+    static const u16 kNumServices = 3; // TODO: find better way to do this
     bool mServiceSubscriptions[kNumServices];
 
     bool mToBeDestroyed;  // Is the object in the update list

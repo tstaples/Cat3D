@@ -1,3 +1,5 @@
+#include "IO.h"
+
 template<typename T>
 ResourceManager<T>::ResourceManager()
 {
@@ -51,4 +53,13 @@ T* ResourceManager<T>::GetResource(const wchar_t* pfilename)
     // Add ref count for the object requesting it
     newResource->AddRef();
     return newResource;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+template<typename T>
+T* ResourceManager<T>::GetResource(const char* pfilename)
+{
+    std::wstring wfilename = IO::CharToWChar(pfilename);
+    return GetResource(wfilename.c_str());
 }

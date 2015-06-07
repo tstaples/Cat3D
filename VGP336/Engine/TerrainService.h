@@ -25,6 +25,7 @@ class Camera;
 class GraphicsSystem;
 class MeshComponent;
 class MeshRendererComponent;
+class TextureManager;
 
 //====================================================================================================
 // Class Declarations
@@ -40,7 +41,7 @@ public:
     TerrainService();
     ~TerrainService();
     
-    void Initialize(GraphicsSystem& graphicsSystem, Camera& camera);
+    void Initialize(GraphicsSystem& graphicsSystem, Camera& camera, TextureManager& textureManager);
     virtual void Terminate();
 
     // Must be called between BeginRender() and EndRender()
@@ -54,6 +55,7 @@ private:
 private:
     GraphicsSystem* mpGraphicsSystem;
     Camera* mpCamera;   // Use this view matrix to render the terrain
+    TextureManager* mpTextureManager;
 };
 
 #endif // #ifndef INCLUDED_ENGINE_RENDERSERVICE_H

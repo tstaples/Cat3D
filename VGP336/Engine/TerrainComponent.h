@@ -14,16 +14,7 @@
 #include "Component.h"
 #include "EngineMath.h"
 #include "Terrain.h"
-
-struct TerrainLayer
-{
-    u32 layer;
-    f32 minHeight;
-    f32 maxHeight;
-    f32 frequency;
-    Texture mTexture;
-    std::string mTexturePath;
-};
+#include "TextureManager.h"
 
 //====================================================================================================
 // Class Declarations
@@ -50,7 +41,9 @@ private:
 
     // TODO: make array
     // For now just support up to 3 different texture layers until meta system can support arrays
-    //TerrainLayer mLayer1;
+    u32 mNumLayers; // Temp: used to know how many of the layers are valid
+    Terrain::Layer mLayer0;
+    Terrain::Layer mLayer1;
 };
 
 //====================================================================================================

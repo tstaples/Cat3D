@@ -64,13 +64,13 @@ u32 GetFieldOffset(DataType ClassType::* field)
 // object type, but it isn't very typesafe, or necessary for the time being.
 #define META_CLASS_BEGIN(TYPE)\
     namespace {\
+        /* typedef to allow usage of the type in below macros. */\
+        typedef TYPE LocalType;\
         void* Create() { return new TYPE(); }\
         void Destroy(void* data) { delete static_cast<TYPE*>(data); }\
     }\
     const MetaClass* TYPE::StaticGetMetaClass()\
     {\
-        /* typedef to allow usage of the type in below macros. */\
-        typedef TYPE LocalType;\
         const char* className = #TYPE;\
         const MetaField* fields = nullptr;\
         u32 numFields = 0;\

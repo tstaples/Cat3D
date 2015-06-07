@@ -241,6 +241,12 @@
     <ClCompile Include="RigidBodyComponent.cpp">
       <Filter>GameObject\Components</Filter>
     </ClCompile>
+    <ClCompile Include="TerrainComponent.cpp">
+      <Filter>GameObject\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainService.cpp">
+      <Filter>GameObject\Services</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InputEvent.h">
@@ -512,6 +518,12 @@
     </ClInclude>
     <ClInclude Include="RigidBodyComponent.h">
       <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainComponent.h">
+      <Filter>GameObject\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainService.h">
+      <Filter>GameObject\Services</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

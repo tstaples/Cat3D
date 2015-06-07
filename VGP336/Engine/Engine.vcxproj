@@ -69,6 +69,8 @@
     <ClCompile Include="SimpleDraw.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />
     <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="TerrainComponent.cpp" />
+    <ClCompile Include="TerrainService.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="TString.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -161,6 +163,8 @@
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SpriteRenderer.h" />
     <ClInclude Include="Terrain.h" />
+    <ClInclude Include="TerrainComponent.h" />
+    <ClInclude Include="TerrainService.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="TString.h" />
     <ClInclude Include="Texture.h" />

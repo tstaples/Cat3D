@@ -10,6 +10,9 @@ META_FIELD_BEGIN
     META_FIELD(mMaxHeight, "MaxHeight")
     META_FIELD(mHeightmapPath, "HeightmapPath")
 META_FIELD_END
+META_DEPENDENCIES_BEGIN
+    META_DEPENDENCY("TerrainService", "Service")
+META_DEPENDENCIES_END
 META_CLASS_END
 
 namespace

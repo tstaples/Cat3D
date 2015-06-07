@@ -63,7 +63,6 @@ void Service::UnSubscribe(GameObjectHandle handle)
             break;
         }
     }
-    ASSERT(found, "[Service] Cannot unsubscribe from service the object is not subscribed to");
 }
 
 // ---------------------------------------------------------------------------------------------------

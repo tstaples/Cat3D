@@ -97,7 +97,7 @@ namespace Editor
 
             // Create the timer for updating the game when it is being played
             updateTimer = new System.Timers.Timer(interval);
-            //updateTimer.Elapsed += OnIdle;
+            updateTimer.Elapsed += OnIdle;
             gameState = GameState.Stopped;
         }
         private void Terminate()
@@ -302,9 +302,9 @@ namespace Editor
                 return;
 
             // Remove the idle event since we only want our timer to call it
-            //Application.Idle -= this.OnIdle;
+            Application.Idle -= this.OnIdle;
             gameState = GameState.Playing;
-            //updateTimer.Enabled = true;
+            updateTimer.Enabled = true;
             NativeMethods.StartGame();
         }
 
@@ -317,10 +317,10 @@ namespace Editor
             {
                 // Only restore idle event if the game was being played.
                 // This prevents adding it multiple times
-                //Application.Idle += this.OnIdle;
+                Application.Idle += this.OnIdle;
             }
             gameState = GameState.Paused;
-            //updateTimer.Enabled = false;
+            updateTimer.Enabled = false;
             NativeMethods.PauseGame();
         }
 
@@ -333,7 +333,7 @@ namespace Editor
             {
                 // Only restore idle event if the game was being played.
                 // This prevents adding it multiple times
-                //Application.Idle += this.OnIdle;
+                Application.Idle += this.OnIdle;
             }
 
             // Store the handle of the currenlty selected object so we can re-select it after
@@ -346,7 +346,7 @@ namespace Editor
             }
 
             gameState = GameState.Stopped;
-            //updateTimer.Enabled = false;
+            updateTimer.Enabled = false;
             NativeMethods.StopGame();
             
             // Update the scene hierarchy since the old items will be invalid

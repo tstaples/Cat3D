@@ -15,8 +15,10 @@
 #include "Heightmap.h"
 #include "Mesh.h"
 #include "MeshBuffer.h"
+#include "Meta.h"
 #include "PixelShader.h"
 #include "Sampler.h"
+#include "Texture.h"
 #include "VertexShader.h"
 
 //====================================================================================================
@@ -29,7 +31,6 @@ namespace Math
 }
 class Camera;
 class GraphicsSystem;
-class Texture;
 
 //====================================================================================================
 // Class Declarations
@@ -38,6 +39,17 @@ class Texture;
 class Terrain
 {
 public:
+
+    struct Layer
+    {
+        META_DECLARE_CLASS
+
+        u32 layerIndex;
+        f32 minHeight;
+        f32 maxHeight;
+        f32 frequency;
+        std::string texturePath;
+    };
 
 	Terrain();
 	~Terrain();
@@ -48,6 +60,7 @@ public:
 
 	void SetCamera(Camera& camera);
 	void SetLayer(Texture* pTexture, u32 layer, f32 minHeight, f32 maxHeight, f32 frequency);
+	void SetLayer(Texture* pTexture, const Layer& layer);
 
 	f32 GetHeight(const Math::Vector3& position);
 

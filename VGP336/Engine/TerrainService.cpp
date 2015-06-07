@@ -43,9 +43,11 @@ TerrainService::~TerrainService()
 
 //----------------------------------------------------------------------------------------------------
 
-void TerrainService::Initialize(GraphicsSystem& graphicsSystem, Camera& camera)
+void TerrainService::Initialize(GraphicsSystem& graphicsSystem, Camera& camera, TextureManager& textureManager)
 {
     mpGraphicsSystem = &graphicsSystem;
+    mpCamera = &camera;
+    mpTextureManager = &textureManager;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -95,6 +97,17 @@ bool TerrainService::OnSubscribe(GameObjectHandle handle)
     // Set the camera
     ASSERT(mpCamera != nullptr, "[TerrainService] Camera not initialized");
     terrain.SetCamera(*mpCamera);
+
+    // Set layers
+    // Temp populate layer struct here. TODO: stored in json file
+    Terrain::Layer& layer0 = terrainComponent->mLayer0;
+    layer0.layerIndex = 0;
+    layer0.frequency = 21.0f;
+    layer0.minHeight = 0;
+    layer0.maxHeight = 30;
+    layer0.texturePath = "../Data/Heightmaps/default_heightmap.raw";
+    Texture* texture = mpTextureManager->GetResource(layer0.texturePath.c_str()); 
+    terrain.SetLayer(texture, layer0);
 
     return true;
 }

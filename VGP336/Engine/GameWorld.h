@@ -19,6 +19,7 @@
 #include "GameSettings.h"
 #include "LevelLoader.h"
 #include "Services.h"
+#include "TextureManager.h"
 
 //====================================================================================================
 // Forward Declarations
@@ -54,10 +55,12 @@ public:
      */
     GameObjectHandle CreateGameObject(const char* templateFile, Math::Vector3 pos, Math::Quaternion rot);
 
+    // Level methods
     bool NewLevel(const char* levelName);
     bool LoadLevel(const char* levelName);
     bool SaveLevel(const char* levelName);
 
+    // Application data
     s32 GetScreenWidth() const;
     s32 GetScreenHeight() const;
 
@@ -75,6 +78,7 @@ private:
     NONCOPYABLE(GameWorld);
 
     Application* mpApplication;
+    GraphicsSystem* mpGraphicsSystem;
 
     GameSettings mSettings;
 
@@ -82,6 +86,7 @@ private:
     Services mServiceList; // used for iterating and calling generic methods
     RenderService mRenderService;
     PhysicsService mPhysicsService;
+    TerrainService mTerrainService;
 
     GameObjectFactory mFactory;
     GameObjectPool mGameObjectPool;
@@ -91,6 +96,7 @@ private:
     GameObjectHandles mUpdateList;
     GameObjectHandles mDestroyedList;
 
+    TextureManager mTextureManager; // Probably should be held by application
     AssetLoader mAssetLoader;
     LevelLoader mLevelLoader;
     Level mCurrentLevel;

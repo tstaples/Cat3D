@@ -21,6 +21,16 @@
 // Class Definitions
 //====================================================================================================
 
+META_CLASS_BEGIN(Terrain::Layer)
+META_FIELD_BEGIN
+    META_FIELD(layerIndex, "LayerIndex")
+    META_FIELD(minHeight, "MinHeight")
+    META_FIELD(maxHeight, "MaxHeight")
+    META_FIELD(frequency, "Frequency")
+    META_FIELD(texturePath, "TexturePath")
+META_FIELD_END
+META_CLASS_END
+
 Terrain::Terrain()
 	: mpGraphicsSystem(nullptr)
 	, mpCamera(nullptr)
@@ -108,6 +118,13 @@ void  Terrain::SetLayer(Texture* pTexture, u32 layer, f32 minHeight, f32 maxHeig
 	mLayerInfo[layer].x = minHeight;
 	mLayerInfo[layer].y = maxHeight;
 	mLayerInfo[layer].z = frequency;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void Terrain::SetLayer(Texture* pTexture, const Layer& layer)
+{
+    SetLayer(pTexture, layer.layerIndex, layer.minHeight, layer.maxHeight, layer.frequency);
 }
 
 //----------------------------------------------------------------------------------------------------

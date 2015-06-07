@@ -51,6 +51,7 @@ public:
 private:
     virtual bool OnSubscribe(GameObjectHandle handle);
 
+    // TODO: Use texture manager
     bool LoadMesh(MeshComponent* meshComponent, MeshRendererComponent* meshRendererComponent);
     bool LoadTexture(MeshRendererComponent* meshRendererComponent);
 
