@@ -59,6 +59,7 @@
             this.cylinderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.coneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.torusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.terrainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.componentToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.cameraToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.colliderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -322,7 +323,8 @@
             this.createToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newGameObjectToolStripMenuItem1,
             this.cameraToolStripMenuItem2,
-            this.geometryToolStripMenuItem});
+            this.geometryToolStripMenuItem,
+            this.terrainToolStripMenuItem});
             this.createToolStripMenuItem1.Name = "createToolStripMenuItem1";
             this.createToolStripMenuItem1.Size = new System.Drawing.Size(53, 20);
             this.createToolStripMenuItem1.Text = "Create";
@@ -395,6 +397,13 @@
             this.torusToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.torusToolStripMenuItem.Text = "Torus";
             this.torusToolStripMenuItem.Click += new System.EventHandler(this.OnCreateGeometry);
+            // 
+            // terrainToolStripMenuItem
+            // 
+            this.terrainToolStripMenuItem.Name = "terrainToolStripMenuItem";
+            this.terrainToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.terrainToolStripMenuItem.Text = "Terrain";
+            this.terrainToolStripMenuItem.Click += new System.EventHandler(this.OnCreateTerrain);
             // 
             // componentToolStripMenuItem1
             // 
@@ -727,7 +736,6 @@
             this.SceneHierarchyTabControl.SelectedIndex = 0;
             this.SceneHierarchyTabControl.Size = new System.Drawing.Size(235, 541);
             this.SceneHierarchyTabControl.TabIndex = 0;
-            this.SceneHierarchyTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.OnDrawTabControl);
             // 
             // SceneHierarchyTab
             // 
@@ -867,6 +875,7 @@
         private System.Windows.Forms.ListView assetListView;
         private System.Windows.Forms.SplitContainer AssetViewSplitContainer;
         private System.Windows.Forms.TrackBar thumnailSizeTrackbar;
+        private System.Windows.Forms.ToolStripMenuItem terrainToolStripMenuItem;
     }
 }
 

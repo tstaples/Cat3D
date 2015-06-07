@@ -55,6 +55,12 @@
     <Filter Include="Gameplay">
       <UniqueIdentifier>{5e389a95-2060-4053-b85a-7a7ed543066a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Gameplay\World">
+      <UniqueIdentifier>{b3835826-1d53-4e81-ad41-e045776c2a35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gameplay\Scripting">
+      <UniqueIdentifier>{4371311c-0ed4-4cf8-a70c-03d2aa414d6a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputSystem.cpp">
@@ -226,12 +232,6 @@
     <ClCompile Include="Service.cpp">
       <Filter>GameObject\Services</Filter>
     </ClCompile>
-    <ClCompile Include="GameWorld.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelLoader.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
     <ClCompile Include="CameraComponent.cpp">
       <Filter>GameObject\Components</Filter>
     </ClCompile>
@@ -246,6 +246,12 @@
     </ClCompile>
     <ClCompile Include="TerrainService.cpp">
       <Filter>GameObject\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="GameWorld.cpp">
+      <Filter>Gameplay\World</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelLoader.cpp">
+      <Filter>Gameplay\World</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -495,17 +501,8 @@
     <ClInclude Include="Service.h">
       <Filter>GameObject\Services</Filter>
     </ClInclude>
-    <ClInclude Include="GameWorld.h">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
     <ClInclude Include="MetaDependency.h">
       <Filter>GameObject\Meta</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelLoader.h">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSettings.h">
-      <Filter>Gameplay</Filter>
     </ClInclude>
     <ClInclude Include="Services.h">
       <Filter>GameObject\Services</Filter>
@@ -524,6 +521,15 @@
     </ClInclude>
     <ClInclude Include="TerrainService.h">
       <Filter>GameObject\Services</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSettings.h">
+      <Filter>Gameplay\World</Filter>
+    </ClInclude>
+    <ClInclude Include="GameWorld.h">
+      <Filter>Gameplay\World</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelLoader.h">
+      <Filter>Gameplay\World</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

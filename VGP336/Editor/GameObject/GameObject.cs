@@ -181,6 +181,10 @@ namespace Editor
             {
                 component = new RigidBodyComponent();
             }
+            else if (name == "TerrainComponent")
+            {
+                component = new TerrainComponent();
+            }
             return component;
         }
 

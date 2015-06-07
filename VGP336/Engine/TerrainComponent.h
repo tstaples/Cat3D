@@ -28,6 +28,14 @@ public:
     TerrainComponent();
     ~TerrainComponent();
 
+    const Terrain& GetTerrain() const { return mTerrain; }
+    Terrain& GetTerrain() { return mTerrain; }
+
+    u32 GetWidth() const { return mLength; }
+    u32 GetLength() const { return mWidth; }
+    f32 GetMaxHeight() const { return mMaxHeight; }
+    const char* GetHeightmapPath() const { return mHeightmapPath.c_str(); }
+
 private:
     friend class TerrainService;
 

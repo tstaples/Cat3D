@@ -28,6 +28,19 @@ META_DEPENDENCIES_BEGIN
 META_DEPENDENCIES_END
 META_CLASS_END
 
+namespace
+{
+    void InitTerrain(TerrainComponent* terrainComponent, GraphicsSystem& gs)
+    {
+        const char* heightMapPath = terrainComponent->GetHeightmapPath();
+        const u32 width = terrainComponent->GetWidth();
+        const u32 length = terrainComponent->GetLength();
+        const f32 maxheight = terrainComponent->GetMaxHeight();
+        Terrain& terrain = terrainComponent->GetTerrain();
+        terrain.Initialize(gs, heightMapPath, width, length, maxheight);
+    }
+}
+
 TerrainService::TerrainService()
     : Service("TerrainService", kID)
     , mpGraphicsSystem(nullptr)
@@ -71,6 +84,28 @@ void TerrainService::Update()
         TerrainComponent* terrainComponent = nullptr;
         gameObject->GetComponent(terrainComponent);
 
+        if (terrainComponent->IsDirty())
+        {
+            // Re-create the terrain with the desired settings
+            Terrain& terrain = terrainComponent->mTerrain;
+            terrain.Terminate();
+            InitTerrain(terrainComponent, *mpGraphicsSystem);
+            
+            terrain.SetCamera(*mpCamera);
+
+            // TODO: remove duplication of this once layers can be set properly
+            Terrain::Layer& layer0 = terrainComponent->mLayer0;
+            layer0.layerIndex = 0;
+            layer0.frequency = 21.0f;
+            layer0.minHeight = 0;
+            layer0.maxHeight = 30;
+            layer0.texturePath = "../Data/Images/grass.jpg";
+            Texture* texture = mpTextureManager->GetResource(layer0.texturePath.c_str()); 
+            terrain.SetLayer(texture, layer0);
+
+            terrainComponent->SetIsDirty(false);
+        }
+
         // Render the terrain
         terrainComponent->mTerrain.Render();
     }
@@ -87,15 +122,11 @@ bool TerrainService::OnSubscribe(GameObjectHandle handle)
     gameObject->GetComponent(terrainComponent);
 
     // Init the terrain
-    const char* heightMapPath = terrainComponent->mHeightmapPath.c_str();
-    const u32 width = terrainComponent->mWidth;
-    const u32 length = terrainComponent->mLength;
-    const f32 maxheight = terrainComponent->mMaxHeight;
-    Terrain& terrain = terrainComponent->mTerrain;
-    terrain.Initialize(*mpGraphicsSystem, heightMapPath, width, length, maxheight);
+    InitTerrain(terrainComponent, *mpGraphicsSystem);
 
     // Set the camera
     ASSERT(mpCamera != nullptr, "[TerrainService] Camera not initialized");
+    Terrain& terrain = terrainComponent->GetTerrain();
     terrain.SetCamera(*mpCamera);
 
     // Set layers
@@ -105,7 +136,7 @@ bool TerrainService::OnSubscribe(GameObjectHandle handle)
     layer0.frequency = 21.0f;
     layer0.minHeight = 0;
     layer0.maxHeight = 30;
-    layer0.texturePath = "../Data/Heightmaps/default_heightmap.raw";
+    layer0.texturePath = "../Data/Images/grass.jpg"; // temp
     Texture* texture = mpTextureManager->GetResource(layer0.texturePath.c_str()); 
     terrain.SetLayer(texture, layer0);
 

@@ -32,4 +32,5 @@ TerrainComponent::TerrainComponent()
 
 TerrainComponent::~TerrainComponent()
 {
+    mTerrain.Terminate();
 }
