@@ -285,44 +285,65 @@ void GraphicsSystem::ResetViewport()
 // https://msdn.microsoft.com/en-us/library/windows/desktop/bb205075(v=vs.85).aspx#Handling_Window_Resizing
 void GraphicsSystem::Resize(HWND window, u32& width, u32& height)
 {
-    ASSERT(mWindowDataContainers[mCurrentWindowIndex]->hWnd == window, "[GraphicsSystem] Attempting to resize the incorrect window");
-    ASSERT(mpCurrentSwapChain, "[GraphicsSystem] Failed to resize: Swap chain unitialized");
+    s32 index = -1;
+    for (int i = 0; i < mWindowDataContainers.size(); ++i)
+    {
+        if (mWindowDataContainers[i]->hWnd == window)
+        {
+            index = i;
+            break;
+        }
+    }
+    ASSERT(index != -1, "Bad stuff");
+
+    WindowDataContainer* windowData = mWindowDataContainers[index];
+    ASSERT(windowData->hWnd == window, "[GraphicsSystem] Attempting to resize the incorrect window");
+    ASSERT(mpCurrentSwapChain, "[GraphicsSystem] Failed to resize: Swap chain unintialized");
+
+    if (width == windowData->width && height == windowData->height)
+    {
+        return;
+    }
 
     // Release all outstanding references to the swap chain's buffers
     SafeRelease(mpDepthStencilBuffer);
-    SafeRelease(mpCurrentRenderTargetView);
+    SafeRelease(windowData->pRenderTargetView);
 
     UINT createDeviceFlags = GetCreateDeviceFlags();
 
     // Preserve exisiting buffer count and format
     // Automatically choose the width and height to match the client rect for HWND
-    HRESULT hr = mpCurrentSwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, createDeviceFlags);
+    HRESULT hr = windowData->pSwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, createDeviceFlags);
     ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to resize buffers");
 
     ID3D11Texture2D* pBackBuffer = nullptr;
-    hr = mpCurrentSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+    hr = windowData->pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
     ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to get buffer");
 
-    hr = mpD3DDevice->CreateRenderTargetView(pBackBuffer, nullptr, &mpCurrentRenderTargetView);
+    hr = mpD3DDevice->CreateRenderTargetView(pBackBuffer, nullptr, &windowData->pRenderTargetView);
     ASSERT(SUCCEEDED(hr), "[GraphicsSystem] Failed to create render target view");
     SafeRelease(pBackBuffer);
 
     // Set the render target
-    mpImmediateContext->OMSetRenderTargets(1, &mpCurrentRenderTargetView, nullptr);
+    //mpImmediateContext->OMSetRenderTargets(1, &mpCurrentRenderTargetView, nullptr);
 
     // Update the swap chain desc so it's aware of the new size
-    mpCurrentSwapChain->GetDesc(&mSwapChainDesc);
+    windowData->pSwapChain->GetDesc(&mSwapChainDesc);
     width = GetWidth();
     height = GetHeight();
-
-    // Update the renderTargetView in the container
-    WindowDataContainer* windowData = mWindowDataContainers[mCurrentWindowIndex];
-    windowData->pRenderTargetView = mpCurrentRenderTargetView;
-
+    
     // Update the viewport's dimensions
     windowData->viewport.Width = (FLOAT)width;
 	windowData->viewport.Height = (FLOAT)height;
-	mpImmediateContext->RSSetViewports(1, &windowData->viewport);
+
+    // Update the renderTargetView in the container
+    if (index == mCurrentWindowIndex)
+    {
+        mpCurrentRenderTargetView = windowData->pRenderTargetView;
+    	mpImmediateContext->RSSetViewports(1, &windowData->viewport);
+    }
+
+    CreateDepthStencil(windowData);
 }
 
 //----------------------------------------------------------------------------------------------------

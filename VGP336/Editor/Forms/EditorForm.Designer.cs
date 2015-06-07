@@ -59,6 +59,7 @@
             this.CountCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ConsoleMessageDetailsLabel = new System.Windows.Forms.Label();
             this.AssetTab = new System.Windows.Forms.TabPage();
+            this.AssetSplitContainer = new System.Windows.Forms.SplitContainer();
             this.AssetListView = new System.Windows.Forms.ListView();
             this.AssetImageList = new System.Windows.Forms.ImageList(this.components);
             this.ViewportTabControl = new System.Windows.Forms.TabControl();
@@ -71,7 +72,6 @@
             this.DeleteGameObjectMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveFileBox = new System.Windows.Forms.SaveFileDialog();
             this.OpenFileBox = new System.Windows.Forms.OpenFileDialog();
-            this.AssetSplitContainer = new System.Windows.Forms.SplitContainer();
             this.EditorTableLayout.SuspendLayout();
             this.InspectorBox.SuspendLayout();
             this.SceneHierarchyBox.SuspendLayout();
@@ -84,13 +84,13 @@
             this.ConsoleSplitContainer.Panel2.SuspendLayout();
             this.ConsoleSplitContainer.SuspendLayout();
             this.AssetTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.AssetSplitContainer)).BeginInit();
+            this.AssetSplitContainer.Panel2.SuspendLayout();
+            this.AssetSplitContainer.SuspendLayout();
             this.ViewportTabControl.SuspendLayout();
             this.EditorViewportTab.SuspendLayout();
             this.GameViewportTab.SuspendLayout();
             this.SceneHierarchyContextMenu.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.AssetSplitContainer)).BeginInit();
-            this.AssetSplitContainer.Panel2.SuspendLayout();
-            this.AssetSplitContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // EditorTableLayout
@@ -101,7 +101,7 @@
             this.EditorTableLayout.ColumnCount = 3;
             this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 21.67266F));
             this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 78.32734F));
-            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 410F));
+            this.EditorTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 412F));
             this.EditorTableLayout.Controls.Add(this.InspectorBox, 2, 1);
             this.EditorTableLayout.Controls.Add(this.SceneHierarchyBox, 0, 1);
             this.EditorTableLayout.Controls.Add(this.MainMenuStrip, 0, 0);
@@ -125,10 +125,10 @@
             this.InspectorBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.InspectorBox.Controls.Add(this.inspectorGrid);
             this.InspectorBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.InspectorBox.Location = new System.Drawing.Point(1064, 69);
+            this.InspectorBox.Location = new System.Drawing.Point(1062, 69);
             this.InspectorBox.MinimumSize = new System.Drawing.Size(250, 500);
             this.InspectorBox.Name = "InspectorBox";
-            this.InspectorBox.Size = new System.Drawing.Size(405, 517);
+            this.InspectorBox.Size = new System.Drawing.Size(407, 517);
             this.InspectorBox.TabIndex = 1;
             this.InspectorBox.TabStop = false;
             this.InspectorBox.Text = "Inspector";
@@ -140,7 +140,7 @@
             this.inspectorGrid.Location = new System.Drawing.Point(3, 16);
             this.inspectorGrid.Name = "inspectorGrid";
             this.inspectorGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.inspectorGrid.Size = new System.Drawing.Size(399, 498);
+            this.inspectorGrid.Size = new System.Drawing.Size(401, 498);
             this.inspectorGrid.TabIndex = 0;
             this.inspectorGrid.ToolbarVisible = false;
             this.inspectorGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.InspectorGrid_PropertyValueChanged);
@@ -240,7 +240,7 @@
             this.componentToolStripMenuItem});
             this.ToolMenuStrip.Location = new System.Drawing.Point(231, 1);
             this.ToolMenuStrip.Name = "ToolMenuStrip";
-            this.ToolMenuStrip.Size = new System.Drawing.Size(829, 24);
+            this.ToolMenuStrip.Size = new System.Drawing.Size(827, 24);
             this.ToolMenuStrip.TabIndex = 4;
             this.ToolMenuStrip.Text = "menuStrip1";
             // 
@@ -309,7 +309,7 @@
             this.ConsoleTabControl.Location = new System.Drawing.Point(234, 593);
             this.ConsoleTabControl.Name = "ConsoleTabControl";
             this.ConsoleTabControl.SelectedIndex = 0;
-            this.ConsoleTabControl.Size = new System.Drawing.Size(823, 265);
+            this.ConsoleTabControl.Size = new System.Drawing.Size(821, 265);
             this.ConsoleTabControl.TabIndex = 6;
             // 
             // ConsoleTab
@@ -318,7 +318,7 @@
             this.ConsoleTab.Location = new System.Drawing.Point(4, 22);
             this.ConsoleTab.Name = "ConsoleTab";
             this.ConsoleTab.Padding = new System.Windows.Forms.Padding(3);
-            this.ConsoleTab.Size = new System.Drawing.Size(815, 239);
+            this.ConsoleTab.Size = new System.Drawing.Size(813, 239);
             this.ConsoleTab.TabIndex = 0;
             this.ConsoleTab.Text = "Console";
             this.ConsoleTab.UseVisualStyleBackColor = true;
@@ -337,7 +337,7 @@
             // ConsoleSplitContainer.Panel2
             // 
             this.ConsoleSplitContainer.Panel2.Controls.Add(this.ConsoleMessageDetailsLabel);
-            this.ConsoleSplitContainer.Size = new System.Drawing.Size(809, 233);
+            this.ConsoleSplitContainer.Size = new System.Drawing.Size(807, 233);
             this.ConsoleSplitContainer.SplitterDistance = 168;
             this.ConsoleSplitContainer.TabIndex = 0;
             // 
@@ -353,7 +353,7 @@
             this.ConsoleList.Location = new System.Drawing.Point(0, 0);
             this.ConsoleList.Name = "ConsoleList";
             this.ConsoleList.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ConsoleList.Size = new System.Drawing.Size(809, 168);
+            this.ConsoleList.Size = new System.Drawing.Size(807, 168);
             this.ConsoleList.TabIndex = 0;
             this.ConsoleList.UseCompatibleStateImageBehavior = false;
             this.ConsoleList.View = System.Windows.Forms.View.Details;
@@ -397,6 +397,20 @@
             this.AssetTab.Text = "Assets";
             this.AssetTab.UseVisualStyleBackColor = true;
             // 
+            // AssetSplitContainer
+            // 
+            this.AssetSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.AssetSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.AssetSplitContainer.Name = "AssetSplitContainer";
+            this.AssetSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // AssetSplitContainer.Panel2
+            // 
+            this.AssetSplitContainer.Panel2.Controls.Add(this.AssetListView);
+            this.AssetSplitContainer.Size = new System.Drawing.Size(815, 239);
+            this.AssetSplitContainer.SplitterDistance = 25;
+            this.AssetSplitContainer.TabIndex = 0;
+            // 
             // AssetListView
             // 
             this.AssetListView.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -422,7 +436,7 @@
             this.ViewportTabControl.Location = new System.Drawing.Point(234, 69);
             this.ViewportTabControl.Name = "ViewportTabControl";
             this.ViewportTabControl.SelectedIndex = 0;
-            this.ViewportTabControl.Size = new System.Drawing.Size(823, 517);
+            this.ViewportTabControl.Size = new System.Drawing.Size(821, 517);
             this.ViewportTabControl.TabIndex = 7;
             // 
             // EditorViewportTab
@@ -431,7 +445,7 @@
             this.EditorViewportTab.Location = new System.Drawing.Point(4, 22);
             this.EditorViewportTab.Name = "EditorViewportTab";
             this.EditorViewportTab.Padding = new System.Windows.Forms.Padding(3);
-            this.EditorViewportTab.Size = new System.Drawing.Size(815, 491);
+            this.EditorViewportTab.Size = new System.Drawing.Size(813, 491);
             this.EditorViewportTab.TabIndex = 0;
             this.EditorViewportTab.Text = "Editor";
             this.EditorViewportTab.UseVisualStyleBackColor = true;
@@ -445,7 +459,7 @@
             this.EditorViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
             this.EditorViewPanel.Name = "EditorViewPanel";
             this.EditorViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.EditorViewPanel.Size = new System.Drawing.Size(809, 485);
+            this.EditorViewPanel.Size = new System.Drawing.Size(807, 485);
             this.EditorViewPanel.TabIndex = 2;
             this.EditorViewPanel.TabStop = true;
             // 
@@ -455,7 +469,7 @@
             this.GameViewportTab.Location = new System.Drawing.Point(4, 22);
             this.GameViewportTab.Name = "GameViewportTab";
             this.GameViewportTab.Padding = new System.Windows.Forms.Padding(3);
-            this.GameViewportTab.Size = new System.Drawing.Size(817, 491);
+            this.GameViewportTab.Size = new System.Drawing.Size(815, 491);
             this.GameViewportTab.TabIndex = 1;
             this.GameViewportTab.Text = "Game";
             this.GameViewportTab.UseVisualStyleBackColor = true;
@@ -469,7 +483,7 @@
             this.GameViewPanel.MinimumSize = new System.Drawing.Size(480, 272);
             this.GameViewPanel.Name = "GameViewPanel";
             this.GameViewPanel.Padding = new System.Windows.Forms.Padding(3);
-            this.GameViewPanel.Size = new System.Drawing.Size(811, 485);
+            this.GameViewPanel.Size = new System.Drawing.Size(809, 485);
             this.GameViewPanel.TabIndex = 3;
             this.GameViewPanel.TabStop = true;
             // 
@@ -495,20 +509,6 @@
             this.DeleteGameObjectMenuItem.Size = new System.Drawing.Size(117, 22);
             this.DeleteGameObjectMenuItem.Text = "Delete";
             this.DeleteGameObjectMenuItem.Click += new System.EventHandler(this.DeleteGameObjectMenuItem_Click);
-            // 
-            // AssetSplitContainer
-            // 
-            this.AssetSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.AssetSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.AssetSplitContainer.Name = "AssetSplitContainer";
-            this.AssetSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // AssetSplitContainer.Panel2
-            // 
-            this.AssetSplitContainer.Panel2.Controls.Add(this.AssetListView);
-            this.AssetSplitContainer.Size = new System.Drawing.Size(815, 239);
-            this.AssetSplitContainer.SplitterDistance = 25;
-            this.AssetSplitContainer.TabIndex = 0;
             // 
             // EditorForm
             // 
@@ -540,15 +540,15 @@
             ((System.ComponentModel.ISupportInitialize)(this.ConsoleSplitContainer)).EndInit();
             this.ConsoleSplitContainer.ResumeLayout(false);
             this.AssetTab.ResumeLayout(false);
+            this.AssetSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.AssetSplitContainer)).EndInit();
+            this.AssetSplitContainer.ResumeLayout(false);
             this.ViewportTabControl.ResumeLayout(false);
             this.EditorViewportTab.ResumeLayout(false);
             this.EditorViewportTab.PerformLayout();
             this.GameViewportTab.ResumeLayout(false);
             this.GameViewportTab.PerformLayout();
             this.SceneHierarchyContextMenu.ResumeLayout(false);
-            this.AssetSplitContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.AssetSplitContainer)).EndInit();
-            this.AssetSplitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
