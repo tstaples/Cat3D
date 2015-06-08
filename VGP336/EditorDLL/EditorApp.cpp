@@ -233,7 +233,8 @@ void EditorApp::OnEditorUpdate(f32 deltaTime)
         }
     }
 
-    mGraphicsSystem.BeginRender(Color::Black());
+    Color col;
+    mGraphicsSystem.BeginRender(col.FromRGBA(80, 80, 80, 255));
 
     DrawGroundPlane(100, 5);
 
@@ -266,8 +267,7 @@ void EditorApp::OnGameUpdate(f32 deltaTime)
 
     // TODO: Use skybox from camera
     Color clearColor;
-    clearColor.SetBytes(22, 115, 196, 255);
-    mGraphicsSystem.BeginRender(clearColor);
+    mGraphicsSystem.BeginRender(clearColor.FromRGBA(22, 115, 196, 255));
 
     mGameWorld.OnRender();
 

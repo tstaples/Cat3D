@@ -20,7 +20,7 @@ namespace Editor
         public bool Contains(Point point)
         {
             Point rel = this.PointToClient(point);
-            return this.Bounds.Contains(point);
+            return this.Bounds.Contains(rel);
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
