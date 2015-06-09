@@ -19,6 +19,13 @@ EditorObject::~EditorObject()
 
 //----------------------------------------------------------------------------------------------------
 
+void EditorObject::Draw()
+{
+    SimpleDraw::AddAABB(GetCollider(), Color::Green());
+}
+
+//----------------------------------------------------------------------------------------------------
+
 Math::Vector3 EditorObject::GetPosition() const
 {
     const TransformComponent* transformComponent = nullptr;
@@ -37,9 +44,12 @@ Math::AABB EditorObject::GetCollider() const
     const ColliderComponent* collider = nullptr;
     if (gameObject->FindComponent(collider))
     {
-        return collider->GetBoundary();
+        // Offset the collider by the AABB's center
+        Math::AABB region(collider->GetBoundary());
+        return Math::AABB(GetPosition() + region.center, region.extend);
     }
-    return Math::AABB(GetPosition(), Math::Vector3(5.0f, 5.0f, 5.0f));
+    // default
+    return Math::AABB(GetPosition(), Math::Vector3(1.0f, 1.0f, 1.0f));
 }
 
 //----------------------------------------------------------------------------------------------------

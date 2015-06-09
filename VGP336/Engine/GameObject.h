@@ -11,7 +11,7 @@
 // Includes
 //====================================================================================================
 
-#include "MemHandle.h"
+#include "MemoryPool.h"
 #include "Meta.h"
 
 //====================================================================================================
@@ -61,6 +61,8 @@ public:
     const char* GetName() const                 { return mName.c_str(); }
     const Components& GetComponents() const     { return mComponents; }
 
+    bool IsValid() const                        { return !mToBeDestroyed; }
+
     GameWorld* GetWorld() const;
 
     bool Serialize(SerialWriter& writer);
@@ -69,12 +71,16 @@ public:
 private:
     //NONCOPYABLE(GameObject)
     friend class GameObjectFactory;
+    friend class GameWorld;
 
     std::string mName; // See TODO in TString
     Components mComponents;
 
-    static const u16 kNumServices = 1; // TODO: find better way to do this
+    static const u16 kNumServices = 3; // TODO: find better way to do this
     bool mServiceSubscriptions[kNumServices];
+
+    bool mToBeDestroyed;  // Is the object in the update list
+    bool mEnabled; // TODO
 
     static class GameWorld* spWorld;
 };
@@ -89,6 +95,17 @@ typedef MemoryPool<GameObject> GameObjectPool;
 //====================================================================================================
 // Inline Definitions
 //====================================================================================================
+
+// Create a specialization to validate so we can ensure the actual gameObject is valid too.
+template <>
+inline bool MemHandle<GameObject>::IsValid() const
+{
+    return sMemoryPool &&
+           sMemoryPool->IsValid(*this) &&
+           sMemoryPool->Get(*this)->IsValid();
+}
+
+//----------------------------------------------------------------------------------------------------
 
 template<typename T>
 bool GameObject::GetComponent(T*& component)

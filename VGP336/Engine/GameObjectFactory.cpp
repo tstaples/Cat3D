@@ -137,7 +137,7 @@ GameObjectFactory::~GameObjectFactory()
 void GameObjectFactory::Initialize(Services& services, GameWorld& world)
 {
     mpWorld = &world;
-    mServices = std::move(services);
+    mServices = services;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -159,9 +159,11 @@ GameObjectHandle GameObjectFactory::Create(const char* templateFile)
     Json::Reader reader;
     if (!reader.parse(data, root))
     {
+        data.close();
         OutputDebugStringA(reader.getFormattedErrorMessages().c_str());
         return handle;
     }
+    data.close();
 
     // We have data, so allocate space for the object
     handle = mGameObjectPool.Allocate();
@@ -235,12 +237,13 @@ bool GameObjectFactory::Destroy(GameObjectHandle handle)
         for (it; it != gameObject->mComponents.end(); ++it)
         {
             Component* component = *it;
+            const MetaClass* metaClass = component->GetMetaClass();
 
             // Unsubscribe from any services
             UnHookServices(handle, mServices, component);
 
             // Delete the component
-            SafeDelete(component);
+            metaClass->Destroy(component);
         }
         gameObject->mComponents.clear();
         mGameObjectPool.Free(handle);
@@ -299,7 +302,7 @@ bool GameObjectFactory::RemoveComponent(GameObjectHandle handle, const char* com
 
             // Remove and Delete the component
             gameObject->mComponents.erase(it);
-            SafeDelete(component);
+            metaClass->Destroy(component);
             return true;
         }
     }

@@ -48,6 +48,10 @@ private:
     EditorObjects mObjects;
     std::vector<EditorObject*> mSelectedObjects;
 
+    Delegate<void, f32> UpdateDelegate;
+    void OnEditorUpdate(f32 deltaTime);
+    void OnGameUpdate(f32 deltaTime);
+
 private:
     friend class InputCallbacks;
     friend class EditorCommands;

@@ -53,6 +53,7 @@
     <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Path.cpp" />
+    <ClCompile Include="PhysicsService.cpp" />
     <ClCompile Include="PhysicsWorld.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="Precompiled.cpp">
@@ -62,11 +63,14 @@
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="MeshBuffer.cpp" />
     <ClCompile Include="RenderService.cpp" />
+    <ClCompile Include="RigidBodyComponent.cpp" />
     <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="Service.cpp" />
     <ClCompile Include="SimpleDraw.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />
     <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="TerrainComponent.cpp" />
+    <ClCompile Include="TerrainService.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="TString.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -137,6 +141,7 @@
     <ClInclude Include="Octree.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Path.h" />
+    <ClInclude Include="PhysicsService.h" />
     <ClInclude Include="PhysicsWorld.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Plane.h" />
@@ -148,6 +153,7 @@
     <ClInclude Include="RenderService.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="RigidBodyComponent.h" />
     <ClInclude Include="Sampler.h" />
     <ClInclude Include="SerialReader.h" />
     <ClInclude Include="SerialWriter.h" />
@@ -157,6 +163,8 @@
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SpriteRenderer.h" />
     <ClInclude Include="Terrain.h" />
+    <ClInclude Include="TerrainComponent.h" />
+    <ClInclude Include="TerrainService.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="TString.h" />
     <ClInclude Include="Texture.h" />

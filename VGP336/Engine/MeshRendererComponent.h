@@ -30,11 +30,17 @@ public:
     Texture& GetTexture()                   { return mTexture; }
 
 private:
+    friend class RenderService;
+
     Texture mTexture;
+
+    // TODO: support multiple textures
+    //std::vector<Texture*> mTextures;
+    //u32 mTextureIndex; // index of selected texture
 
     // Note: Keep this as the last member so if it grows/shrinks it doesn't alter
     // the offset of other members.
-    std::string mTexturePath;
+    std::string mTexturePath; // TODO: store array of these
 };
 
 //====================================================================================================

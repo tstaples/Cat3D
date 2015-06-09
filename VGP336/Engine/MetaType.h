@@ -41,6 +41,7 @@ public:
         Matrix,
         AABB,
         Class,
+        Struct,
         Array,
         Pointer,
         NumTypes

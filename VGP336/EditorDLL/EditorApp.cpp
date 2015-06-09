@@ -3,6 +3,8 @@
 
 #include "Gizmo.h"
 #include "InputCallbacks.h"
+#include "Components.h"
+#include "SimpleDraw.h"
 
 namespace
 {
@@ -32,6 +34,8 @@ EditorApp::EditorApp()
 {
     memset(mInputData.keyStates, 0, sizeof(bool) * 256);
     memset(mInputData.mouseStates, 0, sizeof(bool) * 4);
+
+    UpdateDelegate = DELEGATE(&EditorApp::OnEditorUpdate, this);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -59,11 +63,14 @@ void EditorApp::OnInitialize(u32 width, u32 height)
 
     mpGizmo = new TranslateGizmo(mCamera, 1.0f, 5.0f);
 
+    // TODO: Read settings from editor
     GameSettings settings;
+    settings.timeStep = 1.0f / 60.0f;
+    settings.gravity = Math::Vector3(0.0f, -9.8f, 0.0f);
     mGameWorld.OnInitialize(settings, mGraphicsSystem, mCamera);
 
     // Discover any objects the gameworld has on startup
-    for (GameObjectHandle handle : mGameWorld.mGameObjectHandles)
+    for (GameObjectHandle handle : mGameWorld.mUpdateList)
     {
         mObjects.push_back(EditorObject(handle));
     }
@@ -151,9 +158,17 @@ void EditorApp::OnUpdate()
 	
     // Set time to 0 when not running
     mTimer.Update();
+    //LOG("FPS: %f", mTimer.GetFramesPerSecond());
 	const f32 deltaTime = (mIsGameRunning) ? mTimer.GetElapsedTime() : 0.0f;
-    mGameWorld.OnUpdate(deltaTime);
 
+    // Call the appropriate update callback
+    UpdateDelegate(deltaTime);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void EditorApp::OnEditorUpdate(f32 deltaTime)
+{
     // Destroy and re-create the entire tree
     mOctree.Destroy();
     for (u32 i=0; i < mObjects.size(); ++i)
@@ -207,17 +222,19 @@ void EditorApp::OnUpdate()
             SimpleDraw::AddLine(pos, br, Color::Green());
 
         }
-        Color col = Color::White();
+
         if (object.IsSelected())
         {
+            // Draw the gizmo if any object is selected
             drawGizmo = true;
-            col = Color::Red();
+
+            // Draw the collider
+            object.Draw();
         }
-        //SimpleDraw::AddAABB(object.GetCollider(), col);
     }
 
-	// Render
-	mGraphicsSystem.BeginRender(Color::Black());
+    Color col;
+    mGraphicsSystem.BeginRender(col.FromRGBA(80, 80, 80, 255));
 
     DrawGroundPlane(100, 5);
 
@@ -229,6 +246,31 @@ void EditorApp::OnUpdate()
     }
 
 	SimpleDraw::Render(mCamera);
+	mGraphicsSystem.EndRender();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void EditorApp::OnGameUpdate(f32 deltaTime)
+{
+    mGameWorld.OnUpdate(deltaTime);
+
+    // Temp
+    if (mInputData.keyStates['W'])
+		mCamera.Walk(100.0f * deltaTime);
+    if (mInputData.keyStates['A'])
+		mCamera.Strafe(-100.0f * deltaTime);
+    if (mInputData.keyStates['D'])
+		mCamera.Strafe(100.0f * deltaTime);
+    if (mInputData.keyStates['S'])
+		mCamera.Walk(-100.0f * deltaTime);
+
+    // TODO: Use skybox from camera
+    Color clearColor;
+    mGraphicsSystem.BeginRender(clearColor.FromRGBA(22, 115, 196, 255));
+
+    mGameWorld.OnRender();
+
 	mGraphicsSystem.EndRender();
 }
 

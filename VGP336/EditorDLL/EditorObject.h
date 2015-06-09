@@ -10,6 +10,7 @@ public:
     ~EditorObject();
 
     void Translate(const Math::Vector3& v);
+    void Draw();
 
     Math::Vector3 GetPosition() const;
     Math::AABB GetCollider() const;

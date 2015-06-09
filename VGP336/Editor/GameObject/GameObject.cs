@@ -154,6 +154,17 @@ namespace Editor
             }
             return buffer;
         }
+        public bool HasComponent(string name)
+        {
+            foreach (Component c in components)
+            {
+                if (name == c.Name)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         private static Component CreateComponentFromName(string name)
         {
             Component component = null;
@@ -176,6 +187,14 @@ namespace Editor
             else if (name == "CameraComponent")
             {
                 component = new CameraComponent();
+            }
+            else if (name == "RigidBodyComponent")
+            {
+                component = new RigidBodyComponent();
+            }
+            else if (name == "TerrainComponent")
+            {
+                component = new TerrainComponent();
             }
             return component;
         }

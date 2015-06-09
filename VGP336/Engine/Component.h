@@ -19,6 +19,7 @@
 //====================================================================================================
 
 class GameObject;
+class GameWorld;
 
 //====================================================================================================
 // Class Declarations
@@ -35,12 +36,15 @@ public:
     virtual void Initialize() {}
     virtual void Terminate() {}
     virtual void Update(f32 deltaTime) {} // Not all components need to update; do nothing
+    virtual void Render() {}
 
     void SetIsDirty(bool state)         { mIsDirty = state; }
     bool IsDirty() const                { return mIsDirty; }
 
     GameObject* GetObj()                { return mpGameObject; }
     const GameObject* GetObj() const    { return mpGameObject; }
+
+    const GameWorld* GetWorld() const;
 
 private:
     friend GameObject;

@@ -349,11 +349,52 @@ bool EditorCommands::LoadLevel(const char* filename)
     {
         // Clear any existing items and discover the new ones
         mApp.mObjects.clear();
-        for (GameObjectHandle handle : mApp.mGameWorld.mGameObjectHandles)
+        for (GameObjectHandle handle : mApp.mGameWorld.mUpdateList)
         {
             mApp.mObjects.push_back(EditorObject(handle));
         }
         return true;
     }
     return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool EditorCommands::StartGame()
+{
+    GameWorld& gameWorld = mApp.mGameWorld;
+    bool saved = gameWorld.SaveLevelToMemory();
+    ASSERT(saved, "[EditorCommands] Failed to save level to memory");
+    mApp.mIsGameRunning = true;
+    mApp.UpdateDelegate = DELEGATE(&EditorApp::OnGameUpdate, &mApp);
+    return saved;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool EditorCommands::PauseGame()
+{
+    mApp.mIsGameRunning = false;
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool EditorCommands::StopGame()
+{
+    // Reload current scene
+    GameWorld& gameWorld = mApp.mGameWorld;
+    bool loaded = gameWorld.ReLoadCurrentLevel();
+    ASSERT(loaded, "[EditorCommands] Failed to load level from memory");
+    mApp.mIsGameRunning = false;
+    mApp.UpdateDelegate = DELEGATE(&EditorApp::OnEditorUpdate, &mApp);
+
+    // Update the editor's objects
+    mApp.mObjects.clear();
+    for (GameObjectHandle handle : mApp.mGameWorld.mUpdateList)
+    {
+        mApp.mObjects.push_back(EditorObject(handle));
+    }
+
+    return loaded;
 }

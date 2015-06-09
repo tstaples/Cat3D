@@ -157,7 +157,7 @@ namespace Editor
                     }
                 case EType.Vector3:
                     {
-                        Vector3 v = new Vector3();
+                        Vector3 v = (Vector3)obj;
                         return v.ToBytes();
                     }
             }

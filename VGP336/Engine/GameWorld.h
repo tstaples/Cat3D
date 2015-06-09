@@ -12,12 +12,14 @@
 // Includes
 //====================================================================================================
 
+#include "AssetLoader.h"
 #include "Components.h"
 #include "GameObject.h"
 #include "GameObjectFactory.h"
 #include "GameSettings.h"
 #include "LevelLoader.h"
-#include "Service.h"
+#include "Services.h"
+#include "TextureManager.h"
 
 //====================================================================================================
 // Forward Declarations
@@ -53,32 +55,49 @@ public:
      */
     GameObjectHandle CreateGameObject(const char* templateFile, Math::Vector3 pos, Math::Quaternion rot);
 
+    // Level methods
     bool NewLevel(const char* levelName);
     bool LoadLevel(const char* levelName);
     bool SaveLevel(const char* levelName);
 
+    // Application data
     s32 GetScreenWidth() const;
     s32 GetScreenHeight() const;
+
+    const GameSettings& GetGameSettings() const { return mSettings; }
 
 private:
     // Delegates
     bool OnGameObjectDestroyed(GameObjectHandle handle);
 
+    bool SaveLevelToMemory();
+    bool ReLoadCurrentLevel();
+    void ClearCurrentLevel();
+
 private:
     NONCOPYABLE(GameWorld);
 
     Application* mpApplication;
+    GraphicsSystem* mpGraphicsSystem;
 
     GameSettings mSettings;
 
     // Services
+    Services mServiceList; // used for iterating and calling generic methods
     RenderService mRenderService;
+    PhysicsService mPhysicsService;
+    TerrainService mTerrainService;
 
     GameObjectFactory mFactory;
     GameObjectPool mGameObjectPool;
 
-    GameObjectHandles mGameObjectHandles;
+    // TODO: Hold gameObject pointers for faster access
+    // then get the handle through the gameObject
+    GameObjectHandles mUpdateList;
+    GameObjectHandles mDestroyedList;
 
+    TextureManager mTextureManager; // Probably should be held by application
+    AssetLoader mAssetLoader;
     LevelLoader mLevelLoader;
     Level mCurrentLevel;
 

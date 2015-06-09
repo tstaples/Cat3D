@@ -15,8 +15,10 @@
 #include "Heightmap.h"
 #include "Mesh.h"
 #include "MeshBuffer.h"
+#include "Meta.h"
 #include "PixelShader.h"
 #include "Sampler.h"
+#include "Texture.h"
 #include "VertexShader.h"
 
 //====================================================================================================
@@ -29,7 +31,6 @@ namespace Math
 }
 class Camera;
 class GraphicsSystem;
-class Texture;
 
 //====================================================================================================
 // Class Declarations
@@ -39,19 +40,31 @@ class Terrain
 {
 public:
 
+    struct Layer
+    {
+        META_DECLARE_CLASS
+
+        u32 layerIndex;
+        f32 minHeight;
+        f32 maxHeight;
+        f32 frequency;
+        std::string texturePath;
+    };
+
 	Terrain();
 	~Terrain();
 
     // width & length are dimensions of the heightmap file
-	void Initialize(GraphicsSystem& gs, const char* pFilename, u32 width, u32 length, f32 maxHeight);
+	void Initialize(GraphicsSystem& gs, const char* pFilename, u32 width, u32 length, f32 maxHeight, const Math::Vector3& pos);
 	void Terminate();
 
 	void SetCamera(Camera& camera);
 	void SetLayer(Texture* pTexture, u32 layer, f32 minHeight, f32 maxHeight, f32 frequency);
+	void SetLayer(Texture* pTexture, const Layer& layer);
 
 	f32 GetHeight(const Math::Vector3& position);
 
-	void Render();
+	void Render(const Math::Matrix& transform);
 
 private:
 	NONCOPYABLE(Terrain);
@@ -61,6 +74,7 @@ private:
 	struct CBuffer
 	{
 		XMMATRIX matWVP;
+		//XMMATRIX matWorld;
 		XMVECTOR layer[kMaxTerrainLayers];
 	};
 

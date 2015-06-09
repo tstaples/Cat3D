@@ -1,6 +1,8 @@
 #include "Precompiled.h"
 #include "ColliderComponent.h"
 
+#include "GameObject.h"
+#include "TransformComponent.h"
 
 META_CLASS_BEGIN(ColliderComponent)
 META_FIELD_BEGIN
@@ -8,16 +10,26 @@ META_FIELD_BEGIN
     META_FIELD(mExtend, "Extend")
     META_FIELD(mIsTrigger, "IsTrigger")
 META_FIELD_END
+META_DEPENDENCIES_BEGIN
+    META_DEPENDENCY("PhysicsService", "Service")
+META_DEPENDENCIES_END
 META_CLASS_END
 
 ColliderComponent::ColliderComponent()
     : mIsTrigger(false)
+    , mExtend(1.0f, 1.0f, 1.0f)
 {
 }
 
 //----------------------------------------------------------------------------------------------------
 
 ColliderComponent::~ColliderComponent()
+{
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void ColliderComponent::Update(f32 deltaTime)
 {
 }
 

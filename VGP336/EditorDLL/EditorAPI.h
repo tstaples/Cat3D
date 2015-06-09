@@ -104,4 +104,8 @@ EditorAPI int NewLevel(const char* filename);
 EditorAPI int LoadLevel(const char* filename);
 EditorAPI int SaveLevel(const char* filename);
 
+EditorAPI int StartGame();
+EditorAPI int PauseGame();
+EditorAPI int StopGame();
+
 #endif //#ifndef INCLUDED_EDITORAPI_H

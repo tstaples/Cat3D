@@ -61,6 +61,12 @@ public:
      */
     bool Load(const char* filename, Level& level, Mode mode = Mode::Binary);
 
+    /* Loads the data for a level from the buffer.
+     * @param level: Level struct to ouput the data to.
+     * Returns true if read level data in successfully.
+     */
+    bool LoadLocal(Level& level, Mode mode = Mode::Binary);
+
     /* Serializes out the level data to memory.
      * @param handles: static gameobjects to store in the level data.
      * @param settings: the settings for the level.

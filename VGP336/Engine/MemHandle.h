@@ -32,8 +32,8 @@ public:
     u16 GetInstance() const     { return mInstance; }
     u16 GetIndex() const        { return mIndex; }
 
-    bool IsValid() const        { return sMemoryPool && sMemoryPool->IsValid(*this); }
-    void Invalidate()           { mIndex = U16_MAX; mInstance = U16_MAX; }
+    bool IsValid() const;
+    void Invalidate();
 
 private:
     friend class MemoryPool<DataType>;

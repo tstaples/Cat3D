@@ -26,13 +26,15 @@ public:
     ColliderComponent();
     ~ColliderComponent();
 
+    virtual void Update(f32 deltaTime) override;
+
     void SetBoundary(const Math::AABB& aabb);
     Math::AABB GetBoundary() const;
 
     bool IsTrigger() const  { return mIsTrigger; }    
 
 private:
-    Math::Vector3 mCenter;
+    Math::Vector3 mCenter; // In parent space
     Math::Vector3 mExtend;
     bool mIsTrigger;
 };

@@ -35,6 +35,7 @@ public:
     // If it does, returns a pointer to it
     // else allocates it then returns the pointer
     T* GetResource(const wchar_t* pfilename);
+    T* GetResource(const char* pfilename);
 
 private:
     NONCOPYABLE(ResourceManager);

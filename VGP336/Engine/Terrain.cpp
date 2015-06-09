@@ -21,6 +21,16 @@
 // Class Definitions
 //====================================================================================================
 
+META_CLASS_BEGIN(Terrain::Layer)
+META_FIELD_BEGIN
+    META_FIELD(layerIndex, "LayerIndex")
+    META_FIELD(minHeight, "MinHeight")
+    META_FIELD(maxHeight, "MaxHeight")
+    META_FIELD(frequency, "Frequency")
+    META_FIELD(texturePath, "TexturePath")
+META_FIELD_END
+META_CLASS_END
+
 Terrain::Terrain()
 	: mpGraphicsSystem(nullptr)
 	, mpCamera(nullptr)
@@ -41,7 +51,7 @@ Terrain::~Terrain()
 
 //----------------------------------------------------------------------------------------------------
 
-void Terrain::Initialize(GraphicsSystem& gs, const char* pFilename, u32 width, u32 length, f32 maxHeight)
+void Terrain::Initialize(GraphicsSystem& gs, const char* pFilename, u32 width, u32 length, f32 maxHeight, const Math::Vector3& pos)
 {
 	ASSERT(!mInitialized, "[Terrain] Already initialized!");
 
@@ -54,7 +64,7 @@ void Terrain::Initialize(GraphicsSystem& gs, const char* pFilename, u32 width, u
 	mPixelShader.Initialize(gs, L"../Engine/Shaders/Terrain.fx", "PS", "ps_4_0");
 
 	mHeightmap.GenerateFromRAW(pFilename, width, length);
-	MeshBuilder::CreateTerrain(mTerrainMesh, mHeightmap, maxHeight);
+	MeshBuilder::CreateTerrain(mTerrainMesh, pos, mHeightmap, maxHeight);
 	mTerrain.Initialize(gs, vertexFormat, mTerrainMesh);
 
 	mSampler.Initialize(gs, Sampler::Anisotropic, Sampler::Wrap);
@@ -112,6 +122,13 @@ void  Terrain::SetLayer(Texture* pTexture, u32 layer, f32 minHeight, f32 maxHeig
 
 //----------------------------------------------------------------------------------------------------
 
+void Terrain::SetLayer(Texture* pTexture, const Layer& layer)
+{
+    SetLayer(pTexture, layer.layerIndex, layer.minHeight, layer.maxHeight, layer.frequency);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 f32 Terrain::GetHeight(const Math::Vector3& position)
 {
 	const u32 rows = mHeightmap.GetRows();
@@ -152,27 +169,29 @@ f32 Terrain::GetHeight(const Math::Vector3& position)
 	if (deltaX > deltaZ) // Bottom half of the quad
 	{
         // Start from d and lerp x and y the amount we're into the cell
-		height = d + ((1.0f - deltaX) * (d - a)) + (deltaZ * c);
+		height = d + ((1.0f - deltaX) * (a - d)) + (deltaZ * (c - d));
 	}
 	else
 	{
         // Start from b and lerp x and y the amount we're into the cell
-		height = b + ((1.0f - deltaZ) * (b - a)) + (deltaX * c);
+		height = b + ((1.0f - deltaZ) * (a - b)) + (deltaX * (c - b));
 	}
 	return height;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-void Terrain::Render()
+void Terrain::Render(const Math::Matrix& transform)
 {
 	ASSERT(mpCamera != nullptr , "[Terrain] No camera set!");
 	ASSERT(mpTerrainLayers[0] != nullptr, "[Terrain] At least one layer must be set!");
 
+	//XMMATRIX matWorld = *(XMMATRIX*)&transform;
 	XMMATRIX matView = *(XMMATRIX*)&mpCamera->GetViewMatrix();
 	XMMATRIX matProj = *(XMMATRIX*)&mpCamera->GetProjectionMatrix();
 
 	CBuffer cb;
+    //cb.matWorld = XMMatrixTranspose(matWorld);
 	cb.matWVP = XMMatrixTranspose(matView * matProj);
 	for (u32 i = 0; i < kMaxTerrainLayers; ++i)
 	{

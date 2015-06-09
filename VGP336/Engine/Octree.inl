@@ -49,11 +49,12 @@ namespace
 //----------------------------------------------------------------------------------------------------
 
 template <typename T>
-inline Octree<T>::Octree(const Math::AABB& octRegion, s32 maxDepth)
+inline Octree<T>::Octree(const Math::AABB& octRegion, u32 maxElements, s32 maxDepth)
     : mAABB(octRegion)
     , mpParent(nullptr)
     , mActiveChildren(0)
     , mMaxDepth(maxDepth)
+    , mMaxElements(maxElements)
 {
     for (u32 i=0; i < kNumChildren; ++i)
     {
@@ -64,11 +65,12 @@ inline Octree<T>::Octree(const Math::AABB& octRegion, s32 maxDepth)
 //----------------------------------------------------------------------------------------------------
 
 template <typename T>
-inline Octree<T>::Octree(const Math::AABB& octRegion, T& gameObject, const Math::AABB& objRegion, s32 maxDepth)
+inline Octree<T>::Octree(const Math::AABB& octRegion, T& gameObject, const Math::AABB& objRegion, u32 maxElements, s32 maxDepth)
     : mAABB(octRegion)
     , mpParent(nullptr)
     , mActiveChildren(0)
     , mMaxDepth(maxDepth)
+    , mMaxElements(maxElements)
 {
     for (u32 i=0; i < kNumChildren; ++i)
     {
@@ -80,12 +82,13 @@ inline Octree<T>::Octree(const Math::AABB& octRegion, T& gameObject, const Math:
 //----------------------------------------------------------------------------------------------------
 
 template <typename T>
-inline Octree<T>::Octree(const Math::AABB& octRegion, Objects& objects, s32 maxDepth)
+inline Octree<T>::Octree(const Math::AABB& octRegion, Objects& objects, u32 maxElements, s32 maxDepth)
     : mAABB(octRegion)
     , mpParent(nullptr)
     , mActiveChildren(0)
     , mObjects(objects)
     , mMaxDepth(maxDepth)
+    , mMaxElements(maxElements)
 {
     for (u32 i=0; i < kNumChildren; ++i)
     {
@@ -98,7 +101,8 @@ inline Octree<T>::Octree(const Math::AABB& octRegion, Objects& objects, s32 maxD
 template <typename T>
 inline Octree<T>::~Octree()
 {
-    Destroy();
+    ASSERT(mActiveChildren == 0 && mObjects.empty(), "[Ocree] Tree was not properly destroyed");
+    //Destroy();
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -127,9 +131,9 @@ inline void Octree<T>::Insert(T& object, const Math::AABB& region, s32 depth)
     {
         mObjects.insert(std::make_pair(&object, region));
 
-        // Check if this node currently contains anything
+        // Check if this node is full
         const u32 numObjects = mObjects.size();
-        if (numObjects > 1)
+        if (numObjects > mMaxElements)
         {
             // Split the region into octants
             std::vector<Math::AABB> octants = BuildRegions(mAABB);
@@ -151,6 +155,8 @@ inline void Octree<T>::Insert(T& object, const Math::AABB& region, s32 depth)
                     mpChildren[index]->Insert(object, region, depth + 1);
                 }
             }
+            // This node no longer contains any objects
+            mObjects.clear();
         }
     }
     else
@@ -186,7 +192,13 @@ inline void Octree<T>::Destroy()
 {
     for (u32 i=0; i < kNumChildren; ++i)
     {
-        SafeDelete(mpChildren[i]);
+        // Destroy children recursively
+        Octree* child = mpChildren[i];
+        if (child)
+        {
+            child->Destroy();
+            SafeDelete(mpChildren[i]);
+        }
     }
     mObjects.clear();
     mActiveChildren = 0;
@@ -262,6 +274,41 @@ inline bool Octree<T>::GetIntersectingObjects(const Math::Ray& ray, std::vector<
         return anyIntersect; // May not have intersected with any objects
     }
     return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+template <typename T>
+inline bool Octree<T>::GetIntersectingObjects(std::vector<T*>& objects)
+{
+    s32 depth = 0;
+    return GetIntersectingObjects(objects, depth);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+template <typename T>
+inline bool Octree<T>::GetIntersectingObjects(std::vector<T*>& objects, s32 depth)
+{
+    // TODO
+    if (IsLeaf())
+    {
+        // Nothing to intersect with
+        if (mObjects.size() <= 1)
+        {
+            return false;
+        }
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+template <typename T>
+inline void Octree<T>::SetBoundingRegion(const Math::AABB& region)
+{
+    // TODO: update child oct bounds when region is set
+    mAABB = region;
 }
 
 //----------------------------------------------------------------------------------------------------

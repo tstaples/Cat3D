@@ -62,6 +62,26 @@ bool LevelLoader::Load(const char* filename, Level& level, Mode mode)
 
 //----------------------------------------------------------------------------------------------------
 
+bool LevelLoader::LoadLocal(Level& level, Mode mode)
+{
+    if (!mBufferHasData)
+    {
+        LOG("[LevelLoader] warning: buffer is empty");
+        return false;
+    }
+
+    SerialReader reader(mBuffer, mOffset);
+    level.settings = reader.Read<GameSettings>();
+    level.numGameObjects = reader.Read<u32>();
+    level.buffer = mBuffer + reader.GetOffset();
+    level.bufferSize = mOffset;
+    // For now, assume level name will be assigned by the caller
+
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------
+
 bool LevelLoader::SaveLocal(const GameObjectHandles& handles, const GameSettings& settings)
 {
     memset(mBuffer, 0, LEVEL_BUFFER_SIZE);

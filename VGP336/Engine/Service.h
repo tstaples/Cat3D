@@ -14,6 +14,8 @@
 
 #include "GameObject.h"
 
+class GameWorld;
+
 //====================================================================================================
 // Class Declarations
 //====================================================================================================
@@ -28,13 +30,17 @@ public:
 
     // Subscribes the gameobject to this service
     bool Subscribe(GameObjectHandle handle);
+    
     // UnSubscribes the gameobject to this service
     void UnSubscribe(GameObjectHandle handle);
 
     // Clears subscriber list
     void UnSubscribeAll();
 
+    virtual void Terminate() = 0;
+
     u16 GetID() const { return mID; }
+    const GameWorld* GetWorld() const { return spGameWorld; }
 
 private:
     NONCOPYABLE(Service);
@@ -43,6 +49,9 @@ private:
     virtual bool OnSubscribe(GameObjectHandle handle) = 0;
 
     const char* mName;
+
+    friend GameWorld;
+    static GameWorld* spGameWorld; // weakptr
 
 protected:
     typedef std::vector<GameObjectHandle> Subscribers;

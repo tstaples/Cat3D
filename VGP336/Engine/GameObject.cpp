@@ -34,6 +34,7 @@ GameWorld* GameObject::spWorld = nullptr;
 
 GameObject::GameObject()
     : mName("Unknown")
+    , mToBeDestroyed(false)
 {
     memset(mServiceSubscriptions, 0, kNumServices);
 }
@@ -42,6 +43,7 @@ GameObject::GameObject()
 
 GameObject::GameObject(const char* name)
     : mName(name)
+    , mToBeDestroyed(false)
 {
 }
 
@@ -156,6 +158,7 @@ bool GameObject::Deserialize(SerialReader& reader)
             // If it doesn't exist, create it
             const MetaClass* compMetaClass = MetaDB::GetMetaClass(compMetaClassName.c_str());
             component = static_cast<Component*>(compMetaClass->Create());
+            component->mpGameObject = this;
             isNewComponent = true;
         }
 

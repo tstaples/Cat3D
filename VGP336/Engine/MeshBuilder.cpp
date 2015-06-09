@@ -429,7 +429,7 @@ void MeshBuilder::CreateTorus(Mesh& mesh, f32 radius, f32 ringRadius, u32 sides,
 
 //----------------------------------------------------------------------------------------------------
 
-void MeshBuilder::CreateTerrain(Mesh& mesh, const Heightmap& heightmap, f32 maxHeight)
+void MeshBuilder::CreateTerrain(Mesh& mesh, const Math::Vector3& pos, const Heightmap& heightmap, f32 maxHeight)
 {
 	const u32 kColumns = heightmap.GetColumns();
 	const u32 kRows = heightmap.GetRows();
@@ -452,7 +452,7 @@ void MeshBuilder::CreateTerrain(Mesh& mesh, const Heightmap& heightmap, f32 maxH
 			const f32 u = (f32)x / (kColumns - 1.0f);
 			const f32 v = (f32)(kRows - z - 1) / (kRows - 1.0f);
 
-			vertex.position = Math::Vector3((f32)x, height,(f32)z);
+			vertex.position = pos + Math::Vector3((f32)x, height,(f32)z);
 			vertex.normal =	Math::Vector3(0.0f, 1.0f, 0.0f);
 			vertex.tangent = Math::Vector3(1.0f, 0.0f, 0.0f);
 			vertex.color = Color::White();

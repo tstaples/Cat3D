@@ -1,0 +1,39 @@
+{
+    "Components" : [
+        {
+            "Name" : "TransformComponent",
+            "Properties" : [
+                {
+                    "Name" : "Position",
+                    "Data" : [ 0.0, 0.0, 0.0 ]
+                },
+                {
+                    "Name" : "Rotation",
+                    "Data" : [ 0.0, 0.0, 0.0 ]
+                },
+                {
+                    "Name" : "Scale",
+                    "Data" : [ 1.0, 1.0, 1.0 ]
+                }
+            ]
+        },
+        { 
+            "Name" : "MeshComponent",
+            "Properties" : [
+                {
+                    "Name" : "Filter",
+                    "Data" : [ 2 ]
+                }
+            ]
+        },
+        { 
+            "Name" : "MeshRendererComponent",
+            "Properties" : [
+                {
+                    "Name" : "TexturePath",
+                    "Data" : [ "../Engine/Images/default.png" ]
+                }
+            ]
+        }
+    ]
+}

@@ -159,7 +159,7 @@ void TestApp::SkinModel()
                 newVertices[j].texcoord = vertices[j].texcoord;
             }
             // Send the new vertex data to the GPU
-            mModel.mMeshBuffers[i]->UpdateBuffer(mGraphicsSystem, newVertices, vertexCount);
+            mModel.mMeshBuffers[i]->UpdateBuffer(mGraphicsSystem, newVertices, vertexCount, mesh->GetIndices(), mesh->GetIndexCount());
             SafeDeleteArray(newVertices);
         }
     }

@@ -16,8 +16,15 @@ MeshComponent::MeshComponent()
     : mFilter(eFilters::Cube)
     , mFilterModified(false)
 {
-    // Default to cube
-    MeshBuilder::CreateCube(mMesh);
+    mMeshPaths = 
+    {
+        "../Data/Models/cube.catm",
+        "../Data/Models/plane.catm",
+        "../Data/Models/sphere.catm",
+        "../Data/Models/cylinder.catm",
+        "../Data/Models/torus.catm",
+        "../Data/Models/cone.catm",
+    };
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -27,37 +34,4 @@ MeshComponent::~MeshComponent()
     // TODO: have this managed by some system
     mMesh.Destroy();
     mMeshBuffer.Terminate();
-}
-
-//----------------------------------------------------------------------------------------------------
-
-void MeshComponent::Update(f32 deltaTime)
-{
-    if (IsDirty())
-    {
-        mMesh.Destroy();
-        switch (mFilter)
-        {
-        case MeshComponent::Cube:
-            MeshBuilder::CreateCube(mMesh);
-            break;
-        case MeshComponent::Quad:
-            MeshBuilder::CreateQuad(mMesh);
-            break;
-        case MeshComponent::Sphere:
-            MeshBuilder::CreateSphere(mMesh, 20u, 20u);
-            break;
-        case MeshComponent::Cylinder:
-            MeshBuilder::CreateCylinder(mMesh, 1.0f, 20u, 20u);
-            break;
-        case MeshComponent::Torus:
-            MeshBuilder::CreateTorus(mMesh, 5.0f, 3.0f, 20u, 20u);
-            break;
-        default:
-            // TODO: support custom
-            //MeshBuilder::GenerateMesh(mMesh, mMesh.GetVertices(), mMesh.GetVertexCount(), mMesh.GetIndices(), mMesh.GetIndexCount());
-            break;
-        }
-        mFilterModified = true;
-    }
 }

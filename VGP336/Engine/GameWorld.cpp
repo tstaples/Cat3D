@@ -13,6 +13,21 @@
 #include "Application.h"
 #include "SerialReader.h"
 
+namespace
+{
+    f32 kTimer = 0.0f;
+
+    void DestroyGameObjectList(GameObjectHandles& handles, GameObjectFactory& factory)
+    {
+        const u32 size = handles.size();
+        for (u32 i=0; i < size; ++i)
+        {
+            factory.Destroy(handles[i]);
+        }
+        handles.clear();
+    }
+}
+
 //====================================================================================================
 // local Definitions
 //====================================================================================================
@@ -22,6 +37,9 @@ GameWorld::GameWorld(Application* app, u16 maxObjects)
     , mGameObjectPool(maxObjects)
     , mFactory(mGameObjectPool)
 {
+    mCurrentLevel.buffer = nullptr;
+    mCurrentLevel.bufferSize = 0;
+    mCurrentLevel.numGameObjects = 0;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -34,18 +52,31 @@ GameWorld::~GameWorld()
 
 bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, Camera& camera)
 {
+    mpGraphicsSystem = &gs;
     mSettings = settings;
 
+    mAssetLoader.Initialize(gs);
+    mTextureManager.Initialize(gs);
+
+    Math::AABB worldRegion(Math::Vector3::Zero(), Math::Vector3(100.0f, 100.0f, 100.0f));
+
     // Init services
-    mRenderService.Initialize(gs, camera);
+    Service::spGameWorld = this; // Set the world
+    mRenderService.Initialize(gs, camera, mAssetLoader);
+    mPhysicsService.Initialize(worldRegion, 10);
+    mTerrainService.Initialize(gs, camera, mTextureManager);
 
     // Store all our services in a list to pass to the GameObjectFactory
-    Services services =
-    {
-        &mRenderService
-    };
-    mFactory.Initialize(services, *this);
+    mServiceList.push_back(&mRenderService);
+    mServiceList.push_back(&mPhysicsService);
+    mServiceList.push_back(&mTerrainService);
+
+    mFactory.Initialize(mServiceList, *this);
     mFactory.OnDestroyGameObject = DELEGATE(&GameWorld::OnGameObjectDestroyed, this);
+
+
+    //GameObjectHandle handle = mFactory.Create("../Data/GameObjects/defaultTerrain.json");
+    //mUpdateList.push_back(handle);
     return true;
 }
 
@@ -53,9 +84,19 @@ bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, C
 
 bool GameWorld::OnShutdown()
 {
-    mRenderService.Terminate();
+    // Unsubscribe and terminate services
+    for (Service* service : mServiceList)
+    {
+        service->Terminate();
+    }
+
+    // Manually destroy all game objects to ensure resources are freed properly
+    DestroyGameObjectList(mUpdateList, mFactory);
+    DestroyGameObjectList(mDestroyedList, mFactory);
+
+    mTextureManager.Terminate();
+    mAssetLoader.Terminate();
     mFactory.Terminate();
-    mGameObjectHandles.clear();
     mGameObjectPool.Flush();
     return true;
 }
@@ -73,19 +114,53 @@ bool GameWorld::OnInput()
 void GameWorld::OnUpdate(f32 deltaTime)
 {
     // Update all the game objects
-    for (GameObjectHandle& handle : mGameObjectHandles)
+    // Recompute size each time to account for new objects that may be added
+    for (u32 i=0; i < mUpdateList.size(); ++i)
     {
+        GameObjectHandle handle = mUpdateList[i];
         GameObject* gameObject = handle.Get();
-        gameObject->Update(deltaTime);
+        if (gameObject->IsValid())
+        {
+            gameObject->Update(deltaTime);
+        }
     }
 
-    // TODO: Update other services
+    // Prune the destroyed objects
+    for (GameObjectHandle& handle : mDestroyedList)
+    {
+        // Terminate the gameObject
+
+        // Find the handle in the update list
+        const u32 numUpdate = mUpdateList.size();
+        for (u32 i=0; i < numUpdate; ++i)
+        {
+            if (handle == mUpdateList[i])
+            {
+                // Remove from the update list
+                mUpdateList[i] = mUpdateList.back();
+                mUpdateList.pop_back();
+                
+                // Destroy the object
+                mFactory.Destroy(handle);
+                break;
+            }
+        }
+    }
+    mDestroyedList.clear();
+
+    //kTimer += deltaTime;
+    //if (kTimer >= mSettings.timeStep)
+    //{
+        mPhysicsService.Update(deltaTime);
+        //kTimer -= mSettings.timeStep;
+    //}
 }
 
 //----------------------------------------------------------------------------------------------------
 
 void GameWorld::OnRender()
 {
+    mTerrainService.Update();
     mRenderService.Update();
 }
 
@@ -97,6 +172,10 @@ GameObjectHandle GameWorld::CreateGameObject(const char* templateFile, Math::Vec
     // Note: For now we're assuming all GameObjects have a transform component
     const char* templatePath = (templateFile) ? templateFile : "../Data/GameObjects/default.json";
     GameObjectHandle handle = mFactory.Create(templatePath);
+    if (!handle.IsValid())
+    {
+        return handle;
+    }
 
     GameObject* gameObject = handle.Get();
     TransformComponent* transformComponent = nullptr;
@@ -107,7 +186,7 @@ GameObjectHandle GameWorld::CreateGameObject(const char* templateFile, Math::Vec
     }
 
     // Add the object to the world
-    mGameObjectHandles.push_back(handle);
+    mUpdateList.push_back(handle);
     return handle;
 }
 
@@ -116,9 +195,7 @@ GameObjectHandle GameWorld::CreateGameObject(const char* templateFile, Math::Vec
 bool GameWorld::NewLevel(const char* levelName)
 {
     // Clear current level data
-    mRenderService.UnSubscribeAll();
-    mGameObjectHandles.clear();
-    mGameObjectPool.Flush();
+    ClearCurrentLevel();
 
     // Reset the current level data
     mCurrentLevel.path = levelName;
@@ -133,9 +210,7 @@ bool GameWorld::NewLevel(const char* levelName)
 bool GameWorld::LoadLevel(const char* levelName)
 {
     // Clear current level data
-    mRenderService.UnSubscribeAll();
-    mGameObjectHandles.clear();
-    mGameObjectPool.Flush();
+    ClearCurrentLevel();
 
     // 1 level = 1 file for now
     // level loader will give us a vector of Level objects containing the buffers for each gameobject and the game settings
@@ -155,7 +230,7 @@ bool GameWorld::LoadLevel(const char* levelName)
             {
                 return false;
             }
-            mGameObjectHandles.push_back(handle);
+            mUpdateList.push_back(handle);
         }
         // Set the current level now that everything has loaded successfully
         mCurrentLevel = level;
@@ -166,9 +241,40 @@ bool GameWorld::LoadLevel(const char* levelName)
 
 //----------------------------------------------------------------------------------------------------
 
+bool GameWorld::ReLoadCurrentLevel()
+{
+    // Clear current level data
+    ClearCurrentLevel();
+
+    if (mLevelLoader.LoadLocal(mCurrentLevel))
+    {
+        for (u32 i=0; i < mCurrentLevel.numGameObjects; ++i)
+        {
+            SerialReader reader(mCurrentLevel.buffer, mCurrentLevel.bufferSize);
+            GameObjectHandle handle = mFactory.Create(reader);
+            if (!handle.IsValid())
+            {
+                return false;
+            }
+            mUpdateList.push_back(handle);
+        }
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
 bool GameWorld::SaveLevel(const char* levelName)
 {
-    return mLevelLoader.SaveToFile(levelName, mGameObjectHandles, mSettings);
+    return mLevelLoader.SaveToFile(levelName, mUpdateList, mSettings);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool GameWorld::SaveLevelToMemory()
+{
+    return mLevelLoader.SaveLocal(mUpdateList, mSettings);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -187,35 +293,37 @@ s32 GameWorld::GetScreenHeight() const
 
 //----------------------------------------------------------------------------------------------------
 
+void GameWorld::ClearCurrentLevel()
+{
+    for (Service* service : mServiceList)
+    {
+        service->UnSubscribeAll();
+    }
+    mUpdateList.clear();
+    mDestroyedList.clear(); // just in case
+    mGameObjectPool.Flush();
+}
+
+//----------------------------------------------------------------------------------------------------
+
 bool GameWorld::OnGameObjectDestroyed(GameObjectHandle handle)
 {
-    auto it = std::find(mGameObjectHandles.begin(), mGameObjectHandles.end(), handle);
+    if (!handle.IsValid())
+    {
+        return false;
+    }
+
+    // Flag for destruction
+    //GameObject* gameObject = handle.Get();
+    //gameObject->mToBeDestroyed = true;
+    //mDestroyedList.push_back(handle);
+    //return true;
+
+    auto it = std::find(mUpdateList.begin(), mUpdateList.end(), handle);
     if (&it != nullptr)
     {
-        mGameObjectHandles.erase(it);
+        mUpdateList.erase(it);
         return true;
     }
     return false;
 }
-
-/*
-    Editor::OnPlay()
-    - save current scene and store away
-    - set isPlaying true
-        GameWorld::OnPlay()
-        - load startup scene (from settings)
-        - add physics and scripting services to update list
-
-    Editor::Update()
-        GameWorld::Update()
-        - update scene
-            - update gameobjects
-        - update services in service list
-    - if (IsPlaying)
-
-
-    GameWorld::OnPauseBegin()
-    - remove physics and script services from update list
-
-
-*/

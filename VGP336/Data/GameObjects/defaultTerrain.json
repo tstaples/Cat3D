@@ -1,0 +1,42 @@
+{
+    "Components" : [
+        {
+            "Name" : "TransformComponent",
+            "Properties" : [
+                {
+                    "Name" : "Position",
+                    "Data" : [ 0.0, 0.0, 0.0 ]
+                },
+                {
+                    "Name" : "Rotation",
+                    "Data" : [ 0.0, 0.0, 0.0 ]
+                },
+                {
+                    "Name" : "Scale",
+                    "Data" : [ 1.0, 1.0, 1.0 ]
+                }
+            ]
+        },
+		{
+			"Name" : "TerrainComponent",
+			"Properties" : [
+				{
+					"Name" : "Width",
+					"Data" : [ 256 ]
+				},
+				{
+					"Name" : "Length",
+					"Data" : [ 256 ]
+				},
+				{
+					"Name" : "MaxHeight",
+					"Data" : [ 30.0 ]
+				},
+				{
+					"Name" : "HeightmapPath",
+					"Data" : [ "../Data/Heightmaps/default_heightmap.raw" ]
+				}
+			]
+		}
+    ]
+}

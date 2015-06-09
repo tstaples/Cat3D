@@ -34,6 +34,7 @@ META_CLASS_END
 RenderService::RenderService()
     : Service("RenderService", kID)
     , mpGraphicsSystem(nullptr)
+    , mAssetLoader(nullptr)
 {
 }
 
@@ -45,18 +46,21 @@ RenderService::~RenderService()
 
 //----------------------------------------------------------------------------------------------------
 
-void RenderService::Initialize(GraphicsSystem& graphicsSystem, Camera& camera)
+void RenderService::Initialize(GraphicsSystem& graphicsSystem, Camera& camera, AssetLoader& assetLoader)
 {
     mpGraphicsSystem = &graphicsSystem;
 
     mRenderer.Initialize(*mpGraphicsSystem);
     mRenderer.SetCamera(camera);
+
+    mAssetLoader = &assetLoader;
 }
 
 //----------------------------------------------------------------------------------------------------
 
 void RenderService::Terminate()
 {
+    Service::Terminate();
     mpGraphicsSystem = nullptr;
     mRenderer.Terminate();
 }
@@ -74,31 +78,25 @@ void RenderService::Update()
         MeshComponent* meshComponent = nullptr;
         MeshRendererComponent* meshRendererComponent = nullptr;
 
+        // Get the needed components
         gameObject->GetComponent(transformComponent);
         gameObject->GetComponent(meshComponent);
-        if (gameObject->FindComponent(meshRendererComponent))
-        {
-            // Destroy old texture and load new one
-            Texture& texture = meshRendererComponent->GetTexture();
-            std::wstring texturePath = IO::CharToWChar(meshRendererComponent->GetTexturePath());
-            texture.Terminate();
-            texture.Initialize(*mpGraphicsSystem, texturePath.c_str());
-            mRenderer.SetTexture(texture);
-        }
-
-        MeshBuffer& meshBuffer = meshComponent->GetMeshBuffer();
-        Math::Matrix transform = transformComponent->GetTransform();
+        bool hasMeshRenderer = gameObject->FindComponent(meshRendererComponent); // Not a dependency
 
         // Check if the component was modified
         if (meshComponent->IsDirty())
         {
-            Mesh& mesh = meshComponent->GetMesh();
-
-            // Recreate the mesh buffer
-            meshBuffer.Terminate();
-            meshBuffer.Initialize(*mpGraphicsSystem, mesh.GetVertexFormat(), mesh);
-            meshComponent->mFilterModified = false;
+            VERIFY(LoadMesh(meshComponent, meshRendererComponent), "[RenderService] Failed to load mesh");
         }
+        else if (hasMeshRenderer && meshRendererComponent->IsDirty())
+        {
+            // Load new texture
+            LoadTexture(meshRendererComponent);
+        }
+
+        // Render the mesh
+        MeshBuffer& meshBuffer = meshComponent->GetMeshBuffer();
+        Math::Matrix transform = transformComponent->GetTransform();
         mRenderer.Render(meshBuffer, transform);
 
         // Temp: uncheck flag here until a more suitable location is found
@@ -121,22 +119,17 @@ bool RenderService::OnSubscribe(GameObjectHandle handle)
     {
         return false;
     }
+    bool hasMeshRenderer = gameObject->FindComponent(meshRendererComponent);
 
     // Init the mesh buffer
     Mesh& mesh = meshComponent->GetMesh();
     MeshBuffer& meshBuffer = meshComponent->GetMeshBuffer();
-    meshBuffer.Initialize(*mpGraphicsSystem, mesh.GetVertexFormat(), mesh);
-
-    // MeshRenderer is not a dependency, so allow it to not exist
-    if (gameObject->FindComponent(meshRendererComponent))
+    if (LoadMesh(meshComponent, meshRendererComponent))
     {
-        // Init and set the texture
-        Texture& texture = meshRendererComponent->GetTexture();
-        std::wstring texturePath = IO::CharToWChar(meshRendererComponent->GetTexturePath());
-        texture.Initialize(*mpGraphicsSystem, texturePath.c_str()); 
-        mRenderer.SetTexture(texture);
+       return true;
     }
-    return true;
+    ASSERT(false, "[RenderService] Failed to load mesh");
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -144,4 +137,53 @@ bool RenderService::OnSubscribe(GameObjectHandle handle)
 void RenderService::SetCamera(Camera& camera)
 {
     mRenderer.SetCamera(camera);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool RenderService::LoadMesh(MeshComponent* meshComponent, MeshRendererComponent* meshRendererComponent)
+{
+    bool hasMeshRenderer = (meshRendererComponent != nullptr);
+
+    MeshBuffer& meshBuffer = meshComponent->GetMeshBuffer();
+    Mesh& mesh = meshComponent->GetMesh();
+
+    std::wstring meshPath = IO::CharToWChar(meshComponent->GetCurrentMeshPath());
+    std::vector<Texture*> textures;
+
+    // Load the mesh
+    if (mAssetLoader->LoadMesh(meshPath.c_str(), mesh, meshBuffer, textures))
+    {
+        // Recreate the mesh buffer
+        meshBuffer.Terminate();
+        meshBuffer.Initialize(*mpGraphicsSystem, mesh.GetVertexFormat(), mesh);
+
+        // Assign the textures to the mesh renderer if we have one
+        if (hasMeshRenderer)
+        {
+            if (textures.size() > 0)
+            {
+                // Will hopefully support multiple textures one day
+                meshRendererComponent->mTexture = *textures.front();
+                meshRendererComponent->mTexturePath = ""; // TODO: store path when loading texture from asset loader
+            }
+            LoadTexture(meshRendererComponent);
+        }
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+bool RenderService::LoadTexture(MeshRendererComponent* meshRendererComponent)
+{
+    // Init and set the texture
+    Texture& texture = meshRendererComponent->GetTexture();
+    std::wstring texturePath = IO::CharToWChar(meshRendererComponent->GetTexturePath());
+
+    texture.Terminate(); // Release any existing texture
+    texture.Initialize(*mpGraphicsSystem, texturePath.c_str()); 
+    mRenderer.SetTexture(texture);
+    return true;
 }

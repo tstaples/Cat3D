@@ -4,13 +4,16 @@
 //====================================================================================================
 
 #include "Precompiled.h"
-#include "MemoryPool.h"
 #include "Service.h"
+
+#include "GameWorld.h"
+#include "MemoryPool.h"
 
 //====================================================================================================
 // Class Definitions
 //====================================================================================================
 
+GameWorld* Service::spGameWorld = nullptr;
 
 Service::Service(const char* name, u16 id)
     : mName(name)
@@ -60,7 +63,6 @@ void Service::UnSubscribe(GameObjectHandle handle)
             break;
         }
     }
-    ASSERT(found, "[Service] Cannot unsubscribe from service the object is not subscribed to");
 }
 
 // ---------------------------------------------------------------------------------------------------
@@ -68,4 +70,11 @@ void Service::UnSubscribe(GameObjectHandle handle)
 void Service::UnSubscribeAll()
 {
     mSubscribers.clear();
+}
+
+// ---------------------------------------------------------------------------------------------------
+
+void Service::Terminate()
+{
+    UnSubscribeAll();
 }
