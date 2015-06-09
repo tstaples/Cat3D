@@ -16,10 +16,11 @@ namespace Editor
         public static string[] FilterNames =
         {
             "Cube",
-            "Quad",
+            "Plane",
             "Sphere",
             "Cylinder",
-            "Torus"
+            "Torus",
+            "Cone"
         };
 
         #region accessors

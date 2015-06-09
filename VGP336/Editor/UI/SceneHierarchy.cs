@@ -23,8 +23,11 @@ namespace Editor
 
         public void Clear()
         {
-            Tree.Nodes.Clear();
-            GameObjects.Clear();
+            if (Tree.Nodes.Count > 0)
+            {
+                Tree.Nodes.Clear();
+                GameObjects.Clear();
+            }
         }
 
         public void ClearSelection()

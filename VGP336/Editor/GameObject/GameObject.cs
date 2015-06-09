@@ -154,6 +154,17 @@ namespace Editor
             }
             return buffer;
         }
+        public bool HasComponent(string name)
+        {
+            foreach (Component c in components)
+            {
+                if (name == c.Name)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         private static Component CreateComponentFromName(string name)
         {
             Component component = null;

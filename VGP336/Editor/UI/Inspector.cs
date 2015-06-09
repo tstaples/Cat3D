@@ -104,6 +104,13 @@ namespace Editor
             // See if there is anything selected to add a component to
             if (IsAnObjectSelected())
             {
+                // For now we'll assume no duplicates are allowed
+                if (currentGameObject.HasComponent(name))
+                {
+                    MessageBox.Show("GameObject already contains this component.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+
                 NativeTypes.Handle handle = currentGameObject.handle.ToNativeHandle();
                 if (NativeMethods.AddComponent(handle, name) != 0)
                 {

@@ -30,14 +30,14 @@ META_CLASS_END
 
 namespace
 {
-    void InitTerrain(TerrainComponent* terrainComponent, GraphicsSystem& gs)
+    void InitTerrain(TerrainComponent* terrainComponent, Math::Vector3 pos, GraphicsSystem& gs)
     {
         const char* heightMapPath = terrainComponent->GetHeightmapPath();
         const u32 width = terrainComponent->GetWidth();
         const u32 length = terrainComponent->GetLength();
         const f32 maxheight = terrainComponent->GetMaxHeight();
         Terrain& terrain = terrainComponent->GetTerrain();
-        terrain.Initialize(gs, heightMapPath, width, length, maxheight);
+        terrain.Initialize(gs, heightMapPath, width, length, maxheight, pos);
     }
 }
 
@@ -81,7 +81,9 @@ void TerrainService::Update()
     {
         GameObject* gameObject = it->Get();
 
+        TransformComponent* transformComponent = nullptr;
         TerrainComponent* terrainComponent = nullptr;
+        gameObject->GetComponent(transformComponent);
         gameObject->GetComponent(terrainComponent);
 
         if (terrainComponent->IsDirty())
@@ -89,7 +91,7 @@ void TerrainService::Update()
             // Re-create the terrain with the desired settings
             Terrain& terrain = terrainComponent->mTerrain;
             terrain.Terminate();
-            InitTerrain(terrainComponent, *mpGraphicsSystem);
+            InitTerrain(terrainComponent, transformComponent->GetPosition(), *mpGraphicsSystem);
             
             terrain.SetCamera(*mpCamera);
 
@@ -107,7 +109,7 @@ void TerrainService::Update()
         }
 
         // Render the terrain
-        terrainComponent->mTerrain.Render();
+        terrainComponent->mTerrain.Render(transformComponent->GetTransform());
     }
 }
 
@@ -118,11 +120,13 @@ bool TerrainService::OnSubscribe(GameObjectHandle handle)
     GameObject* gameObject = handle.Get();
 
     // TODO: set position based on transform component
+    TransformComponent* transformComponent = nullptr;
     TerrainComponent* terrainComponent = nullptr;
+    gameObject->GetComponent(transformComponent);
     gameObject->GetComponent(terrainComponent);
 
     // Init the terrain
-    InitTerrain(terrainComponent, *mpGraphicsSystem);
+    InitTerrain(terrainComponent, transformComponent->GetPosition(), *mpGraphicsSystem);
 
     // Set the camera
     ASSERT(mpCamera != nullptr, "[TerrainService] Camera not initialized");

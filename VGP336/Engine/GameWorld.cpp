@@ -172,6 +172,10 @@ GameObjectHandle GameWorld::CreateGameObject(const char* templateFile, Math::Vec
     // Note: For now we're assuming all GameObjects have a transform component
     const char* templatePath = (templateFile) ? templateFile : "../Data/GameObjects/default.json";
     GameObjectHandle handle = mFactory.Create(templatePath);
+    if (!handle.IsValid())
+    {
+        return handle;
+    }
 
     GameObject* gameObject = handle.Get();
     TransformComponent* transformComponent = nullptr;

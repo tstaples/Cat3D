@@ -98,6 +98,7 @@ namespace Editor
             // Create the timer for updating the game when it is being played
             updateTimer = new System.Timers.Timer(interval);
             updateTimer.Elapsed += OnIdle;
+            updateTimer.Enabled = false;
             gameState = GameState.Stopped;
         }
         private void Terminate()

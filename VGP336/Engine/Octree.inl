@@ -101,7 +101,8 @@ inline Octree<T>::Octree(const Math::AABB& octRegion, Objects& objects, u32 maxE
 template <typename T>
 inline Octree<T>::~Octree()
 {
-    Destroy();
+    ASSERT(mActiveChildren == 0 && mObjects.empty(), "[Ocree] Tree was not properly destroyed");
+    //Destroy();
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -145,7 +146,7 @@ inline void Octree<T>::Insert(T& object, const Math::AABB& region, s32 depth)
                 if (mpChildren[index] == nullptr)
                 {
                     // Create a new child if it doesn't exist already
-                    mpChildren[index] = new Octree(octants[index], std::move(*objectIter.first), objectIter.second);
+                    mpChildren[index] = new Octree(octants[index], *objectIter.first, objectIter.second);
                     mActiveChildren |= index; // Set the flag for the new child
                 }
                 else
@@ -191,7 +192,13 @@ inline void Octree<T>::Destroy()
 {
     for (u32 i=0; i < kNumChildren; ++i)
     {
-        SafeDelete(mpChildren[i]);
+        // Destroy children recursively
+        Octree* child = mpChildren[i];
+        if (child)
+        {
+            child->Destroy();
+            SafeDelete(mpChildren[i]);
+        }
     }
     mObjects.clear();
     mActiveChildren = 0;

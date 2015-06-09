@@ -44,7 +44,7 @@ public:
 	static void CreateTorus(Mesh& mesh, f32 radius, f32 ringRadius, u32 sides, u32 rings);
 
 	// Function to create a terrain based on a heightmap
-	static void CreateTerrain(Mesh& mesh, const Heightmap& heightmap, f32 maxHeight);
+	static void CreateTerrain(Mesh& mesh, const Math::Vector3& pos, const Heightmap& heightmap, f32 maxHeight);
 };
 
 #endif // #ifndef INCLUDED_ENGINE_MESHBUILDER_H

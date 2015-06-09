@@ -55,7 +55,7 @@ public:
 	~Terrain();
 
     // width & length are dimensions of the heightmap file
-	void Initialize(GraphicsSystem& gs, const char* pFilename, u32 width, u32 length, f32 maxHeight);
+	void Initialize(GraphicsSystem& gs, const char* pFilename, u32 width, u32 length, f32 maxHeight, const Math::Vector3& pos);
 	void Terminate();
 
 	void SetCamera(Camera& camera);
@@ -64,7 +64,7 @@ public:
 
 	f32 GetHeight(const Math::Vector3& position);
 
-	void Render();
+	void Render(const Math::Matrix& transform);
 
 private:
 	NONCOPYABLE(Terrain);
@@ -74,6 +74,7 @@ private:
 	struct CBuffer
 	{
 		XMMATRIX matWVP;
+		//XMMATRIX matWorld;
 		XMVECTOR layer[kMaxTerrainLayers];
 	};
 

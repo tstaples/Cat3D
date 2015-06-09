@@ -51,7 +51,7 @@ Terrain::~Terrain()
 
 //----------------------------------------------------------------------------------------------------
 
-void Terrain::Initialize(GraphicsSystem& gs, const char* pFilename, u32 width, u32 length, f32 maxHeight)
+void Terrain::Initialize(GraphicsSystem& gs, const char* pFilename, u32 width, u32 length, f32 maxHeight, const Math::Vector3& pos)
 {
 	ASSERT(!mInitialized, "[Terrain] Already initialized!");
 
@@ -64,7 +64,7 @@ void Terrain::Initialize(GraphicsSystem& gs, const char* pFilename, u32 width, u
 	mPixelShader.Initialize(gs, L"../Engine/Shaders/Terrain.fx", "PS", "ps_4_0");
 
 	mHeightmap.GenerateFromRAW(pFilename, width, length);
-	MeshBuilder::CreateTerrain(mTerrainMesh, mHeightmap, maxHeight);
+	MeshBuilder::CreateTerrain(mTerrainMesh, pos, mHeightmap, maxHeight);
 	mTerrain.Initialize(gs, vertexFormat, mTerrainMesh);
 
 	mSampler.Initialize(gs, Sampler::Anisotropic, Sampler::Wrap);
@@ -181,15 +181,17 @@ f32 Terrain::GetHeight(const Math::Vector3& position)
 
 //----------------------------------------------------------------------------------------------------
 
-void Terrain::Render()
+void Terrain::Render(const Math::Matrix& transform)
 {
 	ASSERT(mpCamera != nullptr , "[Terrain] No camera set!");
 	ASSERT(mpTerrainLayers[0] != nullptr, "[Terrain] At least one layer must be set!");
 
+	//XMMATRIX matWorld = *(XMMATRIX*)&transform;
 	XMMATRIX matView = *(XMMATRIX*)&mpCamera->GetViewMatrix();
 	XMMATRIX matProj = *(XMMATRIX*)&mpCamera->GetProjectionMatrix();
 
 	CBuffer cb;
+    //cb.matWorld = XMMatrixTranspose(matWorld);
 	cb.matWVP = XMMatrixTranspose(matView * matProj);
 	for (u32 i = 0; i < kMaxTerrainLayers; ++i)
 	{

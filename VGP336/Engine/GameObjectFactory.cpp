@@ -159,9 +159,11 @@ GameObjectHandle GameObjectFactory::Create(const char* templateFile)
     Json::Reader reader;
     if (!reader.parse(data, root))
     {
+        data.close();
         OutputDebugStringA(reader.getFormattedErrorMessages().c_str());
         return handle;
     }
+    data.close();
 
     // We have data, so allocate space for the object
     handle = mGameObjectPool.Allocate();
