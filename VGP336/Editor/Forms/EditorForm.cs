@@ -364,42 +364,5 @@ namespace Editor
             }
         }
         #endregion Play in editor
-
-        //private void tabControl1_DrawItem(object sender, DrawItemEventArgs e)
-        //{
-
-        //}
-        //private void OnDrawTabControl(object sender, DrawItemEventArgs e)
-        //{
-        //    Color bg = Color.FromArgb(0, 64, 64, 64);
-        //    // fill in the whole rect
-        //    SolidBrush br = new SolidBrush(Color.Red);
-        //    e.Graphics.FillRectangle(br, ClientRectangle);
-
-        //    // draw the tabs
-        //    for (int i = 0; i < SceneHierarchyTabControl.TabPages.Count; ++i)
-        //    {
-        //        TabPage tab = SceneHierarchyTabControl.TabPages[i];
-        //        // Get the text area of the current tab
-        //        RectangleF tabTextArea = (RectangleF)SceneHierarchyTabControl.GetTabRect(i);
-
-        //        // determine how to draw the tab based on which type of tab it is
-        //        // draw the background
-        //        e.Graphics.FillRectangle(br, tabTextArea); 
-
-        //        // draw the tab header text
-        //        SolidBrush brush = new SolidBrush(Color.WhiteSmoke);
-        //        e.Graphics.DrawString(tab.Text, Font, brush, CreateTabHeaderTextRect(tabTextArea));
-        //    }
-        //}
-        //private RectangleF CreateTabHeaderTextRect(RectangleF tabTextArea)
-        //{
-        //    tabTextArea.X += 3;
-        //    tabTextArea.Y += 1;
-
-        //    tabTextArea.Height -= 1;
-
-        //    return tabTextArea;
-        //}
     }
 }

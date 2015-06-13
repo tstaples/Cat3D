@@ -74,7 +74,6 @@ private:
 	struct CBuffer
 	{
 		XMMATRIX matWVP;
-		//XMMATRIX matWorld;
 		XMVECTOR layer[kMaxTerrainLayers];
 	};
 

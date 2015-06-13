@@ -186,13 +186,12 @@ void Terrain::Render(const Math::Matrix& transform)
 	ASSERT(mpCamera != nullptr , "[Terrain] No camera set!");
 	ASSERT(mpTerrainLayers[0] != nullptr, "[Terrain] At least one layer must be set!");
 
-	//XMMATRIX matWorld = *(XMMATRIX*)&transform;
+	XMMATRIX matWorld = *(XMMATRIX*)&transform;
 	XMMATRIX matView = *(XMMATRIX*)&mpCamera->GetViewMatrix();
 	XMMATRIX matProj = *(XMMATRIX*)&mpCamera->GetProjectionMatrix();
 
 	CBuffer cb;
-    //cb.matWorld = XMMatrixTranspose(matWorld);
-	cb.matWVP = XMMatrixTranspose(matView * matProj);
+	cb.matWVP = XMMatrixTranspose(matWorld * matView * matProj);
 	for (u32 i = 0; i < kMaxTerrainLayers; ++i)
 	{
 		if (mpTerrainLayers[i] != nullptr)

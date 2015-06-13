@@ -452,7 +452,11 @@ void MeshBuilder::CreateTerrain(Mesh& mesh, const Math::Vector3& pos, const Heig
 			const f32 u = (f32)x / (kColumns - 1.0f);
 			const f32 v = (f32)(kRows - z - 1) / (kRows - 1.0f);
 
-			vertex.position = pos + Math::Vector3((f32)x, height,(f32)z);
+            const f32 halfWidth = (f32)kColumns * 0.5f;
+            const f32 halfLength = (f32)kRows * 0.5f;
+            Math::Vector3 offset(halfWidth, 0.0f, halfLength);
+
+			vertex.position = Math::Vector3((f32)x, height,(f32)z) - offset;
 			vertex.normal =	Math::Vector3(0.0f, 1.0f, 0.0f);
 			vertex.tangent = Math::Vector3(1.0f, 0.0f, 0.0f);
 			vertex.color = Color::White();

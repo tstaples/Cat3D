@@ -86,25 +86,32 @@ void TerrainService::Update()
         gameObject->GetComponent(transformComponent);
         gameObject->GetComponent(terrainComponent);
 
+        // Check if the component was modified
         if (terrainComponent->IsDirty())
         {
+            // Release the current terrain's texture
+            // TODO: loop through all layers
+            Terrain::Layer& layer0 = terrainComponent->mLayer0;
+            Texture* texture = mpTextureManager->GetResource(layer0.texturePath.c_str()); 
+            SafeRelease(texture);
+
             // Re-create the terrain with the desired settings
             Terrain& terrain = terrainComponent->mTerrain;
             terrain.Terminate();
             InitTerrain(terrainComponent, transformComponent->GetPosition(), *mpGraphicsSystem);
-            
             terrain.SetCamera(*mpCamera);
 
             // TODO: remove duplication of this once layers can be set properly
-            Terrain::Layer& layer0 = terrainComponent->mLayer0;
+            layer0 = terrainComponent->mLayer0;
             layer0.layerIndex = 0;
             layer0.frequency = 21.0f;
             layer0.minHeight = 0;
             layer0.maxHeight = 30;
             layer0.texturePath = "../Data/Images/grass.jpg";
-            Texture* texture = mpTextureManager->GetResource(layer0.texturePath.c_str()); 
+            texture = mpTextureManager->GetResource(layer0.texturePath.c_str()); 
             terrain.SetLayer(texture, layer0);
 
+            // All clean
             terrainComponent->SetIsDirty(false);
         }
 

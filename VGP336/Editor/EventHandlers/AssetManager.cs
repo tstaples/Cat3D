@@ -227,7 +227,7 @@ namespace Editor
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
             foreach (string file in files)
             {
-                string ext = Path.GetExtension(file);
+                string ext = Path.GetExtension(file).ToLower();
                 string filename = Path.GetFileNameWithoutExtension(file);
 
                 // TODO: regex match against all supported types
@@ -245,7 +245,16 @@ namespace Editor
                 else
                 {
                     // Preserve the extension
-                    File.Copy(file, destPath + Path.GetFileName(file));
+                    try
+                    {
+                        File.Copy(file, destPath + Path.GetFileName(file));
+                    } 
+                    catch (Exception exception)
+                    {
+                        DialogResult res = MessageBox.Show(exception.Message);
+                            //MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                        int i = 0;
+                    }
                 }
             }
             // Refresh asset view to show new items
