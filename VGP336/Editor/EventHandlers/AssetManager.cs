@@ -41,6 +41,8 @@ namespace Editor
         Dictionary<int, List<AssetItem>> assetMap;
         List<AssetItem> currentAssetItems;
 
+        private Process importerProcess;
+        private Timer importerTimer;
 
         public AssetManager(EditorForm owner)
         {
@@ -76,6 +78,10 @@ namespace Editor
             thumbnailSizeSlider.ValueChanged += OnThumbnailTrackbarValueChanged;
 
             assetMap = new Dictionary<int, List<AssetItem>>();
+
+            importerTimer = new Timer();
+            importerTimer.Interval = 100;
+            importerTimer.Tick += OnWaitForImporter;
         }
 
         public void Populate(string assetPath)
@@ -86,6 +92,7 @@ namespace Editor
 
             Traverse(assetPath, ref root);
             assetTreeView.Nodes.Add(root);
+            assetTreeView.SelectedNode = root;
             rootAssetPath = assetPath;
         }
         private void Traverse(string directory, ref TreeNode node)
@@ -111,6 +118,69 @@ namespace Editor
                 node.Nodes.Add(dirnode);
             }
         }
+        private void UpdateListView(string path)
+        {
+            // Clear the currently displayed items
+            assetListView.Items.Clear();
+            assetThumbnails.Images.Clear();
+
+            // Which thumbnail to use
+            int sizeIndex = (int)thumbnailState;
+
+            // Get the list of asset items associated with this path
+            int hash = path.GetHashCode();
+            currentAssetItems = assetMap[hash];
+
+            int imageIndex = 0;
+            foreach (AssetItem assetItem in currentAssetItems)
+            {
+                ListViewItem item = new ListViewItem();
+                item.Text = assetItem.filename;
+                item.ImageIndex = imageIndex++; // index corresponds to image list
+
+                assetThumbnails.Images.Add(assetItem.thumbnails[sizeIndex]);
+                assetListView.Items.Add(item);
+            }
+            assetListView.Refresh();
+        }
+        private void RefreshSelectedAssetDirectory()
+        {
+            string path = GetSelectedPath();
+            List<string> files = new List<string>(Directory.EnumerateFileSystemEntries(path));
+
+            // Reload the entire directory for now because i'm lazy
+            // TODO: only add the new items
+            int hash = path.GetHashCode();
+            assetMap[hash].Clear();
+            assetMap.Remove(hash);
+
+            // Re-discover all directories under the selected one
+            TreeNode node = assetTreeView.SelectedNode;
+            node.Nodes.Clear();
+            Traverse(path, ref node);
+            assetTreeView.SelectedNode = node;
+
+            // Update listview
+            UpdateListView(path);
+        }
+        private string GetSelectedPath()
+        {
+            string path = rootAssetPath; // default to root
+            if (assetTreeView.SelectedNode != null)
+            {
+                path = assetTreeView.SelectedNode.Name;
+            }
+            return path;
+        }
+        private void OnWaitForImporter(object sender, EventArgs e)
+        {
+            if (importerProcess.HasExited)
+            {
+                Console.LogInfo("AssetManager", "Importer finished with exited code: {0}", importerProcess.ExitCode);
+                RefreshSelectedAssetDirectory();
+                importerTimer.Stop();
+            }
+        }
 
         public void OnNodeClicked(object sender, TreeNodeMouseClickEventArgs e)
         {
@@ -127,24 +197,7 @@ namespace Editor
             }
             assetTreeView.SelectedNode = e.Node;
 
-            // Clear the currently displayed items
-            assetListView.Items.Clear();
-            assetThumbnails.Images.Clear();
-
-            int imageIndex = 0;
-            int sizeIndex = (int)thumbnailState;
-            string path = e.Node.Name;
-            int hash = path.GetHashCode();
-            currentAssetItems = assetMap[hash];
-            foreach (AssetItem assetItem in currentAssetItems)
-            {
-                ListViewItem item = new ListViewItem();
-                item.Text = assetItem.filename;
-                item.ImageIndex = imageIndex++; // index corresponds to image list
-
-                assetThumbnails.Images.Add(assetItem.thumbnails[sizeIndex]);
-                assetListView.Items.Add(item);
-            }
+            UpdateListView(e.Node.Name);
         }
         private void OnThumbnailTrackbarValueChanged(object sender, EventArgs e)
         {
@@ -221,8 +274,10 @@ namespace Editor
         }
         private void OnAssetListViewItemDrag(object sender, DragEventArgs e)
         {
-            string importerPath = "../Tools/Importer/Importer.exe";
-            string destPath = assetTreeView.SelectedNode.Name + "/";
+            // Must use full path because process doesn't like relative paths :/
+            string currentDirectory = Directory.GetCurrentDirectory();
+            string importerPath = currentDirectory + "/../Tools/Importer/Importer.exe";
+            string destPath = GetSelectedPath() + "/";
 
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
             foreach (string file in files)
@@ -231,33 +286,37 @@ namespace Editor
                 string filename = Path.GetFileNameWithoutExtension(file);
 
                 // TODO: regex match against all supported types
-                if (ext == "fbx" || ext == "x")
+                if (ext == ".fbx" || ext == ".x")
                 {
                     ProcessStartInfo startInfo = new ProcessStartInfo();
                     startInfo.CreateNoWindow = true;
                     startInfo.WorkingDirectory = Directory.GetCurrentDirectory();
+                    startInfo.FileName = importerPath;
                     startInfo.Arguments = file + " " + destPath + filename + ".catm";
 
-                    Process process = new Process();
-                    process.StartInfo = startInfo;
-                    process.Start();
+                    importerProcess = new Process();
+                    importerProcess.StartInfo = startInfo;
+                    importerProcess.Start();
+
+                    // Checks when the process has finished then refreshes the asset view
+                    importerTimer.Start();
                 }
-                else
+                else // Regular files
                 {
-                    // Preserve the extension
                     try
                     {
+                        // Preserve the extension
                         File.Copy(file, destPath + Path.GetFileName(file));
                     } 
                     catch (Exception exception)
                     {
                         DialogResult res = MessageBox.Show(exception.Message);
-                            //MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-                        int i = 0;
                     }
+
+                    // Refresh asset view to show new items
+                    RefreshSelectedAssetDirectory();
                 }
             }
-            // Refresh asset view to show new items
         }
 
         #region Context menu
@@ -289,7 +348,7 @@ namespace Editor
         {
             TreeNode node = new TreeNode();
             node.Text = "NewFolder"; // default
-            string path = assetTreeView.SelectedNode.Name + "/" + node.Text;
+            string path = GetSelectedPath() + "/" + node.Text;
             node.Name = path;
             assetMap.Add(path.GetHashCode(), new List<AssetItem>());
             Directory.CreateDirectory(path);
@@ -326,22 +385,7 @@ namespace Editor
         }
         private void OnRefreshItemClicked(object sender, EventArgs e)
         {
-            string path = assetTreeView.SelectedNode.Name;
-            List<string> files = new List<string>(Directory.EnumerateFileSystemEntries(path));
-
-            // Reload the entire directory for now because i'm lazy
-            // TODO: only add the new items
-            int hash = path.GetHashCode();
-            assetMap[hash].Clear();
-            assetMap.Remove(hash);
-
-            // Re-discover all directories under the selected one
-            TreeNode node = assetTreeView.SelectedNode;
-            node.Nodes.Clear();
-            Traverse(path, ref node);
-            assetTreeView.SelectedNode = node;
-            
-            // Update listview
+            RefreshSelectedAssetDirectory();
         }
         #endregion Context menu
     }
