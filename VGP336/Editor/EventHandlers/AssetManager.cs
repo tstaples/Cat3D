@@ -176,7 +176,9 @@ namespace Editor
         {
             if (importerProcess.HasExited)
             {
-                Console.LogInfo("AssetManager", "Importer finished with exited code: {0}", importerProcess.ExitCode);
+                int exitCode = importerProcess.ExitCode;
+                string output = importerProcess.StandardOutput.ReadToEnd();
+                Console.LogInfo("AssetManager", "Importer finished with exited code: {0}. {1}", exitCode, output);
                 RefreshSelectedAssetDirectory();
                 importerTimer.Stop();
             }
@@ -288,9 +290,14 @@ namespace Editor
                 // TODO: regex match against all supported types
                 if (ext == ".fbx" || ext == ".x")
                 {
+                    Console.LogInfo("AssetManager", "Importing {0}...", file);
+
                     ProcessStartInfo startInfo = new ProcessStartInfo();
-                    startInfo.CreateNoWindow = true;
+                    startInfo.CreateNoWindow = false;
+                    startInfo.UseShellExecute = false;
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.WorkingDirectory = Directory.GetCurrentDirectory();
+                    startInfo.RedirectStandardOutput = true;
                     startInfo.FileName = importerPath;
                     startInfo.Arguments = file + " " + destPath + filename + ".catm";
 
