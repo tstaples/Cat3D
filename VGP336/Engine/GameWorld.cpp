@@ -248,9 +248,9 @@ bool GameWorld::ReLoadCurrentLevel()
 
     if (mLevelLoader.LoadLocal(mCurrentLevel))
     {
+        SerialReader reader(mCurrentLevel.buffer, mCurrentLevel.bufferSize);
         for (u32 i=0; i < mCurrentLevel.numGameObjects; ++i)
         {
-            SerialReader reader(mCurrentLevel.buffer, mCurrentLevel.bufferSize);
             GameObjectHandle handle = mFactory.Create(reader);
             if (!handle.IsValid())
             {
