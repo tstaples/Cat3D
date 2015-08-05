@@ -222,9 +222,9 @@ bool GameWorld::LoadLevel(const char* levelName)
     if (mLevelLoader.Load(levelName, level))
     {
         mSettings = level.settings;
+        SerialReader reader(level.buffer, level.bufferSize);
         for (u32 i=0; i < level.numGameObjects; ++i)
         {
-            SerialReader reader(level.buffer, level.bufferSize);
             GameObjectHandle handle = mFactory.Create(reader);
             if (!handle.IsValid())
             {
