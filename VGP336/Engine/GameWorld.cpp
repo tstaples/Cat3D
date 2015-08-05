@@ -20,9 +20,9 @@ namespace
     void DestroyGameObjectList(GameObjectHandles& handles, GameObjectFactory& factory)
     {
         const u32 size = handles.size();
-        for (u32 i=0; i < size; ++i)
+        for (u32 i=size; i > 0; --i)
         {
-            factory.Destroy(handles[i]);
+            factory.Destroy(handles[i - 1]);
         }
         handles.clear();
     }
@@ -73,10 +73,7 @@ bool GameWorld::OnInitialize(const GameSettings& settings, GraphicsSystem& gs, C
 
     mFactory.Initialize(mServiceList, *this);
     mFactory.OnDestroyGameObject = DELEGATE(&GameWorld::OnGameObjectDestroyed, this);
-
-
-    //GameObjectHandle handle = mFactory.Create("../Data/GameObjects/defaultTerrain.json");
-    //mUpdateList.push_back(handle);
+    
     return true;
 }
 
